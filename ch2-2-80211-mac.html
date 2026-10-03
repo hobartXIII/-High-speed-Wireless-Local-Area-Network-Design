@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>802.11 MAC 架構與服務</title>
+<meta name="description" content="第 2-2 章 IEEE 802.11 MAC 架構與服務：WM、DS、ESS、Portal、十項服務、Distribution 與 Integration、移動性、Association、認證，附互動動畫。">
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/common.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 2-2</div>
+    <h1>📨 IEEE 802.11 MAC 架構與服務</h1>
+    <div class="meta"><span>來源：2-2 CSMA_CA.pdf（講義章節：7. IEEE 802.11 Wireless LAN MAC Standard）</span><span>動畫與互動 5 個・圖解 3 張</span></div>
+  </div>
+
+  <h2 id="std">1. 標準依據</h2>
+  <ul>
+    <li>本章內容依據 <b>IEEE Std 802.11</b> 的 MAC 架構與服務定義。</li>
+    <li>相關修訂：<b>802.11e</b>（QoS）、<b>802.11i</b>（安全）、<b>802.11f</b>（IAPP，AP 間漫遊）。</li>
+    <li>相關的其他 802 標準：<b>802.2 LLC</b>（上層介面）、<b>802.1X</b>（port-based 認證）、<b>802.10</b>（實際執行 challenge/response 計算）、IEEE 802 <b>48-bit 位址空間</b>。</li>
+  </ul>
+
+  <h2 id="diff">2. 無線 LAN 與有線 LAN 的主要差異</h2>
+  <h3>位址 ≠ 位置</h3>
+  <ul>
+    <li>有線 LAN：位址等同實體位置。</li>
+    <li>802.11：可定址的單位是<b>站台（STA）</b>；STA 是訊息的目的地，但<b>不是固定位置</b>。</li>
+  </ul>
+  <h3>媒介影響設計</h3>
+  <p>802.11 PHY 與有線媒介本質不同：點對點連線距離有限、使用共享媒介、不受外部訊號保護、可靠度比有線 PHY 低很多、拓樸是動態變化的。</p>
+  <h3>移動站台的處理</h3>
+  <ul>
+    <li><b>Portable station</b>：會換地點，但只在固定位置時使用。</li>
+    <li><b>Mobile station</b>：移動中也在存取 LAN。</li>
+    <li>電波傳播效應讓兩者的界線變模糊。</li>
+  </ul>
+  <h3>與其他 802 層的互動</h3>
+  <ul>
+    <li>802.11 對上層（LLC）必須<b>看起來就像一般的 802 LAN</b>。</li>
+    <li>站台的移動性必須在 <b>MAC 層內</b>處理（802.11f）。</li>
+  </ul>
+
+  <h2 id="char">3. 802.11 WLAN 特性</h2>
+  <ul>
+    <li>速率：1、2、5.5、11、22、33、6、9、12、18、24、36、48、54、72、150、500、1000 Mbps；802.11ax（Wi-Fi 6；Wi-Fi 6E 使用 5.925–7.125GHz）600–9608 Mbps；802.11be（Wi-Fi 7）40000 Mbps（講義數據）。</li>
+    <li>傳輸媒介：無線電。</li>
+    <li><b>CSMA/CA</b> 協定：
+      <ul>
+        <li>用<b>不同的 contention window</b> 提供優先權（802.11e），進而提供有延遲保證的傳輸服務。</li>
+        <li>避免大部分碰撞，因此傳輸延遲可以保證。</li>
+        <li>頻寬公平性是否成立需要長時間觀察；各站台實際用到的頻寬可能不同 → 講義提問：未來是否需要負載分擔機制？</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h2 id="amend">4. 修訂版與其依據內容</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>標準</th><th>名稱</th><th>重點</th></tr>
+    <tr><td>802.11a-1999</td><td>5GHz 高速 PHY 延伸</td><td>5.15–5.25、5.25–5.35、5.725–5.825GHz；OFDM；6–54 Mbps</td></tr>
+    <tr><td>802.11b-1999</td><td>2.4GHz 高速 PHY 延伸</td><td>2.4–2.4835GHz；DSSS；1、2、5.5、11 Mbps</td></tr>
+    <tr><td>802.11g-2003</td><td>2.4GHz 更高速 PHY 延伸</td><td>DSSS 與 OFDM 混合；22、33 / 6–54 Mbps</td></tr>
+    <tr><td>802.11e-2003</td><td>MAC 的 QoS 強化</td><td>—</td></tr>
+    <tr><td>802.11i-2003</td><td>安全性強化</td><td>WEP、TKIP、WRAP、CCMP</td></tr>
+    <tr><td>802.11s</td><td>Mesh Networking，ESS</td><td>2011/07</td></tr>
+    <tr><td>802.11aa</td><td>MAC 強化：穩健的影音串流</td><td>—</td></tr>
+    <tr><td>802.11ac</td><td>6GHz 以下的 Very High Throughput</td><td>—</td></tr>
+    <tr><td>802.11ad</td><td>60GHz Very High Throughput（WiGig）</td><td>2012/12</td></tr>
+    <tr><td>802.11ae</td><td>管理訊框優先權</td><td>—</td></tr>
+    <tr><td>802.11af</td><td>TV White Spaces（TVWS）運作</td><td>—</td></tr>
+    <tr><td>802.11be</td><td>Extremely High Throughput（EHT）</td><td>—</td></tr>
+  </table></div>
+  <p><span class="sup">補充</span>802.11i 的加密演進：WEP（RC4，已被破解）→ <b>TKIP</b>（WPA 過渡方案，仍用 RC4 但每個封包換金鑰）→ <b>CCMP</b>（以 AES 為基礎，WPA2 必要）；WRAP 是早期以 AES-OCB 為基礎的方案，後來由 CCMP 取代。</p>
+
+  <h2 id="components">5. 802.11 架構元件</h2>
+  <div class="figure" id="fig-arch-wrap">
+    <div class="fig-title">ESS、DS 與 Portal：資料怎麼走 <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-arch"></div><div class="status info" id="arch-msg"></div></div>
+    <div class="caption">依講義第 11、16、19 頁重繪。虛線為無線媒介（WM），實線為 DS 媒介（DSM）。Distribution：STA1 → STA4；Integration：STA1 → 有線 LAN（輸出點是 Portal）。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>元件</th><th>定義</th><th>重點</th></tr>
+    <tr><td><b>WM</b>（Wireless Medium）</td><td>實作無線 LAN 的媒介</td><td>—</td></tr>
+    <tr><td><b>STA</b>（Station）</td><td>具備符合 802.11 的 MAC 與 PHY 介面的任何裝置</td><td>AP 也是一種 STA</td></tr>
+    <tr><td><b>SS</b>（Station Services）</td><td>在 BSS 內的站台間傳送 MSDU 的服務集合</td><td>每個 STA 都有</td></tr>
+    <tr><td><b>BSS</b>（Basic Service Set）</td><td>由<b>單一 Coordination Function</b> 控制的一組 STA</td><td>802.11 LAN 的基本單位；離開覆蓋範圍就無法直接與成員通訊</td></tr>
+    <tr><td><b>IBSS</b>（Independent BSS）</td><td>Ad-Hoc 網路</td><td>站台夠近就能直接連線，不需事先規劃</td></tr>
+    <tr><td><b>DS</b>（Distribution System）</td><td>連接多個 BSS 以形成 ESS 的系統</td><td>用於 Infrastructure 網路</td></tr>
+    <tr><td><b>DSM</b>（DS Medium）</td><td>DS 所使用的媒介</td><td>802.11 在<b>邏輯上</b>把 WM 與 DSM 分開，兩者用途不同</td></tr>
+    <tr><td><b>DSS</b>（DS Services）</td><td>DS 提供的服務，讓 MAC 能在 ESS 內跨 BSS 傳送 MSDU</td><td>經由 AP 存取</td></tr>
+    <tr><td><b>AP</b>（Access Point）</td><td>具 STA 功能並提供 DS 存取的實體</td><td>AP = SS ＋ DSS</td></tr>
+    <tr><td><b>ESS</b>（Extended Service Set）</td><td>互連的多個 BSS，看起來像單一 BSS</td><td>對 LLC 而言與 IBSS 無異；站台在 ESS 內移動對 LLC 透明</td></tr>
+    <tr><td><b>BSA / ESA</b></td><td>BSS / ESS 成員可以通訊的區域</td><td>ESA ≥ BSA</td></tr>
+    <tr><td><b>Portal</b></td><td>與傳統有線 LAN 整合的邏輯元件</td><td>所有來自非 802.11 LAN 的資料都經 Portal 進入</td></tr>
+  </table></div>
+  <ul>
+    <li><b>STA 與 AP 的關聯是動態的</b>：站台會開機、關機、進出範圍；要成為 Infrastructure BSS 的成員必須先 <b>Associated</b>。</li>
+    <li>DS 與多個 BSS 讓 802.11 能建立<b>任意大小與複雜度</b>的無線網路。</li>
+  </ul>
+
+  <h2 id="spatial">6. BSS 的空間關係</h2>
+  <div class="figure">
+    <div class="fig-title">部分重疊・實體分離・同地點共存 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-spatial"></div>
+  </div>
+  <ul>
+    <li>BSS 可以<b>部分重疊</b>（常用來達成連續覆蓋）、<b>實體分離</b>、或<b>同地點共存</b>。</li>
+    <li>同一空間內可以同時存在多個 IBSS 或 ESS，例如：在 ESS 網路範圍內運作的 ad-hoc 網路，或不同組織各自架設、實體相鄰的 802.11 網路。</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>PHY</th><th class="num">最多重疊 BSS 數（常考）</th></tr>
+    <tr><td>DSSS 2.4GHz</td><td class="num">3</td></tr>
+    <tr><td>FHSS 2.4GHz</td><td class="num">26</td></tr>
+    <tr><td>OFDM 5GHz</td><td class="num">12</td></tr>
+  </table></div>
+  <p>講義思考題：單一 BSS 能否同時使用多個頻道？</p>
+
+  <h2 id="portal">7. Portal 與 Bridge</h2>
+  <ul>
+    <li>Bridge 原本用來<b>延伸同類 MAC 的距離</b>；802.11 已由 ESS（DS + AP）提供任意覆蓋範圍，所以不需要靠 bridge 延伸 PHY 距離。</li>
+    <li>Bridge 也用來連接不同類型的 MAC。橋接到 802.11 時會遇到問題：要橋接到 <b>DSM 還是 WM</b>？</li>
+    <li>Portal 必須處理 BSS 成員的動態變化，以及移動性帶來的位址與位置對應。</li>
+    <li>實體上，Portal 可能包含、也可能不包含橋接功能，取決於 DS 的實作。</li>
+  </ul>
+
+  <h2 id="services">8. 邏輯服務介面</h2>
+  <ul>
+    <li>DS 不一定等同現有的有線 LAN，可以用多種技術建構（包括現有的 802.x 有線 LAN）。</li>
+    <li>802.11 <b>不限制</b> DS 是 Data Link 層或 Network 層、集中式或分散式。</li>
+    <li>802.11 <b>只定義服務，不定義 DS 的實作</b>，服務分成 <b>SS</b> 與 <b>DSS</b> 兩類。</li>
+  </ul>
+  <h3>十項架構服務（9 + 1）</h3>
+  <div class="figure" id="fig-quiz-wrap">
+    <div class="fig-title">分類練習：這項服務屬於 SS 還是 DSS？ <span class="tag">互動</span></div>
+    <div class="fig-body">
+      <div id="quiz-card" style="text-align:center;font-size:1.4rem;font-weight:800;padding:18px 0 6px"></div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn" type="button" data-a="SS">SS（Station Services）</button>
+        <button class="btn" type="button" data-a="DSS">DSS（DS Services）</button>
+      </div>
+      <div class="status" id="quiz-msg"></div>
+      <div id="quiz-board"></div>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>服務</th><th>類別</th><th>用途</th><th>發起者</th></tr>
+    <tr><td>Authentication</td><td>SS</td><td>存取控制</td><td>STA 之間</td></tr>
+    <tr><td>Deauthentication</td><td>SS</td><td>存取控制</td><td>任一方</td></tr>
+    <tr><td>Privacy</td><td>SS</td><td>機密性</td><td>—</td></tr>
+    <tr><td>MSDU delivery</td><td>SS</td><td>MSDU 傳送</td><td>—</td></tr>
+    <tr><td>Association</td><td>DSS</td><td>MSDU 傳送</td><td><b>只能由 STA 發起</b></td></tr>
+    <tr><td>Reassociation</td><td>DSS</td><td>MSDU 傳送（漫遊）</td><td><b>只能由 STA 發起</b></td></tr>
+    <tr><td>Disassociation</td><td>DSS</td><td>MSDU 傳送</td><td><b>STA 或 AP 皆可</b></td></tr>
+    <tr><td>Distribution</td><td>DSS</td><td>MSDU 傳送</td><td>DS</td></tr>
+    <tr><td>Integration</td><td>DSS</td><td>MSDU 傳送（經 Portal 到有線 LAN）</td><td>DS</td></tr>
+    <tr><td>QoS</td><td>—</td><td>第 10 項（802.11e 加入）</td><td>—</td></tr>
+  </table></div>
+  <ul>
+    <li>講義的分類：原本 9 項服務中，<b>6 項支援 MSDU 傳送</b>、<b>3 項控制存取與機密性</b>（Authentication、Deauthentication、Privacy）。每項服務由一種或多種 MAC frame 支援。</li>
+    <li>SS 存在於每個 802.11 站台（含 AP），由 MAC 實體使用。</li>
+    <li>DSS 用來跨越媒介與位址空間的邏輯邊界，由 DS 提供，透過同時提供 DSS 的 STA（也就是 AP）存取。</li>
+  </ul>
+  <h3>MAC 的三種訊息</h3>
+  <ul>
+    <li><b>Data</b>：走 MAC 資料服務路徑；<b>Management</b>：走 MAC 管理服務路徑；<b>Control</b>。</li>
+    <li><span class="sup">補充</span>常見的 frame：Management 有 Beacon、Probe Request/Response、Authentication、Deauthentication、Association / Reassociation Request/Response、Disassociation；Control 有 RTS、CTS、ACK、PS-Poll。</li>
+  </ul>
+
+  <h2 id="address">9. 多重邏輯位址空間</h2>
+  <ul>
+    <li>WM、DSM 與整合的有線 LAN 可能是<b>不同的實體媒介</b>，也可能在<b>不同的位址空間</b>運作。</li>
+    <li>802.11 <b>只使用並規範 WM 的位址空間</b>，每個 802.11 PHY 只在單一媒介（WM）運作。</li>
+    <li>802.11 採用 <b>IEEE 802 的 48-bit 位址空間</b>。</li>
+    <li>例：DS 使用網路層定址時，WM 位址空間與 DS 位址空間就不同。</li>
+  </ul>
+  <p><span class="sup">補充</span>802.11 資料訊框最多有 4 個位址欄位，用 To DS / From DS 兩個 bit 表示方向：</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>To DS</th><th>From DS</th><th>意義</th></tr>
+    <tr><td>0</td><td>0</td><td>IBSS 內直接傳送</td></tr>
+    <tr><td>0</td><td>1</td><td>AP 送往 STA</td></tr>
+    <tr><td>1</td><td>0</td><td>STA 送往 AP</td></tr>
+    <tr><td>1</td><td>1</td><td>AP 之間（WDS／Mesh），用到 4 個位址</td></tr>
+  </table></div>
+
+  <h2 id="distribution">10. DS 內的訊息分送</h2>
+  <h3>Distribution</h3>
+  <ul>
+    <li>在 DS 內傳送 MSDU 的服務，<b>依據 Association 資訊</b>找出目的地。</li>
+    <li>例：STA1 傳給 STA4 → STA1 送給所屬 AP（input）→ 經 DS → 到 STA4 所屬的 AP（output）→ 送達 STA4。在第 5 節的動畫選「Distribution」可以看到這條路徑。</li>
+    <li><b>DS 內部怎麼傳，不在 802.11 規範內</b>。</li>
+    <li>DS 要判斷輸出點需要的資訊，來自三項 association 相關服務：<b>Association、Reassociation、Disassociation</b>。</li>
+  </ul>
+  <h3>Integration</h3>
+  <ul>
+    <li>讓 DS 與既有網路之間能傳送 MSDU。</li>
+    <li>若目的地是整合的 LAN 成員，輸出點就是 <b>Portal</b> 而不是 AP。</li>
+    <li>送往 Portal 的訊息會觸發 Integration 服務，負責把訊息從 DSM 送到整合 LAN 的媒介，包括必要的<b>媒介或位址轉換</b>。</li>
+  </ul>
+
+  <h2 id="mobility">11. 移動性類型與漫遊</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>類型</th><th>說明</th><th>需要的服務</th></tr>
+    <tr><td>No-transition</td><td>靜止，或只在一個 BSA 內移動</td><td>Association 即足夠</td></tr>
+    <tr><td>BSS-transition</td><td>在<b>同一個 ESS</b> 內從一個 BSS 移到另一個 BSS</td><td>Association 必要但不充分，還需要 Reassociation</td></tr>
+    <tr><td>ESS-transition</td><td>從一個 ESS 的 BSS 移到<b>另一個獨立 ESS</b> 的 BSS</td><td><span class="sup">補充</span>802.11 無法維持上層連線，需靠上層機制（例如 Mobile IP）</td></tr>
+  </table></div>
+  <div class="figure" id="fig-roam-wrap">
+    <div class="fig-title">BSS-transition：漫遊與 Reassociation <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-roam"></div><div class="status info" id="roam-msg"></div></div>
+    <div class="caption">右上角是 DS 掌握的對應表。Reassociation 之後，DS 才知道要把給這台 STA 的資料送到 AP-B。</div>
+  </div>
+
+  <h2 id="assoc">12. Association 三兄弟（必考比較）</h2>
+  <div class="figure">
+    <div class="fig-title">Association・Reassociation・Disassociation <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+sequenceDiagram
+  participant STA
+  participant APa as AP-A（舊）
+  participant APb as AP-B（新）
+  STA->>APa: Association（STA 發起）
+  Note over STA,APa: 送資料前必須先關聯
+  Note over STA: 移動到 BSS-B（同一 ESS）
+  STA->>APb: Reassociation（STA 發起）
+  Note over APa,APb: DS 更新 STA 與 AP 的對應
+  APb-->>STA: Disassociation（任一方可發，是通知，不能拒絕）
+    </div></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th></th><th>Association</th><th>Reassociation</th><th>Disassociation</th></tr>
+    <tr><td>作用</td><td>建立 STA 與 AP 的<b>初始</b>關聯</td><td>把既有關聯從一個 AP <b>轉移</b>到另一個 AP（同一 ESS）；也可在同一個 AP 下變更關聯屬性</td><td><b>刪除</b>既有關聯</td></tr>
+    <tr><td>發起者</td><td><b>只能 STA</b></td><td><b>只能 STA</b></td><td><b>STA 或 AP 皆可</b></td></tr>
+    <tr><td>性質</td><td>請求</td><td>請求</td><td><b>通知</b>，對方不能拒絕</td></tr>
+    <tr><td>重點</td><td>送資料前必須先 associate；同一時間一個 STA 最多與一個 AP 關聯（DS 才能確定是哪個 AP 在服務它）；一個 AP 可同時關聯多個 STA</td><td>讓 DS 持續掌握 AP 與 STA 的最新對應</td><td>AP 可能因下線維修而解除關聯；STA 離開網路時也應主動 disassociate</td></tr>
+  </table></div>
+  <div class="callout warn">🧠 記法：「建立」和「搬家」都是 STA 自己要的，所以只能 STA 發起；「分手」誰都可以提，而且不能拒絕。</div>
+
+  <h2 id="access">13. 存取與機密性控制</h2>
+  <ul>
+    <li>有線 LAN 設計<b>假設媒介是封閉、不共享的</b>；802.11 開放共享的特性違反了這個假設。</li>
+    <li>因此需要兩項服務，才能達到有線 LAN 原本就有的功能：
+      <ul>
+        <li><b>Authentication</b>：取代有線的「實體接線」→ 後來由 <b>802.1X</b> port-based 認證強化。</li>
+        <li><b>Privacy</b>：提供封閉有線媒介的機密性 → 後來由 <b>802.11i</b> 強化。</li>
+      </ul>
+    </li>
+    <li>有線 LAN 中，能接上實體線路就代表有權使用 LAN；<b>無線 LAN 不能這樣假設</b>。</li>
+    <li>若兩個站台之間沒有建立雙方都能接受的認證等級，<b>就不能建立 association</b>。</li>
+  </ul>
+
+  <h2 id="auth">14. Authentication 服務</h2>
+  <ul>
+    <li>支援從<b>不安全的方式</b>到<b>公開金鑰密碼認證</b>等各種等級；講義列出 <b>Open System</b> 與 <b>Shared Key</b> 兩種。</li>
+    <li>是 <b>link level</b> 認證（802.11 站台之間），<b>不是</b> end-to-end 或 user-to-user；需要更高層的認證由上層處理。</li>
+    <li>Challenge/Response 三步驟：<b>Assertion</b>（宣告身分）→ <b>Challenge</b>（挑戰該宣告）→ <b>Response</b>（回應挑戰）。</li>
+  </ul>
+  <div class="figure" id="fig-cr-wrap">
+    <div class="fig-title">Challenge / Response 的三個例子 <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-cr"></div></div>
+  </div>
+  <p><span class="sup">補充</span>Shared Key 認證使用 WEP 金鑰加密 AP 給的 challenge text；因為攻擊者可以同時截到明文與密文，反而會洩漏金鑰資訊，實務上已不建議使用。</p>
+  <h3>其他規定</h3>
+  <ul>
+    <li>802.11 使用 <b>802.10</b> 的服務執行實際的 challenge / response 計算。</li>
+    <li>提供 <b>MIB</b> 功能，讓外界查詢 STA 支援哪些認證演算法。</li>
+    <li>要求<b>雙向、雙方都接受且成功</b>的認證。</li>
+    <li>一個 STA 可以同時與<b>多個</b> STA（和 AP）完成認證。</li>
+    <li>Authentication 可能很耗時，可以<b>獨立於 Association</b> 執行。</li>
+    <li><b>Pre-authentication</b>：STA 還連著原本的 AP 時，先與其他 AP 完成認證；標準<b>不強制</b>，但因為 association 之前必須先認證，預先認證可以<b>加速 reassociation</b>。</li>
+    <li><b>順序：先 Authentication，才能 Association</b>。</li>
+  </ul>
+  <h3>連線狀態機 <span class="sup">補充</span></h3>
+  <div class="figure" id="fig-fsm-wrap">
+    <div class="fig-title">按按鈕，看站台在三個狀態間移動 <span class="tag">互動</span></div>
+    <div class="fig-body"><div id="fig-fsm"></div><div class="status info" id="fsm-msg">目前在 State 1。試試看直接按「Association」會怎樣？</div></div>
+    <div class="controls">
+      <button class="btn" type="button" data-ev="auth">Authentication</button>
+      <button class="btn" type="button" data-ev="assoc">Association</button>
+      <button class="btn" type="button" data-ev="reassoc">Reassociation</button>
+      <button class="btn" type="button" data-ev="disassoc">Disassociation</button>
+      <button class="btn" type="button" data-ev="deauth">Deauthentication</button>
+      <button class="btn" type="button" data-ev="data">送資料</button>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>狀態</th><th>條件</th><th>可傳的 frame</th></tr>
+    <tr><td>State 1</td><td>未認證、未關聯</td><td>Class 1（例如 Beacon、Probe、Authentication）</td></tr>
+    <tr><td>State 2</td><td>已認證、未關聯</td><td>Class 1 + 2（多了 Association 相關 frame）</td></tr>
+    <tr><td>State 3</td><td>已認證、已關聯</td><td>Class 1 + 2 + 3（可以傳資料）</td></tr>
+  </table></div>
+  <ul>
+    <li>Deauthentication 會回到 State 1；Disassociation 會從 State 3 回到 State 2。</li>
+    <li><span class="sup">補充</span>站台找 AP 的方式：<b>被動掃描</b>（聽 AP 定期廣播的 Beacon）或<b>主動掃描</b>（送出 Probe Request，等 AP 回 Probe Response）。</li>
+  </ul>
+
+  <h2 id="glossary">15. 專有名詞對照</h2>
+  <details><summary>展開 34 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
+    <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
+    <tr><td>無線媒介</td><td>Wireless Medium（WM）</td><td>無線 LAN 使用的傳輸媒介，即空氣中的電波</td></tr>
+    <tr><td>分散式系統媒介</td><td>DS Medium（DSM）</td><td>DS 連接各 AP 所用的媒介，邏輯上與 WM 分開</td></tr>
+    <tr><td>站台服務</td><td>Station Services（SS）</td><td>認證、解除認證、隱私、MSDU 傳送</td></tr>
+    <tr><td>分散式系統服務</td><td>DS Services（DSS）</td><td>關聯、重新關聯、解除關聯、分送、整合</td></tr>
+    <tr><td>基本／延伸服務區域</td><td>BSA / ESA</td><td>BSS ／ ESS 成員可以通訊的地理範圍</td></tr>
+    <tr><td>獨立基本服務集</td><td>IBSS</td><td>不需 AP 的 ad hoc 網路</td></tr>
+    <tr><td>埠接器（門戶）</td><td>Portal</td><td>802.11 與有線 LAN 之間的邏輯出入口</td></tr>
+    <tr><td>橋接器</td><td>Bridge</td><td>連接同類或不同類 MAC 的鏈結層設備</td></tr>
+    <tr><td>協調功能</td><td>Coordination Function（CF）</td><td>決定 BSS 內站台何時可傳送的邏輯，如 DCF、PCF</td></tr>
+    <tr><td>可攜式／行動站台</td><td>Portable / Mobile Station</td><td>會換地點但只在定點使用／移動中也在使用</td></tr>
+    <tr><td>關聯</td><td>Association</td><td>建立 STA 與 AP 的對應關係，由 STA 發起</td></tr>
+    <tr><td>重新關聯</td><td>Reassociation</td><td>把關聯從一個 AP 轉到另一個 AP，由 STA 發起</td></tr>
+    <tr><td>解除關聯</td><td>Disassociation</td><td>刪除既有關聯，任一方可發起，屬於通知</td></tr>
+    <tr><td>認證／解除認證</td><td>Authentication / Deauthentication</td><td>確認對方身分／終止既有的認證</td></tr>
+    <tr><td>隱私（機密性）</td><td>Privacy</td><td>加密傳輸內容，達到有線媒介的封閉效果</td></tr>
+    <tr><td>分送</td><td>Distribution</td><td>在 DS 內把 MSDU 送到正確的 AP</td></tr>
+    <tr><td>整合</td><td>Integration</td><td>把 MSDU 經 Portal 送到有線 LAN，必要時做媒介或位址轉換</td></tr>
+    <tr><td>無轉換／BSS 轉換／ESS 轉換</td><td>No- / BSS- / ESS-transition</td><td>不換 BSS／同 ESS 內換 BSS／換到另一個 ESS</td></tr>
+    <tr><td>預先認證</td><td>Pre-authentication</td><td>還連著舊 AP 時先跟新 AP 認證，加速漫遊</td></tr>
+    <tr><td>挑戰／回應</td><td>Challenge / Response（C/R）</td><td>宣告身分 → 挑戰 → 回應的認證流程</td></tr>
+    <tr><td>開放系統認證</td><td>Open System Authentication</td><td>不驗證，直接通過</td></tr>
+    <tr><td>共享金鑰認證</td><td>Shared Key Authentication</td><td>雙方用預先共享的 WEP 金鑰完成挑戰回應</td></tr>
+    <tr><td>公開金鑰／私密金鑰</td><td>Public / Private Key</td><td>公鑰加密的內容只有對應私鑰能解</td></tr>
+    <tr><td>鏈結層級／端對端</td><td>Link Level / End-to-End</td><td>802.11 認證只在相鄰的無線站台間</td></tr>
+    <tr><td>管理／控制／資料訊框</td><td>Management / Control / Data Frame</td><td>802.11 的三種訊息類型</td></tr>
+    <tr><td>探測要求／回應</td><td>Probe Request / Response</td><td>主動掃描時站台詢問、AP 回覆的管理訊框（補充）</td></tr>
+    <tr><td>主動／被動掃描</td><td>Active / Passive Scanning</td><td>發 Probe Request 找 AP／聽 Beacon 找 AP（補充）</td></tr>
+    <tr><td>服務集識別碼</td><td>SSID / BSSID</td><td>ESS 的名稱（可變長度）／BSS 的 48-bit 識別碼</td></tr>
+    <tr><td>位址空間</td><td>Address Space</td><td>一種定址方式涵蓋的全部位址；802.11 用 IEEE 802 48-bit</td></tr>
+    <tr><td>暫時金鑰完整性協定</td><td>TKIP</td><td>WPA 使用的過渡加密，每個封包換金鑰</td></tr>
+    <tr><td>計數器模式 CBC-MAC 協定</td><td>CCMP</td><td>以 AES 為基礎的加密，WPA2 必要</td></tr>
+    <tr><td>無線穩健認證協定</td><td>WRAP</td><td>早期以 AES-OCB 為基礎的方案，後由 CCMP 取代（補充）</td></tr>
+    <tr><td>競爭視窗</td><td>Contention Window（CW）</td><td>隨機退避時可選的時槽範圍，越小越容易先搶到通道</td></tr>
+    <tr><td>負載分擔</td><td>Load Sharing / Balancing</td><td>把流量分散到多個 AP 或頻道</td></tr>
+  </table></div></div></details>
+
+  <h2 id="check">16. 考前自我檢查</h2>
+  <ul class="checklist">
+    <li><details><summary>說明「位址 ≠ 位置」的意義</summary><div class="inner">有線 LAN 的位址等於實體位置；802.11 的可定址單位是 STA，它是訊息的目的地，但會移動，不是固定位置。</div></details></li>
+    <li><details><summary>說明 802.11 對 LLC 要呈現什麼樣子，以及移動性在哪一層處理</summary><div class="inner">對 LLC 要看起來像一般的 802 LAN；移動性在 MAC 層內處理（802.11f）。</div></details></li>
+    <li><details><summary>定義 BSS、IBSS、ESS、DS、DSM、DSS、AP、Portal、BSA、ESA</summary><div class="inner">見第 5 節表格。關鍵：BSS 由單一 CF 控制；ESS 對 LLC 看起來像單一 BSS；AP = SS + DSS；Portal 是接有線 LAN 的邏輯出入口。</div></details></li>
+    <li><details><summary>背出 DSSS / FHSS / OFDM 的最多重疊 BSS 數</summary><div class="inner">DSSS 2.4GHz：3；FHSS 2.4GHz：26；OFDM 5GHz：12。</div></details></li>
+    <li><details><summary>把十項服務分成 SS 與 DSS</summary><div class="inner">SS：Authentication、Deauthentication、Privacy、MSDU delivery。DSS：Association、Reassociation、Disassociation、Distribution、Integration。第 10 項：QoS。</div></details></li>
+    <li><details><summary>比較 Association / Reassociation / Disassociation 的發起者與特性</summary><div class="inner">Association、Reassociation 只能 STA 發起；Disassociation 任一方皆可，且是通知不能拒絕。</div></details></li>
+    <li><details><summary>分辨 Distribution 與 Integration</summary><div class="inner">Distribution：在 DS 內把 MSDU 送到目的 STA 所屬的 AP。Integration：目的地在有線 LAN，輸出點是 Portal，需做媒介或位址轉換。</div></details></li>
+    <li><details><summary>說出三種移動性類型與需要的服務</summary><div class="inner">No-transition：Association 即可。BSS-transition：還需要 Reassociation。ESS-transition：802.11 無法維持上層連線。</div></details></li>
+    <li><details><summary>說明無線 LAN 為何需要 Authentication 與 Privacy</summary><div class="inner">有線 LAN 假設媒介封閉、接上線就有權使用；無線是開放共享媒介，所以要用 Authentication 取代實體接線、用 Privacy 提供機密性。</div></details></li>
+    <li><details><summary>寫出 challenge / response 三步驟與三個例子</summary><div class="inner">Assertion → Challenge → Response。Open system（Null/Null）、密碼式、密碼學式（公鑰加密 X，私鑰解出）。</div></details></li>
+    <li><details><summary>說明 pre-authentication 的用途</summary><div class="inner">還連著舊 AP 時先和新 AP 認證；因為 association 前必須先認證，預先做好可以加速 reassociation。</div></details></li>
+  </ul>
+</main>
+<aside class="toc"></aside>
+</div>
+<script src="assets/js/ch2-2.js"></script>
+</body>
+</html>

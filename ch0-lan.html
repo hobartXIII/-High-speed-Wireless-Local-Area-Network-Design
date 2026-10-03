@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAN 概論</title>
+<meta name="description" content="第 0 章 LAN 概論：標準組織、LAN 需求、拓樸、OSI 七層、封裝、IEEE 802 標準家族。">
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/common.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 0</div>
+    <h1>🌐 LAN 概論</h1>
+    <div class="meta"><span>來源：0Intro_LAN.pdf</span><span>動畫 3 個・圖解 4 張</span></div>
+  </div>
+
+  <h2 id="orgs">1. 標準組織與分工</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>組織</th><th>負責範圍</th><th>本課相關標準</th></tr>
+    <tr><td><b>IEEE 802</b>（LAN/MAN Standards Committee）</td><td>OSI 第 1 層（實體層）與第 2 層（鏈結層）</td><td>802.1、802.2、802.3、802.11、802.15、802.16…</td></tr>
+    <tr><td><b>ETSI</b>（歐洲電信標準協會）</td><td>歐洲無線標準</td><td>HIPERLAN I / II</td></tr>
+    <tr><td><b>ISO</b></td><td>OSI 參考模型 <span class="sup">補充</span>ISO/IEC 7498-1</td><td>OSI 七層</td></tr>
+    <tr><td><span class="sup">補充</span><b>ANSI</b></td><td>FDDI 是 ANSI 標準，不是 IEEE 802</td><td>FDDI、FDDI-II</td></tr>
+    <tr><td><span class="sup">補充</span><b>產業聯盟</b></td><td>相容性認證與品牌</td><td>Wi-Fi Alliance（802.11）、Bluetooth SIG（802.15.1）、Zigbee Alliance（802.15.4）、WiMAX Forum（802.16）</td></tr>
+  </table></div>
+  <div class="callout tip">💡 <b>觀念：</b>IEEE 802 只定義到<b>第 2 層</b>，而且把鏈結層再切成兩個子層：上面共用的 <b>LLC（802.2）</b>，下面依技術不同的 <b>MAC</b>（802.3、802.11…）。所以不管底下是有線還是無線，上層看到的都是同一個 LLC 介面。</div>
+
+  <h2 id="def">2. LAN 定義與範圍</h2>
+  <ul>
+    <li><b>LAN</b>：讓多個獨立裝置在中等地理範圍內，透過實體通道以中等速率<b>直接</b>互相通訊的資料通訊系統。</li>
+    <li>範圍：PAN（個人，802.15）→ LAN（區域，802.3 / 802.11）→ MAN（都會，802.16、802.6）→ WAN（廣域）；<span class="sup">補充</span>802.22 WRAN 為區域型無線網路（Regional Area）。</li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">網路涵蓋範圍比較 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-scale"></div>
+    <div class="caption">圓的大小只表示相對關係，不是實際比例。</div>
+  </div>
+
+  <h2 id="req">3. LAN 的基本需求</h2>
+  <p>規格：資料速率 <b>1–1000 Mbps</b>；距離最多 <b>1–5 km</b>；支援<b>數百台</b>獨立裝置。講義列出 7 項需求：</p>
+  <ol>
+    <li>不依賴集中式元件或控制（避免單點故障）</li>
+    <li>有效利用共享資源，包括網路通道</li>
+    <li>高負載下仍穩定</li>
+    <li>各裝置公平存取（頻寬、延遲）</li>
+    <li>可靠、錯誤特性良好</li>
+    <li>易於安裝、重新設定與維護</li>
+    <li>低成本</li>
+  </ol>
+
+  <h2 id="comp">4. LAN 組成</h2>
+  <ul>
+    <li>電腦（網路裝置／工作站）</li>
+    <li>傳輸系統：網卡、線材（同軸電纜、雙絞線、光纖）、空氣（無線電）</li>
+    <li>LAN 延伸：用<b>訊號增益器（repeater）</b>把多個網路區段接起來；<span class="sup">補充</span>repeater 工作在實體層，只放大轉送訊號，所以接起來的區段仍是同一個碰撞網域。</li>
+  </ul>
+
+  <h2 id="topo">5. 網路拓樸與對應標準</h2>
+  <div class="figure">
+    <div class="fig-title">九種拓樸 <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-topo"></div><div class="status info" id="topo-info">點選任一拓樸，看它對應的標準。</div></div>
+    <div class="caption">橘色點代表訊框的流向：Bus 是廣播到整條線；Ring 是沿單一方向傳遞；Star 經過中心轉送；Random 是 802.11 無線，訊號向四周擴散。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>拓樸</th><th>細分</th><th>對應標準／技術</th></tr>
+    <tr><td>Star</td><td>Single Star</td><td>802.12 100VG-AnyLAN、ATM、802.16 WMAN</td></tr>
+    <tr><td>Star</td><td>Multiple Star（Snowflake）</td><td>ATM、802.15.1 WPAN、802.15.4 LR-WPAN</td></tr>
+    <tr><td>Bus</td><td>Single Bus</td><td>802.3 CSMA/CD、802.4 Token-Bus</td></tr>
+    <tr><td>Bus</td><td>Dual Bus</td><td>802.6 DQDB</td></tr>
+    <tr><td>Tree</td><td>—</td><td>多個 bus／star 階層串接</td></tr>
+    <tr><td>Ring</td><td>Single Ring</td><td>802.5 Token Ring</td></tr>
+    <tr><td>Ring</td><td>Dual Ring</td><td>FDDI、FDDI-II</td></tr>
+    <tr><td>Mesh</td><td>—</td><td>ATM、802.15.1、802.15.4、802.15.6 WBAN</td></tr>
+    <tr><td>Random</td><td>—</td><td><b>802.11 CSMA/CA</b>（無線站台位置任意、會移動）</td></tr>
+  </table></div>
+  <ul>
+    <li>講義圖例：Bridged Ring Networks（多個 ring 用橋接器相連）；802.15.1 的 piconet 由 controller 協調，多個 piconet 可連成 mesh／snowflake。</li>
+    <li><span class="sup">補充</span>Bluetooth 的 piconet：1 個 master 最多 7 個 active slave；多個 piconet 互連稱為 scatternet。</li>
+  </ul>
+
+  <h2 id="osi">6. OSI 七層</h2>
+  <div class="figure">
+    <div class="fig-title">OSI 七層與 IEEE 802 的範圍 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-osi"></div>
+    <div class="caption">藍色是 IEEE 802 標準涵蓋的範圍：鏈結層切成 LLC 與 MAC 兩個子層，再加上實體層。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>層</th><th>職責</th><th>重點功能</th></tr>
+    <tr><td>7 應用層</td><td>提供服務給應用程式或使用者</td><td>FTP、Telnet、交易伺服器、網管、WWW／VoD</td></tr>
+    <tr><td>6 表達層</td><td>資訊的表示方式</td><td>字元碼轉換、資料轉換、壓縮／解壓縮、加解密</td></tr>
+    <tr><td>5 會議層</td><td>組織與同步使用者間的對話、管理資料交換</td><td>對話控制、同步</td></tr>
+    <tr><td>4 傳輸層</td><td>兩端使用者間達到約定品質的資料傳輸</td><td>建立／維護／終止傳輸連線</td></tr>
+    <tr><td>3 網路層</td><td>節點間路由</td><td>路徑選擇；建立／維護／終止網路連線</td></tr>
+    <tr><td>2 鏈結層</td><td>節點到節點的可靠傳輸</td><td>無錯誤的訊框傳送（IEEE 802：LLC + MAC）</td></tr>
+    <tr><td>1 實體層</td><td>在特定媒介上傳送位元串</td><td><b>不支援重傳</b>；編碼／解碼、擾亂／解擾亂</td></tr>
+  </table></div>
+  <p><b>分層協定：</b>系統 A 與系統 B 的同一層之間有「對等協定」；實際資料則是一路往下送到傳輸媒介，再在對方一路往上。下面的動畫同時呈現這兩件事。</p>
+
+  <h2 id="encap">7. 協定的基本功能</h2>
+  <div class="figure" id="fig-encap-wrap">
+    <div class="fig-title">封裝與解封裝 <span class="tag">動畫</span></div>
+    <div class="fig-body" id="fig-encap"></div>
+    <div class="caption">虛線是同層之間的對等協定（邏輯上的溝通）；實際資料沿著橘色路徑走：A 往下逐層加 header，經過傳輸媒介，B 往上逐層拆掉。</div>
+  </div>
+  <ul>
+    <li><b>封裝／解封裝</b>：往下送時每層加上自己的 header（AH、PH、SH、TH、NH），鏈結層還會加上 flag、位址、控制與 FCS；往上送時逐層拆掉。</li>
+    <li><b>分段／重組</b>、<b>連線建立</b>、<b>流量控制</b>、<b>錯誤控制</b>、<b>多工／解多工</b>。</li>
+    <li><b>SDU vs PDU</b>：上一層交下來的資料是本層的 SDU；本層加上 header（控制資訊）後成為本層的 PDU，再交給下一層當作它的 SDU。</li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">SDU 與 PDU 的關係 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-sdu"></div>
+  </div>
+  <div class="callout key">🔁 之後 802.11 會出現同樣的觀念：LLC 交給 MAC 的是 <b>MSDU</b>，MAC 加 header 後是 <b>MPDU</b>；MPDU 交給 PHY 時稱 <b>PSDU</b>，PHY 加上 preamble／header 後是 <b>PPDU</b>。</div>
+
+  <h2 id="ieee802">8. IEEE 802 標準家族</h2>
+  <h3>802.1 高層介面（跨各種 802 網路的共通功能）</h3>
+  <ul>
+    <li><b>802.1D</b> Local Bridge：Spanning Tree Algorithm（<span class="sup">補充</span>在橋接網路中關閉多餘路徑以避免迴圈）</li>
+    <li><b>802.1G</b> Remote Bridge：透過遠端線路連接兩個 LAN</li>
+    <li><b>802.1P</b> Traffic Class Expediting 與 Dynamic Multicast Filtering：流量優先權（<span class="sup">補充</span>3 bits、8 個等級，放在 802.1Q 標籤內）</li>
+    <li><b>802.1Q</b> Virtual LANs（<span class="sup">補充</span>在乙太網路訊框插入 4 bytes 標籤，其中 VLAN ID 12 bits）</li>
+    <li><b>802.1X</b> Port-Based Network Access Control：以連接埠為單位的認證（<span class="sup">補充</span>三個角色：supplicant 用戶端、authenticator 交換器／AP、authentication server 通常是 RADIUS；使用 EAP）</li>
+  </ul>
+  <h3>802.2 LLC（Logical Link Control）</h3>
+  <ul><li>所有 802 網路共用的鏈結層上半部；講義重點：可靠度透過 <b>sequence number 與 ACK</b> 達成。</li></ul>
+  <h3>802.3–802.14 有線 LAN／MAN 與諮詢小組</h3>
+  <ul>
+    <li><b>802.3</b> CSMA/CD（Ethernet）→ 詳見<a href="ch1-csma-cd.html">第 1 章</a></li>
+    <li><b>802.4</b> Token-Bus；<b>802.5</b> Token-Ring；<b>802.6</b> DQDB（Distributed Queue Dual Bus，都會網路）</li>
+    <li><b>802.7</b> 寬頻技術諮詢小組；<b>802.8</b> 光纖技術諮詢小組；<b>802.9</b> 整合語音與資料 LAN；<b>802.10</b> LAN/MAN 安全互通</li>
+    <li><b>802.12</b> Demand-Priority（100VG-AnyLAN）；<b>802.14</b> Cable TV 寬頻網路</li>
+  </ul>
+  <h3>802.11 無線區域網路（本課主軸）</h3>
+  <div class="figure">
+    <div class="fig-title">802.11 最高速率演進（對數刻度） <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-rates"></div>
+    <div class="caption">速率取講義數據；年份中 11n（2009）、11ax（2021）、11be（2024）為 <span class="sup">補充</span>。橫軸每一格是 10 倍。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>修訂版</th><th>主題</th><th>頻段／速率（講義數據）</th></tr>
+    <tr><td>11a</td><td>5GHz 高速 PHY（OFDM）</td><td>最高 54 Mbps（1999）</td></tr>
+    <tr><td>11b</td><td>2.4GHz 高速 PHY（DSSS/CCK）</td><td>最高 11 Mbps（1999）</td></tr>
+    <tr><td>11g</td><td>2.4GHz 更高速 PHY（ERP）</td><td>最高 54 Mbps</td></tr>
+    <tr><td>11e</td><td>MAC 的 QoS 強化（WMM / WME）</td><td>—</td></tr>
+    <tr><td>11f</td><td>IAPP（Inter-Access Point Protocol）</td><td>—</td></tr>
+    <tr><td>11h</td><td>5GHz 頻譜與傳輸功率管理（歐洲）</td><td>DFS + TPC</td></tr>
+    <tr><td>11i</td><td>安全性強化（WPA-PSK / WPA2）</td><td>—</td></tr>
+    <tr><td>11k / 11r / 11v</td><td>無線資源管理／快速漫遊／無線網路管理</td><td>—</td></tr>
+    <tr><td>11n</td><td>Next Generation WLAN（MIMO / Smart Antenna）</td><td>600 Mbps</td></tr>
+    <tr><td>11p</td><td>車載環境無線存取（WAVE）</td><td>—</td></tr>
+    <tr><td>11s</td><td>ESS Mesh Networking</td><td>—</td></tr>
+    <tr><td>11t</td><td>Wireless Performance Prediction</td><td>—</td></tr>
+    <tr><td>11u / 11w</td><td>與外部網路互通／管理訊框保護</td><td>—</td></tr>
+    <tr><td>11y</td><td>免執照頻段（講義：White TV）</td><td>3650–3700MHz（美國）</td></tr>
+    <tr><td>11ac</td><td>VHT（6GHz 以下）</td><td>1.73 Gbps（2013，講義）；上限 6.93 Gbps</td></tr>
+    <tr><td>11ad</td><td>VHT，60GHz（WiGig）</td><td>Wave1 1.7 / Wave2 7 Gbps</td></tr>
+    <tr><td>11ah</td><td>Sub-1GHz 免執照（Wi-Fi HaLow，IoT）</td><td>900MHz、100 kbps、約 1 km（2016）</td></tr>
+    <tr><td>11af</td><td>Sub-1GHz TV White Space（White-Fi，認知無線電）</td><td>54–790MHz；26.7 / 35.6 Mbps</td></tr>
+    <tr><td>11ax / 11ay</td><td>ac / ad 的下一代（約 4 倍吞吐量）；11ax 為 HEW</td><td>2.4 / 5GHz（+6GHz）</td></tr>
+    <tr><td>11be</td><td>Extremely High Throughput（EHT）</td><td>2.4 / 5 / 6GHz</td></tr>
+    <tr><td>11bn</td><td>Ultra High Reliability（UHR）</td><td>—</td></tr>
+  </table></div>
+  <p><span class="sup">補充</span>Wi-Fi Alliance 的世代名稱：Wi-Fi 4 = 11n、Wi-Fi 5 = 11ac、Wi-Fi 6 = 11ax、Wi-Fi 6E = 11ax 使用 6GHz、Wi-Fi 7 = 11be。</p>
+
+  <h3>802.15 無線個人區域網路（WPAN）</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>標準</th><th>名稱／用途</th></tr>
+    <tr><td>802.15.1</td><td>WPAN / Bluetooth（<span class="sup">補充</span>以 Bluetooth 規格為基礎標準化）</td></tr>
+    <tr><td>802.15.2</td><td>15.1、15.4 與 802.11 之間的共存（同在 2.4GHz）</td></tr>
+    <tr><td>802.15.3</td><td>High Rate WPAN（UWB，OFDM 或 DSSS 方案之爭，後來解散）；3b MAC 改進、3c 60GHz 毫米波</td></tr>
+    <tr><td>802.15.4</td><td>Low Rate WPAN（<span class="sup">補充</span>只定義 PHY/MAC，Zigbee 在其上建網路層與應用層）；4a 替代 PHY、4b 修訂、4c 中國、4d 日本、4e 工業應用、4f 主動式 RFID、4g 智慧電網</td></tr>
+    <tr><td>802.15.5</td><td>Mesh WPAN（Adaptive Robust Tree, ART）</td></tr>
+    <tr><td>802.15.6</td><td>Body Area Network（BAN / WBAN）</td></tr>
+    <tr><td>802.15.7</td><td>Visible Light Communication（VLC，可見光通訊）</td></tr>
+    <tr><td>802.15.8 / .9 / .10</td><td>Peer Aware 通訊／金鑰管理協定／Layer 2 路由</td></tr>
+  </table></div>
+  <h3>802.16 以上</h3>
+  <ul>
+    <li><b>802.16</b> Broadband Wireless Access（WMAN / WiMAX）：16-2004 MAC &amp; PHY、16e 移動性（2005）、16j relay、16m WiMAX2；韓國的 WiBro 屬此系列</li>
+    <li><b>802.17</b> Resilient Packet Ring；<b>802.20</b> Mobile Broadband Wireless Access（MBWA）</li>
+    <li><b>802.21</b> Media Independent Handoff（不同網路間換手）；<b>802.22</b> Wireless Regional Area Networks（WRAN）</li>
+  </ul>
+
+  <h2 id="others">9. 其他非 IEEE 802 的無線 LAN</h2>
+  <ul>
+    <li><b>ETSI HIPERLAN I / II</b>：歐洲標準，5GHz；HIPERLAN II 的 PHY 與 802.11a 相似（OFDM、6–54 Mbps）</li>
+    <li><b>HomeRF 1.0 / 2.0</b>：2.4GHz 家用無線網路</li>
+  </ul>
+
+  <h2 id="glossary">10. 專有名詞對照</h2>
+  <details><summary>展開 40 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
+    <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
+    <tr><td>個人區域網路</td><td>Personal Area Network（PAN）</td><td>範圍約數公尺，連接個人身邊的裝置，如藍牙耳機</td></tr>
+    <tr><td>區域網路</td><td>Local Area Network（LAN）</td><td>中等範圍（1–5 km 內）內的裝置直接互相通訊的網路</td></tr>
+    <tr><td>都會網路</td><td>Metropolitan Area Network（MAN）</td><td>涵蓋一個城市範圍，如 802.16 WiMAX、802.6 DQDB</td></tr>
+    <tr><td>廣域網路</td><td>Wide Area Network（WAN）</td><td>跨城市、跨國的網路</td></tr>
+    <tr><td>網路拓樸</td><td>Network Topology</td><td>節點與連線的排列方式</td></tr>
+    <tr><td>星狀／匯流排／環狀／網狀／樹狀</td><td>Star / Bus / Ring / Mesh / Tree</td><td>中心集中、共用一條線、首尾相連、多路互連、階層式</td></tr>
+    <tr><td>雪花狀</td><td>Snowflake（Multiple Star）</td><td>多個星狀網路再串接</td></tr>
+    <tr><td>工作站</td><td>Workstation / Station</td><td>網路上的終端裝置</td></tr>
+    <tr><td>傳輸媒介</td><td>Transmission Medium</td><td>傳送訊號的實體：同軸電纜、雙絞線、光纖、無線電</td></tr>
+    <tr><td>同軸電纜</td><td>Coaxial Cable</td><td>中心導體外包絕緣層與金屬網，早期乙太網路使用</td></tr>
+    <tr><td>雙絞線</td><td>Twisted Pair</td><td>兩條導線互相絞繞以降低干擾，現今網路線主流</td></tr>
+    <tr><td>光纖</td><td>Optical Fiber</td><td>以光傳輸，速度快、距離長、不受電磁干擾</td></tr>
+    <tr><td>訊號增益器／中繼器</td><td>Repeater</td><td>實體層設備，放大並轉送訊號以延伸距離</td></tr>
+    <tr><td>橋接器</td><td>Bridge</td><td>鏈結層設備，依 MAC 位址過濾與轉送，連接網路區段</td></tr>
+    <tr><td>集線器</td><td>Hub / Concentrator</td><td>星狀拓樸的中心，把訊號廣播到所有連接埠</td></tr>
+    <tr><td>交換器</td><td>Switch</td><td>多埠橋接器，只把訊框送到目的連接埠</td></tr>
+    <tr><td>開放系統互連模型</td><td>OSI Model</td><td>ISO 定義的七層網路參考模型</td></tr>
+    <tr><td>實體層／鏈結層／網路層／傳輸層</td><td>Physical / Data Link / Network / Transport</td><td>OSI 第 1–4 層</td></tr>
+    <tr><td>會議層／表達層／應用層</td><td>Session / Presentation / Application</td><td>OSI 第 5–7 層（又譯會談層、表現層）</td></tr>
+    <tr><td>通訊協定</td><td>Protocol</td><td>通訊雙方約定的規則</td></tr>
+    <tr><td>封裝／解封裝</td><td>Encapsulation / Decapsulation</td><td>往下送時加 header，往上送時拆 header</td></tr>
+    <tr><td>分段／重組</td><td>Segmentation / Reassembly</td><td>把大資料切小傳送，再在接收端組回</td></tr>
+    <tr><td>流量控制</td><td>Flow Control</td><td>避免傳送端送太快，讓接收端來不及處理</td></tr>
+    <tr><td>錯誤控制</td><td>Error Control</td><td>偵測並處理傳輸錯誤（檢查碼、重傳）</td></tr>
+    <tr><td>多工／解多工</td><td>Multiplexing / Demultiplexing</td><td>多個上層連線共用一個下層連線，接收端再分開</td></tr>
+    <tr><td>服務資料單元</td><td>Service Data Unit（SDU）</td><td>上一層交給本層的資料</td></tr>
+    <tr><td>協定資料單元</td><td>Protocol Data Unit（PDU）</td><td>本層加上 header 後的資料單元</td></tr>
+    <tr><td>邏輯鏈結控制</td><td>Logical Link Control（LLC）</td><td>鏈結層上半部，802.2，所有 802 網路共用</td></tr>
+    <tr><td>媒介存取控制（講義：媒介擷取控制）</td><td>Medium Access Control（MAC）</td><td>鏈結層下半部，決定何時能使用共享媒介</td></tr>
+    <tr><td>訊框檢查序列</td><td>Frame Check Sequence（FCS）</td><td>訊框尾端的錯誤檢查碼，通常是 CRC</td></tr>
+    <tr><td>生成樹演算法</td><td>Spanning Tree Algorithm</td><td>802.1D，在橋接網路中關閉多餘路徑避免迴圈</td></tr>
+    <tr><td>虛擬區域網路</td><td>Virtual LAN（VLAN）</td><td>802.1Q，在同一實體網路上切出多個邏輯網路</td></tr>
+    <tr><td>以連接埠為基礎的網路存取控制</td><td>Port-Based Network Access Control</td><td>802.1X，連接埠要通過認證才開放使用</td></tr>
+    <tr><td>權杖匯流排／權杖環</td><td>Token Bus / Token Ring</td><td>802.4 / 802.5，持有權杖的站台才能傳送</td></tr>
+    <tr><td>分散式佇列雙匯流排</td><td>DQDB</td><td>802.6，都會網路用的雙匯流排協定</td></tr>
+    <tr><td>光纖分散式資料介面</td><td>FDDI</td><td>雙環光纖網路，ANSI 標準</td></tr>
+    <tr><td>非同步傳輸模式</td><td>ATM</td><td>以固定長度 cell 交換的網路技術</td></tr>
+    <tr><td>多輸入多輸出</td><td>MIMO</td><td>多支天線同時收發，提高速率與可靠度（11n 起）</td></tr>
+    <tr><td>認知無線電／電視空白頻段</td><td>Cognitive Radio / TVWS</td><td>自動找空閒頻段使用的無線電（11af）／電視頻段中沒被使用的部分</td></tr>
+    <tr><td>微微網</td><td>Piconet</td><td>藍牙的基本網路單位，由一個 controller（master）協調</td></tr>
+  </table></div></div></details>
+
+  <h2 id="check">11. 考前自我檢查</h2>
+  <ul class="checklist">
+    <li><details><summary>能說出 IEEE 802 對應 OSI 哪兩層，以及 LLC / MAC 的分工</summary><div class="inner">對應第 1 層（實體層）與第 2 層（鏈結層）。鏈結層切成上半部共用的 LLC（802.2）與下半部依技術不同的 MAC（802.3、802.11…）。</div></details></li>
+    <li><details><summary>看到一種拓樸，能說出對應的 802 標準</summary><div class="inner">Bus → 802.3、802.4；Dual Bus → 802.6；Ring → 802.5；Dual Ring → FDDI；Star → 802.12、802.16；Snowflake → 802.15.1、802.15.4；Mesh → 802.15.x；Random → 802.11。</div></details></li>
+    <li><details><summary>能說明 SDU 與 PDU 的差別</summary><div class="inner">上一層交下來的資料是本層的 SDU；本層加上 header 後是本層的 PDU，它又成為下一層的 SDU。</div></details></li>
+    <li><details><summary>能說出 802.1D / 1Q / 1X 各在做什麼</summary><div class="inner">1D：Local Bridge、Spanning Tree；1Q：VLAN；1X：Port-Based 存取控制（認證）。</div></details></li>
+    <li><details><summary>能分辨 11a / b / g / n / ac / ax / be 的頻段與速率等級</summary><div class="inner">a：5GHz OFDM 54M；b：2.4GHz DSSS/CCK 11M；g：2.4GHz 54M；n：2.4/5GHz MIMO 600M；ac：5GHz VHT 6.93G；ax：2.4/5/6GHz HE 9.6G；be：2.4/5/6GHz EHT。</div></details></li>
+    <li><details><summary>能分辨 802.15.1 / 15.4 / 15.6 / 15.7</summary><div class="inner">15.1 Bluetooth；15.4 Low Rate WPAN（Zigbee 底層）；15.6 Body Area Network；15.7 可見光通訊。</div></details></li>
+  </ul>
+</main>
+<aside class="toc"></aside>
+</div>
+<script src="assets/js/ch0.js"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>802.3 CSMA/CD</title>
+<meta name="description" content="第 1 章 IEEE 802.3 CSMA/CD：碰撞視窗 2a、BEBA 退避、訊框格式、10BASE5 配置與 Manchester 編碼，附互動動畫。">
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/common.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 1</div>
+    <h1>🔌 IEEE 802.3 CSMA/CD（Ethernet）</h1>
+    <div class="meta"><span>來源：1CSMA_CD.pdf</span><span>動畫與互動 4 個・圖解 5 張</span></div>
+  </div>
+
+  <h2 id="std">1. 標準依據</h2>
+  <ul>
+    <li><b>IEEE 802.3</b>：Carrier Sense Multiple Access with Collision Detection（CSMA/CD），即 Ethernet 的 MAC 與 PHY 標準。</li>
+    <li>上層依據：<b>IEEE 802.2 LLC</b>；再往上是 IP、TCP、HTTP、FTP、SMTP 等高層協定。</li>
+    <li><span class="sup">補充</span>802.3 源自 DEC、Intel、Xerox 制定的 DIX Ethernet（Ethernet II）。差別在訊框第 13–14 byte：802.3 當作 <b>Length</b>，Ethernet II 當作 <b>Type</b>；數值 ≤ 1500 視為長度，≥ 1536（0x0600）視為 EtherType，所以兩種格式能共存。</li>
+    <li><span class="sup">補充</span>後續修訂：802.3u Fast Ethernet 100 Mbps、802.3z／802.3ab Gigabit、802.3ae 10 Gigabit、802.3x 全雙工與流量控制。</li>
+  </ul>
+
+  <h2 id="arch">2. IEEE 802.3 架構</h2>
+  <div class="figure">
+    <div class="fig-title">典型 CSMA/CD 網路（單一區段） <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-net"></div>
+    <div class="caption">依講義第 3、11 頁重繪：同軸電纜為主幹、兩端接終端器（避免訊號反射）；工作站經收發器電纜（AUI）接到夾在同軸電纜上的收發器（MAU）。</div>
+  </div>
+  <div class="figure">
+    <div class="fig-title">802.3 與 OSI 的對應 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  subgraph ST["工作站"]
+    direction TB
+    LLC["LLC 802.2<br>邏輯鏈結控制"] --> MAC["MAC 802.3<br>媒介擷取控制"] --> PLS["PLS<br>實體層訊號處理"]
+  end
+  PLS -- "AUI 收發器電纜<br>≤ 50 m" --> PMA
+  subgraph MAU["MAU 收發器"]
+    PMA["PMA"]
+  end
+  PMA -- "MDI" --> COAX["傳輸媒介<br>同軸電纜"]
+    </div></div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>OSI 層</th><th>802 子層／元件</th><th>說明</th></tr>
+    <tr><td>鏈結層（上）</td><td>LLC（802.2）</td><td>邏輯鏈結控制，所有 802 網路共用</td></tr>
+    <tr><td>鏈結層（下）</td><td>MAC（802.3）</td><td>媒介擷取控制：CSMA/CD、訊框組成</td></tr>
+    <tr><td>實體層</td><td>PLS（Physical Signaling）</td><td>實體層訊號處理（Manchester 編碼等）</td></tr>
+    <tr><td>實體層</td><td>AUI（Attachment Unit Interface）</td><td>工作站與收發器之間的介面（收發器電纜）</td></tr>
+    <tr><td>實體層</td><td>MAU（Medium Attachment Unit，含 PMA）</td><td>收發器，負責實際接上媒介</td></tr>
+    <tr><td>實體層</td><td>MDI（Medium Dependent Interface）</td><td>與媒介的實體接頭</td></tr>
+  </table></div>
+
+  <h2 id="protocol">3. CSMA/CD 協定的五個概念</h2>
+  <ul>
+    <li><b>Carrier Sense</b>：<b>傳送前</b>先聽通道是否有訊號，<b>傳送中</b>也持續聽（這是 CD 的關鍵）。</li>
+    <li><b>Deference</b>：通道忙碌就延後傳送。</li>
+    <li><b>Collision</b>：兩個以上站台同時傳送。</li>
+    <li><b>Backoff</b>：碰撞後等待隨機時間再重傳。</li>
+    <li><b>Collision Window（Slot time）</b>：來回傳播延遲加上一些載波偵測時間；802.3 定義為 <b>51.2 μs</b>。</li>
+  </ul>
+  <p><span class="sup">補充</span>Ethernet 屬於 <b>1-persistent CSMA</b>：通道一空就立刻傳。其他變形有 non-persistent（忙碌時隨機等一段再聽）與 p-persistent（通道空時以機率 p 傳送）。Slot time 本質是 <b>512 bit times</b>：10 Mbps 下為 51.2 μs，100 Mbps 下為 5.12 μs。</p>
+
+  <h2 id="window">4. 碰撞偵測視窗 = 2a</h2>
+  <div class="figure" id="fig-2a-wrap">
+    <div class="fig-title">最壞情況：A 要花 2a 才知道碰撞 <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-2a"></div><div class="status info" id="win-msg"></div></div>
+    <div class="caption">上半是匯流排上的訊號（藍：A 的訊號；橘：B 的訊號；紫：兩者重疊＝碰撞）。下半是時空圖：橫軸是位置，縱軸是時間往下走。講義例子 a = 0.5、訊框傳輸時間 = 1。</div>
+  </div>
+  <ul>
+    <li>設 a = 傳播延遲（以一個訊框的傳輸時間為單位），講義例子 a = 0.5。</li>
+    <li>時序：A 在 t<sub>0</sub> 開始送 → B 在訊號抵達前一瞬間（t<sub>0</sub> + a − ε）開始送 → B 很快偵測到碰撞 → 碰撞訊號再傳回 A，A 在 <b>t<sub>0</sub> + 2a − ε</b> 才偵測到。</li>
+    <li>結論：<b>最壞情況下，傳送端要花 2a 才能確定沒有碰撞</b>，所以訊框傳輸時間必須 ≥ 2a，否則送完了還不知道有碰撞。</li>
+  </ul>
+
+  <h2 id="collision">5. 碰撞處理與 BEBA</h2>
+  <ul>
+    <li>碰撞訊號由<b>實體層</b>產生並通知 MAC。</li>
+    <li><b>Jam signal（collision enforcement）</b>：送出 <b>32 bits</b> 的擾亂訊號，確保所有參與碰撞的站台都偵測得到。</li>
+    <li><b>Truncated Binary Exponential Backoff Algorithm（BEBA）</b>：
+      <ul>
+        <li>n：目前已經歷的碰撞次數（n ≤ 16）</li>
+        <li>k = min(n, 10)：超過 10 次後不再加大（這就是 truncation）</li>
+        <li>r：隨機延遲時間，0 ≤ r &lt; 2<sup>k</sup>（單位：slot time = 51.2 μs）</li>
+        <li>第 16 次仍失敗 → 放棄並回報上層傳送失敗</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="figure" id="fig-beba-wrap">
+    <div class="fig-title">BEBA 模擬器：兩個站台一直撞，什麼時候能分開？ <span class="tag">互動</span></div>
+    <div class="fig-body">
+      <div id="fig-beba"></div>
+      <div class="status" id="beba-msg">按「碰撞一次」讓 A、B 各自抽一個 r；抽到一樣就會再撞。</div>
+      <div class="readout log" id="beba-log"></div>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="beba-step" type="button">碰撞一次 →</button>
+      <button class="btn" id="beba-run" type="button">自動跑到成功</button>
+      <button class="btn" id="beba-reset" type="button">↺ 重來</button>
+      <label><input type="checkbox" id="beba-c"> 加入新站台 C（看 LIFO 效應）</label>
+    </div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th class="num">碰撞次數 n</th><th class="num">k</th><th>r 的範圍（slot）</th><th>最長等待（10 Mbps）</th></tr>
+    <tr><td class="num">1</td><td class="num">1</td><td>0–1</td><td>51.2 μs</td></tr>
+    <tr><td class="num">2</td><td class="num">2</td><td>0–3</td><td>153.6 μs</td></tr>
+    <tr><td class="num">3</td><td class="num">3</td><td>0–7</td><td>358.4 μs</td></tr>
+    <tr><td class="num">10–15</td><td class="num">10</td><td>0–1023</td><td>約 52.4 ms</td></tr>
+    <tr><td class="num">16</td><td class="num">—</td><td>—</td><td>放棄，傳送失敗</td></tr>
+  </table></div>
+  <div class="callout warn"><b>BEBA 的缺點：Last-in First-out 效應。</b>碰撞次數少的站台隨機範圍小，比較早重傳；已經等很久、碰撞很多次的站台隨機範圍大，反而更難搶到通道 → 不公平。在模擬器勾選「加入新站台 C」就能看到。</div>
+  <p><span class="sup">補充</span>每個訊框之間至少要間隔 96 bit times（Interframe Gap，10 Mbps 下為 9.6 μs）。</p>
+
+  <h2 id="frame">6. IEEE 802.3 訊框格式</h2>
+  <div class="figure" id="fig-frame-wrap">
+    <div class="fig-title">訊框欄位與長度計算器 <span class="tag">互動</span></div>
+    <div class="fig-body">
+      <div id="fig-frame"></div>
+      <div class="status info" id="frame-info">點選欄位看說明。</div>
+      <div class="grid-form" style="margin-top:12px">
+        <div class="field"><label for="llc-len">LLC 資料長度（bytes，0–1500）</label><input id="llc-len" type="number" min="0" max="1500" value="20"></div>
+        <div class="field"><label for="addr-len">位址長度</label><select id="addr-len"><option value="6">6 bytes（48-bit）</option><option value="2">2 bytes（16-bit）</option></select></div>
+      </div>
+      <div class="readout" id="frame-calc"></div>
+    </div>
+  </div>
+  <ul>
+    <li><b>MAC frame size 從 DA 算到 FCS</b>（不含 Preamble 與 SFD）。最小 <b>64 bytes</b>：用來和碰撞殘片區分；最大 <b>1518 bytes</b>：避免單一站台佔用頻寬太久。</li>
+    <li>數字的由來（6 bytes 位址）：header + FCS = 6 + 6 + 2 + 4 = <b>18</b>；最大 1500 + 18 = <b>1518</b>；最小 64 − 18 = <b>46</b>，資料不足 46 bytes 要用 PAD 補齊。</li>
+    <li><span class="sup">補充</span>64 bytes = 512 bits，在 10 Mbps 下剛好是 51.2 μs = 1 個 slot time，與「傳輸時間 ≥ 2a」的要求一致。</li>
+  </ul>
+  <h3>位址欄位</h3>
+  <div class="figure">
+    <div class="fig-title">I/G 與 U/L 位元 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-addr"></div>
+  </div>
+  <ul>
+    <li><b>I/G = 0</b> 個別位址（unicast）；<b>I/G = 1</b> 群體位址（multicast／broadcast）。</li>
+    <li><b>U/L = 0</b> 整體性位址（全球統一管理）；<b>U/L = 1</b> 區域性位址（自行管理）。</li>
+    <li><span class="sup">補充</span>實務上都用 48-bit 位址，即 MAC address；前 24 bits 為 IEEE 配發給廠商的 OUI。</li>
+  </ul>
+
+  <h2 id="flow">7. 傳送與接收流程</h2>
+  <div class="figure">
+    <div class="fig-title">傳送端流程 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart TD
+  S(["傳送訊框"]) --> F["組成訊框，i = 1"]
+  F --> C{"線上有訊號？"}
+  C -- "是：等待" --> C
+  C -- "否" --> T["傳送訊框"]
+  T --> K{"發生衝撞？"}
+  K -- "否" --> D{"傳送完畢？"}
+  D -- "否" --> K
+  D -- "是" --> OK(["傳送成功"])
+  K -- "是" --> J["送出擾亂訊號 jam"]
+  J --> I["i = i + 1"]
+  I --> G{"i > 16？"}
+  G -- "是" --> FAIL(["傳送失敗"])
+  G -- "否" --> W["依 BEBA 計算並等待延遲時間"]
+  W --> C
+    </div></div>
+  </div>
+  <div class="figure">
+    <div class="fig-title">接收端流程 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart TD
+  R(["開始接收"]) --> E["接收完畢"]
+  E --> SH{"訊框過短？"}
+  SH -- "是" --> X1(["視為衝撞，丟棄"])
+  SH -- "否" --> AD{"位址辨識成功？"}
+  AD -- "否" --> X2(["不是給自己的，丟棄"])
+  AD -- "是" --> LN{"長度欄位內容正確？"}
+  LN -- "否" --> X3(["長度錯誤"])
+  LN -- "是" --> CK{"檢查碼正確？"}
+  CK -- "否" --> EX{"尚有多餘位元？"}
+  EX -- "是" --> X4(["對齊錯誤"])
+  EX -- "否" --> X5(["訊框錯誤"])
+  CK -- "是" --> OK2["刪除訊框頭尾"]
+  OK2 --> DONE(["接收成功"])
+    </div></div>
+  </div>
+
+  <h2 id="config">8. 網路配置限制（10BASE5）</h2>
+  <div class="figure">
+    <div class="fig-title">最大配置：5 個區段 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-5seg"></div>
+    <div class="caption">依講義第 13 頁「Five segments, maximum」簡化重繪；精確連接方式請對照講義原圖。</div>
+  </div>
+  <ul>
+    <li>單一區段：同軸電纜最長 <b>500 m</b>，每區段最多 <b>100</b> 個收發器，收發器電纜最長 <b>50 m</b>。</li>
+    <li>兩個區段：中間用<b>訊號增益器</b>連接。</li>
+    <li>最大配置：<b>5 個區段</b>；兩個半訊號增益器之間的電纜最長 <b>1000 m</b>。</li>
+    <li>講義提醒：Slot Time = 51.2 μs。這些限制都是為了讓最遠兩站之間的來回延遲不超過一個 slot time。</li>
+    <li><span class="sup">補充</span>常見記法是 <b>5-4-3 規則</b>：最多 5 個區段、4 個 repeater，其中只有 3 個區段可以接工作站。</li>
+  </ul>
+
+  <h2 id="phy">9. 實體層選項比較</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>參數</th><th>10BASE5</th><th>10BASE2</th><th>1BASE5</th><th>10BASE-T</th><th>10BROAD36</th></tr>
+    <tr><td>傳輸媒介</td><td>同軸電纜 50Ω</td><td>同軸電纜 50Ω</td><td>無遮蔽雙絞線</td><td>無遮蔽雙絞線</td><td>同軸電纜 75Ω</td></tr>
+    <tr><td>訊號處理</td><td>基頻 Manchester</td><td>基頻 Manchester</td><td>基頻 Manchester</td><td>基頻 Manchester</td><td>寬頻 DPSK</td></tr>
+    <tr><td>速率</td><td>10 Mbps</td><td>10 Mbps</td><td>1 Mbps</td><td>10 Mbps</td><td>10 Mbps</td></tr>
+    <tr><td>每段最大長度</td><td>500 m</td><td>185 m</td><td>500 m</td><td>185 m*</td><td>1800 m</td></tr>
+    <tr><td>網路最大長度</td><td>2500 m</td><td>925 m</td><td>2500 m</td><td>500 m</td><td>3600 m</td></tr>
+    <tr><td>每段工作站數</td><td>100</td><td>30</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>工作站間距</td><td>2.5 m</td><td>0.5 m</td><td>—</td><td>—</td><td>—</td></tr>
+    <tr><td>電纜直徑</td><td>10 mm</td><td>5 mm</td><td>0.4–0.6 mm</td><td>0.4–0.6 mm</td><td>—</td></tr>
+  </table></div>
+  <p style="font-size:.9rem;color:var(--muted)">* 數值依講義原文。<span class="sup">補充</span>依 802.3 標準，10BASE-T 每段（站台到 hub）最長 100 m。</p>
+  <ul>
+    <li><span class="sup">補充</span>命名規則：<code>10BASE5</code> = 速率 10 Mbps ＋ BASE 基頻 ＋ 5（約 500 m）；<code>10BASE2</code> 的 2 代表約 200 m（實際 185 m）；<code>BROAD</code> 代表寬頻；<code>T</code> 代表雙絞線。</li>
+    <li><span class="sup">補充</span>俗稱：10BASE5 為粗纜（Thick Ethernet）、10BASE2 為細纜（Thin Ethernet）、1BASE5 為 StarLAN。</li>
+  </ul>
+
+  <h2 id="manchester">10. Manchester 編碼</h2>
+  <div class="figure" id="fig-man-wrap">
+    <div class="fig-title">Manchester 波形產生器 <span class="tag">互動</span></div>
+    <div class="fig-body"><div id="fig-man"></div></div>
+    <div class="controls">
+      <label>資料位元 <input type="text" id="man-bits" value="10110010" maxlength="16" size="16" style="font-family:var(--mono)"></label>
+      <div class="seg" id="man-std"><button type="button" class="on" data-v="ieee">IEEE 802.3</button><button type="button" data-v="get">G.E. Thomas</button></div>
+    </div>
+  </div>
+  <ul>
+    <li>每個 bit 的<b>中間一定有電位跳變</b>，用跳變方向表示 0 或 1。</li>
+    <li>相鄰兩個相同位元（例如 1 1）時，位元邊界會多一次跳變，那次不代表資料（圖中以灰色虛線標示）。</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>規範</th><th>高 → 低</th><th>低 → 高</th></tr>
+    <tr><td>G.E. Thomas</td><td>1</td><td>0</td></tr>
+    <tr><td><b>IEEE 802.3</b></td><td><b>0</b></td><td><b>1</b></td></tr>
+  </table></div>
+  <p>兩種規範剛好相反，考試寫明依據哪一種。<span class="sup">補充</span>優點：自帶時脈（self-clocking），接收端可從跳變同步；缺點：訊號變化率是 bit rate 的兩倍，10 Mbps 需要 20 Mbaud 的頻寬。</p>
+
+  <h2 id="modern">11. CSMA/CD 為何在現代乙太網路消失</h2>
+  <p><span class="sup">補充</span></p>
+  <ul>
+    <li>交換器（switch）＋全雙工（802.3x）後，每條線只有兩端且收發分開，不會碰撞，CSMA/CD 實際上不再運作。</li>
+    <li>無線網路<b>無法</b>在傳送時偵測碰撞（自己的發射訊號會蓋過接收），所以 802.11 改用 <b>CSMA/CA</b>，這就是<a href="ch2-1-80211-phy.html">下一章</a>的主題。</li>
+  </ul>
+
+  <h2 id="glossary">12. 專有名詞對照</h2>
+  <details><summary>展開 34 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
+    <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
+    <tr><td>載波偵測多重存取／碰撞偵測</td><td>CSMA/CD</td><td>先聽再傳、邊傳邊聽、碰撞就退避重傳</td></tr>
+    <tr><td>載波偵測</td><td>Carrier Sense</td><td>檢查媒介上是否已有其他站台在傳送</td></tr>
+    <tr><td>多重存取</td><td>Multiple Access</td><td>多個站台共用同一個媒介</td></tr>
+    <tr><td>碰撞（講義：衝撞）</td><td>Collision</td><td>兩個以上站台同時傳送，訊號互相破壞</td></tr>
+    <tr><td>碰撞偵測</td><td>Collision Detection（CD）</td><td>傳送時同時監聽，發現訊號異常就判定碰撞</td></tr>
+    <tr><td>延後傳送</td><td>Deference</td><td>偵測到通道忙碌時先不傳</td></tr>
+    <tr><td>退避</td><td>Backoff</td><td>碰撞後等待一段隨機時間再重傳</td></tr>
+    <tr><td>截斷二元指數退避演算法</td><td>BEBA</td><td>每碰撞一次，隨機等待範圍加倍，到第 10 次後不再加大</td></tr>
+    <tr><td>時槽時間</td><td>Slot Time</td><td>51.2 μs（512 bit times），是退避的時間單位，也是碰撞視窗</td></tr>
+    <tr><td>碰撞視窗</td><td>Collision Window</td><td>來回傳播延遲加載波偵測時間，超過此時間後就不會再碰撞</td></tr>
+    <tr><td>傳播延遲／來回延遲</td><td>Propagation / Round-trip Delay</td><td>訊號走一趟（a）／往返一趟（2a）的時間</td></tr>
+    <tr><td>擾亂訊號（堵塞訊號）</td><td>Jam Signal</td><td>碰撞後送出的 32 bits，讓所有站台都偵測得到碰撞</td></tr>
+    <tr><td>後進先出效應</td><td>LIFO Effect</td><td>BEBA 的缺點：後來的站台反而比等很久的站台先傳</td></tr>
+    <tr><td>前導碼</td><td>Preamble</td><td>10101010…，讓接收端同步時脈</td></tr>
+    <tr><td>訊框起始定界符</td><td>SFD</td><td>10101011，標示訊框內容從下一個 bit 開始</td></tr>
+    <tr><td>目的／來源位址</td><td>DA / SA</td><td>收件者與寄件者的 MAC 位址</td></tr>
+    <tr><td>填充位元組</td><td>Padding（PAD）</td><td>資料不足 46 bytes 時補上的無意義資料</td></tr>
+    <tr><td>循環冗餘檢查</td><td>CRC</td><td>用多項式除法產生的檢查碼，802.3 用 CRC-32</td></tr>
+    <tr><td>個別／群體位址位元</td><td>I/G bit</td><td>0 為單播，1 為群播或廣播</td></tr>
+    <tr><td>整體／區域管理位元</td><td>U/L bit</td><td>0 為全球統一配發，1 為自行設定</td></tr>
+    <tr><td>組織唯一識別碼</td><td>OUI</td><td>MAC 位址前 24 bits，由 IEEE 配發給廠商（補充）</td></tr>
+    <tr><td>收發器</td><td>Transceiver / MAU</td><td>實際接上媒介、收發訊號並偵測碰撞的單元</td></tr>
+    <tr><td>連接單元介面</td><td>AUI</td><td>工作站與收發器之間的介面</td></tr>
+    <tr><td>媒介相依介面</td><td>MDI</td><td>收發器與媒介之間的實體介面</td></tr>
+    <tr><td>實體層訊號處理</td><td>PLS</td><td>負責編碼解碼、向 MAC 回報載波與碰撞</td></tr>
+    <tr><td>實體媒介連接</td><td>PMA</td><td>MAU 內與媒介相關的功能部分</td></tr>
+    <tr><td>終端器</td><td>Terminator</td><td>裝在同軸電纜兩端，吸收訊號避免反射</td></tr>
+    <tr><td>基頻／寬頻</td><td>Baseband / Broadband</td><td>整條線只傳一個數位訊號／調變到載波上、可分多個頻道</td></tr>
+    <tr><td>曼徹斯特編碼</td><td>Manchester Encoding</td><td>每個 bit 中間必有跳變，可自帶時脈</td></tr>
+    <tr><td>差分相位移鍵控</td><td>DPSK</td><td>用相位的「變化量」表示資料，10BROAD36 使用</td></tr>
+    <tr><td>訊框間隔</td><td>Interframe Gap（IFG）</td><td>訊框之間最小間隔 96 bit times（補充）</td></tr>
+    <tr><td>對齊錯誤</td><td>Alignment Error</td><td>訊框位元數不是 8 的倍數且檢查碼錯誤</td></tr>
+    <tr><td>碰撞網域</td><td>Collision Domain</td><td>可能互相碰撞的站台範圍；repeater 連接的區段屬同一個（補充）</td></tr>
+    <tr><td>持續性 CSMA</td><td>1- / Non- / p-persistent</td><td>通道一空就傳／忙碌時隨機等待再聽／空時以機率 p 傳（補充）</td></tr>
+  </table></div></div></details>
+
+  <h2 id="check">13. 考前自我檢查</h2>
+  <ul class="checklist">
+    <li><details><summary>說明 slot time 51.2 μs 的意義，以及它與最小訊框 64 bytes 的關係</summary><div class="inner">Slot time 是碰撞視窗（來回傳播延遲＋載波偵測時間），也是 BEBA 的時間單位。64 bytes = 512 bits，在 10 Mbps 下傳完剛好 51.2 μs，保證送完之前一定能偵測到碰撞。</div></details></li>
+    <li><details><summary>解釋為何碰撞偵測視窗是 2a</summary><div class="inner">最壞情況是最遠端 B 在 A 的訊號抵達前一瞬間開始送；碰撞發生在 B 附近，碰撞訊號要再花 a 才回到 A，所以 A 在 t<sub>0</sub> + 2a − ε 才知道。</div></details></li>
+    <li><details><summary>能寫出 BEBA 的 n、k、r 公式，並算出第 n 次碰撞的隨機範圍</summary><div class="inner">k = min(n, 10)，0 ≤ r &lt; 2<sup>k</sup>（單位 slot time）。例如 n = 4：k = 4，r ∈ 0–15；n = 12：k = 10，r ∈ 0–1023；n &gt; 16 放棄。</div></details></li>
+    <li><details><summary>說明 BEBA 的 LIFO 缺點</summary><div class="inner">碰撞多次的站台退避範圍大、等得久；新來的站台範圍小、很快重傳，反而先搶到通道，不公平。</div></details></li>
+    <li><details><summary>畫出 802.3 訊框格式並算出 1518 / 64 / 46 的由來</summary><div class="inner">Preamble 7｜SFD 1｜DA 6｜SA 6｜LEN 2｜LLC ≤1500｜PAD 0–46｜FCS 4。Header+FCS = 18；1500+18 = 1518；64−18 = 46。</div></details></li>
+    <li><details><summary>說明 I/G 與 U/L 位元的意義</summary><div class="inner">I/G：0 個別位址、1 群體位址。U/L：0 全球統一管理、1 區域自行管理。</div></details></li>
+    <li><details><summary>比較 10BASE5 / 10BASE2 / 10BASE-T / 10BROAD36</summary><div class="inner">10BASE5 粗同軸 500 m／100 站；10BASE2 細同軸 185 m／30 站；10BASE-T 雙絞線（標準 100 m 到 hub）；10BROAD36 75Ω 同軸、寬頻 DPSK、1800 m。</div></details></li>
+    <li><details><summary>分辨 IEEE 802.3 與 G.E. Thomas 的 Manchester 編碼</summary><div class="inner">IEEE 802.3：低→高 = 1、高→低 = 0。G.E. Thomas：高→低 = 1、低→高 = 0。</div></details></li>
+  </ul>
+</main>
+<aside class="toc"></aside>
+</div>
+<script src="assets/js/ch1.js"></script>
+</body>
+</html>
