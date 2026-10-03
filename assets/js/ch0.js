@@ -286,7 +286,7 @@
       rowsA.forEach(r => { r.style.fill = 'var(--surface-2)'; r.style.stroke = 'var(--border)'; });
       rowsB.forEach(r => { r.style.fill = 'var(--surface-2)'; r.style.stroke = 'var(--border)'; });
       if (t < 7 * STEP) {
-        const i = Math.min(6, Math.floor(t / STEP));
+        const i = Math.max(0, Math.min(6, Math.floor(t / STEP)));
         const p = prog(t - i * STEP, 0.55, 1);
         const y = y0 + (i + p) * rh + 4;
         const yy = i === 6 ? y0 + 6 * rh + 4 : y;

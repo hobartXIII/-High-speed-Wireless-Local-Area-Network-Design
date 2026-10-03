@@ -142,7 +142,8 @@
     }
     function frame(now) {
       if (!playing) return;
-      const dt = (now - last) / 1000; last = now;
+      // rAF 的時間戳記可能早於 play() 時的 performance.now()，dt 會是負的
+      const dt = Math.max(0, (now - last) / 1000); last = Math.max(last, now);
       t = Math.min(duration, t + dt * speed);
       draw();
       if (t >= duration) { pause(); return; }
