@@ -118,6 +118,142 @@
   })();
 
   /* ---------- 2. BSS 空間關係 ---------- */
+  /* ---------- 補圖：位址≠位置、修訂時間軸、移動性、開放媒介 ---------- */
+  function cell(svg, cx, cy, r, col) {
+    S('circle', { cx, cy, r, fill: `var(--${col})`, opacity: 0.1, stroke: `var(--${col})`, 'stroke-width': 1.5, 'stroke-dasharray': '6 4' }, svg);
+  }
+
+  (function addrLoc() {
+    const host = document.getElementById('fig-addrloc');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 240, '位址不等於位置');
+    const ar = arrowDefs(svg);
+    // 左：有線
+    S('text', { x: 170, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: '有線 LAN' }, svg);
+    S('rect', { x: 40, y: 50, width: 260, height: 40, rx: 6, fill: 'var(--surface-2)', stroke: 'var(--fg)', 'stroke-width': 2 }, svg);
+    S('text', { x: 170, y: 45, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '交換器' }, svg);
+    for (let i = 0; i < 6; i++) {
+      const x = 62 + i * 42;
+      S('rect', { x: x - 12, y: 62, width: 24, height: 18, rx: 2, fill: i === 2 ? 'var(--accent)' : 'var(--surface)', stroke: 'var(--border)' }, svg);
+      S('text', { x, y: 75, 'text-anchor': 'middle', 'font-size': 10, fill: i === 2 ? '#fff' : null, text: i + 1 }, svg);
+    }
+    S('line', { x1: 146, y1: 90, x2: 146, y2: 150, stroke: 'var(--accent)', 'stroke-width': 3 }, svg);
+    S('rect', { x: 116, y: 150, width: 60, height: 36, rx: 5, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-width': 2 }, svg);
+    S('text', { x: 146, y: 173, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, text: 'PC' }, svg);
+    S('text', { x: 170, y: 214, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '位址綁在固定的線與埠上（第 3 埠）' }, svg);
+    S('line', { x1: 345, y1: 30, x2: 345, y2: 225, stroke: 'var(--border)' }, svg);
+    // 右：802.11
+    S('text', { x: 535, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: '802.11' }, svg);
+    cell(svg, 450, 120, 70, 'accent'); cell(svg, 620, 120, 70, 'green');
+    apIcon(svg, 450, 80, 'AP1'); apIcon(svg, 620, 80, 'AP2');
+    staDot(svg, 440, 150, 'STA', 'orange');
+    S('circle', { cx: 610, cy: 150, r: 17, fill: 'none', stroke: 'var(--orange)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }, svg);
+    S('path', { d: 'M462 150 L586 150', stroke: 'var(--orange)', 'stroke-width': 2, 'stroke-dasharray': '6 4', 'marker-end': ar('orange') }, svg);
+    S('text', { x: 525, y: 142, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--orange)', 'font-weight': 700, text: '同一個 MAC 位址' }, svg);
+    S('text', { x: 535, y: 214, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: 'STA 會移動 → 要記錄它目前在哪個 AP' }, svg);
+  })();
+
+  (function amend() {
+    const host = document.getElementById('fig-amend');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 230, '802.11 修訂版時間軸');
+    const y0 = 1997, y1 = 2025, X0 = 40, X1 = 690, Y = 120;
+    const fx = y => X0 + (y - y0) / (y1 - y0) * (X1 - X0);
+    S('line', { x1: X0, y1: Y, x2: X1, y2: Y, stroke: 'var(--muted)', 'stroke-width': 2 }, svg);
+    [1997, 2000, 2005, 2010, 2015, 2020, 2025].forEach(y => {
+      S('line', { x1: fx(y), y1: Y - 4, x2: fx(y), y2: Y + 4, stroke: 'var(--muted)' }, svg);
+      S('text', { x: fx(y), y: Y + 20, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: y }, svg);
+    });
+    // [年, 名稱, PHY?, 層（正上／下）]
+    const items = [
+      [1997, '802.11', 1, -1], [1999, '11a／11b', 1, -2], [2003, '11g', 1, -1], [2004, '11i 安全', 0, 1],
+      [2005, '11e QoS', 0, 2], [2011, '11s Mesh', 0, 1], [2012, '11ad 60GHz', 1, -1], [2012, '11aa、11ae', 0, 2],
+      [2013, '11ac', 1, -2], [2014, '11af TVWS', 1, -3], [2021, '11ax', 1, -1], [2024, '11be', 1, -2],
+    ];
+    items.forEach(([y, n, phy, lv], i) => {
+      const x = fx(y) + (n === '11aa、11ae' ? 0 : 0), col = phy ? 'accent' : 'orange';
+      const up = lv < 0, ly = Y + (up ? -1 : 1) * (Math.abs(Math.round(lv)) * 34 + (up ? 0 : 6));
+      S('line', { x1: x, y1: Y, x2: x, y2: ly + (up ? 6 : -14), stroke: `var(--${col})`, 'stroke-width': 1.5 }, svg);
+      S('circle', { cx: x, cy: Y, r: 5, fill: `var(--${col})` }, svg);
+      S('text', { x, y: ly, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, fill: `var(--${col})`, text: n }, svg);
+    });
+    S('rect', { x: 500, y: 196, width: 14, height: 14, rx: 3, fill: 'var(--accent)' }, svg);
+    S('text', { x: 520, y: 208, 'font-size': 12, text: 'PHY' }, svg);
+    S('rect', { x: 570, y: 196, width: 14, height: 14, rx: 3, fill: 'var(--orange)' }, svg);
+    S('text', { x: 590, y: 208, 'font-size': 12, text: 'MAC／安全' }, svg);
+  })();
+
+  (function mobility() {
+    const host = document.getElementById('fig-mobility');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 250, '三種移動性類型');
+    const ar = arrowDefs(svg);
+    const panels = [
+      [120, 'No-transition（不轉換）', 'Association 就足夠'],
+      [360, 'BSS-transition（BSS 轉換）', '還需要 Reassociation'],
+      [600, 'ESS-transition（ESS 轉換）', '802.11 無法維持連線'],
+    ];
+    panels.forEach(([cx, t, n], i) => {
+      S('text', { x: cx, y: 22, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, text: t }, svg);
+      S('text', { x: cx, y: 236, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, fill: i === 2 ? 'var(--red)' : 'var(--green)', text: n }, svg);
+    });
+    S('line', { x1: 240, y1: 34, x2: 240, y2: 220, stroke: 'var(--border)' }, svg);
+    S('line', { x1: 480, y1: 34, x2: 480, y2: 220, stroke: 'var(--border)' }, svg);
+    // 1：同一 BSA 內
+    cell(svg, 120, 130, 80, 'accent'); apIcon(svg, 120, 95, 'AP');
+    staDot(svg, 95, 160, 'STA', 'orange');
+    S('path', { d: 'M115 165 Q140 185 160 160', fill: 'none', stroke: 'var(--orange)', 'stroke-width': 2, 'marker-end': ar('orange') }, svg);
+    S('text', { x: 120, y: 205, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '靜止或在同一個 BSA 內移動' }, svg);
+    // 2：同一 ESS
+    S('rect', { x: 252, y: 40, width: 216, height: 172, rx: 12, fill: 'none', stroke: 'var(--purple)', 'stroke-dasharray': '7 4', 'stroke-width': 1.5 }, svg);
+    S('text', { x: 262, y: 56, 'font-size': 11, fill: 'var(--purple)', 'font-weight': 700, text: '同一個 ESS' }, svg);
+    cell(svg, 315, 125, 55, 'accent'); cell(svg, 405, 125, 55, 'green');
+    apIcon(svg, 315, 100, 'AP1'); apIcon(svg, 405, 100, 'AP2');
+    S('line', { x1: 315, y1: 112, x2: 315, y2: 192, stroke: 'var(--fg)', 'stroke-width': 2 }, svg);
+    S('line', { x1: 405, y1: 112, x2: 405, y2: 192, stroke: 'var(--fg)', 'stroke-width': 2 }, svg);
+    S('line', { x1: 300, y1: 192, x2: 420, y2: 192, stroke: 'var(--fg)', 'stroke-width': 3 }, svg);
+    S('text', { x: 360, y: 206, 'text-anchor': 'middle', 'font-size': 10, cls: 't-muted', text: 'DS' }, svg);
+    staDot(svg, 300, 150, 'STA', 'orange');
+    S('path', { d: 'M318 150 L398 150', stroke: 'var(--orange)', 'stroke-width': 2, 'marker-end': ar('orange') }, svg);
+    // 3：不同 ESS
+    [[545, 'ESS 1', 'accent'], [655, 'ESS 2', 'green']].forEach(([x, n, col]) => {
+      S('rect', { x: x - 50, y: 50, width: 100, height: 150, rx: 12, fill: 'none', stroke: `var(--${col})`, 'stroke-dasharray': '7 4', 'stroke-width': 1.5 }, svg);
+      S('text', { x, y: 66, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, fill: `var(--${col})`, text: n }, svg);
+      apIcon(svg, x, 100, 'AP');
+    });
+    staDot(svg, 530, 155, 'STA', 'orange');
+    S('path', { d: 'M548 155 L640 155', stroke: 'var(--orange)', 'stroke-width': 2, 'marker-end': ar('orange') }, svg);
+    S('text', { x: 600, y: 182, 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 700, fill: 'var(--red)', text: '✕' }, svg);
+  })();
+
+  (function openMedium() {
+    const host = document.getElementById('fig-openmedium');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 240, '有線與無線的存取控制');
+    // 左：有線
+    S('text', { x: 170, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: '有線 LAN：封閉、不共享' }, svg);
+    S('rect', { x: 50, y: 40, width: 240, height: 150, rx: 6, fill: 'var(--surface-2)', stroke: 'var(--fg)', 'stroke-width': 3 }, svg);
+    S('text', { x: 62, y: 58, 'font-size': 11, cls: 't-muted', text: '上鎖的辦公室' }, svg);
+    S('rect', { x: 100, y: 110, width: 24, height: 30, rx: 3, fill: 'var(--surface)', stroke: 'var(--fg)', 'stroke-width': 2 }, svg);
+    S('text', { x: 112, y: 155, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '網路孔' }, svg);
+    S('path', { d: 'M124 125 C160 125 170 100 200 100', fill: 'none', stroke: 'var(--accent)', 'stroke-width': 3 }, svg);
+    S('rect', { x: 200, y: 86, width: 50, height: 30, rx: 4, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-width': 2 }, svg);
+    S('text', { x: 225, y: 106, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, text: 'PC' }, svg);
+    S('text', { x: 20, y: 120, 'font-size': 22, text: '🚶' }, svg);
+    S('text', { x: 20, y: 150, 'font-size': 16, 'font-weight': 700, fill: 'var(--red)', text: '✕' }, svg);
+    S('text', { x: 170, y: 220, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '插得到線 ＝ 有權使用 LAN' }, svg);
+    S('line', { x1: 345, y1: 30, x2: 345, y2: 225, stroke: 'var(--border)' }, svg);
+    // 右：無線
+    S('text', { x: 535, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: '802.11：開放、共享' }, svg);
+    S('circle', { cx: 500, cy: 115, r: 95, fill: 'var(--orange)', opacity: 0.12, stroke: 'var(--orange)', 'stroke-dasharray': '6 4' }, svg);
+    S('rect', { x: 420, y: 50, width: 160, height: 130, rx: 6, fill: 'none', stroke: 'var(--fg)', 'stroke-width': 3 }, svg);
+    apIcon(svg, 500, 110, 'AP');
+    staDot(svg, 460, 150, 'STA', 'accent');
+    S('text', { x: 640, y: 125, 'text-anchor': 'middle', 'font-size': 24, text: '🕵️' }, svg);
+    S('text', { x: 640, y: 155, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, fill: 'var(--red)', text: '牆外也收得到' }, svg);
+    S('text', { x: 535, y: 220, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '需要 Authentication（取代接線）＋ Privacy（取代封閉）' }, svg);
+  })();
+
   (function spatial() {
     const svg = svgRoot(document.getElementById('fig-spatial'), 720, 210, 'BSS 的三種空間關係');
     const panel = (cx, title, circles, note) => {

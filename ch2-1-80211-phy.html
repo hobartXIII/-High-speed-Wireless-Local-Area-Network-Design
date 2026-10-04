@@ -14,7 +14,7 @@
   <div class="page-head">
     <div class="eyebrow">CH 2-1</div>
     <h1>📶 IEEE 802.11 架構與 PHY</h1>
-    <div class="meta"><span>來源：2-1 CSMA_CA.pdf</span><span>動畫與互動 9 個・圖解 19 張</span></div>
+    <div class="meta"><span>來源：2-1 CSMA_CA.pdf</span><span>動畫與互動 10 個・圖解 19 張</span></div>
   </div>
 
   <h2 id="outline">0. 本章大綱（講義）</h2>
@@ -515,6 +515,22 @@ flowchart LR
       <span class="time" id="corr-val"></span>
     </div>
   </div>
+
+  <h4><span class="sup">補充</span>chip 被雜訊翻掉也能還原：最多容忍 5 個</h4>
+  <div class="figure" id="fig-noise-wrap">
+    <div class="fig-title">翻掉幾個 chip，bit 還判斷得對嗎？ <span class="tag">互動</span></div>
+    <div class="fig-body"><div id="fig-noise"></div><div class="readout" id="noise-out"></div></div>
+    <div class="controls">
+      <div class="seg" id="noise-bit"><button type="button" class="on" data-v="1">送出資料 1</button><button type="button" data-v="0">送出資料 0</button></div>
+      <label style="flex:1;display:flex;gap:8px;align-items:center">被雜訊翻掉的 chip 數 <input type="range" id="noise-k" min="0" max="11" value="3" style="flex:1"></label>
+    </div>
+  </div>
+  <ul>
+    <li><b>能推回正確的 bit</b>：相關值 = 11 − 2 ×（錯的 chip 數）。只要錯的不超過 <b>5 個</b>，資料 1 的相關值仍是正的、資料 0 仍是負的，bit 判斷正確；錯到 6 個才會判錯。等於 11 個 chip 做「多數決」。</li>
+    <li><b>能知道哪個 chip 錯</b>：判定 bit 之後，把收到的 chip 和應有的 Barker 碼逐一比對，不一樣的就是被雜訊翻掉的 chip（圖中紅色）。</li>
+    <li><b>限制</b>：展頻修正的是 <b>chip 層級</b>的錯誤。一個 bit 本身判錯（錯超過 5 個 chip）時，展頻無法發現，要靠上層的 CRC（PLCP header 的 CRC-16、MAC 的 FCS）檢查出來，再由 MAC 重傳。</li>
+    <li><b>功率密度低不等於功率小</b>：展頻後<b>總功率不變</b>，只是攤到更寬的頻率，所以每 1 Hz 的功率（功率密度）變低，對其他系統干擾小、也不易被察覺。能用比較弱的訊號，則是因為解展頻時 11 個 chip 的能量集中回 1 個 bit，訊雜比提高約 10.4 dB（處理增益）。</li>
+  </ul>
 
   <h3>分貝<span class="en">（Decibels, dB）</span>（p.60）</h3>
   <div class="figure" id="fig-db-wrap">

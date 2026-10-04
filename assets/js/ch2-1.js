@@ -886,6 +886,49 @@
     draw();
   })();
 
+  /* ---------- 10b. chip 錯誤與多數決 ---------- */
+  (function noise() {
+    const host = document.getElementById('fig-noise');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 250, 'chip 錯誤與相關值');
+    const out = document.getElementById('noise-out');
+    const range = document.getElementById('noise-k');
+    const ORDER = [1, 5, 9, 3, 7, 0, 10, 2, 6, 4, 8]; // 依序被翻掉的 chip
+    let bit = 1;
+    const X0 = 130, CW = 48;
+    function row(y, label, vals, colorOf) {
+      S('text', { x: X0 - 14, y: y + 24, 'text-anchor': 'end', 'font-size': 13, 'font-weight': 700, text: label }, svg);
+      vals.forEach((v, i) => {
+        const col = colorOf(i, v);
+        S('rect', { x: X0 + i * CW, y, width: CW - 6, height: 36, rx: 5, fill: `var(--${col}-soft)`, stroke: `var(--${col})`, 'stroke-width': 1.5 }, svg);
+        S('text', { x: X0 + i * CW + (CW - 6) / 2, y: y + 24, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, text: v > 0 ? '+1' : '−1' }, svg);
+      });
+    }
+    function draw() {
+      clear(svg);
+      const k = +range.value, sign = bit ? 1 : -1;
+      const flipped = new Set(ORDER.slice(0, k));
+      const sent = BARKER.map(c => c * sign);
+      const recv = sent.map((c, i) => (flipped.has(i) ? -c : c));
+      const prod = recv.map((c, i) => c * BARKER[i]);
+      const sum = prod.reduce((a, b) => a + b, 0);
+      const dec = sum > 0 ? 1 : sum < 0 ? 0 : null;
+      for (let i = 0; i < 11; i++) S('text', { x: X0 + i * CW + (CW - 6) / 2, y: 22, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: `chip ${i + 1}` }, svg);
+      row(32, `送出（資料 ${bit}）`, sent, () => 'accent');
+      row(84, '收到', recv, i => (flipped.has(i) ? 'red' : 'accent'));
+      row(136, '× Barker', prod, (i, v) => (v > 0 ? 'green' : 'red'));
+      const ok = dec === bit;
+      S('text', { x: X0, y: 205, 'font-size': 15, 'font-weight': 700, text: `相關值 = ${bit ? '' : '−'}(11 − 2 × ${k}) = ${sum > 0 ? '+' : ''}${sum}` }, svg);
+      S('text', { x: X0, y: 232, 'font-size': 15, 'font-weight': 700, fill: ok ? 'var(--green)' : 'var(--red)',
+        text: dec === null ? '→ 無法判斷' : `→ 判定為資料 ${dec}　${ok ? '✓ 正確還原' : '✗ 判錯（錯超過 5 個 chip）'}` }, svg);
+      out.textContent = `紅色 chip：被雜訊翻掉（和應有的 Barker 碼不同），共 ${k} 個\n` +
+        `相關值的正負決定 bit：資料 1 → 正、資料 0 → 負；錯 ≤ 5 個都能還原`;
+    }
+    range.addEventListener('input', draw);
+    segButtons(document.getElementById('noise-bit'), v => { bit = +v; draw(); });
+    draw();
+  })();
+
   /* ---------- 11. dB ---------- */
   (function db() {
     const p1 = document.getElementById('db-p1'), p2 = document.getElementById('db-p2'), mw = document.getElementById('db-mw');

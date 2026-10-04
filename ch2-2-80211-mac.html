@@ -14,7 +14,7 @@
   <div class="page-head">
     <div class="eyebrow">CH 2-2</div>
     <h1>📨 IEEE 802.11 MAC 架構與服務</h1>
-    <div class="meta"><span>來源：2-2 CSMA_CA.pdf（講義章節：7. IEEE 802.11 Wireless LAN MAC Standard）</span><span>動畫與互動 5 個・圖解 3 張</span></div>
+    <div class="meta"><span>來源：2-2 CSMA_CA.pdf（講義章節：7. IEEE 802.11 Wireless LAN MAC Standard）</span><span>動畫與互動 5 個・圖解 11 張</span></div>
   </div>
 
   <h2 id="std">1. 標準依據</h2>
@@ -24,19 +24,32 @@
     <li>相關的其他 802 標準：<b>802.2 LLC</b>（上層介面）、<b>802.1X</b>（port-based 認證）、<b>802.10</b>（實際執行 challenge/response 計算）、IEEE 802 <b>48-bit 位址空間</b>。</li>
   </ul>
 
-  <h2 id="diff">2. 無線 LAN 與有線 LAN 的主要差異<span class="en">（Major differences between Wireless LAN and Wired LAN）</span></h2>
+  <h2 id="diff">2. 無線 LAN 與有線 LAN 的主要差異（p.2–3）<span class="en">（Major differences between Wireless LAN and Wired LAN）</span></h2>
   <h3>位址 ≠ 位置<span class="en">（Destination address does not equal destination location）</span></h3>
   <ul>
     <li>有線 LAN：位址等同實體位置<span class="en">（In wired LANs, an address is equivalent to a physical address）</span>。</li>
     <li>802.11：可定址的單位是<b>站台（STA）</b>；STA 是訊息的目的地，但<b>不是固定位置</b><span class="en">（not a fixed location）</span>。</li>
   </ul>
+  <div class="figure">
+    <div class="fig-title">位址 ≠ 位置 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-addrloc"></div>
+    <div class="caption"><span class="sup">補充</span>有線 LAN 的位址綁在某條線、某個交換器埠上；802.11 的 STA 帶著同一個 MAC 位址在 BSS 之間移動，網路必須隨時記錄「它現在在哪個 AP 底下」，這就是 Association／Reassociation 存在的原因。</div>
+  </div>
   <h3>媒介影響設計<span class="en">（The media impacts the design）</span></h3>
-  <p>802.11 PHY 與有線媒介本質不同：點對點連線距離有限<span class="en">（limited physical point to point connection ranges）</span>、使用共享媒介<span class="en">（Use a shared medium）</span>、不受外部訊號保護<span class="en">（unprotected from outside signals）</span>、可靠度比有線 PHY 低很多<span class="en">（significantly less reliable than wired PHYs）</span>、拓樸是動態變化的<span class="en">（dynamic topologies）</span>。</p>
+  <p>802.11 PHY 與有線媒介本質不同<span class="en">（fundamentally different from wired media）</span>，每一項特性都對應到 802.11 的某個設計：</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>講義列出的 PHY 特性</th><th>對應的 802.11 設計 <span class="sup">補充</span></th></tr>
+    <tr><td>點對點連線距離有限<span class="en">（limited physical point to point connection ranges）</span></td><td>用 DS 串起多個 BSS 成為 ESS，延伸覆蓋範圍</td></tr>
+    <tr><td>使用共享媒介<span class="en">（Use a shared medium）</span></td><td>CSMA/CA、RTS/CTS 協調大家輪流用</td></tr>
+    <tr><td>不受外部訊號保護<span class="en">（unprotected from outside signals）</span></td><td>Authentication 與 Privacy（第 13、14 節）</td></tr>
+    <tr><td>可靠度比有線 PHY 低很多<span class="en">（significantly less reliable than wired PHYs）</span></td><td>MAC 層 ACK 與重傳、分段</td></tr>
+    <tr><td>拓樸是動態變化的<span class="en">（dynamic topologies）</span></td><td>Association、Reassociation、Disassociation 隨時更新成員</td></tr>
+  </table></div>
   <h3>移動站台的處理<span class="en">（Impact of handling mobile stations）</span></h3>
   <ul>
-    <li><b>Portable station</b>：會換地點，但只在固定位置時使用。</li>
-    <li><b>Mobile station</b>：移動中也在存取 LAN。</li>
-    <li>電波傳播效應讓兩者的界線變模糊<span class="en">（Propagation effects blur the distinction between portable and mobile stations）</span>。</li>
+    <li><b>可攜式站台</b><span class="en">（Portable station）</span>：會換地點，但只在固定位置時使用。<span class="sup">補充</span>例如把筆電從會議室帶到辦公室，到了才打開來用。</li>
+    <li><b>移動式站台</b><span class="en">（Mobile station）</span>：移動中也在存取 LAN。<span class="sup">補充</span>例如邊走邊用手機視訊通話。</li>
+    <li>電波傳播效應讓兩者的界線變模糊<span class="en">（Propagation effects blur the distinction between portable and mobile stations）</span>。<span class="sup">補充</span>就算站台不動，有人走過、門開關都會讓訊號變化，對 MAC 來說和「在移動」差不多。</li>
   </ul>
   <h3>與其他 802 層的互動<span class="en">（Interaction with other 802 layers）</span></h3>
   <ul>
@@ -44,9 +57,9 @@
     <li>站台的移動性必須在 <b>MAC 層內</b>處理<span class="en">（Station mobility has to be handled within the MAC layer）</span>（802.11f）。</li>
   </ul>
 
-  <h2 id="char">3. 802.11 WLAN 特性<span class="en">（802.11 Wireless LAN Characteristics）</span></h2>
+  <h2 id="char">3. 802.11 WLAN 特性（p.4）<span class="en">（802.11 Wireless LAN Characteristics）</span></h2>
   <ul>
-    <li>速率：1、2、5.5、11、22、33、6、9、12、18、24、36、48、54、72、150、500、1000 Mbps；802.11ax（Wi-Fi 6；Wi-Fi 6E 使用 5.925–7.125GHz）600–9608 Mbps；802.11be（Wi-Fi 7）40000 Mbps（講義數據）。</li>
+    <li>速率：1、2、5.5、11、22、33、6、9、12、18、24、36、48、54、72、150、500、1000 Mbps；802.11ax（Wi-Fi 6；Wi-Fi 6E 使用 5.925–7.125GHz）600–9608 Mbps；802.11be（Wi-Fi 7）40000 Mbps（講義數據）。<span class="sup">補充</span>72 Mbps 是 Atheros 的 Turbo 模式（非標準，見 2-1 第 11 節）；150 Mbps 是 11n 單一空間串流的最高速率。</li>
     <li>傳輸媒介：無線電<span class="en">（Transmission medium: Radio）</span>。</li>
     <li><b>CSMA/CA</b> 協定：
       <ul>
@@ -57,25 +70,30 @@
     </li>
   </ul>
 
-  <h2 id="amend">4. 修訂版與其依據內容</h2>
+  <h2 id="amend">4. 修訂版與其依據內容（p.5–8）</h2>
   <div class="tbl-wrap"><table>
     <tr><th>標準</th><th>名稱</th><th>重點</th></tr>
     <tr><td>802.11a-1999</td><td>5GHz 高速 PHY 延伸<span class="en">（High-speed Physical Layer Extension in the 5 GHz Band）</span></td><td>5.15–5.25、5.25–5.35、5.725–5.825GHz；OFDM；6–54 Mbps</td></tr>
     <tr><td>802.11b-1999</td><td>2.4GHz 高速 PHY 延伸<span class="en">（High-speed Physical Layer Extension in the 2.4 GHz Band）</span></td><td>2.4–2.4835GHz；DSSS；1、2、5.5、11 Mbps</td></tr>
     <tr><td>802.11g-2003</td><td>2.4GHz 更高速 PHY 延伸<span class="en">（Further Higher-Speed Physical Layer Extension in the 2.4GHz Band）</span></td><td>DSSS 與 OFDM 混合<span class="en">（hybrid DSSS and OFDM）</span>；22、33 / 6–54 Mbps</td></tr>
-    <tr><td>802.11e-2003</td><td>MAC 的 QoS 強化<span class="en">（MAC Enhancements for QoS）</span></td><td>—</td></tr>
-    <tr><td>802.11i-2003</td><td>安全性強化<span class="en">（Enhanced Security）</span></td><td>WEP、TKIP、WRAP、CCMP</td></tr>
-    <tr><td>802.11s</td><td>Mesh Networking，ESS</td><td>2011/07</td></tr>
-    <tr><td>802.11aa</td><td>MAC 強化：穩健的影音串流<span class="en">（MAC Enhancements for Robust Audio Video Streaming）</span></td><td>—</td></tr>
-    <tr><td>802.11ac</td><td>6GHz 以下的 Very High Throughput</td><td>—</td></tr>
-    <tr><td>802.11ad</td><td>60GHz Very High Throughput（WiGig）</td><td>2012/12</td></tr>
-    <tr><td>802.11ae</td><td>管理訊框優先權<span class="en">（Prioritization of Management Frames）</span></td><td>—</td></tr>
-    <tr><td>802.11af</td><td>TV White Spaces（TVWS）運作</td><td>—</td></tr>
-    <tr><td>802.11be</td><td>Extremely High Throughput（EHT）</td><td>—</td></tr>
+    <tr><td>802.11e-2003</td><td>MAC 的服務品質強化<span class="en">（MAC Enhancements for Quality of Services）</span></td><td><span class="sup">補充</span>HCF：EDCA（4 種存取類別）＋HCCA；TXOP、Block ACK；Wi-Fi 認證名 WMM（正式標準 2005）</td></tr>
+    <tr><td>802.11i-2003</td><td>安全性強化<span class="en">（Enhanced Security）</span></td><td>WEP、TKIP、WRAP、CCMP（<span class="sup">補充</span>正式標準 2004）</td></tr>
+    <tr><td>802.11s</td><td>網狀網路<span class="en">（Mesh Networking, ESS）</span></td><td>2011/07；<span class="sup">補充</span>AP 之間無線多跳互連，用 HWMP 選路徑</td></tr>
+    <tr><td>802.11aa</td><td>MAC 強化：穩健的影音串流<span class="en">（MAC Enhancements for Robust Audio Video Streaming）</span></td><td><span class="sup">補充</span>2012；群播串流可靠傳送（GCR）、影音流量分級，適合 IPTV</td></tr>
+    <tr><td>802.11ac</td><td>6GHz 以下的極高吞吐量<span class="en">（Very High Throughput below 6 GHz）</span></td><td><span class="sup">補充</span>2013；5 GHz、80／160 MHz、256-QAM、最多 8 串流、下行 MU-MIMO</td></tr>
+    <tr><td>802.11ad</td><td>60GHz 極高吞吐量<span class="en">（Very High Throughput 60 GHz, WiGig）</span></td><td>2012/12；<span class="sup">補充</span>數 Gbps，但只到同一房間</td></tr>
+    <tr><td>802.11ae</td><td>管理訊框優先權<span class="en">（Prioritization of Management Frames）</span></td><td><span class="sup">補充</span>2012；讓重要的管理訊框也套用 QoS 優先權，不被大量資料塞住</td></tr>
+    <tr><td>802.11af</td><td>電視空白頻段運作<span class="en">（Television White Spaces, TVWS）</span></td><td><span class="sup">補充</span>2014；54–790 MHz 未使用的電視頻道，需查地理位置資料庫，可達公里級</td></tr>
+    <tr><td>802.11be</td><td>超高吞吐量<span class="en">（Extremely High Throughput, EHT）</span></td><td><span class="sup">補充</span>2024；Wi-Fi 7，320 MHz、4096-QAM、MLO</td></tr>
   </table></div>
+  <div class="figure">
+    <div class="fig-title">802.11 修訂版時間軸 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-amend"></div>
+    <div class="caption"><span class="sup">補充</span>藍色為 PHY 相關、橙色為 MAC 相關。年份為正式標準通過年；講義寫的 802.11e-2003、802.11i-2003 是當時草案的年份，正式標準分別在 2005、2004 年通過。</div>
+  </div>
   <p><span class="sup">補充</span>802.11i 的加密演進：WEP（RC4，已被破解）→ <b>TKIP</b>（WPA 過渡方案，仍用 RC4 但每個封包換金鑰）→ <b>CCMP</b>（以 AES 為基礎，WPA2 必要）；WRAP 是早期以 AES-OCB 為基礎的方案，後來由 CCMP 取代。</p>
 
-  <h2 id="components">5. 802.11 架構元件<span class="en">（802.11 Architecture Components）</span></h2>
+  <h2 id="components">5. 802.11 架構元件（p.9–13）<span class="en">（802.11 Architecture Components）</span></h2>
   <div class="figure" id="fig-arch-wrap">
     <div class="fig-title">ESS、DS 與 Portal：資料怎麼走 <span class="tag">動畫</span></div>
     <div class="fig-body"><div id="fig-arch"></div><div class="status info" id="arch-msg"></div></div>
@@ -101,7 +119,7 @@
     <li>DS 與多個 BSS 讓 802.11 能建立<b>任意大小與複雜度</b><span class="en">（arbitrary size and complexity）</span>的無線網路。</li>
   </ul>
 
-  <h2 id="spatial">6. BSS 的空間關係</h2>
+  <h2 id="spatial">6. BSS 的空間關係（p.14–15）</h2>
   <div class="figure">
     <div class="fig-title">部分重疊・實體分離・同地點共存 <span class="tag static">圖解</span></div>
     <div class="fig-body" id="fig-spatial"></div>
@@ -117,16 +135,43 @@
     <tr><td>OFDM 5GHz</td><td class="num">12</td></tr>
   </table></div>
   <p>講義思考題：單一 BSS 能否同時使用多個頻道？<span class="en">（Is it possible for a single BSS to utilize multiple channels?）</span></p>
+  <ul>
+    <li><span class="sup">補充</span>傳統上<b>一個 BSS 只用一個頻道</b>：AP 在一個頻道上發 Beacon，所有成員都在這個頻道上收發。</li>
+    <li><span class="sup">補充</span>後來的兩種做法：
+      <ul>
+        <li><b>頻道聚合</b><span class="en">（channel bonding）</span>：11n 起把相鄰的 20 MHz 頻道綁成 40／80／160／320 MHz，對 BSS 來說仍是「一個較寬的頻道」。</li>
+        <li><b>多重連結運作</b><span class="en">（Multi-Link Operation, MLO）</span>：11be 讓同一個 AP 同時在 2.4／5／6 GHz 多條連結上服務同一台裝置，最接近「一個 BSS 用多個頻道」。</li>
+      </ul>
+    </li>
+  </ul>
 
-  <h2 id="portal">7. Portal 與 Bridge</h2>
+  <h2 id="portal">7. 與有線 LAN 整合：Portal 與 Bridge（p.16–17）</h2>
   <ul>
     <li>Bridge 原本用來<b>延伸同類 MAC 的距離</b><span class="en">（range extension between like-type MAC layers）</span>；802.11 已由 ESS（DS + AP）提供任意覆蓋範圍，所以不需要靠 bridge 延伸 PHY 距離。</li>
     <li>Bridge 也用來連接不同類型的 MAC<span class="en">（interconnect MAC layers of different types）</span>。橋接到 802.11 時會遇到問題：要橋接到 <b>DSM 還是 WM</b>？</li>
     <li>Portal 必須處理 BSS 成員的動態變化<span class="en">（dynamic membership of BSSs）</span>，以及移動性帶來的位址與位置對應<span class="en">（mapping of address and location）</span>。</li>
     <li>實體上，Portal 可能包含、也可能不包含橋接功能，取決於 DS 的實作。</li>
   </ul>
+  <div class="figure">
+    <div class="fig-title">橋接到 DSM 還是 WM？ <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  LAN["802.3 有線 LAN<br>（整合的 LAN）"] --- P["Portal<br>（可含橋接功能）"]
+  P --- DSM["DSM<br>DS 的媒介"]
+  DSM --- AP1["AP1"]
+  DSM --- AP2["AP2"]
+  AP1 -. "WM" .- S1["STA1"]
+  AP2 -. "WM" .- S2["STA2"]
+  LAN -. "直接橋接到 WM？" .- S1
+    </div></div>
+    <div class="caption">依講義 p.16–17 的問題整理：實線是有線（DSM、802.3 LAN），虛線是無線媒介（WM）。</div>
+  </div>
+  <ul>
+    <li><span class="sup">補充</span><b>實務上的答案：橋接到 DSM 這一側</b>。AP 本身就扮演 Portal＋橋接器，把 WM 上的 802.11 訊框轉成 802.3 訊框送上乙太網路；DSM 與整合的有線 LAN 也常是同一條乙太網路。</li>
+    <li><span class="sup">補充</span>如果有線 LAN 直接橋接到 WM，有線端的設備就得自己處理站台的移動與「位址在哪個 AP」的對應；這正是講義說 Portal 必須考慮的動態成員與位址位置對應，所以交給 DS 與 Portal 處理比較合理。</li>
+  </ul>
 
-  <h2 id="services">8. 邏輯服務介面<span class="en">（Logical Service Interface）</span></h2>
+  <h2 id="services">8. 邏輯服務介面（p.18–19、21）<span class="en">（Logical Service Interface）</span></h2>
   <ul>
     <li>DS 不一定等同現有的有線 LAN，可以用多種技術建構（包括現有的 802.x 有線 LAN）。</li>
     <li>802.11 <b>不限制</b> DS 是 Data Link 層或 Network 層、集中式或分散式。</li>
@@ -169,23 +214,42 @@
     <li><span class="sup">補充</span>常見的 frame：Management 有 Beacon、Probe Request/Response、Authentication、Deauthentication、Association / Reassociation Request/Response、Disassociation；Control 有 RTS、CTS、ACK、PS-Poll。</li>
   </ul>
 
-  <h2 id="address">9. 多重邏輯位址空間<span class="en">（Multiple Logical Address Spaces）</span></h2>
+  <h2 id="address">9. 多重邏輯位址空間（p.20）<span class="en">（Multiple Logical Address Spaces）</span></h2>
   <ul>
     <li>WM、DSM 與整合的有線 LAN 可能是<b>不同的實體媒介</b>，也可能在<b>不同的位址空間</b>運作。</li>
     <li>802.11 <b>只使用並規範 WM 的位址空間</b><span class="en">（only uses and specifies the use of WM address space）</span>，每個 802.11 PHY 只在單一媒介（WM）運作。</li>
     <li>802.11 採用 <b>IEEE 802 的 48-bit 位址空間</b>。</li>
     <li>例：DS 使用網路層定址時，WM 位址空間與 DS 位址空間就不同。</li>
   </ul>
-  <p><span class="sup">補充</span>802.11 資料訊框最多有 4 個位址欄位，用 To DS / From DS 兩個 bit 表示方向：</p>
+  <div class="figure">
+    <div class="fig-title">三個邏輯位址空間 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  subgraph W["WM 位址空間<br>IEEE 802 48-bit（802.11 只規範這個）"]
+    S1["STA"] -.- A1["AP"]
+  end
+  subgraph D["DS 位址空間<br>可能是網路層位址（例如 IP）"]
+    A1 --- DS["DS"] --- PT["Portal"]
+  end
+  subgraph L["整合 LAN 位址空間<br>802.x 48-bit"]
+    PT --- H["有線主機"]
+  end
+    </div></div>
+    <div class="caption">依講義 p.20 整理：WM、DSM 與整合的有線 LAN 可能是不同媒介、不同位址空間；跨越邊界時由 AP（DSS）與 Portal（Integration）負責轉換。</div>
+  </div>
+  <p><span class="sup">補充</span>802.11 資料訊框最多有 4 個位址欄位，用 To DS／From DS 兩個 bit 表示方向；Address 1 一定是「這一跳的接收者」，Address 2 是「這一跳的傳送者」：</p>
   <div class="tbl-wrap"><table>
-    <tr><th>To DS</th><th>From DS</th><th>意義</th></tr>
-    <tr><td>0</td><td>0</td><td>IBSS 內直接傳送</td></tr>
-    <tr><td>0</td><td>1</td><td>AP 送往 STA</td></tr>
-    <tr><td>1</td><td>0</td><td>STA 送往 AP</td></tr>
-    <tr><td>1</td><td>1</td><td>AP 之間（WDS／Mesh），用到 4 個位址</td></tr>
+    <tr><th>To DS</th><th>From DS</th><th>意義</th><th>Address 1</th><th>Address 2</th><th>Address 3</th><th>Address 4</th></tr>
+    <tr><td>0</td><td>0</td><td>IBSS 內直接傳送</td><td>目的 DA</td><td>來源 SA</td><td>BSSID</td><td>—</td></tr>
+    <tr><td>0</td><td>1</td><td>AP 送往 STA</td><td>目的 DA</td><td>BSSID（AP）</td><td>來源 SA</td><td>—</td></tr>
+    <tr><td>1</td><td>0</td><td>STA 送往 AP</td><td>BSSID（AP）</td><td>來源 SA</td><td>目的 DA</td><td>—</td></tr>
+    <tr><td>1</td><td>1</td><td>AP 之間（WDS／Mesh）</td><td>接收端 AP（RA）</td><td>傳送端 AP（TA）</td><td>目的 DA</td><td>來源 SA</td></tr>
   </table></div>
+  <ul>
+    <li><span class="sup">補充</span>為什麼需要 3～4 個位址：無線上的「這一跳」（STA → AP）和最終的「來源、目的」不一定相同，這就是講義說的<b>位址 ≠ 位置</b>在訊框格式上的體現。</li>
+  </ul>
 
-  <h2 id="distribution">10. DS 內的訊息分送<span class="en">（Distribution of Message Within a DS）</span></h2>
+  <h2 id="distribution">10. DS 內的訊息分送（p.22–23）<span class="en">（Distribution of Message Within a DS）</span></h2>
   <h3>Distribution</h3>
   <ul>
     <li>在 DS 內傳送 MSDU 的服務，<b>依據 Association 資訊</b>找出目的地。</li>
@@ -200,13 +264,18 @@
     <li>送往 Portal 的訊息會觸發 Integration 服務，負責把訊息從 DSM 送到整合 LAN 的媒介，包括必要的<b>媒介或位址轉換</b><span class="en">（media or address translation）</span>。</li>
   </ul>
 
-  <h2 id="mobility">11. 移動性類型與漫遊<span class="en">（Mobility types）</span></h2>
+  <h2 id="mobility">11. 移動性類型與漫遊（p.24）<span class="en">（Mobility types）</span></h2>
   <div class="tbl-wrap"><table>
     <tr><th>類型</th><th>說明</th><th>需要的服務</th></tr>
     <tr><td>No-transition</td><td>靜止，或只在一個 BSA 內移動<span class="en">（Static - no motion / Local movement - movement within a Basic Service Area）</span></td><td>Association 即足夠<span class="en">（Association is sufficient to support no-transition mobility）</span></td></tr>
     <tr><td>BSS-transition</td><td>在<b>同一個 ESS</b> 內從一個 BSS 移到另一個 BSS</td><td>Association 必要但不充分<span class="en">（Association is necessary, but not sufficient, to support BSS-transition mobility）</span>，還需要 Reassociation</td></tr>
     <tr><td>ESS-transition</td><td>從一個 ESS 的 BSS 移到<b>另一個獨立 ESS</b> 的 BSS</td><td><span class="sup">補充</span>802.11 無法維持上層連線，需靠上層機制（例如 Mobile IP）</td></tr>
   </table></div>
+  <div class="figure">
+    <div class="fig-title">三種移動性類型 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-mobility"></div>
+    <div class="caption">依講義 p.24 整理：No-transition 只要 Association；BSS-transition 還需要 Reassociation；ESS-transition 802.11 無法維持連線（<span class="sup">補充</span>需靠上層，例如 Mobile IP）。</div>
+  </div>
   <div class="figure" id="fig-roam-wrap">
     <div class="fig-title">BSS-transition：漫遊與 Reassociation <span class="tag">動畫</span></div>
     <div class="fig-body"><div id="fig-roam"></div><div class="status info" id="roam-msg"></div></div>
@@ -215,7 +284,7 @@
 
   <p><span class="sup">補充</span>家用 Mesh 的自動漫遊（11k／v／r）與佈建方式，見 <a href="ch2-1-80211-phy.html#home-ap">2-1 第 17 節「家用 AP 技術與天線」</a>。</p>
 
-  <h2 id="assoc">12. Association 三兄弟（必考比較）</h2>
+  <h2 id="assoc">12. Association 三兄弟（必考比較）（p.25–27）</h2>
   <div class="figure">
     <div class="fig-title">Association・Reassociation・Disassociation <span class="tag static">圖解</span></div>
     <div class="fig-body"><div class="mermaid-host">
@@ -240,7 +309,7 @@ sequenceDiagram
   </table></div>
   <div class="callout warn">🧠 記法：「建立」和「搬家」都是 STA 自己要的，所以只能 STA 發起；「分手」誰都可以提，而且不能拒絕。</div>
 
-  <h2 id="access">13. 存取與機密性控制<span class="en">（Access and Confidentiality Control Services）</span></h2>
+  <h2 id="access">13. 存取與機密性控制（p.28–29）<span class="en">（Access and Confidentiality Control Services）</span></h2>
   <ul>
     <li>有線 LAN 設計<b>假設媒介是封閉、不共享的</b><span class="en">（assumes the closed, non-shared nature of wired media）</span>；802.11 開放共享的特性違反了這個假設。</li>
     <li>因此需要兩項服務，才能達到有線 LAN 原本就有的功能：
@@ -252,8 +321,13 @@ sequenceDiagram
     <li>有線 LAN 中，能接上實體線路就代表有權使用 LAN<span class="en">（access to a physical connection conveys authority to connect to the LAN）</span>；<b>無線 LAN 不能這樣假設</b>。</li>
     <li>若兩個站台之間沒有建立雙方都能接受的認證等級，<b>就不能建立 association</b><span class="en">（an association shall not be established）</span>。</li>
   </ul>
+  <div class="figure">
+    <div class="fig-title">有線的「封閉」假設 vs 無線的開放媒介 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-openmedium"></div>
+    <div class="caption"><span class="sup">補充</span>依講義 p.28–29 示意：有線 LAN 靠「進得了機房、插得到線」控制存取；無線訊號會穿出牆外，範圍內任何人都收得到，所以要用 Authentication 取代實體接線、用 Privacy 取代封閉媒介。</div>
+  </div>
 
-  <h2 id="auth">14. Authentication 服務</h2>
+  <h2 id="auth">14. 認證服務（Authentication）（p.30–32）</h2>
   <ul>
     <li>支援從<b>不安全的方式</b><span class="en">（unsecured schemes）</span>到<b>公開金鑰密碼認證</b><span class="en">（public key cryptographic authentication）</span>等各種等級；講義列出 <b>Open System</b> 與 <b>Shared Key</b> 兩種。</li>
     <li>是 <b>link level</b> 認證（802.11 站台之間），<b>不是</b> end-to-end 或 user-to-user；需要更高層的認證由上層處理。</li>
@@ -274,6 +348,21 @@ sequenceDiagram
     <li><b>Pre-authentication</b>：STA 還連著原本的 AP 時，先與其他 AP 完成認證；標準<b>不強制</b>，但因為 association 之前必須先認證，預先認證可以<b>加速 reassociation</b><span class="en">（speedup the reassociation process）</span>。</li>
     <li><b>順序：先 Authentication，才能 Association</b>。</li>
   </ul>
+  <div class="figure">
+    <div class="fig-title">預先認證加速漫遊（Pre-authentication） <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+sequenceDiagram
+  participant STA
+  participant A as AP-A（目前關聯）
+  participant B as AP-B（即將漫遊過去）
+  STA->>A: Authentication ＋ Association，正常傳資料
+  STA-->>B: Pre-authentication（STA 仍連著 AP-A）
+  Note over STA,B: STA 移動到 AP-B 的範圍
+  STA->>B: Reassociation（已認證過，直接關聯）
+  B-->>STA: Reassociation Response，漫遊完成
+    </div></div>
+    <div class="caption">依講義 p.32 整理：認證可能很耗時，可以獨立於 Association 先做。<span class="sup">補充</span>802.11i 的預先認證是透過目前的 AP 與 DS 轉送到新 AP 完成。</div>
+  </div>
   <h3>連線狀態機 <span class="sup">補充</span></h3>
   <div class="figure" id="fig-fsm-wrap">
     <div class="fig-title">按按鈕，看站台在三個狀態間移動 <span class="tag">互動</span></div>
