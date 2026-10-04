@@ -70,7 +70,7 @@
     const toc = document.querySelector('.toc');
     if (!toc) return;
     const hs = [...document.querySelectorAll('main h2[id]')];
-    toc.innerHTML = '<div class="label">本頁目錄</div>' + hs.map(h => `<a href="#${h.id}">${h.textContent}</a>`).join('');
+    toc.innerHTML = '<div class="label">本頁目錄</div>' + hs.map(h => `<a href="#${h.id}">${[...h.childNodes].filter(n => !n.classList || !n.classList.contains('en')).map(n => n.textContent).join('')}</a>`).join('');
     const links = [...toc.querySelectorAll('a')];
     let ticking = false;
     function update() {

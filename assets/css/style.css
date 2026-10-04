@@ -96,6 +96,7 @@ main { min-width: 0; max-width: 900px; padding-bottom: 80px; }
 
 /* ===== Components ===== */
 .sup { display: inline-block; font-size: .72em; font-weight: 600; color: var(--purple); background: var(--purple-soft); border-radius: 4px; padding: 0 .4em; margin-right: .3em; vertical-align: .12em; line-height: 1.6; }
+.en { color: var(--muted); font-size: .9em; font-weight: 400; }
 .callout { border-radius: var(--radius); padding: 12px 16px; margin: 1em 0; border: 1px solid var(--border); background: var(--surface); }
 .callout.note { background: var(--surface-2); }
 .callout.tip { background: var(--accent-soft); border-color: transparent; }

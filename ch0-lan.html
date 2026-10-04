@@ -17,6 +17,32 @@
     <div class="meta"><span>來源：0Intro_LAN.pdf</span><span>動畫 3 個・圖解 4 張</span></div>
   </div>
 
+  <h2 id="outline">0. 課程大綱（講義 Outline）</h2>
+  <p>講義第 3 頁列出整學期的範圍，順序就是上課的順序：先講 LAN 基礎與有線的 802.3，再進入本課主軸 802.11，最後介紹其他無線網路標準。</p>
+  <ol>
+    <li><b>LAN Introduction</b>：本章</li>
+    <li><b>IEEE 802.3 CSMA/CD Ethernet</b> → <a href="ch1-csma-cd.html">第 1 章</a></li>
+    <li><b>IEEE 802.11 CSMA/CA Wireless LAN</b> → <a href="ch2-1-80211-phy.html">第 2 章起</a>，依序涵蓋：
+      <ul>
+        <li><b>11a/b/g PHY</b>：11 / 54 Mbps（1999）</li>
+        <li><b>11f</b> IAPP（Inter-Access Point Protocol，AP 之間的協定）</li>
+        <li><b>WPA vs. 11i</b>：Enhanced Security</li>
+        <li><b>11e</b> QoS</li>
+        <li><b>11n</b> Next Generation WLAN：MIMO／Smart Antenna，600 Mbps（講義標註 802.11-2007）</li>
+        <li><b>11ac / 11ad</b> Gbps WLAN：Wireless Gigabit Alliance（WiGig），Wave1 1.7 Gbps／Wave2 7 Gbps</li>
+        <li><b>11ah</b> Sub-1GHz <b>免執照</b>頻段：Wi-Fi HaLow（唸作 “HAY-Low”），900MHz、100 kbps、約 1 km，給 IoT 用（2016）</li>
+        <li><b>11af</b> Sub-1GHz <b>需執照</b>頻段：White-Fi／Super Wi-Fi，利用 54–790MHz 的 TV white space 並搭配認知無線電；6、7MHz 通道 26.7 Mbps，8MHz 通道 35.6 Mbps</li>
+        <li><b>11ax / 11ay</b>：ac / ad 的下一代（約 4 倍吞吐量）</li>
+        <li><b>11be</b> Extremely High Throughput（EHT），2.4 / 5 / 6GHz</li>
+        <li><b>11bn</b> Ultra High Reliability（UHR）</li>
+      </ul>
+    </li>
+    <li><b>其他無線 LAN</b>：ETSI HIPERLAN I / II、HomeRF 1.0 / 2.0</li>
+    <li><b>IEEE 802.15 WPAN</b>：15.1 Bluetooth、15.2 共存（15.1、15.4 與 802.11）、15.3 HR-WPAN（UWB，OFDM 或 DSSS 方案，後來解散）、15.4 LR-WPAN Zigbee（2004 / 2006 / 2009）、15.5 Mesh（Adaptive Robust Tree, ART）、15.6 BAN、15.7 VLC</li>
+    <li><b>IEEE 802.16 WMAN</b>：16-2004 Cor2 + 16e-2005 移動性 + 16j relay + 16m WiMAX2；<b>802.20</b> MBWA；<b>802.22</b> WRAN</li>
+  </ol>
+  <div class="callout tip">💡 <b>11ah 與 11af 容易搞混：</b>兩者都在 1GHz 以下。11ah（HaLow）走<b>免執照</b>的 900MHz，主打 IoT 的低速、遠距離；11af（White-Fi）借用<b>需執照</b>的電視頻段空檔，要靠認知無線電找出沒人用的頻道。</div>
+
   <h2 id="orgs">1. 標準組織與分工</h2>
   <div class="tbl-wrap"><table>
     <tr><th>組織</th><th>負責範圍</th><th>本課相關標準</th></tr>
@@ -30,7 +56,7 @@
 
   <h2 id="def">2. LAN 定義與範圍</h2>
   <ul>
-    <li><b>LAN</b>：讓多個獨立裝置在中等地理範圍內，透過實體通道以中等速率<b>直接</b>互相通訊的資料通訊系統。</li>
+    <li><b>LAN</b>：讓多個獨立裝置<span class="en">（independent devices）</span>在中等地理範圍<span class="en">（moderately sized geographic area）</span>內，透過實體通道<span class="en">（physical communications channel）</span>以中等速率<span class="en">（moderate data rates）</span><b>直接</b>互相通訊的資料通訊系統<span class="en">（data communication system）</span>。</li>
     <li>範圍：PAN（個人，802.15）→ LAN（區域，802.3 / 802.11）→ MAN（都會，802.16、802.6）→ WAN（廣域）；<span class="sup">補充</span>802.22 WRAN 為區域型無線網路（Regional Area）。</li>
   </ul>
   <div class="figure">
@@ -38,27 +64,58 @@
     <div class="fig-body" id="fig-scale"></div>
     <div class="caption">圓的大小只表示相對關係，不是實際比例。</div>
   </div>
+  <h3><span class="sup">補充</span>實際應用的產品與線路</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>類型</th><th>範圍</th><th>常見產品／技術</th><th>線路／媒介</th></tr>
+    <tr><td><b>PAN</b>（802.15）</td><td>數公尺</td><td>藍牙耳機、智慧手錶、手環；Zigbee 智慧家電（燈泡、門窗感測器）；UWB 的 AirTag、手機數位車鑰匙</td><td>2.4GHz 無線；UWB 3–10GHz</td></tr>
+    <tr><td><b>LAN</b>（802.3 / 802.11）</td><td>一棟樓、一個校園</td><td>家用 Wi-Fi 路由器、Mesh Wi-Fi、辦公室交換器、AP、NAS</td><td>雙絞線（Cat5e/6/6A）、大樓之間用光纖；Wi-Fi 2.4/5/6GHz</td></tr>
+    <tr><td><b>MAN</b>（802.16、802.6）</td><td>一座城市</td><td>都會乙太網路（Metro Ethernet）、FTTH 光世代、有線電視 Cable Modem（DOCSIS）；以前的 WiMAX（台灣 2007 年左右發過執照，後來幾乎都退場）</td><td>市區光纖環（多半是 ring 拓樸，斷一處還能從另一邊繞）、同軸電纜</td></tr>
+    <tr><td><b>WAN</b></td><td>跨城市、跨國</td><td>ISP 骨幹、企業 MPLS 專線、SD-WAN、4G/5G 行動網路、TANet 台灣學術網路、衛星網路（Starlink）</td><td>長途陸纜、<b>海底電纜</b>、微波中繼、衛星</td></tr>
+  </table></div>
+  <p><b>海底電纜：</b></p>
+  <ul>
+    <li>跨洲的資料流量約 <b>99%</b> 走海纜，衛星只占很小一部分，因為海纜頻寬大得多、延遲也低。</li>
+    <li>構造：中心是幾對光纖，外面包鋼絲、銅管（負責供電）和絕緣層。深海段只有水管粗細；靠近岸邊的段落會加上重鎧裝，防船錨和拖網。</li>
+    <li>中繼器：每隔約 50–100 km 一個，用來放大光訊號，電力由兩端的<b>登陸站</b>從岸上經銅管供應。</li>
+    <li>容量：一條新纜用 DWDM（密集分波多工，同一根光纖跑很多波長）可達數十到數百 Tbps。</li>
+    <li>台灣的例子：主要登陸站在宜蘭頭城、屏東枋山、新北八里與淡水等地。連外的國際海纜有 APG（亞太直達）、SJC2、TPE（跨太平洋快速）等；本島連金門、馬祖也靠海纜，2023 年台馬海纜被扯斷造成馬祖斷網，是很有名的案例。</li>
+    <li>主要風險：船錨和漁船拖網造成的損壞最多，其次是地震（2006 年恆春地震一次弄斷多條海纜，亞洲網路大亂），近年也有疑似人為破壞的事件。</li>
+  </ul>
+  <div class="callout tip">💡 WAN 不在 IEEE 802 的範圍內，那是電信業者與 ITU-T、IETF 的領域，例如 SONET/SDH、MPLS、3GPP 的 4G/5G。</div>
 
-  <h2 id="req">3. LAN 的基本需求</h2>
-  <p>規格：資料速率 <b>1–1000 Mbps</b>；距離最多 <b>1–5 km</b>；支援<b>數百台</b>獨立裝置。講義列出 7 項需求：</p>
+  <h2 id="req">3. LAN 的基本需求<span class="en">（Basic Requirements of a LAN）</span></h2>
+  <p>規格：資料速率<span class="en">（data rate）</span> <b>1–1000 Mbps</b>；距離<span class="en">（geographic distances）</span>最多 <b>1–5 km</b>；支援<b>數百台</b>獨立裝置<span class="en">（several hundred independent devices）</span>。講義列出 7 項需求：</p>
   <ol>
-    <li>不依賴集中式元件或控制（避免單點故障）</li>
-    <li>有效利用共享資源，包括網路通道</li>
-    <li>高負載下仍穩定</li>
-    <li>各裝置公平存取（頻寬、延遲）</li>
-    <li>可靠、錯誤特性良好</li>
-    <li>易於安裝、重新設定與維護</li>
-    <li>低成本</li>
+    <li>不依賴集中式元件或控制<span class="en">（Minimal dependence on any centralized components or control）</span>，避免單點故障</li>
+    <li>有效利用共享資源，包括網路通道<span class="en">（Efficient use of shared resources, including the network channel）</span></li>
+    <li>高負載下仍穩定<span class="en">（Stability under high load）</span></li>
+    <li>各裝置公平存取（頻寬、延遲）<span class="en">（Fair access (bandwidth, delay) to the network by all devices）</span></li>
+    <li>可靠、錯誤特性良好<span class="en">（Reliability and good error characteristics）</span></li>
+    <li>易於安裝、重新設定與維護<span class="en">（Easy installation, reconfiguration and maintenance）</span></li>
+    <li>低成本<span class="en">（Low cost）</span></li>
   </ol>
 
-  <h2 id="comp">4. LAN 組成</h2>
+  <h2 id="comp">4. LAN 組成<span class="en">（LAN Components）</span></h2>
   <ul>
-    <li>電腦（網路裝置／工作站）</li>
-    <li>傳輸系統：網卡、線材（同軸電纜、雙絞線、光纖）、空氣（無線電）</li>
-    <li>LAN 延伸：用<b>訊號增益器（repeater）</b>把多個網路區段接起來；<span class="sup">補充</span>repeater 工作在實體層，只放大轉送訊號，所以接起來的區段仍是同一個碰撞網域。</li>
+    <li>電腦／網路裝置<span class="en">（Computers / Networking devices）</span>；講義圖中稱工作站</li>
+    <li>傳輸系統<span class="en">（Transmission System）</span>：網卡<span class="en">（Network Cards）</span>、線材<span class="en">（Cabling）</span>、空氣<span class="en">（Air）</span>。講義圖中的傳輸媒介：同軸電纜、雙絞線、光纖、radio
+      <ul>
+        <li><span class="sup">補充</span><b>導向媒介（guided media）</b>：有線，訊號被限制在線材裡傳，例如雙絞線、同軸電纜、光纖。</li>
+        <li><span class="sup">補充</span><b>自由介質／非導向媒介（unguided media）</b>：無線，訊號以電磁波在自由空間中傳播。電磁波<b>不需要介質</b>，真空中也能傳（衛星、太空通訊就是這樣），講義寫「空氣」只是日常說法；空氣、牆壁、雨反而會造成衰減。例如無線電、微波、紅外線（最早的 802.11 就定義過紅外線 PHY）。特性：
+          <ul>
+            <li><b>天生是廣播、共享的</b>：範圍內所有站台都收得到，所以需要 MAC 協調誰能傳，也需要加密（802.11i／WPA2）來防竊聽。</li>
+            <li><b>訊號品質不穩</b>：有路徑衰減、多路徑衰落（multipath fading）、障礙物遮蔽，還會受其他裝置干擾，錯誤率比有線高很多，因此 802.11 每個 frame 都要 ACK。</li>
+            <li><b>邊傳邊聽做不到</b>：自己發射的訊號遠強於收到的訊號，無法像乙太網路那樣偵測碰撞（CD），加上有隱藏節點問題，所以 802.11 改用<b>避免</b>碰撞的 CSMA/CA。</li>
+            <li><b>頻譜受法規管制</b>：Wi-Fi、藍牙、Zigbee 用的是免執照的 ISM 頻段（2.4GHz）和 5GHz、6GHz 免執照頻段，但要遵守發射功率等規定；行動網路、11af 的電視頻段則屬於需執照頻段。</li>
+            <li><b>優點</b>：不用佈線，站台可以移動，網路容易擴充，這正是無線 LAN 拓樸會是 Random 的原因。</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li>LAN 延伸<span class="en">（LAN Extension）</span>：用<b>訊號增益器（repeater）</b>把多個網路區段<span class="en">（segment）</span>接起來；<span class="sup">補充</span>repeater 工作在實體層，只放大轉送訊號，所以接起來的區段仍是同一個碰撞網域。</li>
   </ul>
 
-  <h2 id="topo">5. 網路拓樸與對應標準</h2>
+  <h2 id="topo">5. 網路拓樸<span class="en">（Network Topologies）</span>與對應標準</h2>
   <div class="figure">
     <div class="fig-title">九種拓樸 <span class="tag">動畫</span></div>
     <div class="fig-body"><div id="fig-topo"></div><div class="status info" id="topo-info">點選任一拓樸，看它對應的標準。</div></div>
@@ -77,11 +134,11 @@
     <tr><td>Random</td><td>—</td><td><b>802.11 CSMA/CA</b>（無線站台位置任意、會移動）</td></tr>
   </table></div>
   <ul>
-    <li>講義圖例：Bridged Ring Networks（多個 ring 用橋接器相連）；802.15.1 的 piconet 由 controller 協調，多個 piconet 可連成 mesh／snowflake。</li>
+    <li>講義圖例：Bridged Ring Networks（多個 ring 用橋接器 Bridge 相連）；802.15.1 的 piconet 由 controller 協調，多個 piconet 可連成 mesh／snowflake。</li>
     <li><span class="sup">補充</span>Bluetooth 的 piconet：1 個 master 最多 7 個 active slave；多個 piconet 互連稱為 scatternet。</li>
   </ul>
 
-  <h2 id="osi">6. OSI 七層</h2>
+  <h2 id="osi">6. OSI 七層<span class="en">（Open System Interconnection Model - Seven Layers）</span></h2>
   <div class="figure">
     <div class="fig-title">OSI 七層與 IEEE 802 的範圍 <span class="tag static">圖解</span></div>
     <div class="fig-body" id="fig-osi"></div>
@@ -89,31 +146,66 @@
   </div>
   <div class="tbl-wrap"><table>
     <tr><th>層</th><th>職責</th><th>重點功能</th></tr>
-    <tr><td>7 應用層</td><td>提供服務給應用程式或使用者</td><td>FTP、Telnet、交易伺服器、網管、WWW／VoD</td></tr>
-    <tr><td>6 表達層</td><td>資訊的表示方式</td><td>字元碼轉換、資料轉換、壓縮／解壓縮、加解密</td></tr>
-    <tr><td>5 會議層</td><td>組織與同步使用者間的對話、管理資料交換</td><td>對話控制、同步</td></tr>
-    <tr><td>4 傳輸層</td><td>兩端使用者間達到約定品質的資料傳輸</td><td>建立／維護／終止傳輸連線</td></tr>
-    <tr><td>3 網路層</td><td>節點間路由</td><td>路徑選擇；建立／維護／終止網路連線</td></tr>
-    <tr><td>2 鏈結層</td><td>節點到節點的可靠傳輸</td><td>無錯誤的訊框傳送（IEEE 802：LLC + MAC）</td></tr>
-    <tr><td>1 實體層</td><td>在特定媒介上傳送位元串</td><td><b>不支援重傳</b>；編碼／解碼、擾亂／解擾亂</td></tr>
+    <tr><td>7 應用層<br><span class="en">Application Layer</span></td><td>提供服務給應用程式或使用者<span class="en">（Provides services to application processes or users）</span></td><td>FTP、Telnet<span class="en">（Remote Login）</span>、交易伺服器<span class="en">（Transaction Server）</span>、網管<span class="en">（Network Management）</span>、WWW／VoD Server</td></tr>
+    <tr><td>6 表達層<br><span class="en">Presentation Layer</span></td><td>資訊的表示方式<span class="en">（presentation of information to the network users）</span></td><td>字元碼轉換<span class="en">（Character code translation）</span>、資料轉換<span class="en">（Data conversion）</span>、壓縮／解壓縮<span class="en">（Data compression/expansion）</span>、加解密<span class="en">（Encryption/Decryption）</span></td></tr>
+    <tr><td>5 會議層<br><span class="en">Session Layer</span></td><td>組織與同步使用者間的對話<span class="en">（organize and synchronize the dialog）</span>、管理資料交換<span class="en">（manage the data exchange）</span></td><td>對話控制、同步</td></tr>
+    <tr><td>4 傳輸層<br><span class="en">Transport Layer</span></td><td>兩端使用者間達到約定品質的資料傳輸<span class="en">（data transfer between two end users at an agreed on level of quality）</span></td><td>建立／維護／終止傳輸連線<span class="en">（Establishing/Maintaining/Terminating transport layer connection）</span></td></tr>
+    <tr><td>3 網路層<br><span class="en">Network Layer</span></td><td>節點間路由<span class="en">（routing data from one network node to another）</span></td><td>路徑選擇<span class="en">（routing path selection）</span>；建立／維護／終止網路連線<span class="en">（Establishing/Maintaining/Terminating network connection）</span></td></tr>
+    <tr><td>2 鏈結層<br><span class="en">Data Link Layer</span></td><td>節點到節點的可靠傳輸<span class="en">（reliable data transmission from one node to another）</span></td><td>無錯誤的訊框傳送<span class="en">（error-free transmission of frames）</span>；IEEE 802 分為 LLC + MAC</td></tr>
+    <tr><td>1 實體層<br><span class="en">Physical Layer</span></td><td>在特定媒介上傳送位元串<span class="en">（transmission of bit streams across a particular physical transmission medium）</span></td><td><b>不支援重傳</b><span class="en">（Retransmission is not supported）</span>；編碼／解碼<span class="en">（Encoding/Decoding）</span>、擾亂／解擾亂<span class="en">（Scrambling/Descrambling）</span></td></tr>
   </table></div>
-  <p><b>分層協定：</b>系統 A 與系統 B 的同一層之間有「對等協定」；實際資料則是一路往下送到傳輸媒介，再在對方一路往上。下面的動畫同時呈現這兩件事。</p>
+  <p><b>分層協定<span class="en">（Layering Protocols）</span>：</b>系統 A 與系統 B 的同一層之間有「對等協定」；實際資料則是一路往下送到傳輸媒介，再在對方一路往上。下面的動畫同時呈現這兩件事。</p>
 
-  <h2 id="encap">7. 協定的基本功能</h2>
+  <h2 id="encap">7. 協定的基本功能<span class="en">（Basic Functions of Protocols）</span></h2>
   <div class="figure" id="fig-encap-wrap">
     <div class="fig-title">封裝與解封裝 <span class="tag">動畫</span></div>
     <div class="fig-body" id="fig-encap"></div>
     <div class="caption">虛線是同層之間的對等協定（邏輯上的溝通）；實際資料沿著橘色路徑走：A 往下逐層加 header，經過傳輸媒介，B 往上逐層拆掉。</div>
   </div>
   <ul>
-    <li><b>封裝／解封裝</b>：往下送時每層加上自己的 header（AH、PH、SH、TH、NH），鏈結層還會加上 flag、位址、控制與 FCS；往上送時逐層拆掉。</li>
-    <li><b>分段／重組</b>、<b>連線建立</b>、<b>流量控制</b>、<b>錯誤控制</b>、<b>多工／解多工</b>。</li>
+    <li><b>封裝／解封裝</b><span class="en">（Encapsulation/Decapsulation）</span>：往下送時每層加上自己的 header（AH、PH、SH、TH、NH），鏈結層還會加上 flag、位址、控制與 FCS；往上送時逐層拆掉。</li>
+    <li><b>分段／重組</b><span class="en">（Segmentation/Reassembly）</span>、<b>連線建立</b><span class="en">（Connection Establishing）</span>、<b>流量控制</b><span class="en">（Flow Control）</span>、<b>錯誤控制</b><span class="en">（Error Control）</span>、<b>多工／解多工</b><span class="en">（Multiplexing/Demultiplexing）</span>。</li>
     <li><b>SDU vs PDU</b>：上一層交下來的資料是本層的 SDU；本層加上 header（控制資訊）後成為本層的 PDU，再交給下一層當作它的 SDU。</li>
   </ul>
   <div class="figure">
     <div class="fig-title">SDU 與 PDU 的關係 <span class="tag static">圖解</span></div>
     <div class="fig-body" id="fig-sdu"></div>
   </div>
+  <h3><span class="sup">補充</span>各層的 PDU 名稱與封包格式</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>層</th><th>PDU 名稱</th><th>這層加上的東西</th><th>實例</th></tr>
+    <tr><td>7 應用層</td><td>資料／訊息（data / message）</td><td>應用協定自己的格式</td><td>HTTP 請求行＋標頭（GET / Host:…）、DNS 查詢、SMTP</td></tr>
+    <tr><td>6 表達層</td><td>資料</td><td>編碼、壓縮、加密後的資料</td><td>UTF-8、JPEG、gzip、TLS 加密記錄</td></tr>
+    <tr><td>5 會議層</td><td>資料</td><td>對話控制與同步資訊</td><td>TLS 工作階段、RPC；TCP/IP 模型把 5–7 層併成一個應用層</td></tr>
+    <tr><td>4 傳輸層</td><td><b>Segment</b>（TCP）／<b>Datagram</b>（UDP）</td><td>TCP header 20–60 bytes；UDP header 8 bytes</td><td>用 <b>port</b> 區分是哪個應用程式</td></tr>
+    <tr><td>3 網路層</td><td><b>Packet</b></td><td>IPv4 header 20–60 bytes；IPv6 header 固定 40 bytes</td><td>用 <b>IP 位址</b>決定送到哪台主機</td></tr>
+    <tr><td>2 鏈結層</td><td><b>Frame</b></td><td>header ＋ <b>trailer</b>（尾端的 FCS），是唯一前後都包的層</td><td>Ethernet、802.11、HDLC；用 <b>MAC 位址</b>決定下一跳</td></tr>
+    <tr><td>1 實體層</td><td><b>Bits</b>／符號</td><td>前導訊號（preamble）、線路編碼、調變</td><td>Ethernet preamble＋SFD、802.11 PLCP preamble</td></tr>
+  </table></div>
+
+  <p><b>講義中的鏈結層訊框 F｜A｜C｜資料｜FCS｜F</b> 是典型的 HDLC 格式：</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>欄位</th><th>長度</th><th>用途</th></tr>
+    <tr><td>Flag（F）</td><td>8 bits</td><td>固定 <code>01111110</code>，標示訊框開頭與結尾（資料中出現連續 5 個 1 就插一個 0，稱 bit stuffing）</td></tr>
+    <tr><td>Address（A）</td><td>8 bits 以上</td><td>站台位址</td></tr>
+    <tr><td>Control（C）</td><td>8 或 16 bits</td><td>訊框種類、序號、ACK 號碼</td></tr>
+    <tr><td>Information</td><td>可變</td><td>上層交下來的資料（網路層 packet）</td></tr>
+    <tr><td>FCS</td><td>16 或 32 bits</td><td>CRC 錯誤檢查碼</td></tr>
+  </table></div>
+
+  <p><b>TCP/IP 實際各層 header 的欄位：</b></p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Header</th><th>欄位（括號內為 bits）</th></tr>
+    <tr><td>TCP（20 bytes 起）</td><td>Source Port（16）、Destination Port（16）、Sequence Number（32）、Acknowledgment Number（32）、Header Length（4）、Flags（SYN／ACK／FIN／RST／PSH／URG…）、Window（16）、Checksum（16）、Urgent Pointer（16）、Options</td></tr>
+    <tr><td>UDP（8 bytes）</td><td>Source Port（16）、Destination Port（16）、Length（16）、Checksum（16）</td></tr>
+    <tr><td>IPv4（20 bytes 起）</td><td>Version（4）、IHL（4）、DSCP／ECN（8）、Total Length（16）、Identification（16）、Flags（3）、Fragment Offset（13）、TTL（8）、Protocol（8，6 = TCP、17 = UDP）、Header Checksum（16）、Source IP（32）、Destination IP（32）、Options</td></tr>
+    <tr><td>Ethernet II 訊框</td><td>（實體層：Preamble 7 B ＋ SFD 1 B）、Destination MAC（6 B）、Source MAC（6 B）、（選用：802.1Q 標籤 4 B）、EtherType（2 B，0x0800 = IPv4、0x86DD = IPv6、0x0806 = ARP）、Payload（46–1500 B）、FCS（4 B，CRC-32）→ 詳見<a href="ch1-csma-cd.html">第 1 章</a></td></tr>
+    <tr><td>802.11 MAC 訊框（預告）</td><td>Frame Control（2 B）、Duration／ID（2 B）、Address 1–3（各 6 B）、Sequence Control（2 B）、Address 4（6 B，選用）、QoS Control（2 B，11e 起）、Frame Body、FCS（4 B）→ 詳見<a href="ch2-2-80211-mac.html">第 2-2 章</a></td></tr>
+  </table></div>
+
+  <div class="callout tip">💡 <b>解多工靠的是每層 header 裡的「上層是誰」欄位：</b>Ethernet 的 EtherType 指出上面是 IP，IP 的 Protocol 指出上面是 TCP 或 UDP，TCP／UDP 的 port 再指出是哪個應用程式（例如 443 = HTTPS）。接收端就是照這條線一層層往上交。</div>
+  <p><b>例子：</b>瀏覽網頁時，一個 Ethernet 訊框最多帶 1500 bytes 的 IP packet（即 MTU）。扣掉 IP 20 B 和 TCP 20 B，每個訊框最多裝 1460 B 的應用資料（即 TCP 的 MSS）；鏈結層再加 18 B（MAC header 14 ＋ FCS 4），實體層另外有 8 B 的 preamble／SFD。</p>
+
   <div class="callout key">🔁 之後 802.11 會出現同樣的觀念：LLC 交給 MAC 的是 <b>MSDU</b>，MAC 加 header 後是 <b>MPDU</b>；MPDU 交給 PHY 時稱 <b>PSDU</b>，PHY 加上 preamble／header 後是 <b>PPDU</b>。</div>
 
   <h2 id="ieee802">8. IEEE 802 標準家族</h2>
@@ -164,6 +256,14 @@
     <tr><td>11be</td><td>Extremely High Throughput（EHT）</td><td>2.4 / 5 / 6GHz</td></tr>
     <tr><td>11bn</td><td>Ultra High Reliability（UHR）</td><td>—</td></tr>
   </table></div>
+  <p>講義第 27 頁的原文名稱與附註：</p>
+  <ul>
+    <li><b>11a</b> High Speed Physical Layer in the 5GHz Band；<b>11b</b> Higher Speed Physical Layer Extension in the 2.4GHz Band；<b>11g</b> Further Higher Speed Physical Layer Extension in the 2.4GHz Band</li>
+    <li><b>11e</b> MAC Enhancements for QoS，又稱 <b>WME</b>（Wireless Multimedia Extension）；Wi-Fi Alliance 的認證名稱是 <b>WMM</b>（Wireless Multimedia）</li>
+    <li><b>11i</b> Enhanced Security，對照 <b>WPA</b>（WPA-PSK，Pre-Shared Key）與 <b>WPA2.0</b></li>
+    <li><b>11n</b> 標準化時有兩大陣營提案互相競爭：<b>WWiSE</b>（World Wide Spectrum Efficiency）與 <b>TGnSync</b></li>
+    <li><b>11u</b> InterWorking with External Networks；<b>11ac</b> VHT for lower 6GHz band；<b>11ax</b> High Efficiency WLAN（HEW）for 2.4 / 5GHz</li>
+  </ul>
   <p><span class="sup">補充</span>Wi-Fi Alliance 的世代名稱：Wi-Fi 4 = 11n、Wi-Fi 5 = 11ac、Wi-Fi 6 = 11ax、Wi-Fi 6E = 11ax 使用 6GHz、Wi-Fi 7 = 11be。</p>
 
   <h3>802.15 無線個人區域網路（WPAN）</h3>
@@ -241,8 +341,11 @@
     <li><details><summary>能說出 IEEE 802 對應 OSI 哪兩層，以及 LLC / MAC 的分工</summary><div class="inner">對應第 1 層（實體層）與第 2 層（鏈結層）。鏈結層切成上半部共用的 LLC（802.2）與下半部依技術不同的 MAC（802.3、802.11…）。</div></details></li>
     <li><details><summary>看到一種拓樸，能說出對應的 802 標準</summary><div class="inner">Bus → 802.3、802.4；Dual Bus → 802.6；Ring → 802.5；Dual Ring → FDDI；Star → 802.12、802.16；Snowflake → 802.15.1、802.15.4；Mesh → 802.15.x；Random → 802.11。</div></details></li>
     <li><details><summary>能說明 SDU 與 PDU 的差別</summary><div class="inner">上一層交下來的資料是本層的 SDU；本層加上 header 後是本層的 PDU，它又成為下一層的 SDU。</div></details></li>
+    <li><details><summary>能說出各層 PDU 的名稱，以及解多工靠哪些欄位</summary><div class="inner">應用層 data／message → 傳輸層 segment（TCP）／datagram（UDP）→ 網路層 packet → 鏈結層 frame（唯一有 trailer FCS 的層）→ 實體層 bits。解多工：EtherType → IP Protocol 欄位 → TCP／UDP port。</div></details></li>
     <li><details><summary>能說出 802.1D / 1Q / 1X 各在做什麼</summary><div class="inner">1D：Local Bridge、Spanning Tree；1Q：VLAN；1X：Port-Based 存取控制（認證）。</div></details></li>
     <li><details><summary>能分辨 11a / b / g / n / ac / ax / be 的頻段與速率等級</summary><div class="inner">a：5GHz OFDM 54M；b：2.4GHz DSSS/CCK 11M；g：2.4GHz 54M；n：2.4/5GHz MIMO 600M；ac：5GHz VHT 6.93G；ax：2.4/5/6GHz HE 9.6G；be：2.4/5/6GHz EHT。</div></details></li>
+    <li><details><summary>能區分 11ah 與 11af（都在 1GHz 以下）</summary><div class="inner">11ah：Wi-Fi HaLow，免執照 900MHz，100 kbps、約 1 km，給 IoT 用。11af：White-Fi／Super Wi-Fi，利用 54–790MHz 的 TV white space（需執照頻段），靠認知無線電找空閒頻道；6、7MHz 通道 26.7 Mbps，8MHz 通道 35.6 Mbps。</div></details></li>
+    <li><details><summary>能說出 11e、11i、11n 在講義中對應的別名或提案</summary><div class="inner">11e = WME（Wi-Fi Alliance 認證名稱 WMM）；11i 對照 WPA（PSK）／WPA2.0；11n 有兩個競爭提案陣營：WWiSE 與 TGnSync。</div></details></li>
     <li><details><summary>能分辨 802.15.1 / 15.4 / 15.6 / 15.7</summary><div class="inner">15.1 Bluetooth；15.4 Low Rate WPAN（Zigbee 底層）；15.6 Body Area Network；15.7 可見光通訊。</div></details></li>
   </ul>
 </main>

@@ -19,7 +19,7 @@
 
   <h2 id="outline">0. 本章大綱（講義）</h2>
   <ol>
-    <li>802.11 架構與概論</li>
+    <li>802.11 架構與概論<span class="en">（802.11 Architecture and Overview）</span></li>
     <li>PHY 介紹：802.11/11b DSSS、802.11a OFDM、802.11g ERP、802.11n HT</li>
     <li>MAC 介紹：DCF、PCF、Power Management</li>
     <li>結論</li>
@@ -43,13 +43,13 @@
     <li><span class="sup">補充</span>11ax 另有 1024-QAM；11be 有 320MHz 頻寬、4096-QAM 與 Multi-Link Operation。</li>
   </ul>
 
-  <h2 id="unique">2. 無線環境的特殊性</h2>
+  <h2 id="unique">2. 無線環境的特殊性<span class="en">（What is unique about wireless?）</span></h2>
   <ul>
-    <li><b>媒介困難</b>：干擾與雜訊；品質隨時間與空間變化；與其他 802.11 裝置共用；與非 802 裝置共用免執照頻段（微波爐、藍牙、Zigbee 等）。</li>
-    <li><b>不能假設完全連通</b> → <b>Hidden node problem</b>。</li>
-    <li><b>多國法規</b>要求不同。</li>
-    <li><b>移動性</b>：連結可靠度變化；電池 → 需要<b>電源管理</b>與功率控制；希望無縫連線。</li>
-    <li><b>安全性</b>：沒有實體邊界；LAN 彼此重疊。</li>
+    <li><b>媒介困難</b><span class="en">（Difficult media）</span>：干擾與雜訊<span class="en">（interference and noise）</span>；品質隨時間與空間變化<span class="en">（quality varies over space and time）</span>；與其他 802.11 裝置共用<span class="en">（shared with unwanted 802.11 devices）</span>；與非 802 裝置共用免執照頻段<span class="en">（shared with non-802 devices, unlicensed spectrum）</span>（微波爐、藍牙、Zigbee 等）。</li>
+    <li><b>不能假設完全連通</b><span class="en">（Full connectivity cannot be assumed）</span> → <b>Hidden node problem</b>。</li>
+    <li><b>多國法規</b>要求不同<span class="en">（Multiple international regulatory requirements）</span>。</li>
+    <li><b>移動性</b>：連結可靠度變化<span class="en">（variation in link reliability）</span>；電池 → 需要<b>電源管理</b>與功率控制<span class="en">（power control）</span>；希望無縫連線<span class="en">（want seamless connections）</span>。</li>
+    <li><b>安全性</b>：沒有實體邊界<span class="en">（no physical boundaries）</span>；LAN 彼此重疊<span class="en">（overlapping LANs）</span>。</li>
   </ul>
   <h3>Hidden node 與 RTS/CTS <span class="sup">補充</span></h3>
   <div class="figure" id="fig-hidden-wrap">
@@ -75,19 +75,19 @@
     </ul>
   </div>
 
-  <h2 id="req">3. 設計需求（講義）</h2>
+  <h2 id="req">3. 設計需求（講義）<span class="en">（Requirements）</span></h2>
   <ul>
-    <li><b>單一 MAC 支援多種 PHY</b>：支援單頻道與多頻道 PHY、不同的媒介偵測特性。</li>
-    <li>允許<b>多個網路在同一區域、同一頻道重疊</b>。</li>
-    <li>要能<b>抗干擾</b>：ISM（Industry, Science, Medicine）頻段，包含 13.56MHz、27.55MHz、303MHz、315MHz、404MHz、433MHz、868MHz（歐洲）、915MHz（北美）、2.45GHz、3650–3700MHz（美國，802.11y）、5.2GHz（北美）、5.3GHz、5.7GHz（北美）；干擾源包括微波爐、其他非 802.11 裝置、同頻干擾。</li>
+    <li><b>單一 MAC 支援多種 PHY</b><span class="en">（Single MAC to support multiple PHYs）</span>：支援單頻道與多頻道 PHY<span class="en">（Support single and multiple channel PHYs）</span>、不同的媒介偵測特性<span class="en">（PHYs with different medium sense characteristics）</span>。</li>
+    <li>允許<b>多個網路在同一區域、同一頻道重疊</b><span class="en">（Should allow overlap of multiple networks in the same area and channel space）</span>。</li>
+    <li>要能<b>抗干擾</b><span class="en">（Need to be robust for interference）</span>：ISM（Industry, Science, Medicine）頻段，包含 13.56MHz、27.55MHz、303MHz、315MHz、404MHz、433MHz、868MHz（歐洲）、915MHz（北美）、2.45GHz、3650–3700MHz（美國，802.11y）、5.2GHz（北美）、5.3GHz、5.7GHz（北美）；干擾源包括微波爐、其他非 802.11 裝置、同頻干擾。</li>
     <li>要有處理 <b>Hidden Node</b> 的機制。</li>
     <li>要支援 <b>Time Bounded Services</b>（有時間限制的服務，例如語音、影像）。</li>
   </ul>
 
-  <h2 id="overview">4. 架構總覽</h2>
+  <h2 id="overview">4. 架構總覽<span class="en">（Architecture Overview）</span></h2>
   <ul>
-    <li><b>一個 MAC 對多個 PHY</b>：IR、FHSS、DSSS、OFDM、OFDMA（MIMO）。</li>
-    <li><b>三種配置</b>：Independent（ad hoc）、Infrastructure（AP）、Mesh（Hybrid）。</li>
+    <li><b>一個 MAC 對多個 PHY</b><span class="en">（One MAC supporting multiple PHYs）</span>：IR、FHSS、DSSS、OFDM、OFDMA（MIMO）。</li>
+    <li><b>三種配置</b><span class="en">（Three Configurations）</span>：Independent（ad hoc）、Infrastructure（AP）、Mesh（Hybrid）。</li>
     <li><b>MAC 協定</b>：<b>DCF</b>（Distributed Coordination Function，即 CSMA/CA，基本且必要）＋可選的 <b>PCF</b> 與 <b>HCF</b>。</li>
   </ul>
   <div class="tbl-wrap"><table>
@@ -102,7 +102,7 @@
     <div class="caption">橫軸是時間、縱軸是頻率（子載波）；顏色代表不同使用者。OFDMA 把子載波切給不同使用者同時使用（11ax）。</div>
   </div>
 
-  <h2 id="entities">5. 802.11 協定實體</h2>
+  <h2 id="entities">5. 802.11 協定實體<span class="en">（802.11 Protocol Entities）</span></h2>
   <div class="figure">
     <div class="fig-title">協定實體 <span class="tag static">圖解</span></div>
     <div class="fig-body"><div class="mermaid-host">
@@ -123,11 +123,11 @@ flowchart TB
   </div>
   <div class="tbl-wrap"><table>
     <tr><th>實體</th><th>負責工作</th></tr>
-    <tr><td>MAC Entity</td><td>基本存取機制（含 QoS）、分段／重組、聚合／解聚合、加密／解密</td></tr>
-    <tr><td>MAC Layer Management Entity</td><td>同步、電源管理、漫遊、MAC MIB</td></tr>
-    <tr><td>PLCP（Physical Layer Convergence Protocol）</td><td>依 PHY 而異，提供共同的 PHY SAP；提供 <b>CCA（Clear Channel Assessment）</b>，也就是載波偵測</td></tr>
+    <tr><td>MAC Entity</td><td>基本存取機制（含 QoS）<span class="en">（basic access mechanism）</span>、分段／重組、聚合／解聚合、加密／解密<span class="en">（fragmentation/defragmentation, aggregation/deaggregation, encryption/decryption）</span></td></tr>
+    <tr><td>MAC Layer Management Entity</td><td>同步、電源管理、漫遊、MAC MIB<span class="en">（synchronization, power management, roaming, MAC MIB）</span></td></tr>
+    <tr><td>PLCP（Physical Layer Convergence Protocol）</td><td>依 PHY 而異，提供共同的 PHY SAP<span class="en">（PHY-specific, supports common PHY SAP）</span>；提供 <b>CCA（Clear Channel Assessment）</b>，也就是載波偵測</td></tr>
     <tr><td>PMD（Physical Medium Dependent）</td><td>實際調變與收發（baseband）</td></tr>
-    <tr><td>PHY Layer Management</td><td>MCS、MIMO（beamforming、時空編碼、空間分集）、頻道編號、頻寬（11/20/40…MHz）、收發天線數、PHY MIB</td></tr>
+    <tr><td>PHY Layer Management</td><td>MCS、MIMO（beamforming、時空編碼、空間分集<span class="en">（Space-Time Coding, Spatial Diversity）</span>）、頻道編號<span class="en">（Channel Index）</span>、頻寬（11/20/40…MHz）<span class="en">（Channel Bandwidth）</span>、收發天線數、PHY MIB</td></tr>
   </table></div>
   <h3>資料單元的名稱變化（常考）</h3>
   <div class="figure" id="fig-pdu-wrap">
@@ -141,7 +141,7 @@ flowchart TB
     <li>PLCP 加上 preamble 與 header → <b>PPDU</b>（PLCP Protocol Data Unit），送上空中</li>
   </ol>
 
-  <h2 id="configs">6. 三種網路配置</h2>
+  <h2 id="configs">6. 三種網路配置<span class="en">（802.11 Configurations）</span></h2>
   <div class="figure">
     <div class="fig-title">Independent・Infrastructure・Mesh <span class="tag static">圖解</span></div>
     <div class="fig-body" id="fig-configs"></div>
@@ -149,71 +149,71 @@ flowchart TB
   </div>
   <h3>Independent（Ad Hoc）</h3>
   <ul>
-    <li>只有一個 BSS（稱 IBSS），站台<b>直接</b>互相通訊，覆蓋範圍有限。</li>
+    <li>只有一個 BSS（稱 IBSS），站台<b>直接</b>互相通訊，覆蓋範圍有限<span class="en">（limited coverage area）</span>。</li>
     <li>應用：MANET（Mobile Ad Hoc Network）、VANET（Vehicular Ad-Hoc Network）。</li>
-    <li>研究題目：多跳路由（IETF MANET、VANET）、群播、多頻道存取、安全、QoS。</li>
+    <li>研究題目：多跳路由<span class="en">（Research topics: Multi-Hop Routing）</span>（IETF MANET、VANET）、群播、多頻道存取、安全<span class="en">（Multicasting, Multi-channel Access, Security）</span>、QoS。</li>
   </ul>
   <h3>Infrastructure</h3>
   <ul>
-    <li>由 AP 與 STA 組成；多個 cell 透過 AP 接上 <b>Distribution System（DS）</b>，串成單一網路，延伸無線覆蓋範圍。</li>
-    <li>應用：無線橋接（例如兩棟大樓）；以 <b>802.11s</b> 實作時要考慮安全、速率、距離、法規、成本；對照有線方式是租用專線（802.1G remote bridge）。戶外應用常搭配<b>指向性天線</b>。</li>
+    <li>由 AP 與 STA 組成；多個 cell 透過 AP 接上 <b>Distribution System（DS）</b>，串成單一網路，延伸無線覆蓋範圍<span class="en">（extends wireless coverage area）</span>。</li>
+    <li>應用：無線橋接<span class="en">（Wireless bridge application）</span>（例如兩棟大樓）；以 <b>802.11s</b> 實作時要考慮安全、速率、距離、法規、成本；對照有線方式是租用專線（802.1G remote bridge）。戶外應用常搭配<b>指向性天線</b>。</li>
   </ul>
   <h3>Mesh（Hybrid）</h3>
   <ul><li>依據 <b>802.11s</b>，AP 之間以無線互連。</li></ul>
 
   <h2 id="ds">7. Distribution System（DS）</h2>
   <ul>
-    <li>用來連接多個無線 cell：多個 BSS 連起來形成 <b>ESS（Extended Service Set）</b>，讓移動站台可以存取固定資源。</li>
-    <li><b>DS 本身不在 802.11 標準範圍內</b>，可以是橋接的 IEEE LAN、無線或其他網路；802.11 只定義 <b>Distribution System Services（DSS）</b>。</li>
+    <li>用來連接多個無線 cell<span class="en">（Used to interconnect wireless cells）</span>：多個 BSS 連起來形成 <b>ESS（Extended Service Set）</b>，讓移動站台可以存取固定資源<span class="en">（Allows mobile stations to access fixed resources）</span>。</li>
+    <li><b>DS 本身不在 802.11 標準範圍內</b><span class="en">（Not part of 802.11 standard）</span>，可以是橋接的 IEEE LAN、無線或其他網路；802.11 只定義 <b>Distribution System Services（DSS）</b>。</li>
     <li>同地點可以有多個 BSS 使用<b>不同頻道</b>同時覆蓋（Collocated Coverage Areas）。</li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>802.11 有標準化</th><th>802.11 沒有標準化</th></tr>
-    <tr><td>✅ 站台之間（含站台與 AP 之間）的<b>空中介面</b>：PHY 與 MAC</td><td>❌ 對外公開的 MAC/PHY 內部介面<br>❌ 對 DS 的公開介面（只定義必要的 DS 服務）<br>❌ DS 的內部運作</td></tr>
+    <tr><td>✅ 站台之間（含站台與 AP 之間）的<b>空中介面</b><span class="en">（airwaves interface）</span>：PHY 與 MAC</td><td>❌ 對外公開的 MAC/PHY 內部介面<span class="en">（No exposed MAC/PHY interface specified）</span><br>❌ 對 DS 的公開介面<span class="en">（No exposed interface to Distribution System）</span>（只定義必要的 DS 服務）<br>❌ DS 的內部運作<span class="en">（Internals of Distribution System not defined）</span></td></tr>
   </table></div>
 
   <h2 id="ap">8. Access Point</h2>
   <ul>
     <li>站台選擇一個 AP 並與它 <b>Associate</b>。</li>
     <li>AP 支援：<b>漫遊</b>（L2 用 <b>IAPP，802.11f</b>；L3 用 <b>Mobile IP</b>，IETF）、<b>時間同步</b>（beacon）、<b>電源管理</b>（若有）、<b>PCF</b>（若有）。</li>
-    <li>流量通常（但不一定）經過 AP，也可以直接 Ad-Hoc 通訊。</li>
+    <li>流量通常（但不一定）經過 AP<span class="en">（Traffic typically (but not always) flows through AP）</span>，也可以直接 Ad-Hoc 通訊。</li>
   </ul>
   <p>Infrastructure BSS 經由 AP 通訊的優缺點（講義引述《IEEE 802.11 Handbook》，Bob O'Hara 與 Al Petrick）：</p>
   <div class="tbl-wrap"><table>
     <tr><th>優點</th><th>缺點</th></tr>
-    <tr><td>容易解決 hidden terminal 問題（大家都聽得到 AP）</td><td>STA 之間通訊要經過 AP，頻寬消耗是直連的兩倍</td></tr>
-    <tr><td>可提供省電功能（AP 幫休眠中的站台暫存資料）</td><td>競爭與碰撞變多</td></tr>
+    <tr><td>容易解決 hidden terminal 問題<span class="en">（easily solve hidden terminal problem）</span>（大家都聽得到 AP）</td><td>STA 之間通訊要經過 AP，頻寬消耗是直連的兩倍<span class="en">（bandwidth is consumed twice than directional communication）</span></td></tr>
+    <tr><td>可提供省電功能<span class="en">（provide power saving function）</span>（AP 幫休眠中的站台暫存資料）</td><td>競爭與碰撞變多<span class="en">（more contentions and more collisions）</span></td></tr>
     <tr><td>符合 AAA 架構（Authentication、Authorization、Accounting）</td><td>—</td></tr>
     <tr><td>可做 per-flow 頻寬控制與 QoS 保證（802.11e）</td><td>—</td></tr>
   </table></div>
 
-  <h2 id="mac">9. MAC 服務與功能</h2>
+  <h2 id="mac">9. MAC 服務與功能<span class="en">（MAC Services / MAC Functionality）</span></h2>
   <h3>MAC 服務</h3>
   <ul>
-    <li><b>非同步 MSDU 傳送</b>：提供給 LLC，最大 <b>2304 octets</b>；實務上常用 1500 bytes，以便與 Ethernet 互通。</li>
+    <li><b>非同步 MSDU 傳送</b><span class="en">（Asynchronous MSDU Data Delivery）</span>：提供給 LLC，最大 <b>2304 octets</b>；實務上常用 1500 bytes，以便與 Ethernet 互通。</li>
     <li><b>Time Bounded Services</b>：可選的 PCF。講義提出討論：商用產品不普及，原因可能是頻寬不足以支援即時服務、CSMA/CA 已經夠用（類似 Ethernet 的歷史）；後來由 <b>WMM / 802.11e</b> 強化 QoS。</li>
-    <li><b>安全服務</b>：機密性、認證、存取控制；由 <b>WPA / 802.11i</b> 強化。</li>
-    <li><b>管理服務</b>：掃描、加入、漫遊、電源管理。</li>
+    <li><b>安全服務</b><span class="en">（Security Services）</span>：機密性、認證、存取控制<span class="en">（confidentiality, authentication, access control）</span>；由 <b>WPA / 802.11i</b> 強化。</li>
+    <li><b>管理服務</b><span class="en">（Management Services）</span>：掃描、加入、漫遊、電源管理<span class="en">（scanning, joining, roaming, power management）</span>。</li>
   </ul>
   <h3>MAC 功能</h3>
   <ul>
-    <li>支援 Independent 與 Infrastructure 配置：每個 BSS 有唯一的 <b>48-bit 位址</b>（BSSID）；每個 ESS 有<b>可變長度位址</b>（<span class="sup">補充</span>即 SSID，最長 32 bytes）。</li>
-    <li><b>CSMA/CA</b>：MAC 層<b>正向確認（positive ACK）</b>、MSDU 分段、可選的 PCF（AP polling）、Hidden node 保護（<b>virtual carrier sense</b>、<b>RTS/CTS 交換</b>）。</li>
-    <li><b>漫遊</b>：在 ESS 內，站台掃描 AP、進行 association handshake。</li>
-    <li><b>電源管理</b>：站台可自行休眠；Infrastructure 由 AP 暫存資料，IBSS 則採分散式做法。</li>
-    <li><b>認證與隱私</b>：可選的 <b>WEP</b>、金鑰交換、認證握手；<b>802.1X</b> 以 EAP 強化認證；<b>802.11i</b> 強化安全性（建立在 802.1X 之上）。</li>
+    <li>支援 Independent 與 Infrastructure 配置：每個 BSS 有唯一的 <b>48-bit 位址</b>（BSSID）；每個 ESS 有<b>可變長度位址</b><span class="en">（variable length address）</span>（<span class="sup">補充</span>即 SSID，最長 32 bytes）。</li>
+    <li><b>CSMA/CA</b>：MAC 層<b>正向確認（positive ACK）</b>、MSDU 分段<span class="en">（MSDU fragmentation）</span>、可選的 PCF（AP polling）、Hidden node 保護<span class="en">（hidden node protection）</span>（<b>virtual carrier sense</b>、<b>RTS/CTS 交換</b>）。</li>
+    <li><b>漫遊</b>：在 ESS 內，站台掃描 AP、進行 association handshake<span class="en">（Roaming support within an ESS: scans for APs, association handshakes）</span>。</li>
+    <li><b>電源管理</b>：站台可自行休眠<span class="en">（stations may power themselves down）</span>；Infrastructure 由 AP 暫存資料<span class="en">（AP buffering）</span>，IBSS 則採分散式做法<span class="en">（distributed approach for IBSS）</span>。</li>
+    <li><b>認證與隱私</b><span class="en">（Authentication and privacy）</span>：可選的 <b>WEP</b>、金鑰交換、認證握手<span class="en">（Key exchange, Authentication handshakes）</span>；<b>802.1X</b> 以 EAP 強化認證；<b>802.11i</b> 強化安全性（建立在 802.1X 之上）。</li>
   </ul>
 
-  <h2 id="phy-svc">10. PHY 層服務</h2>
+  <h2 id="phy-svc">10. PHY 層服務<span class="en">（PHY Layer Services）</span></h2>
   <ul>
-    <li><b>PHY_DATA 傳輸</b>：多種速率。講義提問「如何決定適當的資料速率？」→ <b>速率切換演算法不在標準範圍內</b>，由廠商自行實作。
+    <li><b>PHY_DATA 傳輸</b>：多種速率。講義提問「如何決定適當的資料速率？<span class="en">（how to decide the proper data rate?）</span>」→ <b>速率切換演算法不在標準範圍內</b><span class="en">（The algorithm for performing rate switching is beyond the scope of the standard）</span>，由廠商自行實作。
       <ul>
-        <li>多重速率：1、2、5.5、11 Mbps</li>
-        <li>延伸速率：22、33 或 6、9、12、18、24、36、48、54 Mbps</li>
+        <li>多重速率<span class="en">（Multiple rates）</span>：1、2、5.5、11 Mbps</li>
+        <li>延伸速率<span class="en">（Extended rates）</span>：22、33 或 6、9、12、18、24、36、48、54 Mbps</li>
         <li>HT：77 種速率，6–600 Mbps；VHT：278 種速率，6–6933.3 Mbps</li>
       </ul>
     </li>
-    <li><b>CCA</b>：載波偵測、偵測 SFD。</li>
+    <li><b>CCA</b>：載波偵測、偵測 SFD<span class="en">（Carrier sense, Detect start frame delimiter）</span>。</li>
     <li><b>PHY 管理</b>：頻寬、MCS、收發天線數。</li>
   </ul>
   <div class="figure">
@@ -222,15 +222,15 @@ flowchart TB
     <div class="caption">示意圖，不是實測距離。距離越遠訊號越弱，只能用較低階的調變，所以速率越低；速率要用哪一階，由廠商的速率切換演算法決定。</div>
   </div>
 
-  <h2 id="four-phy">11. 四種 PHY</h2>
+  <h2 id="four-phy">11. 四種 PHY<span class="en">（Four PHYs）</span></h2>
   <div class="tbl-wrap"><table>
     <tr><th>PHY</th><th>頻段</th><th>速率</th><th>調變／編碼</th></tr>
     <tr><td>FHSS</td><td>2.4GHz</td><td>1、2 Mbps</td><td>2GFSK、4GFSK；北美 79 個 1MHz 頻道，每秒 2.5 次跳頻</td></tr>
     <tr><td>DSSS</td><td>2.4GHz</td><td>1、2 Mbps</td><td>11-chip Barker sequence；DBPSK、DQPSK</td></tr>
     <tr><td>DSSS（11b）</td><td>2.4GHz</td><td>5.5、11 Mbps</td><td>CCK（DQPSK）必要；PBCC（5.5 為 BPSK、11 為 QPSK）可選</td></tr>
     <tr><td>DSSS（可選）</td><td>2.4GHz</td><td>22、33 Mbps</td><td>PBCC-22、PBCC-33（TI 提案，用於 11g）</td></tr>
-    <tr><td>IR</td><td>紅外線</td><td>1、2 Mbps</td><td>擴散式紅外線；16-PPM、4-PPM</td></tr>
-    <tr><td>OFDM</td><td>5GHz（11a/n/ac）、2.4GHz（11g）</td><td>6–54 Mbps</td><td>BPSK、QPSK、16-QAM、64-QAM；卷積碼碼率 1/2、2/3、3/4、5/6</td></tr>
+    <tr><td>IR</td><td>紅外線</td><td>1、2 Mbps</td><td>擴散式紅外線<span class="en">（Diffuse infrared）</span>；16-PPM、4-PPM</td></tr>
+    <tr><td>OFDM</td><td>5GHz（11a/n/ac）、2.4GHz（11g）</td><td>6–54 Mbps</td><td>BPSK、QPSK、16-QAM、64-QAM；卷積碼碼率<span class="en">（Convolutional Code with coding rates）</span> 1/2、2/3、3/4、5/6</td></tr>
   </table></div>
   <h3>OFDM 速率計算器</h3>
   <div class="figure" id="fig-ofdm-wrap">
@@ -250,20 +250,20 @@ flowchart TB
     <tr><td>BPSK</td><td>6、9</td></tr><tr><td>QPSK</td><td>12、18</td></tr><tr><td>16-QAM</td><td>24、36</td></tr><tr><td>64-QAM</td><td>48、54</td></tr>
   </table></div>
   <ul>
-    <li>必要速率：<b>6、12、24 Mbps</b>。</li>
+    <li>必要速率<span class="en">（Mandatory）</span>：<b>6、12、24 Mbps</b>。</li>
     <li>每個頻道 20MHz、64 個子載波；11a/n 使用其中 52/54 個，佔用約 16.6MHz；另外 12/10 個子載波用來正規化 OFDM symbol 的平均功率。</li>
     <li>Atheros 的 turbo mode 延伸到 72/108 Mbps（非標準）。</li>
   </ul>
 
-  <h2 id="bands">12. 免執照頻段</h2>
+  <h2 id="bands">12. 免執照頻段<span class="en">（Unlicensed Operation RF Bands）</span></h2>
   <div class="figure">
     <div class="fig-title">各免執照頻段的可用頻寬 <span class="tag static">圖解</span></div>
     <div class="fig-body" id="fig-bands"></div>
   </div>
   <div class="tbl-wrap"><table>
     <tr><th>頻段</th><th>頻寬</th><th>特性</th><th>使用者</th></tr>
-    <tr><td>902MHz</td><td>26MHz（902–928MHz）</td><td>擁擠，全球可用性有限</td><td>802.11、802.15.4、無線電話</td></tr>
-    <tr><td>2.4GHz</td><td>83.5MHz（2400–2483.5MHz）</td><td>全球可用</td><td>802.11b/g/n、藍牙、802.15.4、HomeRF</td></tr>
+    <tr><td>902MHz</td><td>26MHz（902–928MHz）</td><td>擁擠，全球可用性有限<span class="en">（Crowded and Worldwide limited）</span></td><td>802.11、802.15.4、無線電話</td></tr>
+    <tr><td>2.4GHz</td><td>83.5MHz（2400–2483.5MHz）</td><td>全球可用<span class="en">（Available worldwide）</span></td><td>802.11b/g/n、藍牙、802.15.4、HomeRF</td></tr>
     <tr><td>5GHz</td><td>300MHz（3 段各 100MHz，UNII）</td><td>歐洲需 DFS + TPC</td><td>802.11a、HiperLAN I / II</td></tr>
     <tr><td>6GHz</td><td>1200MHz</td><td>—</td><td><span class="sup">補充</span>802.11ax（Wi-Fi 6E）、802.11be</td></tr>
   </table></div>
@@ -289,8 +289,8 @@ flowchart LR
   </div>
   <ul>
     <li>原始訊號乘上<b>虛擬隨機序列</b>，再調變送出；途中受雜訊與干擾影響。接收端解調變後，再乘上<b>同一個</b>虛擬隨機序列，還原原始訊號。</li>
-    <li>效果：<b>頻寬變寬、功率密度變低</b>。</li>
-    <li>虛擬隨機序列（PN code）：看起來隨機，實際上是有規律的週期性二進位序列。</li>
+    <li>效果：<b>頻寬變寬、功率密度變低<span class="en">（Wider Bandwidth, Less power density）</span></b>。</li>
+    <li>虛擬隨機序列（PN code）：看起來隨機，實際上是有規律的週期性二進位序列<span class="en">（a periodic binary sequence that appears random but is actually regular）</span>。</li>
   </ul>
   <div class="figure" id="fig-spread-wrap">
     <div class="fig-title">用 Barker 碼展頻 <span class="tag">互動</span></div>
@@ -303,7 +303,7 @@ flowchart LR
   <h3>11-chip Barker sequence</h3>
   <ul>
     <li>序列：<code>+1 −1 +1 +1 −1 +1 +1 +1 −1 −1 −1</code></li>
-    <li>特性：<b>自相關特性好</b>（對齊時相關值 +11，錯位時接近 0）、<b>FCC 允許的最短序列</b>、<b>coding gain 10.4 dB</b>。</li>
+    <li>特性：<b>自相關特性好</b><span class="en">（Good autocorrelation properties）</span>（對齊時相關值 +11，錯位時接近 0）、<b>FCC 允許的最短序列</b><span class="en">（Minimal sequence allowed by FCC）</span>、<b>coding gain 10.4 dB</b>。</li>
     <li><span class="sup">補充</span>10.4 dB 的由來：每個 bit 展成 11 個 chip，處理增益 = 10 log<sub>10</sub>(11) ≈ <b>10.4 dB</b>；chip rate 為 11 Mchip/s。</li>
   </ul>
   <div class="figure" id="fig-corr-wrap">
@@ -314,10 +314,10 @@ flowchart LR
       <span class="time" id="corr-val"></span>
     </div>
   </div>
-  <h3>DSSS 的好處</h3>
+  <h3>DSSS 的好處<span class="en">（DSSS Benefits）</span></h3>
   <ul>
-    <li>約 10 dB 的編碼增益 → 抗干擾與雜訊。</li>
-    <li>抗時間延遲擴散（delay spread）：可分辨出主訊號與回波（多路徑）。</li>
+    <li>約 10 dB 的編碼增益 → 抗干擾與雜訊<span class="en">（Robust against interferers and noise）</span>。</li>
+    <li>抗時間延遲擴散（delay spread）：可分辨出主訊號與回波<span class="en">（Resolution of echoes）</span>（多路徑）。</li>
   </ul>
   <h3>分貝（dB）</h3>
   <div class="figure" id="fig-db-wrap">
@@ -336,7 +336,7 @@ flowchart LR
     <li><span class="sup">補充</span>常用值：3 dB ≈ 2 倍、10 dB = 10 倍、20 dB = 100 倍；dBm 以 1 mW 為基準（0 dBm = 1 mW、20 dBm = 100 mW）。</li>
   </ul>
 
-  <h2 id="channels">14. DSSS 頻道規劃（2.4GHz）</h2>
+  <h2 id="channels">14. DSSS 頻道規劃（2.4GHz）<span class="en">（DSSS Channels）</span></h2>
   <div class="figure" id="fig-ch-wrap">
     <div class="fig-title">2.4GHz 頻道與各地區可用範圍 <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-ch"></div><div class="status info" id="ch-msg"></div></div>
@@ -349,7 +349,7 @@ flowchart LR
   </div>
   <ul>
     <li>頻道 1–13：2412–2472MHz，每頻道間隔 <b>5MHz</b>；頻道 14 為 <b>2484MHz</b>（特例）。</li>
-    <li>相鄰 cell 使用不同頻道時，中心頻率需相隔 <b>≥ 30MHz</b>（802.11b 為 25MHz）。</li>
+    <li>相鄰 cell 使用不同頻道時<span class="en">（Adjacent cells using different channels）</span>，中心頻率需相隔 <b>≥ 30MHz</b>（802.11b 為 25MHz）。</li>
     <li><span class="sup">補充</span>實務上北美常用互不重疊的 <b>1、6、11</b>，這也是講義所說 DSSS 2.4GHz 最多只能 3 個 BSS 重疊的原因。</li>
     <li>FCC 將 3.65–3.70GHz（原電視廣播未使用頻段）開放給 WLAN（802.11y）。</li>
   </ul>
@@ -362,7 +362,7 @@ flowchart LR
     <tr><td>西班牙</td><td>2.445–2.475GHz</td><td>10–11</td></tr>
   </table></div>
 
-  <h2 id="plcp">15. 802.11b PLCP 訊框格式</h2>
+  <h2 id="plcp">15. 802.11b PLCP 訊框格式<span class="en">（PLCP Frame Formats in IEEE 802.11b）</span></h2>
   <div class="figure" id="fig-plcp-wrap">
     <div class="fig-title">Long 與 Short PLCP <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-plcp"></div><div class="status info" id="plcp-msg">點選欄位看說明。</div></div>
@@ -376,7 +376,7 @@ flowchart LR
     <tr><td>Header</td><td>48 bits，1 Mbps DBPSK</td><td>48 bits，2 Mbps DQPSK</td></tr>
     <tr><td>耗時</td><td><b>192 μs</b></td><td><b>96 μs</b></td></tr>
     <tr><td>PSDU 速率</td><td>1、2、5.5、11 Mbps</td><td>2、5.5、11 Mbps</td></tr>
-    <tr><td>目的</td><td>相容 1 / 2 Mbps 舊設備</td><td>降低 overhead、提高吞吐量</td></tr>
+    <tr><td>目的</td><td>相容 1 / 2 Mbps 舊設備<span class="en">（Compatible with 1 and 2 Mbps）</span></td><td>降低 overhead、提高吞吐量<span class="en">（Minimize overhead, maximize data throughput）</span></td></tr>
   </table></div>
   <ul>
     <li><span class="sup">補充</span>192 μs = (144 + 48) bits ÷ 1 Mbps；96 μs = 72 ÷ 1 Mbps + 48 ÷ 2 Mbps。</li>
@@ -384,18 +384,18 @@ flowchart LR
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>欄位</th><th>長度</th><th>內容與用途</th></tr>
-    <tr><td>SYNC</td><td>128 bits</td><td>128 個 1，經過 scrambler 擾亂；讓接收端鎖定時脈並與 PN code 相關</td></tr>
-    <tr><td>SFD</td><td>16 bits</td><td>固定值 hF3A0；用於位元同步</td></tr>
-    <tr><td>SIGNAL</td><td>8 bits</td><td>速率：h0A = 1 Mbps DBPSK、h14 = 2 Mbps DQPSK、h37 = 5.5 Mbps、h6E = 11 Mbps（CCK 或 PBCC）；單位為 100 kbps，例如 h6E = 110 → 11 Mbps</td></tr>
-    <tr><td>SERVICE</td><td>8 bits</td><td>h00 表示符合 802.11；bit 2 locked clock（11b 可選、11g 必要）、bit 3 調變選擇（0 = CCK、1 = PBCC）、bit 7 長度延伸（速率 &gt; 8 Mbps 時使用）</td></tr>
-    <tr><td>LENGTH</td><td>16 bits</td><td>傳送 PSDU 所需的<b>微秒數</b>；用於訊框結束偵測、讓低速站台做 virtual carrier sense、MPDU CRC 同步</td></tr>
-    <tr><td>CRC</td><td>16 bits</td><td>CCITT CRC-16，保護 SIGNAL、SERVICE、LENGTH 三個欄位</td></tr>
+    <tr><td>SYNC</td><td>128 bits</td><td>128 個 1，經過 scrambler 擾亂；讓接收端鎖定時脈並與 PN code 相關<span class="en">（Used for receiver to clock on to the signal and to correlate to the PN code）</span></td></tr>
+    <tr><td>SFD</td><td>16 bits</td><td>固定值 hF3A0；用於位元同步<span class="en">（bit synchronization）</span></td></tr>
+    <tr><td>SIGNAL</td><td>8 bits</td><td>速率<span class="en">（Rate indication）</span>：h0A = 1 Mbps DBPSK、h14 = 2 Mbps DQPSK、h37 = 5.5 Mbps、h6E = 11 Mbps（CCK 或 PBCC）；單位為 100 kbps，例如 h6E = 110 → 11 Mbps</td></tr>
+    <tr><td>SERVICE</td><td>8 bits</td><td>h00 表示符合 802.11；bit 2 locked clock（11b 可選、11g 必要）、bit 3 調變選擇<span class="en">（modulation selection）</span>（0 = CCK、1 = PBCC）、bit 7 長度延伸<span class="en">（length extension bit）</span>（速率 &gt; 8 Mbps 時使用）</td></tr>
+    <tr><td>LENGTH</td><td>16 bits</td><td>傳送 PSDU 所需的<b>微秒數</b>；用於訊框結束偵測<span class="en">（End of frame detection）</span>、讓低速站台做 virtual carrier sense、MPDU CRC 同步</td></tr>
+    <tr><td>CRC</td><td>16 bits</td><td>CCITT CRC-16，保護 SIGNAL、SERVICE、LENGTH 三個欄位<span class="en">（Protects Signal, Service and Length Field）</span></td></tr>
   </table></div>
 
-  <h2 id="modulation">16. 調變基礎</h2>
+  <h2 id="modulation">16. 調變基礎<span class="en">（Modulation）</span></h2>
   <ul>
-    <li><b>調變</b>：改變週期性載波的一個或多個性質（振幅、頻率、相位）來攜帶訊息；把窄頻的基頻訊號轉成可通過濾波器的帶通訊號。</li>
-    <li>數位調變可視為數位轉類比；解調變則是類比轉數位。載波變化從有限的 M 種 symbol 中選一種。</li>
+    <li><b>調變</b>：改變週期性載波的一個或多個性質<span class="en">（varying one or more properties of a periodic waveform, called the carrier signal）</span>（振幅、頻率、相位）來攜帶訊息；把窄頻的基頻訊號轉成可通過濾波器的帶通訊號。</li>
+    <li>數位調變可視為數位轉類比<span class="en">（digital-to-analog conversion）</span>；解調變則是類比轉數位<span class="en">（analog-to-digital conversion）</span>。載波變化從有限的 M 種 symbol<span class="en">（a finite number of M alternative symbols, the modulation alphabet）</span> 中選一種。</li>
     <li><b>symbol rate 與 bit rate</b>（講義數據機例子）：4 種 symbol 可代表 00、01、10、11，每個 symbol 載 2 bits；每秒 1000 個 symbol（1000 baud）→ 2000 bps。</li>
   </ul>
   <div class="figure">
@@ -405,7 +405,7 @@ flowchart LR
   </div>
   <div class="tbl-wrap"><table>
     <tr><th>方式</th><th>改變什麼</th></tr>
-    <tr><td>ASK</td><td>有限個振幅</td></tr><tr><td>FSK</td><td>有限個頻率</td></tr><tr><td>PSK</td><td>有限個相位</td></tr>
+    <tr><td>ASK</td><td>有限個振幅<span class="en">（a finite number of amplitudes）</span></td></tr><tr><td>FSK</td><td>有限個頻率<span class="en">（a finite number of frequencies）</span></td></tr><tr><td>PSK</td><td>有限個相位<span class="en">（a finite number of phases）</span></td></tr>
     <tr><td>QAM</td><td>至少兩個相位 ＋ 至少兩個振幅；I（cos）與 Q（sin）兩路各做 ASK 再相加，等於 PSK 與 ASK 的結合</td></tr>
   </table></div>
   <h3>差分調變（依相位「變化量」表示資料）</h3>
