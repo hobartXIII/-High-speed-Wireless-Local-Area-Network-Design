@@ -311,8 +311,38 @@
   })();
 
   /* ---------- 6. 五個區段 ---------- */
+  (function twoSeg() {
+    const host = document.getElementById('fig-2seg');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 300, '10BASE5 兩個區段');
+    const y1 = 80, y2 = 220, xr = 360;
+    [[y1, '第一段同軸電纜（≤ 500 m）', [['A', 110, -1], ['B', 200, -1], ['C', 470, -1], ['D', 580, -1]]],
+     [y2, '第二段同軸電纜（≤ 500 m）', [['E', 110, 1], ['F', 200, 1], ['G', 470, 1], ['H', 560, 1], ['I', 640, 1]]]]
+      .forEach(([y, label, st]) => {
+        S('line', { x1: 40, y1: y, x2: 680, y2: y, stroke: 'var(--fg)', 'stroke-width': 5 }, svg);
+        terminator(svg, 40, y); terminator(svg, 680, y);
+        st.forEach(([n, x, d]) => {
+          const sy = y + d * 48;
+          S('line', { x1: x, y1: y, x2: x, y2: sy - d * 15, stroke: 'var(--muted)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }, svg);
+          S('rect', { x: x - 7, y: y - 7, width: 14, height: 14, rx: 3, fill: 'var(--orange)' }, svg);
+          station(svg, x, sy, n);
+        });
+        S('text', { x: 200, y: y + (y === y1 ? 24 : -14), 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: label }, svg);
+      });
+    // repeater between the two segments, attached by transceiver cables
+    [y1, y2].forEach(y => {
+      S('line', { x1: xr, y1: y, x2: xr, y2: (y1 + y2) / 2 + (y === y1 ? -16 : 16), stroke: 'var(--muted)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }, svg);
+      S('rect', { x: xr - 7, y: y - 7, width: 14, height: 14, rx: 3, fill: 'var(--orange)' }, svg);
+    });
+    S('rect', { x: xr - 46, y: (y1 + y2) / 2 - 16, width: 92, height: 32, rx: 6, fill: 'var(--orange-soft)', stroke: 'var(--orange)', 'stroke-width': 2 }, svg);
+    S('text', { x: xr, y: (y1 + y2) / 2 + 5, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, text: '訊號增益器' }, svg);
+    S('text', { x: xr + 56, y: (y1 + y2) / 2 + 5, 'font-size': 12, cls: 't-muted', text: '經收發器電纜（≤ 50 m）接到兩段電纜' }, svg);
+    S('rect', { x: 40, y: 284, width: 12, height: 12, rx: 2, fill: 'var(--orange)' }, svg);
+    S('text', { x: 58, y: 294, 'font-size': 12, text: '收發器（MAU）　虛線＝收發器電纜（AUI）' }, svg);
+  })();
+
   (function fiveSeg() {
-    const svg = svgRoot(document.getElementById('fig-5seg'), 720, 330, '10BASE5 最大配置');
+    const svg = svgRoot(document.getElementById('fig-5seg'), 720, 400, '10BASE5 最大配置');
     function seg(x1, x2, y, label, stations) {
       S('line', { x1, y1: y, x2, y2: y, stroke: 'var(--fg)', 'stroke-width': 4 }, svg);
       terminator(svg, x1, y); terminator(svg, x2, y);
@@ -323,10 +353,18 @@
         S('circle', { cx: x, cy: y - 28, r: 6, fill: 'var(--surface)', stroke: 'var(--accent)', 'stroke-width': 2 }, svg);
       }
     }
-    function rep(x, y, label, half) {
-      S('rect', { x: x - 18, y: y - 13, width: 36, height: 26, rx: 5, fill: half ? 'var(--purple-soft)' : 'var(--orange-soft)', stroke: half ? 'var(--purple)' : 'var(--orange)', 'stroke-width': 2 }, svg);
+    // 訊號增益器：橘色方框「R」；半訊號增益器：紫色切角框「½R」
+    function rep(x, y, label, half, side) {
+      if (half) {
+        S('path', { d: `M${x - 18} ${y - 13} L${x + 12} ${y - 13} L${x + 18} ${y - 7} L${x + 18} ${y + 13} L${x - 12} ${y + 13} L${x - 18} ${y + 7} Z`, fill: 'var(--purple-soft)', stroke: 'var(--purple)', 'stroke-width': 2 }, svg);
+      } else {
+        S('rect', { x: x - 18, y: y - 13, width: 36, height: 26, rx: 5, fill: 'var(--orange-soft)', stroke: 'var(--orange)', 'stroke-width': 2 }, svg);
+      }
       S('text', { x, y: y + 5, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, text: half ? '½R' : 'R' }, svg);
-      if (label) S('text', { x, y: y - 20, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: label }, svg);
+      if (!label) return;
+      if (side === 'below') S('text', { x, y: y + 28, 'text-anchor': 'middle', 'font-size': 11, fill: half ? 'var(--purple)' : 'var(--muted)', text: label }, svg);
+      else if (side === 'right') S('text', { x: x + 26, y: y + 4, 'font-size': 11, fill: half ? 'var(--purple)' : 'var(--muted)', text: label }, svg);
+      else S('text', { x, y: y - 20, 'text-anchor': 'middle', 'font-size': 11, fill: half ? 'var(--purple)' : 'var(--muted)', text: label }, svg);
     }
     const y1 = 70;
     seg(20, 210, y1, '區段 1（≤ 500 m）', 3);
@@ -338,14 +376,23 @@
     // half repeater link
     const yh = 160;
     S('line', { x1: 640, y1: y1, x2: 640, y2: yh - 13, stroke: 'var(--muted)', 'stroke-dasharray': '3 2', 'stroke-width': 1.5 }, svg);
-    rep(640, yh, '');
-    S('path', { d: `M622 ${yh} L120 ${yh} L120 ${yh + 70}`, fill: 'none', stroke: 'var(--purple)', 'stroke-width': 4, 'stroke-dasharray': '10 5' }, svg);
+    rep(640, yh, '半訊號增益器', true, 'below');
+    S('path', { d: `M622 ${yh} L60 ${yh} L60 ${yh + 70}`, fill: 'none', stroke: 'var(--purple)', 'stroke-width': 4, 'stroke-dasharray': '10 5' }, svg);
     S('text', { x: 380, y: yh - 10, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, fill: 'var(--purple)', text: '區段 4：半訊號增益器間電纜（最長 1000 m，不接工作站）' }, svg);
-    rep(120, yh + 83, '');
+    rep(60, yh + 83, '半訊號增益器', true, 'right');
     const y5 = 290;
-    S('line', { x1: 120, y1: yh + 96, x2: 120, y2: y5, stroke: 'var(--muted)', 'stroke-dasharray': '3 2', 'stroke-width': 1.5 }, svg);
-    seg(40, 400, y5, '區段 5', 4);
-    S('text', { x: 690, y: 312, 'text-anchor': 'end', 'font-size': 12, cls: 't-muted', text: 'R＝訊號增益器　½R＝半訊號增益器　Slot Time = 51.2 μs' }, svg);
+    S('line', { x1: 60, y1: yh + 96, x2: 60, y2: y5, stroke: 'var(--muted)', 'stroke-dasharray': '3 2', 'stroke-width': 1.5 }, svg);
+    seg(30, 450, y5, '區段 5', 4);
+    // 圖例：兩種增益器分開標示
+    const ly = 352;
+    S('line', { x1: 20, y1: ly - 22, x2: 700, y2: ly - 22, stroke: 'var(--border)' }, svg);
+    rep(42, ly, '', false);
+    S('text', { x: 68, y: ly - 2, 'font-size': 12, 'font-weight': 700, text: 'R：訊號增益器（repeater）' }, svg);
+    S('text', { x: 68, y: ly + 14, 'font-size': 11, cls: 't-muted', text: '直接把兩段同軸電纜接起來' }, svg);
+    rep(382, ly, '', true);
+    S('text', { x: 408, y: ly - 2, 'font-size': 12, 'font-weight': 700, fill: 'var(--purple)', text: '½R：半訊號增益器（half repeater）' }, svg);
+    S('text', { x: 408, y: ly + 14, 'font-size': 11, cls: 't-muted', text: '成對使用，兩個之間以 ≤ 1000 m 電纜相連' }, svg);
+    S('text', { x: 700, y: ly + 40, 'text-anchor': 'end', 'font-size': 12, cls: 't-muted', text: 'Slot Time = 51.2 μs' }, svg);
   })();
 
   /* ---------- 7. Manchester ---------- */

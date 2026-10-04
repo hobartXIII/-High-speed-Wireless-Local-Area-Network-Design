@@ -1,4 +1,4 @@
-/* 第 2-1 章：Hidden/Exposed node、OFDMA、PDU 動畫、三種配置、速率與距離、OFDM、頻段、DSSS、Barker、dB、頻道、PLCP、調變、DPSK */
+/* 第 2-1 章：Hidden/Exposed node、OFDMA、PDU 動畫、三種配置、速率與距離、OFDM、頻段、DSSS、Barker、dB、頻道、PLCP、調變、DPSK、天線場型 */
 (function () {
   const { S, clear, svgRoot, arrowDefs, Timeline, lerp, prog } = WL;
 
@@ -160,25 +160,87 @@
 
   /* ---------- 3. TDMA / OFDM / OFDMA ---------- */
   (function ofdma() {
-    const svg = svgRoot(document.getElementById('fig-ofdma'), 720, 230, 'TDMA、OFDM、OFDMA 比較');
+    const svg = svgRoot(document.getElementById('fig-ofdma'), 720, 262, 'TDMA、OFDM、OFDMA 比較');
     const users = ['accent', 'orange', 'green', 'purple'];
-    const cols = 8, rows = 6, cw = 24, rh = 22;
+    const cols = 8, rows = 6, cw = 24, rh = 22, y0 = 32;
+    // 每格填使用者編號，'.' 為沒用到的資源（空白）；列由上到下
+    const tdma = [0, 1, '.', 3, 0, '.', 2, 3];
+    const ofdmDemand = [6, 2, 4, 1, 5, 3, 2, 6]; // 每個時槽只給一個使用者，資料少時其餘子載波空著
+    const ofdmaGrid = ['00112233', '00112233', '11223300', '11223300', '223300..', '330011..'];
     const panels = [
-      { x: 20, n: 'TDMA', f: (c) => users[c % 4], sub: false },
-      { x: 260, n: 'OFDM', f: (c) => users[c % 4], sub: true },
-      { x: 500, n: 'OFDMA', f: (c, r) => users[(Math.floor(r / 2) + Math.floor(c / 2)) % 4], sub: true },
+      { x: 20, n: 'TDMA', cell: (c, r) => (r === 0 ? tdma[c] : null), full: true },
+      { x: 260, n: 'OFDM', cell: (c, r) => (rows - r <= ofdmDemand[c] ? c % 4 : '.') },
+      { x: 500, n: 'OFDMA', cell: (c, r) => { const v = ofdmaGrid[r][c]; return v === '.' ? '.' : +v; } },
     ];
+    const box = (x, y, h, v) => S('rect', v === '.'
+      ? { x, y, width: cw - 2, height: h, rx: 2, fill: '#ffffff', stroke: 'var(--muted)', 'stroke-width': 1 }
+      : { x, y, width: cw - 2, height: h, rx: 2, fill: `var(--${users[v]})`, opacity: 0.8 }, svg);
     panels.forEach(p => {
       S('text', { x: p.x + cols * cw / 2, y: 20, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, text: p.n }, svg);
       for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) {
-        const col = p.f(c, r);
-        if (!p.sub && r > 0) continue;
-        S('rect', { x: p.x + c * cw, y: 32 + r * rh, width: cw - 2, height: p.sub ? rh - 2 : rows * rh - 2, rx: 2, fill: `var(--${col})`, opacity: 0.8 }, svg);
+        const v = p.cell(c, r);
+        if (v === null) continue;
+        box(p.x + c * cw, y0 + r * rh, p.full ? rows * rh - 2 : rh - 2, v);
       }
-      S('text', { x: p.x + cols * cw / 2, y: 32 + rows * rh + 18, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '時間 →' }, svg);
-      S('text', { x: p.x - 6, y: 32 + rows * rh / 2, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '頻率', transform: `rotate(-90 ${p.x - 6} ${32 + rows * rh / 2})` }, svg);
+      S('text', { x: p.x + cols * cw / 2, y: y0 + rows * rh + 18, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '時間 →' }, svg);
+      S('text', { x: p.x - 6, y: y0 + rows * rh / 2, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '頻率', transform: `rotate(-90 ${p.x - 6} ${y0 + rows * rh / 2})` }, svg);
     });
-    S('text', { x: 360, y: 220, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: 'TDMA：一次一個使用者用整個頻道　OFDM：一次一個使用者，資料分到多個子載波　OFDMA：子載波同時分給多個使用者' }, svg);
+    // 圖例
+    const ly = 200;
+    const items = users.map((u, i) => [u, `使用者 ${i + 1}`]).concat([['.', '白色：沒用到的資源（空白）']]);
+    let lx = 110;
+    items.forEach(([u, t]) => {
+      S('rect', u === '.'
+        ? { x: lx, y: ly, width: 16, height: 14, rx: 2, fill: '#ffffff', stroke: 'var(--muted)', 'stroke-width': 1 }
+        : { x: lx, y: ly, width: 16, height: 14, rx: 2, fill: `var(--${u})`, opacity: 0.8 }, svg);
+      S('text', { x: lx + 22, y: ly + 12, 'font-size': 12, text: t }, svg);
+      lx += u === '.' ? 0 : 92;
+    });
+    S('text', { x: 360, y: 248, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: 'TDMA：一次一個使用者用整個頻道　OFDM：一次一個使用者，資料分到多個子載波　OFDMA：子載波同時分給多個使用者' }, svg);
+  })();
+
+  /* ---------- 3b. 協定實體（依講義四格圖） ---------- */
+  (function entities() {
+    const host = document.getElementById('fig-entities');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 370, '802.11 協定實體');
+    const ar = arrowDefs(svg);
+    function box(x, y, w, h, col, title, sub) {
+      S('rect', { x, y, width: w, height: h, rx: 6, fill: `var(--${col}-soft)`, stroke: `var(--${col})`, 'stroke-width': 2 }, svg);
+      const cy = y + h / 2 + (sub ? -4 : 5);
+      S('text', { x: x + w / 2, y: cy, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: title }, svg);
+      if (sub) S('text', { x: x + w / 2, y: cy + 19, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: sub }, svg);
+    }
+    const X1 = 90, W1 = 240, X2 = 350, W2 = 200, X3 = 570, W3 = 130;
+    const Y = { llc: 14, mac: 92, plcp: 196, pmd: 262, end: 322 };
+    // 左側層別括號
+    [['MAC', Y.mac, Y.mac + 60], ['PHY', Y.plcp, Y.end]].forEach(([n, a, b]) => {
+      S('path', { d: `M64 ${a} L56 ${a} L56 ${b} L64 ${b}`, fill: 'none', stroke: 'var(--muted)', 'stroke-width': 2 }, svg);
+      S('text', { x: 40, y: (a + b) / 2 + 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: n }, svg);
+    });
+    box(X1, Y.llc, W1, 46, 'purple', 'LLC', '邏輯鏈結控制');
+    box(X1, Y.mac, W1, 60, 'accent', 'MAC Sublayer', '存取機制、分段、加解密');
+    box(X1, Y.plcp, W1, 60, 'green', 'PLCP Sublayer', '統一 PHY 介面、CCA、Multiple Rate');
+    box(X1, Y.pmd, W1, 60, 'green', 'PMD Sublayer', 'Baseband（modulation）');
+    box(X2, Y.mac, W2, 60, 'orange', 'MAC Layer', 'Management');
+    box(X2, Y.plcp, W2, Y.end - Y.plcp, 'orange', 'PHY Layer', 'Management');
+    box(X3, Y.mac, W3, Y.end - Y.mac, 'red', 'Station', 'Management');
+    // SAP：資料往下送的介面點
+    [['MAC SAP', Y.llc + 46, Y.mac, 'MSDU'], ['PHY SAP', Y.mac + 60, Y.plcp, 'MPDU ＝ PSDU']].forEach(([n, a, b, pdu]) => {
+      const cx = X1 + W1 / 2, my = (a + b) / 2;
+      S('line', { x1: cx, y1: a, x2: cx, y2: b - 2, stroke: 'var(--fg)', 'stroke-width': 2, 'marker-end': ar('fg') }, svg);
+      S('ellipse', { cx, cy: my, rx: 30, ry: 10, fill: 'var(--surface)', stroke: 'var(--fg)', 'stroke-width': 1.5 }, svg);
+      S('text', { x: cx + 40, y: my + 5, 'font-size': 13, 'font-weight': 700, text: n }, svg);
+      S('text', { x: cx - 40, y: my + 5, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--accent)', 'font-weight': 700, text: pdu }, svg);
+    });
+    // 實體與管理實體之間的連結
+    [[Y.mac + 30], [Y.plcp + 30], [Y.pmd + 30]].forEach(([y]) => S('line', { x1: X1 + W1, y1: y, x2: X2, y2: y, stroke: 'var(--muted)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }, svg));
+    [[Y.mac + 30], [(Y.plcp + Y.end) / 2]].forEach(([y]) => S('line', { x1: X2 + W2, y1: y, x2: X3, y2: y, stroke: 'var(--muted)', 'stroke-width': 2, 'stroke-dasharray': '4 3' }, svg));
+    // 送上無線媒介
+    const cx = X1 + W1 / 2;
+    S('line', { x1: cx, y1: Y.end, x2: cx, y2: 356, stroke: 'var(--fg)', 'stroke-width': 2, 'marker-end': ar('fg') }, svg);
+    S('text', { x: cx - 12, y: 352, 'text-anchor': 'end', 'font-size': 12, fill: 'var(--accent)', 'font-weight': 700, text: 'PPDU' }, svg);
+    S('text', { x: cx + 12, y: 352, 'font-size': 12, cls: 't-muted', text: '送上無線媒介' }, svg);
   })();
 
   /* ---------- 4. MSDU → PPDU ---------- */
@@ -192,7 +254,7 @@
       S('line', { x1: 112, y1: y, x2: 700, y2: y, stroke: 'var(--border)', 'stroke-dasharray': '3 4' }, svg);
     });
     const g = S('g', null, svg);
-    const DX = 380;
+    const DX = 330;
     function block(y, parts, name, nameColor) {
       clear(g);
       const total = parts.reduce((a, p) => a + p.w, 0);
@@ -203,14 +265,14 @@
         if (p.w > 30) S('text', { x: x + p.w / 2 - 1, y: y + 5, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, text: p.t }, g);
         x += p.w;
       });
-      S('text', { x: DX + total / 2 + 12, y: y + 6, 'font-size': 16, 'font-weight': 800, fill: `var(--${nameColor})`, text: name }, g);
+      S('text', { x: DX + total / 2 + 12, y: y + 5, 'font-size': 14, 'font-weight': 700, fill: `var(--${nameColor})`, text: name }, g);
     }
     function render(t) {
-      const data = { t: '資料', w: 120, c: 'green' };
+      const data = { t: '資料', w: 110, c: 'green' };
       const grow = prog(t, 2, 2.8);
-      const mac = [{ t: 'MAC header', w: 100 * grow, c: 'accent' }, data, { t: 'FCS', w: 50 * grow, c: 'accent' }];
+      const mac = [{ t: 'MAC header', w: 84 * grow, c: 'accent' }, data, { t: 'FCS', w: 40 * grow, c: 'accent' }];
       const grow2 = prog(t, 4.6, 5.4);
-      const phy = [{ t: 'Preamble', w: 90 * grow2, c: 'orange' }, { t: 'PLCP hdr', w: 80 * grow2, c: 'orange' }, ...mac];
+      const phy = [{ t: 'Preamble', w: 70 * grow2, c: 'orange' }, { t: 'PLCP hdr', w: 64 * grow2, c: 'orange' }, ...mac];
       if (t < 1) block(40, [data], 'MSDU', 'green');
       else if (t < 2) block(lerp(40, 100, prog(t, 1, 1.8)), [data], 'MSDU', 'green');
       else if (t < 3.2) block(100, mac, grow < 1 ? 'MSDU' : 'MPDU', grow < 1 ? 'green' : 'accent');
@@ -218,11 +280,18 @@
       else if (t < 4.6) block(160, mac, 'PSDU（= MPDU）', 'purple');
       else if (t < 6) block(160, phy, grow2 < 1 ? 'PSDU' : 'PPDU', grow2 < 1 ? 'purple' : 'orange');
       else {
-        block(lerp(160, 230, prog(t, 6, 6.8)), phy, 'PPDU → 送上空中', 'orange');
-        if (t > 6.8) [0, 0.5].forEach(o => {
-          const q = ((t - 6.8) / 1.2 + o) % 1;
-          S('circle', { cx: 700, cy: 230, r: 6 + q * 40, fill: 'none', stroke: 'var(--orange)', 'stroke-width': 2, opacity: 1 - q }, g);
-        });
+        block(lerp(160, 230, prog(t, 6, 6.8)), phy, 'PPDU', 'orange');
+        if (t > 6.8) {
+          // 天線與電波：放在 PPDU 名稱右側，不與方塊重疊
+          const ax = 630;
+          S('line', { x1: ax, y1: 244, x2: ax, y2: 222, stroke: 'var(--muted)', 'stroke-width': 1.5 }, g);
+          S('circle', { cx: ax, cy: 220, r: 2.5, fill: 'var(--muted)' }, g);
+          [0, 0.5].forEach(o => {
+            const q = ((t - 6.8) / 1.2 + o) % 1;
+            S('path', { d: `M${ax + 8 + q * 30} ${206 - q * 10} Q${ax + 16 + q * 36} 220 ${ax + 8 + q * 30} ${234 + q * 10}`, fill: 'none', stroke: 'var(--orange)', 'stroke-width': 1.5, opacity: (1 - q) * 0.8 }, g);
+          });
+          S('text', { x: ax, y: 264, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '送上空中' }, g);
+        }
       }
     }
     Timeline(fig, { duration: 8.5, render, format: t => `${t.toFixed(1)} s` });
@@ -262,6 +331,232 @@
     mp.forEach(p => apIcon(svg, p[0], p[1], 'MP'));
   })();
 
+  /* ---------- 5b. 無線橋接（Wireless Bridging） ---------- */
+  (function bridge() {
+    const host = document.getElementById('fig-bridge');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 340, '兩棟大樓間的無線橋接');
+    function building(x, name, ap, st) {
+      S('rect', { x, y: 50, width: 230, height: 230, rx: 6, fill: 'var(--surface-2)', stroke: 'var(--border)', 'stroke-width': 2 }, svg);
+      S('text', { x: x + 115, y: 40, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: name }, svg);
+      // Ethernet 匯流排
+      S('line', { x1: x + 20, y1: 200, x2: x + 210, y2: 200, stroke: 'var(--green)', 'stroke-width': 4, 'stroke-linecap': 'round' }, svg);
+      S('text', { x: x + 20, y: 192, 'font-size': 12, fill: 'var(--green)', 'font-weight': 700, text: 'Ethernet' }, svg);
+      st.forEach((n, i) => {
+        const sx = x + 45 + i * 70;
+        S('line', { x1: sx, y1: 200, x2: sx, y2: 232, stroke: 'var(--muted)', 'stroke-width': 2 }, svg);
+        S('rect', { x: sx - 28, y: 232, width: 56, height: 28, rx: 5, fill: 'var(--surface)', stroke: 'var(--accent)', 'stroke-width': 2 }, svg);
+        S('text', { x: sx, y: 251, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, text: n }, svg);
+      });
+      const axp = ap.x;
+      S('line', { x1: axp, y1: 116, x2: axp, y2: 200, stroke: 'var(--muted)', 'stroke-width': 2 }, svg);
+      apIcon(svg, axp, 105, ap.n);
+      return axp;
+    }
+    const a = building(20, '大樓 A（Building A）', { x: 205, n: 'AP A' }, ['A1', 'A2', 'A3']);
+    const b = building(470, '大樓 B（Building B）', { x: 515, n: 'AP B' }, ['B1', 'B2', 'B3']);
+    // 802.11s 無線連結
+    S('line', { x1: a + 26, y1: 100, x2: b - 26, y2: 100, stroke: 'var(--orange)', 'stroke-width': 2.5, 'stroke-dasharray': '7 5' }, svg);
+    [a + 40, b - 40].forEach((cx, i) => [10, 18].forEach(r => S('path', {
+      d: i === 0 ? `M${cx + r * 0.5} ${100 - r} A${r} ${r} 0 0 1 ${cx + r * 0.5} ${100 + r}` : `M${cx - r * 0.5} ${100 - r} A${r} ${r} 0 0 0 ${cx - r * 0.5} ${100 + r}`,
+      fill: 'none', stroke: 'var(--orange)', 'stroke-width': 1.5, opacity: 0.7 }, svg)));
+    S('text', { x: 360, y: 88, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: 'var(--orange)', text: 'IEEE 802.11s（無線）' }, svg);
+    // 考量
+    ['安全 Security ?', '速率 Data Rate ?', '距離 Range ?', '法規 Legal ?', '成本 Cost ?'].forEach((q, i) => {
+      const y = 124 + i * 26;
+      S('rect', { x: 290, y, width: 140, height: 20, rx: 10, fill: 'var(--red-soft)', stroke: 'var(--red)' }, svg);
+      S('text', { x: 360, y: y + 14, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, text: q }, svg);
+    });
+    // 有線替代：租用專線
+    S('path', { d: 'M230 200 H262 V305 H458 V200 H490', fill: 'none', stroke: 'var(--muted)', 'stroke-width': 2 }, svg);
+    S('text', { x: 360, y: 298, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, text: 'private lease line' }, svg);
+    S('text', { x: 360, y: 326, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '有線替代：租用專線（802.1G remote bridge）' }, svg);
+  })();
+
+  /* ---------- 5c. 戶外應用：指向性天線 ---------- */
+  (function outdoor() {
+    const host = document.getElementById('fig-outdoor');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 300, '戶外應用與指向性天線');
+    const G = 268;
+    S('line', { x1: 10, y1: G, x2: 710, y2: G, stroke: 'var(--muted)', 'stroke-width': 2 }, svg);
+    function bld(x, w, top, name) {
+      S('rect', { x, y: top, width: w, height: G - top, fill: 'var(--surface-2)', stroke: 'var(--border)', 'stroke-width': 2 }, svg);
+      for (let r = top + 16; r < G - 20; r += 26) for (let c = x + 14; c < x + w - 14; c += 28)
+        S('rect', { x: c, y: r, width: 14, height: 12, fill: 'var(--accent-soft)' }, svg);
+      S('text', { x: x + w / 2, y: G + 20, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, text: name }, svg);
+    }
+    function dish(x, y, dir) {
+      S('line', { x1: x, y1: y + 6, x2: x, y2: y + 46, stroke: 'var(--fg)', 'stroke-width': 3 }, svg);
+      S('path', { d: `M${x} ${y - 16} Q${x + dir * 16} ${y} ${x} ${y + 16}`, fill: 'var(--orange-soft)', stroke: 'var(--orange)', 'stroke-width': 3 }, svg);
+      S('line', { x1: x, y1: y, x2: x + dir * 18, y2: y, stroke: 'var(--orange)', 'stroke-width': 2 }, svg);
+    }
+    bld(30, 120, 150, '大樓 A');
+    bld(570, 120, 150, '大樓 B');
+    dish(110, 104, 1);
+    dish(610, 104, -1);
+    // 窄波束
+    S('path', { d: 'M128 104 Q360 74 592 104 Q360 134 128 104 Z', fill: 'var(--orange)', opacity: 0.18, stroke: 'var(--orange)', 'stroke-dasharray': '5 4' }, svg);
+    S('text', { x: 360, y: 70, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: 'var(--orange)', text: '指向性天線對準：窄波束，點對點數百 m～數 km' }, svg);
+    S('text', { x: 110, y: 66, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '指向性天線' }, svg);
+    S('text', { x: 610, y: 66, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '指向性天線' }, svg);
+    // 障礙物：樹
+    S('rect', { x: 246, y: 220, width: 8, height: 48, fill: 'var(--muted)' }, svg);
+    S('circle', { cx: 250, cy: 200, r: 30, fill: 'var(--green-soft)', stroke: 'var(--green)', 'stroke-width': 2 }, svg);
+    S('text', { x: 250, y: 160, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '視線需無遮蔽（LOS）' }, svg);
+    // 戶外全向 AP
+    const px = 455;
+    S('line', { x1: px, y1: 176, x2: px, y2: G, stroke: 'var(--fg)', 'stroke-width': 3 }, svg);
+    S('path', { d: `M${px - 80} ${G} A80 80 0 0 1 ${px + 80} ${G}`, fill: 'var(--accent)', opacity: 0.12, stroke: 'var(--accent)', 'stroke-dasharray': '4 4' }, svg);
+    apIcon(svg, px, 176, 'AP');
+    [[px - 52, '📱'], [px + 50, '💻']].forEach(([x, e]) => S('text', { x, y: G - 8, 'text-anchor': 'middle', 'font-size': 16, text: e }, svg));
+    S('text', { x: px, y: G + 20, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '戶外 AP（全向）覆蓋廣場' }, svg);
+  })();
+
+  /* ---------- 5d. BSS／ESS、同地點覆蓋、完整架構 ---------- */
+  function miniSta(svg, x, y, label) {
+    S('circle', { cx: x, cy: y, r: 12, fill: 'var(--surface)', stroke: 'var(--accent)', 'stroke-width': 2 }, svg);
+    S('text', { x, y: y + 4, 'text-anchor': 'middle', 'font-size': 10, 'font-weight': 700, text: label }, svg);
+  }
+  function cell(svg, cx, cy, r, col) {
+    S('circle', { cx, cy, r, fill: `var(--${col})`, opacity: 0.1, stroke: `var(--${col})`, 'stroke-width': 1.5, 'stroke-dasharray': '6 4' }, svg);
+  }
+  function dsBar(svg, x1, x2, y, label) {
+    S('rect', { x: x1, y: y - 14, width: x2 - x1, height: 28, rx: 6, fill: 'var(--surface-2)', stroke: 'var(--fg)', 'stroke-width': 2 }, svg);
+    S('text', { x: (x1 + x2) / 2, y: y + 5, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, text: label }, svg);
+  }
+  function wireTo(svg, x, y1, y2) { S('line', { x1: x, y1, x2: x, y2, stroke: 'var(--fg)', 'stroke-width': 2.5 }, svg); }
+  function pill(svg, x, y, text, col) {
+    const w = text.length * 8 + 14;
+    S('rect', { x: x - w / 2, y: y - 10, width: w, height: 20, rx: 10, fill: `var(--${col}-soft)`, stroke: `var(--${col})` }, svg);
+    S('text', { x, y: y + 4, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, text }, svg);
+  }
+
+  (function bssEss() {
+    const host = document.getElementById('fig-bss-ess');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 290, 'BSS 與 ESS');
+    // 左：單一 BSS
+    S('text', { x: 150, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: 'BSS' }, svg);
+    cell(svg, 150, 130, 95, 'accent');
+    apIcon(svg, 150, 110, 'AP');
+    [[95, 160], [205, 160], [150, 195]].forEach(([x, y]) => miniSta(svg, x, y, 'STA'));
+    S('text', { x: 150, y: 250, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '覆蓋範圍 = BSA；BSSID = AP 的 MAC' }, svg);
+    S('line', { x1: 300, y1: 30, x2: 300, y2: 270, stroke: 'var(--border)' }, svg);
+    // 右：ESS
+    S('rect', { x: 325, y: 30, width: 385, height: 245, rx: 14, fill: 'none', stroke: 'var(--purple)', 'stroke-width': 2, 'stroke-dasharray': '8 5' }, svg);
+    S('text', { x: 517, y: 22, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, fill: 'var(--purple)', text: 'ESS（同一個 SSID）' }, svg);
+    cell(svg, 440, 120, 80, 'accent');
+    cell(svg, 595, 120, 80, 'green');
+    S('text', { x: 400, y: 56, 'font-size': 12, 'font-weight': 700, fill: 'var(--accent)', text: 'BSS 1' }, svg);
+    S('text', { x: 600, y: 56, 'font-size': 12, 'font-weight': 700, fill: 'var(--green)', text: 'BSS 2' }, svg);
+    wireTo(svg, 440, 121, 231); wireTo(svg, 595, 121, 231);
+    apIcon(svg, 440, 110, 'AP1'); apIcon(svg, 595, 110, 'AP2');
+    [[395, 150], [470, 165], [565, 160], [640, 150]].forEach(([x, y]) => miniSta(svg, x, y, 'STA'));
+    dsBar(svg, 380, 655, 245, 'DS（Distribution System）');
+  })();
+
+  (function colloc() {
+    const host = document.getElementById('fig-colloc');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 270, '同地點不同頻道的 BSS');
+    const aps = [[230, 'accent', 'ch 1'], [290, 'orange', 'ch 6'], [350, 'green', 'ch 11']];
+    aps.forEach(([x, col]) => cell(svg, x, 115, 100, col));
+    aps.forEach(([x]) => wireTo(svg, x, 126, 226));
+    aps.forEach(([x, col, ch]) => {
+      apIcon(svg, x, 115, 'AP');
+      S('text', { x, y: 150, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, fill: `var(--${col})`, text: ch }, svg);
+    });
+    [[180, 70], [380, 80], [200, 180], [380, 175], [290, 50]].forEach(([x, y]) => miniSta(svg, x, y, 'STA'));
+    dsBar(svg, 150, 430, 240, 'DS（Distribution System）');
+    const notes = ['同一區域、不同頻道', '→ 彼此不干擾', '→ 容量相加、可備援', '', '2.4 GHz：最多 3 層', '（頻道 1、6、11）', '5／6 GHz：頻道多，可疊更多'];
+    notes.forEach((n, i) => {
+      const strong = i === 0 || i === 4;
+      S('text', { x: 480, y: 70 + i * 24, 'font-size': 13, 'font-weight': strong ? 700 : 400, cls: strong ? null : 't-muted', text: n }, svg);
+    });
+  })();
+
+  (function complete() {
+    const host = document.getElementById('fig-complete');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 320, '802.11 完整架構');
+    S('rect', { x: 10, y: 10, width: 560, height: 270, rx: 14, fill: 'none', stroke: 'var(--purple)', 'stroke-width': 2, 'stroke-dasharray': '8 5' }, svg);
+    S('text', { x: 24, y: 30, 'font-size': 13, 'font-weight': 700, fill: 'var(--purple)', text: 'ESS' }, svg);
+    S('ellipse', { cx: 150, cy: 105, rx: 120, ry: 66, fill: 'var(--accent)', opacity: 0.1, stroke: 'var(--accent)', 'stroke-dasharray': '6 4' }, svg);
+    S('ellipse', { cx: 430, cy: 105, rx: 120, ry: 66, fill: 'var(--green)', opacity: 0.1, stroke: 'var(--green)', 'stroke-dasharray': '6 4' }, svg);
+    S('text', { x: 70, y: 58, 'font-size': 12, 'font-weight': 700, fill: 'var(--accent)', text: 'BSS 1' }, svg);
+    S('text', { x: 470, y: 58, 'font-size': 12, 'font-weight': 700, fill: 'var(--green)', text: 'BSS 2' }, svg);
+    wireTo(svg, 220, 128, 221); wireTo(svg, 360, 128, 221);
+    apIcon(svg, 220, 117, 'AP1'); apIcon(svg, 360, 117, 'AP2');
+    [[80, 100, 'STA1'], [140, 135, 'STA2'], [430, 140, 'STA3'], [490, 100, 'STA4']].forEach(([x, y, l]) => miniSta(svg, x, y, l));
+    // SS：所有站台（含 AP）提供
+    pill(svg, 110, 172, 'SS', 'accent');
+    pill(svg, 460, 172, 'SS', 'green');
+    // DSS：DS 經 AP 提供
+    pill(svg, 290, 190, 'DSS', 'orange');
+    S('line', { x1: 268, y1: 190, x2: 226, y2: 190, stroke: 'var(--orange)', 'stroke-width': 1.5, 'stroke-dasharray': '3 3' }, svg);
+    S('line', { x1: 312, y1: 190, x2: 354, y2: 190, stroke: 'var(--orange)', 'stroke-width': 1.5, 'stroke-dasharray': '3 3' }, svg);
+    dsBar(svg, 60, 520, 235, 'DS（Distribution System）');
+    S('text', { x: 290, y: 268, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: 'AP = STA ＋ 進入 DS 的入口（Service Entry）' }, svg);
+    // Portal 與 802.x LAN
+    S('line', { x1: 520, y1: 235, x2: 600, y2: 235, stroke: 'var(--fg)', 'stroke-width': 2.5 }, svg);
+    S('rect', { x: 600, y: 215, width: 80, height: 40, rx: 6, fill: 'var(--purple-soft)', stroke: 'var(--purple)', 'stroke-width': 2 }, svg);
+    S('text', { x: 640, y: 240, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, text: 'Portal' }, svg);
+    S('line', { x1: 640, y1: 255, x2: 640, y2: 290, stroke: 'var(--fg)', 'stroke-width': 2.5 }, svg);
+    S('line', { x1: 590, y1: 290, x2: 710, y2: 290, stroke: 'var(--green)', 'stroke-width': 4, 'stroke-linecap': 'round' }, svg);
+    S('text', { x: 650, y: 310, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, text: '802.x LAN' }, svg);
+    S('text', { x: 640, y: 205, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: 'Integration' }, svg);
+  })();
+
+  /* ---------- 5e. 802.11 定義的是空中介面 ---------- */
+  (function airIf() {
+    const host = document.getElementById('fig-airif');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 250, '802.11 標準化的範圍');
+    function layer(x, y, w, n, col) {
+      S('rect', { x, y, width: w, height: 36, rx: 5, fill: `var(--${col}-soft)`, stroke: `var(--${col})`, 'stroke-width': 2 }, svg);
+      S('text', { x: x + w / 2, y: y + 23, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, text: n }, svg);
+    }
+    function mark(x, y, ok, text, anchor) {
+      S('circle', { cx: x, cy: y, r: 10, fill: ok ? 'var(--green)' : 'var(--red)' }, svg);
+      S('text', { x, y: y + 5, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: '#fff', text: ok ? '✓' : '✕' }, svg);
+      if (text) S('text', { x: anchor === 'end' ? x - 16 : x + 16, y: y + 5, 'text-anchor': anchor || 'start', 'font-size': 12, 'font-weight': 600, fill: ok ? 'var(--green)' : 'var(--red)', text }, svg);
+    }
+    // STA
+    S('text', { x: 90, y: 40, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, text: 'STA' }, svg);
+    layer(40, 52, 100, 'MAC', 'accent');
+    layer(40, 96, 100, 'PHY', 'accent');
+    mark(40, 92, false);
+    S('text', { x: 90, y: 152, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--red)', text: 'MAC／PHY 內部介面' }, svg);
+    S('text', { x: 90, y: 167, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--red)', text: '不公開、不標準化' }, svg);
+    // 空中介面
+    let d = 'M142 114';
+    for (let i = 0; i < 9; i++) d += ` q8.5 ${i % 2 ? 10 : -10} 17 0`;
+    S('path', { d, fill: 'none', stroke: 'var(--green)', 'stroke-width': 3 }, svg);
+    S('text', { x: 220, y: 72, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: 'var(--green)', text: '空中介面 Airwaves IF' }, svg);
+    S('text', { x: 220, y: 90, 'text-anchor': 'middle', 'font-size': 12, fill: 'var(--green)', text: 'PHY＋MAC：標準化' }, svg);
+    mark(220, 142, true);
+    // AP
+    S('text', { x: 350, y: 40, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, text: 'AP' }, svg);
+    layer(300, 52, 100, 'MAC', 'accent');
+    layer(300, 96, 100, 'PHY', 'accent');
+    S('rect', { x: 300, y: 150, width: 100, height: 32, rx: 5, fill: 'var(--red-soft)', stroke: 'var(--red)', 'stroke-width': 2, 'stroke-dasharray': '5 3' }, svg);
+    S('text', { x: 350, y: 171, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, text: '對 DS 的介面' }, svg);
+    mark(300, 92, false);
+    // DS
+    S('line', { x1: 400, y1: 166, x2: 480, y2: 166, stroke: 'var(--fg)', 'stroke-width': 2.5 }, svg);
+    mark(440, 166, false);
+    S('text', { x: 440, y: 194, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--red)', text: '沒有公開介面' }, svg);
+    S('rect', { x: 480, y: 50, width: 225, height: 170, rx: 16, fill: 'var(--surface-2)', stroke: 'var(--red)', 'stroke-width': 2, 'stroke-dasharray': '7 5' }, svg);
+    S('text', { x: 592, y: 82, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: 'Distribution System' }, svg);
+    mark(505, 115, false, 'DS 內部運作不定義', 'start');
+    S('text', { x: 592, y: 150, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '可以是 Ethernet、交換器、Mesh…' }, svg);
+    mark(505, 185, true, '只定義 DS 服務（DSS）', 'start');
+    // 圖例
+    mark(250, 232, true, '標準化', 'start');
+    mark(370, 232, false, '未標準化（廠商自訂）', 'start');
+  })();
+
   /* ---------- 6. 速率與距離 ---------- */
   (function range() {
     const svg = svgRoot(document.getElementById('fig-range'), 720, 260, '速率與距離示意');
@@ -275,7 +570,8 @@
       S('text', { x: 450, y: y + 5, 'font-size': 15, 'font-weight': 700, text: n }, svg);
       S('text', { x: 550, y: y + 5, 'font-size': 13, cls: 't-muted', text: m }, svg);
     });
-    S('text', { x: 450, y: 245, 'font-size': 12, cls: 't-muted', text: '以 802.11b 為例：越外圈速率越低' }, svg);
+    S('text', { x: 450, y: 228, 'font-size': 12, cls: 't-muted', text: '以 802.11b 為例：越外圈速率越低' }, svg);
+    S('text', { x: 450, y: 248, 'font-size': 12, fill: 'var(--orange)', 'font-weight': 600, text: 'Beacon、PLCP 標頭用最外圈 1 Mbps 送' }, svg);
   })();
 
   /* ---------- 7. OFDM 計算器 ---------- */
@@ -342,6 +638,164 @@
       S('text', { x: x0 + w + 8, y: y + 19, 'font-size': 13, 'font-weight': 600, text: `${mhz} MHz` }, svg);
       S('text', { x: x0 + w + 90, y: y + 19, 'font-size': 12, cls: 't-muted', text: s }, svg);
     });
+  })();
+
+  /* ---------- 8b. 5 GHz UNII 與 6 GHz ---------- */
+  (function unii() {
+    const host = document.getElementById('fig-unii');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 230, '5 GHz UNII 頻段');
+    const f0 = 5140, f1 = 5860, X0 = 30, X1 = 700;
+    const fx = f => X0 + (f - f0) / (f1 - f0) * (X1 - X0);
+    const defs = S('defs', null, svg);
+    const pat = S('pattern', { id: 'dfs-hatch', width: 6, height: 6, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
+    S('line', { x1: 0, y1: 0, x2: 0, y2: 6, stroke: 'var(--orange)', 'stroke-width': 2, opacity: 0.6 }, pat);
+    // 講義：三段各 100 MHz
+    [[5150, 5250], [5250, 5350], [5725, 5825]].forEach(([a, b], i) => {
+      S('rect', { x: fx(a) + 1, y: 20, width: fx(b) - fx(a) - 2, height: 22, rx: 4, fill: 'var(--purple-soft)', stroke: 'var(--purple)' }, svg);
+      S('text', { x: (fx(a) + fx(b)) / 2, y: 35, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 700, text: `講義第 ${i + 1} 段` }, svg);
+    });
+    // UNII 子頻段
+    const bands = [[5150, 5250, 'UNII-1', false], [5250, 5350, 'UNII-2A', true], [5470, 5725, 'UNII-2C（2003 加開）', true], [5725, 5850, 'UNII-3', false]];
+    bands.forEach(([a, b, n, dfs]) => {
+      S('rect', { x: fx(a) + 1, y: 56, width: fx(b) - fx(a) - 2, height: 30, rx: 4, fill: dfs ? 'var(--orange-soft)' : 'var(--accent-soft)', stroke: dfs ? 'var(--orange)' : 'var(--accent)', 'stroke-width': 1.5 }, svg);
+      S('text', { x: (fx(a) + fx(b)) / 2, y: 76, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, text: n }, svg);
+    });
+    S('text', { x: (fx(5350) + fx(5470)) / 2, y: 76, 'text-anchor': 'middle', 'font-size': 10, cls: 't-muted', text: '不可用' }, svg);
+    // 20 MHz 頻道
+    const chs = [36, 40, 44, 48, 52, 56, 60, 64, 100, 104, 108, 112, 116, 120, 124, 128, 132, 136, 140, 144, 149, 153, 157, 161, 165];
+    chs.forEach(c => {
+      const fc = 5000 + 5 * c, dfs = c >= 52 && c <= 144;
+      S('rect', { x: fx(fc - 10) + 1, y: 100, width: fx(fc + 10) - fx(fc - 10) - 2, height: 40, rx: 2, fill: dfs ? 'url(#dfs-hatch)' : 'var(--accent-soft)', stroke: dfs ? 'var(--orange)' : 'var(--accent)' }, svg);
+      S('text', { x: fx(fc), y: 154, 'text-anchor': 'middle', 'font-size': 9, 'font-weight': 600, text: c }, svg);
+    });
+    // 頻率軸
+    S('line', { x1: X0, y1: 168, x2: X1, y2: 168, stroke: 'var(--muted)' }, svg);
+    [5150, 5250, 5350, 5470, 5725, 5850].forEach(f => {
+      S('line', { x1: fx(f), y1: 164, x2: fx(f), y2: 172, stroke: 'var(--muted)' }, svg);
+      S('text', { x: fx(f), y: 186, 'text-anchor': 'middle', 'font-size': 10, cls: 't-muted', text: f }, svg);
+    });
+    S('text', { x: X1, y: 186, 'text-anchor': 'end', 'font-size': 10, cls: 't-muted', text: 'MHz' }, svg);
+    // 圖例
+    S('rect', { x: 200, y: 202, width: 16, height: 14, fill: 'var(--accent-soft)', stroke: 'var(--accent)' }, svg);
+    S('text', { x: 222, y: 214, 'font-size': 12, text: '不需 DFS' }, svg);
+    S('rect', { x: 320, y: 202, width: 16, height: 14, fill: 'url(#dfs-hatch)', stroke: 'var(--orange)' }, svg);
+    S('text', { x: 342, y: 214, 'font-size': 12, text: '需要 DFS（偵測到雷達要換頻道）' }, svg);
+  })();
+
+  (function sixG() {
+    const host = document.getElementById('fig-6g');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 260, '6 GHz 頻段');
+    const f0 = 5925, f1 = 7125, X0 = 110, X1 = 700;
+    const fx = f => X0 + (f - f0) / (f1 - f0) * (X1 - X0);
+    [[5925, 6425, 'UNII-5'], [6425, 6525, 'U-6'], [6525, 6875, 'UNII-7'], [6875, 7125, 'UNII-8']].forEach(([a, b, n], i) => {
+      S('rect', { x: fx(a) + 1, y: 20, width: fx(b) - fx(a) - 2, height: 28, rx: 4, fill: i % 2 ? 'var(--green-soft)' : 'var(--accent-soft)', stroke: i % 2 ? 'var(--green)' : 'var(--accent)', 'stroke-width': 1.5 }, svg);
+      S('text', { x: (fx(a) + fx(b)) / 2, y: 39, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, text: n }, svg);
+    });
+    // 各頻寬的頻道數（6 GHz 頻道從 5955 MHz 起，20 MHz 一格）
+    const rows = [[20, 59], [40, 29], [80, 14], [160, 7], [320, 3]];
+    rows.forEach(([bw, n], r) => {
+      const y = 64 + r * 28;
+      S('text', { x: X0 - 10, y: y + 13, 'text-anchor': 'end', 'font-size': 11, 'font-weight': 600, text: `${bw} MHz × ${n}` }, svg);
+      for (let k = 0; k < n; k++) {
+        const a = 5945 + k * bw;
+        S('rect', { x: fx(a) + 0.5, y, width: Math.max(1, fx(a + bw) - fx(a) - 1), height: 18, rx: 2, fill: 'var(--orange)', opacity: 0.35 + (k % 2) * 0.25 }, svg);
+      }
+    });
+    // 歐洲範圍
+    const ye = 212;
+    S('rect', { x: fx(5945), y: ye, width: fx(6425) - fx(5945), height: 16, rx: 3, fill: 'var(--purple-soft)', stroke: 'var(--purple)' }, svg);
+    S('text', { x: fx(6425) + 8, y: ye + 12, 'font-size': 11, text: '歐洲只開放 5945–6425 MHz（約 480 MHz）' }, svg);
+    S('text', { x: X0 - 10, y: ye + 12, 'text-anchor': 'end', 'font-size': 11, 'font-weight': 600, text: '歐洲' }, svg);
+    [5925, 6425, 6525, 6875, 7125].forEach(f => S('text', { x: fx(f), y: 250, 'text-anchor': 'middle', 'font-size': 10, cls: 't-muted', text: f }, svg));
+  })();
+
+  /* ---------- 8c. DSSS 頻譜、回波、CRC 電路 ---------- */
+  (function spectrum() {
+    const host = document.getElementById('fig-spectrum');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 240, '展頻前後的功率頻譜');
+    function panel(x0, title, bw, peak, col) {
+      const W = 300, base = 190, cx = x0 + W / 2;
+      S('text', { x: cx, y: 22, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, text: title }, svg);
+      S('line', { x1: x0, y1: base, x2: x0 + W, y2: base, stroke: 'var(--muted)', 'stroke-width': 1.5 }, svg);
+      S('line', { x1: x0, y1: base, x2: x0, y2: 36, stroke: 'var(--muted)', 'stroke-width': 1.5 }, svg);
+      S('text', { x: x0 + W, y: base + 18, 'text-anchor': 'end', 'font-size': 11, cls: 't-muted', text: '頻率 Frequency' }, svg);
+      S('text', { x: x0 + 6, y: 46, 'font-size': 11, cls: 't-muted', text: '功率 Power' }, svg);
+      let d = `M${cx - bw} ${base}`;
+      for (let i = 0; i <= 60; i++) {
+        const u = -1 + i / 30, y = base - peak * Math.pow(Math.cos(u * Math.PI / 2), 2);
+        d += ` L${(cx + u * bw).toFixed(1)} ${y.toFixed(1)}`;
+      }
+      S('path', { d: d + 'Z', fill: `var(--${col})`, opacity: 0.3, stroke: `var(--${col})`, 'stroke-width': 2 }, svg);
+      return { cx, base };
+    }
+    const a = panel(30, '展頻前', 22, 140, 'accent');
+    const b = panel(390, '展頻後（× 11-chip 碼）', 130, 24, 'orange');
+    S('text', { x: a.cx, y: 228, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '窄頻寬、高功率密度' }, svg);
+    S('text', { x: b.cx, y: 228, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '寬頻寬、低功率密度（Wider Bandwidth, Less power density）' }, svg);
+    S('path', { d: 'M338 110 L380 110', stroke: 'var(--fg)', 'stroke-width': 2, 'marker-end': arrowDefs(svg)('fg') }, svg);
+  })();
+
+  (function echo() {
+    const host = document.getElementById('fig-echo');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 230, '相關器輸出的主峰與回波');
+    const X0 = 50, X1 = 690, base = 180;
+    S('line', { x1: X0, y1: base, x2: X1, y2: base, stroke: 'var(--muted)', 'stroke-width': 1.5 }, svg);
+    S('text', { x: X1, y: base + 20, 'text-anchor': 'end', 'font-size': 12, cls: 't-muted', text: '時間 time' }, svg);
+    const peaks = [[200, 130, '主峰 peak（直達路徑）', 'accent'], [290, 60, '回波 echo', 'orange'], [370, 35, '回波 echo', 'orange']];
+    // 基底雜訊
+    let d = `M${X0} ${base}`;
+    for (let x = X0; x <= X1; x += 8) d += ` L${x} ${base - 4 - 4 * Math.abs(Math.sin(x * 0.7))}`;
+    S('path', { d, fill: 'none', stroke: 'var(--muted)', 'stroke-width': 1 }, svg);
+    peaks.forEach(([x, h, n, col]) => {
+      S('path', { d: `M${x - 10} ${base} L${x} ${base - h} L${x + 10} ${base} Z`, fill: `var(--${col})`, opacity: 0.8 }, svg);
+      S('text', { x, y: base - h - 8, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, fill: `var(--${col})`, text: n }, svg);
+    });
+    S('path', { d: `M200 ${base + 14} L290 ${base + 14}`, stroke: 'var(--fg)', 'stroke-width': 1.5 }, svg);
+    S('text', { x: 245, y: base + 30, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '延遲 > 1 chip 就分得開' }, svg);
+    S('text', { x: 470, y: 70, 'font-size': 12, text: '相關運算後：' }, svg);
+    S('text', { x: 470, y: 92, 'font-size': 12, cls: 't-muted', text: '• 直達路徑 → 最大的主峰' }, svg);
+    S('text', { x: 470, y: 112, 'font-size': 12, cls: 't-muted', text: '• 反射路徑 → 較晚、較小的回波峰' }, svg);
+    S('text', { x: 470, y: 132, 'font-size': 12, cls: 't-muted', text: '• 接收端鎖定主峰，不被回波混淆' }, svg);
+  })();
+
+  (function crc() {
+    const host = document.getElementById('fig-crc');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 190, 'CRC-16 移位暫存器');
+    const ar = arrowDefs(svg);
+    const cw = 32, X0 = 92, Y = 70, taps = [0, 5, 12];
+    // 輸入
+    S('text', { x: 10, y: Y + 22, 'font-size': 12, 'font-weight': 600, text: '輸入位元' }, svg);
+    // 暫存器 0..15，XOR 放在第 0、5、12 格前面
+    let x = X0;
+    const pos = [];
+    for (let i = 0; i < 16; i++) {
+      if (taps.includes(i)) {
+        S('circle', { cx: x + 10, cy: Y + 17, r: 9, fill: 'var(--surface)', stroke: 'var(--orange)', 'stroke-width': 2 }, svg);
+        S('text', { x: x + 10, y: Y + 22, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, fill: 'var(--orange)', text: '⊕' }, svg);
+        pos.push([i, x + 10]);
+        x += 24;
+      }
+      S('rect', { x, y: Y, width: cw - 4, height: 34, rx: 3, fill: 'var(--accent-soft)', stroke: 'var(--accent)', 'stroke-width': 1.5 }, svg);
+      S('text', { x: x + (cw - 4) / 2, y: Y + 22, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600, text: i }, svg);
+      x += cw;
+    }
+    const xEnd = x - 4;
+    // 輸入接到第 0 個 XOR
+    S('line', { x1: 66, y1: Y + 17, x2: pos[0][1] - 10, y2: Y + 17, stroke: 'var(--fg)', 'stroke-width': 1.5, 'marker-end': ar('fg') }, svg);
+    // 回授：最後一格輸出與輸入在第一個 XOR 相加，結果同時送進第 0 格，並回授到第 5、12 格前的 XOR
+    S('path', { d: `M${xEnd} ${Y + 17} H${xEnd + 12} V${Y + 54} H${pos[0][1]} V${Y + 28}`, fill: 'none', stroke: 'var(--orange)', 'stroke-width': 1.8, 'marker-end': ar('orange') }, svg);
+    const fx = pos[0][1] + 12;
+    S('circle', { cx: fx, cy: Y + 17, r: 3, fill: 'var(--orange)' }, svg);
+    S('path', { d: `M${fx} ${Y + 17} V${Y - 26} H${pos[2][1]}`, fill: 'none', stroke: 'var(--orange)', 'stroke-width': 1.8 }, svg);
+    pos.slice(1).forEach(([, px]) => S('line', { x1: px, y1: Y - 26, x2: px, y2: Y + 6, stroke: 'var(--orange)', 'stroke-width': 1.8, 'marker-end': ar('orange') }, svg));
+    S('text', { x: (fx + pos[2][1]) / 2, y: Y - 34, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--orange)', text: '回授 =（輸入 ⊕ 第 15 格）' }, svg);
+    S('text', { x: 360, y: Y + 84, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, text: 'G(x) = x¹⁶ + x¹² + x⁵ + 1' }, svg);
+    S('text', { x: 360, y: Y + 106, 'text-anchor': 'middle', 'font-size': 12, cls: 't-muted', text: '預設全 1 → 送入 SIGNAL、SERVICE、LENGTH 共 32 bits → 取 1 的補數當 CRC' }, svg);
   })();
 
   /* ---------- 9. Barker 展頻 ---------- */
@@ -641,5 +1095,76 @@
     const tl = Timeline(fig, { duration: 10, render, format: t => `符號 ${Math.min(syms.length, Math.floor(t / (10 / syms.length)) + 1)} / ${syms.length}`, controlsAfter: fig.querySelector('.fig-body') });
     input.addEventListener('input', () => { build(); tl.redraw(); });
     segButtons(document.getElementById('dpsk-mode'), v => { mode = v; build(); tl.pause(); tl.set(0); });
+  })();
+
+  /* ---------- 17. 天線增益與輻射場型 ---------- */
+  (function antenna() {
+    const host = document.getElementById('fig-ant');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 340, '天線增益與輻射場型');
+    const out = document.getElementById('ant-out');
+    const K = 28, L = { x: 185, y: 180 }, R = { x: 540, y: 180 };
+    // 全向：P(ψ) = D·|cos ψ|^n（ψ 為仰角），D 由 n 積分求得；指向：P = D·cos^a ψ（前半球），背瓣 −20 dB
+    const TYPES = {
+      o2: { omni: true, n: 2.5, name: '全向（偶極）2 dBi' },
+      o5: { omni: true, n: 14, name: '全向 5 dBi' },
+      o9: { omni: true, n: 100, name: '全向 9 dBi' },
+      d14: { omni: false, a: 12, D: Math.pow(10, 1.4), name: '指向（平板）14 dBi' },
+    };
+    function directivity(n) {
+      let sum = 0; const N = 2000;
+      for (let i = 0; i < N; i++) { const p = -Math.PI / 2 + (i + 0.5) * Math.PI / N; sum += Math.pow(Math.cos(p), n + 1) * Math.PI / N; }
+      return 2 / sum;
+    }
+    Object.values(TYPES).forEach(t => { if (t.omni) t.D = directivity(t.n); });
+    const FLOOR = 0.03; // 約 −15 dBi 的旁瓣下限
+    function gain(t, psi) {
+      const c = Math.cos(psi);
+      if (t.omni) return Math.max(t.D * Math.pow(Math.abs(c), t.n), FLOOR);
+      return c > 0 ? Math.max(t.D * Math.pow(c, t.a), t.D * 0.01) : t.D * 0.01;
+    }
+    function shape(cx, cy, f) {
+      let d = '';
+      for (let deg = 0; deg <= 360; deg += 1) {
+        const psi = deg * Math.PI / 180, r = K * Math.sqrt(f(psi));
+        d += (deg ? 'L' : 'M') + (cx + r * Math.cos(psi)).toFixed(1) + ' ' + (cy - r * Math.sin(psi)).toFixed(1);
+      }
+      return d + 'Z';
+    }
+    let cur = 'o2';
+    function draw() {
+      clear(svg);
+      const t = TYPES[cur], col = t.omni ? 'accent' : 'orange';
+      [[L, '側視（垂直切面）'], [R, '俯視（水平切面）']].forEach(([c, title]) => {
+        S('text', { x: c.x, y: 24, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 700, text: title }, svg);
+        S('circle', { cx: c.x, cy: c.y, r: K, fill: 'none', stroke: 'var(--muted)', 'stroke-dasharray': '4 4' }, svg);
+      });
+      S('line', { x1: 362, y1: 40, x2: 362, y2: 330, stroke: 'var(--border)' }, svg);
+      // 側視：樓板
+      [[L.y - 80, '樓上'], [L.y + 80, '樓下']].forEach(([y, s]) => {
+        S('line', { x1: 30, y1: y, x2: 340, y2: y, stroke: 'var(--muted)', 'stroke-width': 2, 'stroke-dasharray': '10 5', opacity: 0.6 }, svg);
+        S('text', { x: 34, y: y - 6, 'font-size': 12, cls: 't-muted', text: s }, svg);
+      });
+      S('path', { d: shape(L.x, L.y, p => gain(t, p)), fill: `var(--${col})`, opacity: 0.25, stroke: `var(--${col})`, 'stroke-width': 2 }, svg);
+      S('path', { d: shape(R.x, R.y, p => (t.omni ? t.D : gain(t, p))), fill: `var(--${col})`, opacity: 0.25, stroke: `var(--${col})`, 'stroke-width': 2 }, svg);
+      if (t.omni) {
+        S('line', { x1: L.x, y1: L.y - 16, x2: L.x, y2: L.y + 16, stroke: 'var(--fg)', 'stroke-width': 4, 'stroke-linecap': 'round' }, svg);
+        S('circle', { cx: R.x, cy: R.y, r: 5, fill: 'var(--fg)' }, svg);
+      } else {
+        S('rect', { x: L.x - 6, y: L.y - 14, width: 6, height: 28, fill: 'var(--fg)' }, svg);
+        S('rect', { x: R.x - 6, y: R.y - 14, width: 6, height: 28, fill: 'var(--fg)' }, svg);
+      }
+      S('text', { x: L.x + K + 4, y: L.y + K + 14, 'font-size': 11, cls: 't-muted', text: '0 dBi' }, svg);
+      const hp = t.omni ? Math.acos(Math.pow(0.5, 1 / t.n)) : Math.acos(Math.pow(0.5, 1 / t.a));
+      const bw = (2 * hp * 180 / Math.PI).toFixed(0);
+      out.textContent =
+        `${t.name}　峰值增益 ${(10 * Math.log10(t.D)).toFixed(1)} dBi\n` +
+        `水平涵蓋：${t.omni ? '360°' : bw + '°（半功率波束寬）'}　垂直半功率波束寬：約 ${bw}°\n` +
+        `主方向相對距離（自由空間）：0 dBi 的 ${Math.sqrt(t.D).toFixed(2)} 倍` +
+        (t.omni ? (cur === 'o2' ? '\n場型最「圓」：上下樓也收得到，但水平距離最短' : '\n場型被壓扁：同層更遠，但樓上、樓下明顯變弱') : '\n能量集中在一個方向：適合點對點，背面幾乎收不到');
+    }
+    segButtons(document.getElementById('ant-type'), v => { cur = v; draw(); });
+    draw();
+    document.addEventListener('themechange', draw);
   })();
 })();

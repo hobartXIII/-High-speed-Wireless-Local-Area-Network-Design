@@ -14,7 +14,7 @@
   <div class="page-head">
     <div class="eyebrow">CH 2-1</div>
     <h1>📶 IEEE 802.11 架構與 PHY</h1>
-    <div class="meta"><span>來源：2-1 CSMA_CA.pdf</span><span>動畫與互動 8 個・圖解 6 張</span></div>
+    <div class="meta"><span>來源：2-1 CSMA_CA.pdf</span><span>動畫與互動 9 個・圖解 19 張</span></div>
   </div>
 
   <h2 id="outline">0. 本章大綱（講義）</h2>
@@ -40,6 +40,10 @@
   </table></div>
   <ul>
     <li>講義的速率術語：1 Mbps = <b>Basic Rate（BR）</b>、2 Mbps = <b>Extended Rate（ER）</b>、5.5/11 Mbps = <b>High Rate（HR）</b>、22–33 / 6–54 Mbps = <b>Extended Rate PHY（ERP）</b>、54–600 Mbps = <b>High Throughput（HT）</b>。</li>
+    <li>講義 p.65 再列一次術語，並標出 802.11n（MIMO）依串流數為 <b>150／300／450／600 Mbps</b>（每條空間串流最高 150 Mbps，最多 4 條）；802.11ac 再往上、802.11ax 到 9608 Mbps、802.11be 約 40000 Mbps。</li>
+    <li>講義的高速術語：<b>&gt; 1 Gbps（&lt; 6 GHz）</b> = <b>Very High Throughput（VHT L6）</b>，即 802.11ac；<b>&gt; 1 Gbps（60 GHz，57–66 GHz）</b> = <b>VHT60</b>，即 802.11ad。</li>
+    <li><b>802.11ac</b>（講義時程）：2008/11 在 Dallas 成立工作小組（TG）；5 GHz、更寬的 80／160 MHz 頻寬、256-QAM、8 × MIMO（下行 MU-MIMO），最高 6.93 Gbps；Draft 5.0 於 2013/01，標準預計 2013 年底。編號<b>跳過「802.11ab」</b>（<span class="sup">補充</span>一般認為是避免和乙太網路的 802.3ab（1000BASE-T）混淆）。</li>
+    <li><b>802.11ad</b>（講義時程）：2009/01 成立工作小組，2012/12 成為標準；60 GHz（57–66 GHz）。</li>
     <li><span class="sup">補充</span>11ax 另有 1024-QAM；11be 有 320MHz 頻寬、4096-QAM 與 Multi-Link Operation。</li>
   </ul>
 
@@ -99,34 +103,21 @@
   <div class="figure">
     <div class="fig-title">TDMA、OFDM、OFDMA 的資源分配 <span class="tag static">圖解</span></div>
     <div class="fig-body" id="fig-ofdma"></div>
-    <div class="caption">橫軸是時間、縱軸是頻率（子載波）；顏色代表不同使用者。OFDMA 把子載波切給不同使用者同時使用（11ax）。</div>
+    <div class="caption">橫軸是時間、縱軸是頻率（子載波）；顏色代表不同使用者，白色格是沒用到的資源（空白）。TDMA、OFDM 一個時槽只給一個使用者，使用者沒資料或資料少時，整個時槽或部分子載波就空著浪費；OFDMA 把子載波切給不同使用者同時使用（11ax），空白最少。</div>
   </div>
 
   <h2 id="entities">5. 802.11 協定實體<span class="en">（802.11 Protocol Entities）</span></h2>
   <div class="figure">
     <div class="fig-title">協定實體 <span class="tag static">圖解</span></div>
-    <div class="fig-body"><div class="mermaid-host">
-flowchart TB
-  LLC["LLC 子層"] -- "MAC SAP" --> MAC
-  subgraph MACL["MAC Layer"]
-    MAC["MAC Sublayer"] --- MM["MAC Management"]
-  end
-  MAC -- "PHY SAP" --> PLCP
-  subgraph PHYL["PHY Layer"]
-    PLCP["PLCP Sublayer"] --- PM["PHY Management"]
-    PLCP --> PMD["PMD Sublayer"]
-    PMD --- PM
-  end
-  SM["Station Management"] --- MM
-  SM --- PM
-    </div></div>
+    <div class="fig-body" id="fig-entities"></div>
+    <div class="caption">依講義「802.11 Protocol Entities」圖重繪：左欄是資料路徑（LLC → MAC → PLCP → PMD），右邊是對應的管理實體；Station Management 同時管理 MAC 與 PHY。</div>
   </div>
   <div class="tbl-wrap"><table>
     <tr><th>實體</th><th>負責工作</th></tr>
     <tr><td>MAC Entity</td><td>基本存取機制（含 QoS）<span class="en">（basic access mechanism）</span>、分段／重組、聚合／解聚合、加密／解密<span class="en">（fragmentation/defragmentation, aggregation/deaggregation, encryption/decryption）</span></td></tr>
     <tr><td>MAC Layer Management Entity</td><td>同步、電源管理、漫遊、MAC MIB<span class="en">（synchronization, power management, roaming, MAC MIB）</span></td></tr>
     <tr><td>PLCP（Physical Layer Convergence Protocol）</td><td>依 PHY 而異，提供共同的 PHY SAP<span class="en">（PHY-specific, supports common PHY SAP）</span>；提供 <b>CCA（Clear Channel Assessment）</b>，也就是載波偵測</td></tr>
-    <tr><td>PMD（Physical Medium Dependent）</td><td>實際調變與收發（baseband）</td></tr>
+    <tr><td>PMD（Physical Medium Dependent）</td><td>實際調變與收發（baseband）<br><span class="sup">補充</span>PMD 把調變好的訊號送到天線發射出去。理想的<b>等向性天線</b><span class="en">（isotropic）</span>向四面八方均勻輻射，場型是<b>球形</b>，增益定為 0 dBi，但只是計算用的參考；實際天線都是<b>非球形</b>：偶極天線是水平方向強、正上下方弱的甜甜圈形，指向性天線把能量集中在一個方向。總功率不變，只是重新分配方向，所以有「增益」（見第 17 節天線場型圖）。</td></tr>
     <tr><td>PHY Layer Management</td><td>MCS、MIMO（beamforming、時空編碼、空間分集<span class="en">（Space-Time Coding, Spatial Diversity）</span>）、頻道編號<span class="en">（Channel Index）</span>、頻寬（11/20/40…MHz）<span class="en">（Channel Bandwidth）</span>、收發天線數、PHY MIB</td></tr>
   </table></div>
   <h3>資料單元的名稱變化（常考）</h3>
@@ -153,10 +144,56 @@ flowchart TB
     <li>應用：MANET（Mobile Ad Hoc Network）、VANET（Vehicular Ad-Hoc Network）。</li>
     <li>研究題目：多跳路由<span class="en">（Research topics: Multi-Hop Routing）</span>（IETF MANET、VANET）、群播、多頻道存取、安全<span class="en">（Multicasting, Multi-channel Access, Security）</span>、QoS。</li>
   </ul>
+  <h4><span class="sup">補充</span>車載網路用哪一種配置</h4>
+  <div class="tbl-wrap"><table>
+    <tr><th>情境</th><th>802.11 模式</th><th>對應講義的配置</th></tr>
+    <tr><td>車對車、車對路側設施（V2V／V2I）</td><td><b>802.11p</b>（DSRC／WAVE，5.9 GHz；後繼為 802.11bd）的<b>非 BSS 模式</b><span class="en">（Outside the Context of a BSS, OCB）</span></td><td>近似 Independent（VANET）</td></tr>
+    <tr><td>車內乘客上網</td><td>車子當 <b>AP</b>，回程走 4G／5G</td><td>Infrastructure</td></tr>
+    <tr><td>無線 CarPlay／Android Auto</td><td>車機當 AP、手機連上</td><td>Infrastructure</td></tr>
+  </table></div>
+  <ul>
+    <li><b>非 BSS 模式</b><span class="en">（OCB）</span>：不建立 BSS、不做認證與 Association，聽得到就直接收發。車速快，經過一個路口只有幾秒，來不及做掃描、認證、Association。</li>
+    <li><b>路側設施</b><span class="en">（Road Side Unit, RSU）</span>雖然像 AP 一樣固定在路邊，但在 802.11p 中同樣以 OCB 廣播，車子不必連上它。</li>
+    <li>另一套競爭技術是 3GPP 的 <b>C-V2X</b>（以蜂巢網路技術做車間直連），目前兩者並存。</li>
+  </ul>
+  <h4><span class="sup">補充</span>VANET 與講義的研究題目</h4>
+  <div class="tbl-wrap"><table>
+    <tr><th>講義研究題目</th><th>在 VANET 中的樣子</th></tr>
+    <tr><td>Multi-Hop Routing</td><td>把事故警告傳到幾公里外、超出單跳範圍的車輛，靠沿途車輛接力轉送</td></tr>
+    <tr><td>Multicasting</td><td>送給「某區域內所有車」，多為<b>地理群播</b>（GeoCast）</td></tr>
+    <tr><td>Multi-channel Access</td><td>802.11p 搭配 IEEE 1609.4，在<b>控制頻道</b>（安全訊息）與<b>服務頻道</b>（其他應用）間輪流切換</td></tr>
+    <tr><td>Security</td><td>訊息要簽章防偽造（假事故警告很危險），並定期更換假名憑證保護隱私</td></tr>
+    <tr><td>QoS</td><td>安全訊息延遲要在 100 ms 以內，優先權高於娛樂資料</td></tr>
+  </table></div>
+  <ul>
+    <li><b>實務上以單跳廣播為主</b>：每台車每秒約 10 次廣播位置、速度、方向（美規 BSM、歐規 CAM），周圍幾百公尺直接收，不轉送；多跳只用在事故警告往後傳數公里、或 RSU 收不到的地方。</li>
+    <li><b>VANET 多跳路由的難處</b>：
+      <ul>
+        <li><b>拓樸變化太快</b>：對向會車相對速度約 55 m/s，幾秒內連線就斷；AODV、OLSR 等 MANET 路由剛找到路徑就失效。</li>
+        <li><b>地理路由</b><span class="en">（Geographic Routing，如 GPSR）</span>：不維護路由表，每次把封包交給離目的地最近的鄰居；歐洲 ETSI 的 GeoNetworking 即此概念。</li>
+        <li><b>廣播風暴</b><span class="en">（Broadcast Storm）</span>：每台車都轉送同一則警告會互相碰撞，需要只讓最遠的車轉送等機制。</li>
+        <li><b>先存後轉</b><span class="en">（Store-Carry-Forward）</span>：車流稀疏時先存著，遇到下一台車再轉交。</li>
+      </ul>
+    </li>
+  </ul>
   <h3>Infrastructure</h3>
   <ul>
     <li>由 AP 與 STA 組成；多個 cell 透過 AP 接上 <b>Distribution System（DS）</b>，串成單一網路，延伸無線覆蓋範圍<span class="en">（extends wireless coverage area）</span>。</li>
     <li>應用：無線橋接<span class="en">（Wireless bridge application）</span>（例如兩棟大樓）；以 <b>802.11s</b> 實作時要考慮安全、速率、距離、法規、成本；對照有線方式是租用專線（802.1G remote bridge）。戶外應用常搭配<b>指向性天線</b>。</li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">無線橋接<span class="en">（Wireless Bridging）</span> <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-bridge"></div>
+    <div class="caption">依講義「Wireless Bridging」圖重繪：兩棟大樓各有自己的 Ethernet 與 AP，AP 之間以 802.11s 無線連接，把兩邊橋接成同一個網路；有線的替代方案是租用專線（802.1G remote bridge）。中間是講義列出的考量：安全、速率、距離、法規、成本。</div>
+  </div>
+  <div class="figure">
+    <div class="fig-title">戶外應用與指向性天線<span class="en">（Outdoor Application - Directional Antenna）</span> <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-outdoor"></div>
+    <div class="caption">講義「Outdoor Application」兩頁是戶外設備與指向性天線的照片，這裡依主題示意：遠距的大樓間橋接用指向性天線對準彼此；開放空間的覆蓋則用全向的戶外 AP。</div>
+  </div>
+  <ul>
+    <li><span class="sup">補充</span>指向性天線（平板、八木、碟形，約 14–24 dBi）把能量集中成窄波束，點對點可達數公里，但兩端要<b>精準對準</b>，而且中間要<b>視線無遮蔽</b><span class="en">（Line of Sight, LOS）</span>；樹木、建築擋在路徑上會大幅衰減。</li>
+    <li><span class="sup">補充</span>戶外設備需防水防塵（IP65／IP67 等級）、耐溫，並加裝避雷；常用 PoE 從室內供電。</li>
   </ul>
   <h3>Mesh（Hybrid）</h3>
   <ul><li>依據 <b>802.11s</b>，AP 之間以無線互連。</li></ul>
@@ -167,10 +204,66 @@ flowchart TB
     <li><b>DS 本身不在 802.11 標準範圍內</b><span class="en">（Not part of 802.11 standard）</span>，可以是橋接的 IEEE LAN、無線或其他網路；802.11 只定義 <b>Distribution System Services（DSS）</b>。</li>
     <li>同地點可以有多個 BSS 使用<b>不同頻道</b>同時覆蓋（Collocated Coverage Areas）。</li>
   </ul>
+  <h3>BSS 與 ESS<span class="en">（BSS vs ESS）</span></h3>
+  <div class="figure">
+    <div class="fig-title">BSS 與 ESS <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-bss-ess"></div>
+    <div class="caption">依講義「BSS vs ESS」圖重繪：左邊是單一 BSS；右邊兩個 BSS 經 DS 串成一個 ESS。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>項目</th><th>BSS（Basic Service Set）</th><th>ESS（Extended Service Set）</th></tr>
+    <tr><td>組成</td><td>由同一個協調功能控制的一組站台；Infrastructure BSS 含一台 AP</td><td>多個 Infrastructure BSS ＋ 連接它們的 DS</td></tr>
+    <tr><td>範圍</td><td>一個 AP 的覆蓋範圍，稱<b>基本服務區</b><span class="en">（Basic Service Area, BSA）</span></td><td>所有 BSS 的覆蓋範圍加起來</td></tr>
+    <tr><td>識別 <span class="sup">補充</span></td><td><b>基本服務集識別碼</b><span class="en">（BSSID）</span>，48 bits：Infrastructure 為 AP 的 MAC 位址；IBSS 為隨機產生</td><td><b>服務集識別碼</b><span class="en">（SSID）</span>，可變長度、最長 32 bytes：同一個 ESS 的 AP 都用同一個 SSID</td></tr>
+    <tr><td>對上層的樣子</td><td>—</td><td>對 LLC 而言整個 ESS 就像一個 BSS，STA 在 ESS 內移動對上層透明</td></tr>
+    <tr><td>移動</td><td>離開 BSA 就斷線</td><td>在 BSS 之間移動靠<b>重新結合</b><span class="en">（Reassociation）</span>漫遊（2-2 第 11 節）</td></tr>
+  </table></div>
+
+  <h3>同地點覆蓋<span class="en">（Collocated Coverage Areas）</span></h3>
+  <div class="figure">
+    <div class="fig-title">同地點、不同頻道的多個 BSS <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-colloc"></div>
+    <div class="caption">依講義「Collocated Coverage Areas」圖重繪：三台 AP 覆蓋幾乎同一區域，各用不同頻道（Different Channels），都接到同一個 DS。</div>
+  </div>
+  <ul>
+    <li>多個 BSS 可以<b>覆蓋同一個區域</b>，只要使用<b>不同頻道</b>就不會互相干擾，並透過同一個 DS 連在一起。</li>
+    <li><span class="sup">補充</span>目的：<b>增加容量</b>（每個頻道各自有一份頻寬，總容量相加，適合演講廳、會場等人多的地方）與<b>備援</b>（一台 AP 故障，另一台仍可服務）。</li>
+    <li><span class="sup">補充</span>能疊幾層取決於不重疊頻道數：2.4 GHz 只有 1、6、11 三個（第 14 節），所以 2.4 GHz DSSS 最多 3 個 BSS 重疊；5／6 GHz 頻道多，可以疊更多。</li>
+    <li><span class="sup">補充</span>BSS 之間的其他空間關係（部分重疊、實體分離）見 2-2 第 6 節。</li>
+  </ul>
+
+  <h3>完整架構<span class="en">（Complete Architecture）</span></h3>
+  <div class="figure">
+    <div class="fig-title">完整架構：SS、DSS 與 Portal <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-complete"></div>
+    <div class="caption">依講義「Complete Architecture」圖重繪：所有站台（含 AP）提供 SS；DS 透過 AP 提供 DSS（Distribution System Service）；Portal 把 DS 接到 802.x LAN。AP 就是站台進入 DS 的入口（Service Entry）。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>服務</th><th>由誰提供</th><th>包含哪些服務 <span class="sup">補充</span></th></tr>
+    <tr><td><b>站台服務</b><span class="en">（Station Service, SS）</span></td><td>每個站台，包括 AP</td><td>Authentication、Deauthentication、Privacy（資料加密）、MSDU delivery</td></tr>
+    <tr><td><b>分散式系統服務</b><span class="en">（Distribution System Service, DSS）</span></td><td>DS，經由 AP 對站台提供</td><td>Association、Reassociation、Disassociation、Distribution（BSS 間轉送）、Integration（經 Portal 與 802.x LAN 互通）</td></tr>
+  </table></div>
+  <ul>
+    <li><b>AP</b> 同時具備 STA 的功能（提供 SS）以及進入 DS 的能力（提供 DSS），所以是 BSS 與 DS 之間的<b>入口</b>。</li>
+    <li><b>入口</b><span class="en">（Portal）</span>：DS 與非 802.11 的有線 LAN（例如 802.3）之間的邏輯連接點，負責 Integration；<span class="sup">補充</span>實務上常和 AP 做在同一台設備。</li>
+    <li>802.11 只定義這些<b>服務</b>，不定義 DS 內部怎麼實作（見下表）。SS 與 DSS 的細節與分類練習見 2-2 第 8 節「邏輯服務介面」。</li>
+  </ul>
+
+  <h3>802.11 定義的是空中介面<span class="en">（802.11 Defines the Airwaves IF）</span></h3>
+  <div class="figure">
+    <div class="fig-title">標準化的範圍 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-airif"></div>
+    <div class="caption">綠色是 802.11 標準化的部分：站台之間（含站台與 AP 之間）的空中介面，也就是 PHY 與 MAC 的行為；紅色是沒有標準化、留給廠商實作的部分。</div>
+  </div>
   <div class="tbl-wrap"><table>
     <tr><th>802.11 有標準化</th><th>802.11 沒有標準化</th></tr>
     <tr><td>✅ 站台之間（含站台與 AP 之間）的<b>空中介面</b><span class="en">（airwaves interface）</span>：PHY 與 MAC</td><td>❌ 對外公開的 MAC/PHY 內部介面<span class="en">（No exposed MAC/PHY interface specified）</span><br>❌ 對 DS 的公開介面<span class="en">（No exposed interface to Distribution System）</span>（只定義必要的 DS 服務）<br>❌ DS 的內部運作<span class="en">（Internals of Distribution System not defined）</span></td></tr>
   </table></div>
+  <ul>
+    <li><span class="sup">補充</span><b>為什麼只標準化空中介面</b>：不同廠牌的手機、筆電、AP 要能互通，只需要「在空中怎麼收發」一致就夠了（Wi-Fi Alliance 的認證也是測這部分）。晶片內部 MAC 與 PHY 怎麼切、AP 之間怎麼溝通，都留給廠商自由設計與創新。</li>
+    <li><span class="sup">補充</span><b>代價</b>：不同廠牌的 AP 之間很難合作。講義第 8 節提到的 IAPP（802.11f）只是試用建議，2006 年就撤回；企業級 Wi-Fi 多改用同一廠牌的控制器（Wireless LAN Controller）集中管理 AP，或 IETF 的 CAPWAP 協定。</li>
+    <li><span class="sup">補充</span>DS 內部可以是 Ethernet、交換器、甚至無線（Mesh），802.11 只要求 DS 提供 Association、Distribution、Integration 等 <b>DSS</b>（見上方完整架構）。</li>
+  </ul>
 
   <h2 id="ap">8. Access Point</h2>
   <ul>
@@ -191,17 +284,49 @@ flowchart TB
   <h3>MAC 服務</h3>
   <ul>
     <li><b>非同步 MSDU 傳送</b><span class="en">（Asynchronous MSDU Data Delivery）</span>：提供給 LLC，最大 <b>2304 octets</b>；實務上常用 1500 bytes，以便與 Ethernet 互通。</li>
-    <li><b>Time Bounded Services</b>：可選的 PCF。講義提出討論：商用產品不普及，原因可能是頻寬不足以支援即時服務、CSMA/CA 已經夠用（類似 Ethernet 的歷史）；後來由 <b>WMM / 802.11e</b> 強化 QoS。</li>
+    <li><b>有時間限制的服務</b><span class="en">（Time Bounded Services）</span>：可選的 PCF。講義提出討論：商用產品不普及，原因可能是頻寬不足以支援即時服務、CSMA/CA 已經夠用（類似 Ethernet 的歷史）；後來由 <b>WMM / 802.11e</b> 強化 QoS。</li>
     <li><b>安全服務</b><span class="en">（Security Services）</span>：機密性、認證、存取控制<span class="en">（confidentiality, authentication, access control）</span>；由 <b>WPA / 802.11i</b> 強化。</li>
     <li><b>管理服務</b><span class="en">（Management Services）</span>：掃描、加入、漫遊、電源管理<span class="en">（scanning, joining, roaming, power management）</span>。</li>
   </ul>
   <h3>MAC 功能</h3>
   <ul>
     <li>支援 Independent 與 Infrastructure 配置：每個 BSS 有唯一的 <b>48-bit 位址</b>（BSSID）；每個 ESS 有<b>可變長度位址</b><span class="en">（variable length address）</span>（<span class="sup">補充</span>即 SSID，最長 32 bytes）。</li>
-    <li><b>CSMA/CA</b>：MAC 層<b>正向確認（positive ACK）</b>、MSDU 分段<span class="en">（MSDU fragmentation）</span>、可選的 PCF（AP polling）、Hidden node 保護<span class="en">（hidden node protection）</span>（<b>virtual carrier sense</b>、<b>RTS/CTS 交換</b>）。</li>
-    <li><b>漫遊</b>：在 ESS 內，站台掃描 AP、進行 association handshake<span class="en">（Roaming support within an ESS: scans for APs, association handshakes）</span>。</li>
+    <li><b>載波偵測多重存取／碰撞避免</b><span class="en">（CSMA/CA）</span>，包含：
+      <ul>
+        <li><b>MAC 層正向確認</b><span class="en">（MAC level acknowledgment, positive ACK）</span>
+          <ul>
+            <li><span class="sup">補充</span>接收端收到<b>正確</b>的訊框（FCS 檢查通過），等一個 SIFS 就回 ACK；傳送端在時限內沒收到 ACK，就當作失敗，退避後重傳。「正向」是指只在成功時回應，失敗時不回任何東西（不像有些協定會回 NAK 否定確認）。</li>
+            <li><span class="sup">補充</span>為什麼需要：無線無法邊傳邊偵測碰撞，碰撞也可能只發生在接收端，傳送端唯一能確認成功的方法就是 ACK。對照第 1 章 802.3：有線靠碰撞偵測判斷成功，接收端不回 ACK。</li>
+            <li><span class="sup">補充</span>ACK 只等 SIFS（最短的訊框間隔），別的站台都要等更久的 DIFS，所以 ACK 不會被插隊。<b>廣播、群播訊框不回 ACK</b>，因此也不會重傳（這也是它們要用低速率送的原因，見第 10 節）。</li>
+          </ul>
+        </li>
+        <li><b>MSDU 分段</b><span class="en">（MSDU fragmentation）</span>
+          <ul>
+            <li><span class="sup">補充</span>MSDU 大於<b>分段門檻</b><span class="en">（Fragmentation Threshold）</span>時，切成數個較小的 MPDU 依序送出，接收端再<b>重組</b><span class="en">（defragmentation）</span>還原成原本的 MSDU。</li>
+            <li><span class="sup">補充</span>為什麼要切：無線的位元錯誤率比有線高，訊框越長越容易出錯；切小以後，出錯只要重傳那一小段，不必整個重來。</li>
+            <li><span class="sup">補充</span>每一段各自回 ACK；段與段之間只隔 SIFS，所以整串會連續送完，中途不會被其他站台搶走通道。接收端靠 MAC header 的<b>序號</b><span class="en">（Sequence Number）</span>與<b>分段編號</b><span class="en">（Fragment Number）</span>重組。</li>
+            <li><span class="sup">補充</span>代價：每段都要多一個 MAC header 與 ACK，訊號品質好時反而浪費，所以門檻通常設很大（預設幾乎不分段），只在干擾嚴重時調小。</li>
+          </ul>
+        </li>
+        <li><b>可選的集中式協調功能：AP 輪詢</b><span class="en">（Point Coordination Function, PCF：AP polling）</span>
+          <ul>
+            <li><span class="sup">補充</span>AP 當<b>協調者</b><span class="en">（Point Coordinator）</span>，把時間分成<b>免競爭期</b><span class="en">（Contention-Free Period, CFP）</span>與<b>競爭期</b><span class="en">（Contention Period, CP）</span>，合稱一個 superframe，以 Beacon 開頭。</li>
+            <li><span class="sup">補充</span>AP 只等 <b>PCF 訊框間隔</b><span class="en">（PIFS）</span>（比 DIFS 短）就能先搶到通道，開始免競爭期；期間依輪詢清單送<b>輪詢訊框</b><span class="en">（CF-Poll）</span>，被點到的站台才能傳，所以完全沒有碰撞；結束時送<b>免競爭期結束訊框</b><span class="en">（CF-End）</span>，回到一般的 DCF 競爭。</li>
+            <li>目的是支援<b>有時間限制的服務</b><span class="en">（Time Bounded Services）</span>，例如語音、影像；只能用在 Infrastructure，商用產品很少實作（見上方 MAC 服務與第 4 節）。</li>
+          </ul>
+        </li>
+        <li><b>隱藏節點保護</b><span class="en">（hidden node protection）</span>：
+          <ul>
+            <li><b>虛擬載波偵測</b><span class="en">（virtual carrier sense）</span>：不實際聽通道，而是讀其他訊框 Duration 欄位，設定<b>網路配置向量</b><span class="en">（Network Allocation Vector, NAV）</span>，知道通道還會忙多久。</li>
+            <li><b>要求傳送／允許傳送交換</b><span class="en">（RTS/CTS exchanges）</span>：傳資料前先交換短訊框，接收端回的 CTS 讓聽不到傳送端的隱藏節點也知道要避開。</li>
+            <li>原理與動畫見第 2 節「Hidden node 與 RTS/CTS」。<span class="sup">補充</span>RTS/CTS 本身也有額外負擔，通常只在訊框大於 <b>RTS 門檻</b><span class="en">（RTS Threshold）</span>時才使用。</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><b>漫遊</b>：在 ESS 內，站台掃描 AP、進行結合交握<span class="en">（Roaming support within an ESS: scans for APs, association handshakes）</span>。</li>
     <li><b>電源管理</b>：站台可自行休眠<span class="en">（stations may power themselves down）</span>；Infrastructure 由 AP 暫存資料<span class="en">（AP buffering）</span>，IBSS 則採分散式做法<span class="en">（distributed approach for IBSS）</span>。</li>
-    <li><b>認證與隱私</b><span class="en">（Authentication and privacy）</span>：可選的 <b>WEP</b>、金鑰交換、認證握手<span class="en">（Key exchange, Authentication handshakes）</span>；<b>802.1X</b> 以 EAP 強化認證；<b>802.11i</b> 強化安全性（建立在 802.1X 之上）。</li>
+    <li><b>認證與隱私</b><span class="en">（Authentication and privacy）</span>：可選的<b>有線等效加密</b><span class="en">（Wired Equivalent Privacy, WEP）</span>、金鑰交換、認證交握<span class="en">（Key exchange, Authentication handshakes）</span>；<b>802.1X</b> 以<b>可延伸認證協定</b><span class="en">（EAP）</span>強化認證；<b>802.11i</b> 強化安全性（建立在 802.1X 之上）。</li>
   </ul>
 
   <h2 id="phy-svc">10. PHY 層服務<span class="en">（PHY Layer Services）</span></h2>
@@ -221,6 +346,19 @@ flowchart TB
     <div class="fig-body" id="fig-range"></div>
     <div class="caption">示意圖，不是實測距離。距離越遠訊號越弱，只能用較低階的調變，所以速率越低；速率要用哪一階，由廠商的速率切換演算法決定。</div>
   </div>
+  <h3><span class="sup">補充</span>越重要的資訊，用越低的速率送</h3>
+  <p>低速率用的是最保守的調變（例如 DBPSK），需要的訊雜比最低，傳得最遠、最不容易出錯。所以<b>「範圍內每個站台都必須收到」的資訊，一律用低速率（Basic Rate）送</b>；只要給特定站台、錯了還能靠 ACK 重傳的一般資料，才依距離用高速率。</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>資訊</th><th>用什麼速率</th><th>為什麼</th></tr>
+    <tr><td><b>PLCP 前導碼＋標頭</b><span class="en">（Preamble＋Header）</span></td><td>11b Long：固定 1 Mbps DBPSK；Short header 2 Mbps；11a/g 以後的 SIGNAL 欄位固定 6 Mbps（BPSK 1/2）</td><td>每個站台都要能同步、讀出速率與長度；LENGTH 欄位讓<b>只支援低速率的站台</b>也能做 virtual carrier sense（第 15 節講義原文）</td></tr>
+    <tr><td><b>信標</b><span class="en">（Beacon）</span></td><td>Basic Rate Set 中的最低速率</td><td>BSS 範圍內所有站台都要靠它同步時間、發現網路</td></tr>
+    <tr><td><b>控制訊框</b>（RTS、CTS、ACK）</td><td>Basic Rate</td><td>周圍站台（包括 hidden node）都要讀得到 Duration 來設定 NAV</td></tr>
+    <tr><td><b>廣播／群播資料</b></td><td>Basic Rate</td><td>收件人多、沒有 ACK 也不重傳，要讓最遠的站台也收得到</td></tr>
+    <tr><td>一般單播資料</td><td>依距離由速率切換決定，越近越高</td><td>只要目的端收到即可，錯了有 ACK 重傳</td></tr>
+  </table></div>
+  <ul>
+    <li><b>代價</b>：低速率很佔空中時間。同樣 100 bytes，1 Mbps 要 800 μs，54 Mbps 不到 15 μs；Beacon 每 100 ms 就送一次。實務上常把 Basic Rate 下限調高（停用 802.11b 的 1、2、5.5、11 Mbps），省下空中時間，但最遠的舊設備就收不到了。</li>
+  </ul>
 
   <h2 id="four-phy">11. 四種 PHY<span class="en">（Four PHYs）</span></h2>
   <div class="tbl-wrap"><table>
@@ -272,10 +410,64 @@ flowchart TB
     <li><b>DFS</b>（Dynamic Frequency Selection）與 <b>TPC</b>（Transmit Power Control）來自 <b>802.11h</b>；<span class="sup">補充</span>DFS 主要是避開同頻段的雷達。</li>
     <li>HiperLAN I：23.5 Mbps、GMSK；HiperLAN II：6–54 Mbps，BPSK～64-QAM。</li>
   </ul>
-
-  <h2 id="dsss">13. DSSS 直接序列展頻</h2>
+  <h3>5 GHz：UNII 頻段<span class="en">（Unlicensed National Information Infrastructure）</span></h3>
   <div class="figure">
-    <div class="fig-title">DSSS 收發流程 <span class="tag static">圖解</span></div>
+    <div class="fig-title">5 GHz UNII 頻段與頻道 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-unii"></div>
+    <div class="caption">依講義「UNII 5GHz」頁整理（以美國 FCC 為例）。上排是講義說的三段各 100 MHz；下排是頻道編號（20 MHz 一個），斜線底色的頻道需要 DFS。</div>
+  </div>
+  <ul>
+    <li>講義：5 GHz 共 <b>300 MHz</b>，分三段各 100 MHz；<b>歐洲要求 DFS＋TPC</b><span class="en">（Europe: DFS+TPC）</span>。</li>
+    <li><b>DFS</b>（Dynamic Frequency Selection，動態頻率選擇）：偵測到雷達就自動換頻道；<b>TPC</b>（Transmit Power Control，傳輸功率控制）：自動把發射功率降到夠用就好，減少對其他系統的干擾。兩者都來自 802.11h。</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>頻段 <span class="sup">補充</span></th><th>頻率</th><th>20 MHz 頻道</th><th>需要 DFS</th><th>備註</th></tr>
+    <tr><td>UNII-1</td><td>5150–5250 MHz</td><td>36、40、44、48</td><td>否</td><td>講義三段之一；原本限室內</td></tr>
+    <tr><td>UNII-2（2A）</td><td>5250–5350 MHz</td><td>52、56、60、64</td><td>是</td><td>講義三段之一</td></tr>
+    <tr><td>UNII-2 Extended（2C）</td><td>5470–5725 MHz</td><td>100–144</td><td>是</td><td>2003 年後加開（不在講義的三段內）</td></tr>
+    <tr><td>UNII-3</td><td>5725–5850 MHz</td><td>149、153、157、161、165</td><td>否</td><td>講義三段之一（原為 5725–5825）</td></tr>
+  </table></div>
+  <ul>
+    <li><span class="sup">補充</span>頻道編號換算：中心頻率 = 5000 ＋ 5 × 頻道號（MHz），例如 36 → 5180 MHz。</li>
+    <li><span class="sup">補充</span>5 GHz 不重疊頻道多（約 25 個 20 MHz），所以可以開 40／80／160 MHz 寬頻道，這也是 11ac 只用 5 GHz 的原因。</li>
+  </ul>
+
+  <h3>6 GHz <span class="sup">補充</span></h3>
+  <div class="figure">
+    <div class="fig-title">6 GHz 頻段與頻道數 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-6g"></div>
+    <div class="caption">依講義「6GHz」頁整理（以美國 FCC 開放的 1200 MHz 為例）。下方是各種頻寬可切出的頻道數；歐洲等地只開放下半段。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>頻段</th><th>頻率</th><th>寬度</th></tr>
+    <tr><td>UNII-5</td><td>5925–6425 MHz</td><td>500 MHz</td></tr>
+    <tr><td>UNII-6</td><td>6425–6525 MHz</td><td>100 MHz</td></tr>
+    <tr><td>UNII-7</td><td>6525–6875 MHz</td><td>350 MHz</td></tr>
+    <tr><td>UNII-8</td><td>6875–7125 MHz</td><td>250 MHz</td></tr>
+  </table></div>
+  <ul>
+    <li><span class="sup">補充</span>1200 MHz 可切出 59 個 20 MHz、29 個 40 MHz、14 個 80 MHz、7 個 160 MHz、3 個不重疊的 320 MHz 頻道（Wi-Fi 7）。比 2.4 GHz（83.5 MHz）與 5 GHz 加起來還多。</li>
+    <li><span class="sup">補充</span>只有 Wi-Fi 6E 以後的裝置能用，沒有舊設備拖慢速度，所以最「乾淨」。</li>
+    <li><span class="sup">補充</span>功率等級：室內低功率（LPI）可直接用；戶外或高功率要先查詢頻率協調資料庫（AFC），避免干擾既有的微波鏈路。</li>
+    <li><span class="sup">補充</span>各國開放範圍不同：美國、加拿大、台灣等開放較多（台灣以 NCC 最新公告為準）；歐洲只開放 5945–6425 MHz（約 480 MHz）。</li>
+  </ul>
+
+  <h2 id="dsss">13. DSSS 實體層規格<span class="en">（Direct Sequence Spread Spectrum Physical Layer Specification）</span></h2>
+  <div class="callout note">本節依講義 p.55–63 的順序整理；頻道（p.64）見第 14 節，PLCP（p.66–68、78–84）見第 15 節，調變（p.69–77）見第 16 節。</div>
+
+  <h3>什麼是 DSSS<span class="en">（What is DSSS?）</span>（p.56–57）</h3>
+  <ul>
+    <li>每個訊號符號都用一個序列<b>展開</b><span class="en">（Signal symbol is spread with a sequence）</span>：講義圖中一個 +1 或 −1 的符號，乘上 <code>+1 −1 +1 +1 −1 +1 +1 +1 −1 −1 −1</code> 這串展頻碼<span class="en">（Spreading code）</span>。</li>
+    <li>結果：<b>頻寬變寬</b><span class="en">（Wider Bandwidth）</span>、<b>功率密度變低</b><span class="en">（Less power density）</span>。總功率不變，只是攤到更寬的頻率上。</li>
+    <li>講義中文說明（p.57）：原始信號乘上<b>虛擬隨機序列</b>，再經過調變送出；途中受雜訊與干擾影響。接收端解調變後，再乘上<b>同一個</b>虛擬隨機序列，就能還原原始信號。</li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">展頻前後的功率頻譜（Power vs. Frequency） <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-spectrum"></div>
+    <div class="caption">依講義 p.56 的兩張頻譜圖重繪：左邊展頻前，能量集中在窄頻帶、峰值高；右邊展頻後，同樣的能量攤成寬而低的頻譜。</div>
+  </div>
+  <div class="figure">
+    <div class="fig-title">直接序列展頻的收發流程 <span class="tag static">圖解</span></div>
     <div class="fig-body"><div class="mermaid-host">
 flowchart LR
   D["原始信號"] --> X1(("×"))
@@ -286,12 +478,14 @@ flowchart LR
   PN2["同一個虛擬隨機序列"] --> X2
   X2 --> OUT["還原原始信號"]
     </div></div>
+    <div class="caption">依講義 p.57 的方塊圖重繪。</div>
   </div>
   <ul>
-    <li>原始訊號乘上<b>虛擬隨機序列</b>，再調變送出；途中受雜訊與干擾影響。接收端解調變後，再乘上<b>同一個</b>虛擬隨機序列，還原原始訊號。</li>
-    <li>效果：<b>頻寬變寬、功率密度變低<span class="en">（Wider Bandwidth, Less power density）</span></b>。</li>
-    <li>虛擬隨機序列（PN code）：看起來隨機，實際上是有規律的週期性二進位序列<span class="en">（a periodic binary sequence that appears random but is actually regular）</span>。</li>
+    <li><span class="sup">補充</span>為什麼能抗干擾：接收端再乘一次同一個序列時，原始訊號被「收窄」回來；窄頻干擾反而只乘一次，被<b>展開</b>成寬而低的雜訊，大部分會被濾掉。</li>
+    <li><b>虛擬隨機序列</b>（Pseudo-random / PN code）：基本特性和隨機序列類似，但其實是有規律的<b>週期性</b>二進位序列<span class="en">（a periodic binary sequence that appears random but is actually regular）</span>（p.78）。</li>
   </ul>
+
+  <h3>展頻過程（p.58）</h3>
   <div class="figure" id="fig-spread-wrap">
     <div class="fig-title">用 Barker 碼展頻 <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-spread"></div></div>
@@ -300,26 +494,29 @@ flowchart LR
       <span style="color:var(--muted)">每個 bit 乘上 11 個 chip：1 → +1 × Barker，0 → −1 × Barker</span>
     </div>
   </div>
-  <h3>11-chip Barker sequence</h3>
+
+  <h3>11-chip Barker 序列<span class="en">（11 Chip BARKER Sequence）</span>（p.59）</h3>
   <ul>
     <li>序列：<code>+1 −1 +1 +1 −1 +1 +1 +1 −1 −1 −1</code></li>
-    <li>特性：<b>自相關特性好</b><span class="en">（Good autocorrelation properties）</span>（對齊時相關值 +11，錯位時接近 0）、<b>FCC 允許的最短序列</b><span class="en">（Minimal sequence allowed by FCC）</span>、<b>coding gain 10.4 dB</b>。</li>
-    <li><span class="sup">補充</span>10.4 dB 的由來：每個 bit 展成 11 個 chip，處理增益 = 10 log<sub>10</sub>(11) ≈ <b>10.4 dB</b>；chip rate 為 11 Mchip/s。</li>
+    <li><b>自相關特性好</b><span class="en">（Good autocorrelation properties）</span>：接收端把收到的 chip 串和 Barker 碼逐一相乘再相加（相關運算）。
+      <ul>
+        <li>剛好對齊時，資料 1 得 <b>+11</b>、資料 0 得 <b>−11</b>，用正負號就能判斷位元。</li>
+        <li>沒對齊時（講義圖中 t−1、t+1 時刻收到的 chip 串）結果接近 0，所以接收端很容易找到每個位元的起點。</li>
+      </ul>
+    </li>
+    <li><b>FCC 允許的最短序列</b><span class="en">（Minimal sequence allowed by FCC）</span>：<span class="sup">補充</span>FCC 規定展頻至少要 10 倍，11 是符合規定的最短 Barker 碼。</li>
+    <li><b>編碼增益 10.4 dB</b><span class="en">（Coding gain 10.4 dB）</span>：<span class="sup">補充</span>每個 bit 展成 11 個 chip，處理增益 = 10 log<sub>10</sub>(11) ≈ 10.4 dB；1 Mbps 時 chip rate 為 11 Mchip/s。</li>
   </ul>
   <div class="figure" id="fig-corr-wrap">
-    <div class="fig-title">Barker 自相關：只有對齊時才是 11 <span class="tag">互動</span></div>
+    <div class="fig-title">Barker 自相關：只有對齊時才是 ±11 <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-corr"></div></div>
     <div class="controls">
       <label style="flex:1;display:flex;gap:8px;align-items:center">位移 <input type="range" id="corr-shift" min="-10" max="10" value="0" style="flex:1"></label>
       <span class="time" id="corr-val"></span>
     </div>
   </div>
-  <h3>DSSS 的好處<span class="en">（DSSS Benefits）</span></h3>
-  <ul>
-    <li>約 10 dB 的編碼增益 → 抗干擾與雜訊<span class="en">（Robust against interferers and noise）</span>。</li>
-    <li>抗時間延遲擴散（delay spread）：可分辨出主訊號與回波<span class="en">（Resolution of echoes）</span>（多路徑）。</li>
-  </ul>
-  <h3>分貝（dB）</h3>
+
+  <h3>分貝<span class="en">（Decibels, dB）</span>（p.60）</h3>
   <div class="figure" id="fig-db-wrap">
     <div class="fig-title">dB 計算器 <span class="tag">互動</span></div>
     <div class="fig-body">
@@ -332,11 +529,58 @@ flowchart LR
     </div>
   </div>
   <ul>
-    <li>功率比：<b>10 log<sub>10</sub>(P1 / P2)</b>。講義例題：輸入 100W、輸出 1W → 10 log<sub>10</sub>(100) = <b>20 dB</b>。</li>
-    <li><span class="sup">補充</span>常用值：3 dB ≈ 2 倍、10 dB = 10 倍、20 dB = 100 倍；dBm 以 1 mW 為基準（0 dBm = 1 mW、20 dBm = 100 mW）。</li>
+    <li><b>分貝</b>：10 log<sub>10</sub>(x)。<b>以分貝表示功率</b><span class="en">（Power in decibels）</span>：Y dB = 10 log<sub>10</sub>(x Watt)，也就是以 1 W 為基準（<span class="sup">補充</span>單位寫成 dBW）。</li>
+    <li><b>功率比</b><span class="en">（Power ratio in decibels）</span>：P1、P2 以瓦特為單位，比值 = <b>10 log<sub>10</sub>(P1 / P2)</b>。</li>
+    <li>講義例題：輸入功率 100 W、輸出功率 1 W，功率比 = 10 log<sub>10</sub>(100) = <b>20 dB</b>。</li>
+    <li><span class="sup">補充</span>常用值：3 dB ≈ 2 倍、10 dB = 10 倍、20 dB = 100 倍。Wi-Fi 常用 <b>dBm</b>（以 1 mW 為基準）：0 dBm = 1 mW、20 dBm = 100 mW；dBm = dBW + 30。</li>
   </ul>
 
+  <h3>DSSS 的好處<span class="en">（DSSS Benefits）</span>（p.61）</h3>
+  <ul>
+    <li><b>10 dB 編碼增益</b><span class="en">（10 dB coding gain）</span>：抗干擾與雜訊<span class="en">（Robust against interferers and noise）</span>，干擾約可被壓低 10 dB<span class="en">（10 dB suppression）</span>。</li>
+    <li><b>抗時間延遲擴散</b><span class="en">（Robust against time delay spread）</span>：能分辨出回波<span class="en">（Resolution of echoes）</span>。多路徑造成的回波比主訊號晚到，相關運算後會在不同時間各出現一個峰值，接收端鎖定最大的主峰<span class="en">（peak）</span>，把回波<span class="en">（echo）</span>分開來。</li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">相關器輸出：主峰與回波 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-echo"></div>
+    <div class="caption">依講義 p.61 的圖重繪：橫軸是時間，縱軸是相關值。直達路徑產生主峰，經牆面反射較晚到達的訊號形成較小的回波峰；只要回波延遲超過 1 個 chip（約 91 ns），就能和主峰分開。</div>
+  </div>
+
+  <h3>DSSS 硬體方塊圖<span class="en">（DSSS Hardware Block Diagram）</span>（p.62）</h3>
+  <div class="figure">
+    <div class="fig-title">DSSS 收發器（DBPSK／DQPSK） <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart TB
+  subgraph TX["傳送端"]
+    direction LR
+    T1["PPDU 位元"] --> T2["擾亂器<br>Scrambler"] --> T3["DBPSK／DQPSK<br>差分調變"] --> T4(("×")) --> T5["發射濾波<br>＋射頻"]
+    B1["11-chip Barker<br>11 Mchip/s"] --> T4
+  end
+  subgraph RX["接收端"]
+    direction LR
+    R1["射頻＋濾波"] --> R2["Barker 相關器<br>（解展頻）"] --> R3["DBPSK／DQPSK<br>差分解調"] --> R4["解擾亂器<br>Descrambler"] --> R5["PPDU 位元"]
+  end
+  TX -. "空中傳輸" .-> RX
+    </div></div>
+    <div class="caption">講義 p.62 為硬體方塊圖（標示 DBPSK、DQPSK 兩種調變），這裡依 802.11 DSSS 標準架構整理成示意，元件名稱與講義原圖可能略有不同。</div>
+  </div>
+  <ul>
+    <li><span class="sup">補充</span>擾亂器（scrambler）先把資料打散，避免長串 0 或 1 讓頻譜出現尖峰；接收端用解擾亂器還原。PLCP 的 SYNC（128 個 1）也是經過擾亂後才送出（p.78）。</li>
+    <li><span class="sup">補充</span>差分調變（DBPSK／DQPSK）看的是「相位變化量」，接收端不需要知道絕對相位，硬體較簡單（第 16 節）。</li>
+  </ul>
+
+  <h3>IEEE 802.11 DSSS PHY 特性<span class="en">（IEEE 802.11 DSSS PHY characteristics）</span>（p.63）</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>項目</th><th>內容</th></tr>
+    <tr><td>頻段</td><td>2.4 GHz ISM 頻段（FCC 15.247）</td></tr>
+    <tr><td>1、2 Mbps</td><td>DBPSK、DQPSK 調變；chip rate 11 MHz，使用 11-chip Barker 序列</td></tr>
+    <tr><td>5.5、11 Mbps（802.11b）</td><td><b>互補碼鍵控</b><span class="en">（CCK）</span>：QPSK、DQPSK 調變，<b>必要</b>；<b>封包二元卷積碼</b><span class="en">（PBCC）</span>：BPSK、QPSK 調變，可選</td></tr>
+    <tr><td>22、33 Mbps（802.11g）</td><td>PBCC-22、PBCC-33（可選，TI 提案）</td></tr>
+    <tr><td>頻道</td><td>2.4–2.4835 GHz 中的多個頻道（第 14 節）</td></tr>
+  </table></div>
+
   <h2 id="channels">14. DSSS 頻道規劃（2.4GHz）<span class="en">（DSSS Channels）</span></h2>
+  <div class="callout note">依講義 p.48（2.4GHz）與 p.64（DSSS Channels）整理。</div>
   <div class="figure" id="fig-ch-wrap">
     <div class="fig-title">2.4GHz 頻道與各地區可用範圍 <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-ch"></div><div class="status info" id="ch-msg"></div></div>
@@ -363,6 +607,26 @@ flowchart LR
   </table></div>
 
   <h2 id="plcp">15. 802.11b PLCP 訊框格式<span class="en">（PLCP Frame Formats in IEEE 802.11b）</span></h2>
+  <div class="callout note">依講義 p.66–68（格式總覽）與 p.78–84（各欄位、CRC 實作）整理；中間的調變（p.69–77）見第 16 節。</div>
+
+  <h3>兩種 Preamble／Header 格式（p.66）</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>項目</th><th>Long PLCP PPDU</th><th>Short PLCP PPDU</th></tr>
+    <tr><td>802.11b 中</td><td><b>必要</b><span class="en">（Mandatory in 802.11b）</span></td><td>可選<span class="en">（Optional in 802.11b）</span></td></tr>
+    <tr><td>Preamble</td><td>144 bits，1 Mbps DBPSK</td><td>72 bits，1 Mbps DBPSK</td></tr>
+    <tr><td>Header</td><td>48 bits，1 Mbps DBPSK</td><td>48 bits，<b>2 Mbps DQPSK</b></td></tr>
+    <tr><td>耗時</td><td><b>192 μs</b><span class="en">（Spend 192us）</span></td><td><b>96 μs</b></td></tr>
+    <tr><td>PSDU 速率</td><td>1、2、5.5、11 Mbps</td><td>2、5.5、11 Mbps</td></tr>
+    <tr><td>目的</td><td>相容 1、2 Mbps 的舊設備<span class="en">（Compatible with 1 and 2 Mbps）</span></td><td>降低額外負擔、提高吞吐量<span class="en">（Minimize overhead, maximize data throughput）</span></td></tr>
+  </table></div>
+  <ul>
+    <li><span class="sup">補充</span>192 μs = (144 + 48) bits ÷ 1 Mbps；96 μs = 72 ÷ 1 Mbps ＋ 48 ÷ 2 Mbps。</li>
+  </ul>
+
+  <h3>PLCP 子層的位置（p.67）</h3>
+  <p>講義在這裡重複第 5 節的協定實體圖，並標出 PLCP 子層<span class="en">（PHY Convergence Sublayer）</span>：LLC 交下來的 MSDU，經 MAC 加上 802.11 header 成為 MPDU；送到 PLCP 時改稱 PSDU；PLCP 加上 802.11b 的 preamble 與 header 後成為 <b>PPDU</b>。動畫見第 5 節「資料單元的名稱變化」。</p>
+
+  <h3>Long PLCP 訊框格式<span class="en">（Long PLCP Frame Format）</span>（p.68）</h3>
   <div class="figure" id="fig-plcp-wrap">
     <div class="fig-title">Long 與 Short PLCP <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-plcp"></div><div class="status info" id="plcp-msg">點選欄位看說明。</div></div>
@@ -370,33 +634,46 @@ flowchart LR
       <div class="seg" id="plcp-mode"><button type="button" class="on" data-v="long">Long PLCP（必要）</button><button type="button" data-v="short">Short PLCP（可選）</button></div>
     </div>
   </div>
+  <ul>
+    <li>Long PLCP Preamble（144 bits）＝ SYNC 128 ＋ SFD 16；Long PLCP Header（48 bits）＝ SIGNAL 8 ＋ SERVICE 8 ＋ LENGTH 16 ＋ CRC 16。整個合起來是 <b>PPDU</b>。</li>
+    <li><b>Preamble 與 Header 一律用 1 Mb/s DBPSK Barker</b><span class="en">（Preamble and Header always at 1Mb/s DBPSK Barker）</span>，共 192 μs。</li>
+    <li>後面的 PSDU／MPDU 依速率調變：1 Mbps DBPSK Barker、2 Mbps DQPSK Barker、5.5／11 Mbps DQPSK CCK。</li>
+  </ul>
+
+  <h3>各欄位說明（p.78–83）</h3>
   <div class="tbl-wrap"><table>
-    <tr><th>項目</th><th>Long PLCP（必要）</th><th>Short PLCP（可選）</th></tr>
-    <tr><td>Preamble</td><td>144 bits，1 Mbps DBPSK</td><td>72 bits，1 Mbps DBPSK</td></tr>
-    <tr><td>Header</td><td>48 bits，1 Mbps DBPSK</td><td>48 bits，2 Mbps DQPSK</td></tr>
-    <tr><td>耗時</td><td><b>192 μs</b></td><td><b>96 μs</b></td></tr>
-    <tr><td>PSDU 速率</td><td>1、2、5.5、11 Mbps</td><td>2、5.5、11 Mbps</td></tr>
-    <tr><td>目的</td><td>相容 1 / 2 Mbps 舊設備<span class="en">（Compatible with 1 and 2 Mbps）</span></td><td>降低 overhead、提高吞吐量<span class="en">（Minimize overhead, maximize data throughput）</span></td></tr>
+    <tr><th>欄位（頁）</th><th>長度</th><th>內容與用途</th></tr>
+    <tr><td><b>SYNC</b>（p.78 PLCP synchronization）</td><td>128 bits</td><td>128 個 1，經過擾亂器（scrambler）擾亂；讓接收端鎖定訊號的時脈，並與 PN code 做相關<span class="en">（Used for receiver to clock on to the signal and to correlate to the PN code）</span></td></tr>
+    <tr><td><b>SFD</b>（p.79 Start Frame Delimiter）</td><td>16 bits</td><td>固定值 <b>hF3A0</b>；用於位元同步<span class="en">（bit synchronization）</span>，標示 header 從下一個 bit 開始</td></tr>
+    <tr><td><b>SIGNAL</b>（p.80）</td><td>8 bits</td><td>速率<span class="en">（Rate indication）</span>：h0A = 1 Mb/s DBPSK、h14 = 2 Mb/s DQPSK、h37 = 5.5 Mb/s CCK 或 PBCC、h6E = 11 Mb/s CCK 或 PBCC。其他值保留給未來使用；數值以 <b>100 kb/s</b> 為單位（例如 h6E = 110 → 11 Mbps）</td></tr>
+    <tr><td><b>SERVICE</b>（p.81）</td><td>8 bits</td><td>保留給未來使用；<b>h00</b> 表示符合 802.11<br>• bit 2 <b>locked clock</b>：表示發射頻率（mixer）與符號時脈（baseband）由同一個振盪器產生；11b 可選、11g 必要<br>• bit 3 <b>調變選擇</b><span class="en">（modulation selection）</span>：0 = CCK、1 = PBCC<br>• bit 7 <b>長度延伸</b><span class="en">（length extension bit）</span>：資料率 &gt; 8 Mbps 時使用</td></tr>
+    <tr><td><b>LENGTH</b>（p.82）</td><td>16 bits</td><td>傳送 PSDU／MPDU 需要的<b>微秒數</b>，由 TXVECTOR 中的長度與資料率決定。用途：訊框結束偵測<span class="en">（End of frame detection）</span>、讓速率較低的站台也能做 virtual carrier sense、MPDU CRC 同步</td></tr>
+    <tr><td><b>CRC</b>（p.83）</td><td>16 bits</td><td>CCITT CRC-16，保護 SIGNAL、SERVICE、LENGTH 三個欄位<span class="en">（Protects Signal, Service and Length Field）</span></td></tr>
   </table></div>
   <ul>
-    <li><span class="sup">補充</span>192 μs = (144 + 48) bits ÷ 1 Mbps；96 μs = 72 ÷ 1 Mbps + 48 ÷ 2 Mbps。</li>
-    <li>PSDU 的調變：1 Mbps 為 DBPSK Barker、2 Mbps 為 DQPSK Barker、5.5 / 11 Mbps 為 DQPSK CCK。</li>
+    <li><span class="sup">補充</span>為什麼 LENGTH 用「微秒」而不是 bytes：只看得懂 1、2 Mbps 的舊站台，雖然解不開 11 Mbps 的資料，但讀得懂 1 Mbps 的 header，知道通道會忙多久，就能延後傳送（虛擬載波偵測）。</li>
+    <li><span class="sup">補充</span>為什麼需要長度延伸位元：11 Mbps 時 1 μs 傳 11 bits，不是整數個 byte，從微秒換回 bytes 會有歧義，用 bit 7 消除。</li>
   </ul>
-  <div class="tbl-wrap"><table>
-    <tr><th>欄位</th><th>長度</th><th>內容與用途</th></tr>
-    <tr><td>SYNC</td><td>128 bits</td><td>128 個 1，經過 scrambler 擾亂；讓接收端鎖定時脈並與 PN code 相關<span class="en">（Used for receiver to clock on to the signal and to correlate to the PN code）</span></td></tr>
-    <tr><td>SFD</td><td>16 bits</td><td>固定值 hF3A0；用於位元同步<span class="en">（bit synchronization）</span></td></tr>
-    <tr><td>SIGNAL</td><td>8 bits</td><td>速率<span class="en">（Rate indication）</span>：h0A = 1 Mbps DBPSK、h14 = 2 Mbps DQPSK、h37 = 5.5 Mbps、h6E = 11 Mbps（CCK 或 PBCC）；單位為 100 kbps，例如 h6E = 110 → 11 Mbps</td></tr>
-    <tr><td>SERVICE</td><td>8 bits</td><td>h00 表示符合 802.11；bit 2 locked clock（11b 可選、11g 必要）、bit 3 調變選擇<span class="en">（modulation selection）</span>（0 = CCK、1 = PBCC）、bit 7 長度延伸<span class="en">（length extension bit）</span>（速率 &gt; 8 Mbps 時使用）</td></tr>
-    <tr><td>LENGTH</td><td>16 bits</td><td>傳送 PSDU 所需的<b>微秒數</b>；用於訊框結束偵測<span class="en">（End of frame detection）</span>、讓低速站台做 virtual carrier sense、MPDU CRC 同步</td></tr>
-    <tr><td>CRC</td><td>16 bits</td><td>CCITT CRC-16，保護 SIGNAL、SERVICE、LENGTH 三個欄位<span class="en">（Protects Signal, Service and Length Field）</span></td></tr>
-  </table></div>
+
+  <h3>CRC 實作<span class="en">（CRC Implementation）</span>（p.84）</h3>
+  <div class="figure">
+    <div class="fig-title">CRC-16 移位暫存器 <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-crc"></div>
+    <div class="caption">講義 p.84 是 CRC 電路圖，這裡依 CCITT CRC-16 的標準電路重繪：16 個暫存器；輸入與第 15 格的輸出做 XOR 後，送進第 0 格，也回授到第 5、12 格前面的 XOR，對應生成多項式 x<sup>16</sup> ＋ x<sup>12</sup> ＋ x<sup>5</sup> ＋ 1。</div>
+  </div>
+  <ul>
+    <li><span class="sup">補充</span>生成多項式 <b>G(x) = x<sup>16</sup> ＋ x<sup>12</sup> ＋ x<sup>5</sup> ＋ 1</b>。</li>
+    <li><span class="sup">補充</span>步驟：暫存器先預設成<b>全 1</b>；SIGNAL、SERVICE、LENGTH 共 32 bits 依序送入；最後把暫存器內容取 <b>1 的補數</b>（全部反相）當成 16-bit CRC 送出。接收端用同一個電路計算，結果不符就丟棄這個訊框。</li>
+    <li><span class="sup">補充</span>預設全 1 的好處：如果開頭多了或少了幾個 0，CRC 也會不同，偵測得出來。</li>
+  </ul>
 
   <h2 id="modulation">16. 調變基礎<span class="en">（Modulation）</span></h2>
+  <div class="callout note">依講義 p.69–77 整理：調變定義（p.69–70）、數位調變（p.71）、數據機例子（p.72–73）、基本數位調變（p.74）、QAM（p.75）、DBPSK（p.76）、DQPSK（p.77）。</div>
   <ul>
     <li><b>調變</b>：改變週期性載波的一個或多個性質<span class="en">（varying one or more properties of a periodic waveform, called the carrier signal）</span>（振幅、頻率、相位）來攜帶訊息；把窄頻的基頻訊號轉成可通過濾波器的帶通訊號。</li>
+    <li>大多數無線電系統用<b>調頻</b><span class="en">（frequency modulation, FM）</span>或<b>調幅</b><span class="en">（amplitude modulation, AM）</span>，讓載波攜帶廣播內容；也就是收音機的 FM、AM 電台。</li>
     <li>數位調變可視為數位轉類比<span class="en">（digital-to-analog conversion）</span>；解調變則是類比轉數位<span class="en">（analog-to-digital conversion）</span>。載波變化從有限的 M 種 symbol<span class="en">（a finite number of M alternative symbols, the modulation alphabet）</span> 中選一種。</li>
-    <li><b>symbol rate 與 bit rate</b>（講義數據機例子）：4 種 symbol 可代表 00、01、10、11，每個 symbol 載 2 bits；每秒 1000 個 symbol（1000 baud）→ 2000 bps。</li>
+    <li><b>symbol rate 與 bit rate</b>（講義數據機例子）：4 種 symbol 可代表 00、01、10、11，每個 symbol 載 2 bits；每秒 1000 個 symbol（1000 baud）→ 2000 bps。講義補充：這就是<b>撥接數據機</b><span class="en">（dial-up modems）</span>的做法，<b>DSL 數據機</b>則不同。<span class="sup">補充</span>DSL 用 DMT（類似 OFDM 的多載波技術），把電話線頻寬切成數百個子載波同時傳。</li>
   </ul>
   <div class="figure">
     <div class="fig-title">ASK・FSK・PSK 波形 <span class="tag static">圖解</span></div>
@@ -408,7 +685,7 @@ flowchart LR
     <tr><td>ASK</td><td>有限個振幅<span class="en">（a finite number of amplitudes）</span></td></tr><tr><td>FSK</td><td>有限個頻率<span class="en">（a finite number of frequencies）</span></td></tr><tr><td>PSK</td><td>有限個相位<span class="en">（a finite number of phases）</span></td></tr>
     <tr><td>QAM</td><td>至少兩個相位 ＋ 至少兩個振幅；I（cos）與 Q（sin）兩路各做 ASK 再相加，等於 PSK 與 ASK 的結合</td></tr>
   </table></div>
-  <h3>差分調變（依相位「變化量」表示資料）</h3>
+  <h3>差分調變：DBPSK 與 DQPSK（p.76–77）</h3>
   <div class="figure" id="fig-dpsk-wrap">
     <div class="fig-title">DBPSK／DQPSK 相位旋轉 <span class="tag">動畫</span></div>
     <div class="fig-body"><div id="fig-dpsk"></div></div>
@@ -418,13 +695,122 @@ flowchart LR
     </div>
   </div>
   <ul>
-    <li><b>DBPSK</b>（1 Mbps）：輸入 0 → 相位變化 0；輸入 1 → 相位變化 π。</li>
+    <li>差分調變是用相位的<b>變化量</b>（不是絕對相位）表示資料；講義表格的「Phase Change (+jω)」指往逆時針方向轉多少。</li>
+    <li><b>DBPSK</b>（1 Mb/s）：輸入 0 → 相位變化 0；輸入 1 → 相位變化 π。</li>
     <li><b>DQPSK</b>（2 Mbps，每 2 bits 一組，d0 先）：00 → 0、01 → π/2、11 → π、10 → 3π/2（−π/2）。</li>
     <li><span class="sup">補充</span>00、01、11、10 的順序是 Gray code，相鄰相位只差 1 bit，出錯時影響最小。</li>
   </ul>
 
-  <h2 id="glossary">17. 專有名詞對照</h2>
-  <details><summary>展開 60 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
+  <h2 id="home-ap">17. 家用 AP 技術與天線<span class="en">（Home AP Technologies and Antennas）</span></h2>
+  <p><span class="sup">補充</span>本節都不在講義內，用來把講義的 PHY 與架構接到市售家用 AP。</p>
+
+  <h3>家用 AP 的組成</h3>
+  <div class="figure">
+    <div class="fig-title">家用無線路由器內部方塊圖 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  WAN["WAN 埠<br>接數據機／光纖"] --> SOC
+  subgraph SOC["主控晶片 SoC"]
+    direction TB
+    RT["路由器：NAT、DHCP、防火牆"] --- SW["交換器：LAN 埠"]
+  end
+  SOC --> R24["2.4 GHz 無線晶片<br>MAC＋基頻"]
+  SOC --> R5["5 GHz 無線晶片"]
+  SOC --> R6["6 GHz 無線晶片<br>（Wi-Fi 6E／7）"]
+  R24 --> F1["前端模組 FEM<br>PA＋LNA＋開關"] --> A1(("天線"))
+  R5 --> F2["FEM"] --> A2(("天線"))
+  R6 --> F3["FEM"] --> A3(("天線"))
+    </div></div>
+    <div class="caption">市售「無線路由器」其實是路由器、交換器、AP 三合一；切成 AP 模式（橋接模式）時才只剩第 8 節講的 AP 功能。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>元件</th><th>功能</th><th>對應講義</th></tr>
+    <tr><td>主控晶片<span class="en">（SoC）</span></td><td>CPU、路由、NAT、DHCP、防火牆、管理介面</td><td>DS 與 Portal 的角色（802.11 不規範內部）</td></tr>
+    <tr><td>無線晶片<span class="en">（Wi-Fi Radio）</span></td><td>802.11 MAC 與基頻：OFDM、QAM、MIMO 運算</td><td>MAC、PLCP、PMD</td></tr>
+    <tr><td>前端模組<span class="en">（Front-End Module, FEM）</span></td><td>功率放大器（PA）放大發射訊號；低雜訊放大器（LNA）放大接收訊號；收發切換開關</td><td>PMD</td></tr>
+    <tr><td>天線<span class="en">（Antenna）</span></td><td>把電訊號轉成電磁波；數量決定 MIMO 能用幾條串流</td><td>PHY 的最末端</td></tr>
+  </table></div>
+  <ul>
+    <li><b>規格名稱怎麼看</b>：「AX3000」是各頻段最高速率相加，例如 2.4 GHz 2×2 40 MHz（574 Mbps）＋ 5 GHz 2×2 160 MHz（2402 Mbps）≈ 3000。單一裝置一次只連一個頻段，實際拿不到 3000。</li>
+    <li>「雙頻」是 2.4＋5 GHz；「三頻」可能是 2.4＋5＋6 GHz，也可能是 2.4＋兩組 5 GHz（Mesh 常用其中一組當回程）。</li>
+  </ul>
+
+  <h3>Wi-Fi 世代比較</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>名稱</th><th>標準</th><th>頻段</th><th>最大頻寬</th><th>最高調變</th><th>串流數（標準上限）</th><th>理論最高速率</th><th>重點技術</th></tr>
+    <tr><td>Wi-Fi 4</td><td>802.11n（HT）</td><td>2.4／5 GHz</td><td>40 MHz</td><td>64-QAM</td><td>4</td><td>600 Mbps</td><td>MIMO、頻道聚合</td></tr>
+    <tr><td>Wi-Fi 5</td><td>802.11ac（VHT）</td><td>5 GHz</td><td>160 MHz</td><td>256-QAM</td><td>8</td><td>6.9 Gbps</td><td>下行 MU-MIMO、標準化波束成形</td></tr>
+    <tr><td>Wi-Fi 6</td><td>802.11ax（HE）</td><td>2.4／5 GHz</td><td>160 MHz</td><td>1024-QAM</td><td>8</td><td>9.6 Gbps</td><td>OFDMA、上下行 MU-MIMO、TWT、BSS Coloring</td></tr>
+    <tr><td>Wi-Fi 6E</td><td>802.11ax（HE）</td><td>＋6 GHz</td><td>160 MHz</td><td>1024-QAM</td><td>8</td><td>9.6 Gbps</td><td>同 Wi-Fi 6，多了乾淨的 6 GHz</td></tr>
+    <tr><td>Wi-Fi 7</td><td>802.11be（EHT）</td><td>2.4／5／6 GHz</td><td>320 MHz（僅 6 GHz）</td><td>4096-QAM</td><td>16</td><td>約 46 Gbps</td><td>MLO、Multi-RU、前導打孔（Preamble Puncturing）</td></tr>
+  </table></div>
+  <ul>
+    <li>「Wi-Fi 4／5／6／7」是 Wi-Fi Alliance 在 2018 年訂的商品名稱，對應第 1 節的 HT／VHT／HE／EHT。</li>
+    <li>家用 AP 多為每頻段 2×2 或 4×4；手機多為 2×2，所以實際速率常受限於用戶端。</li>
+    <li>1024／4096-QAM 每個符號分別載 10／12 bits，但星座點很密，需要很高的訊雜比（SNR），只有靠近 AP 時才用得上（呼應第 10 節「速率越高、距離越短」）。</li>
+  </ul>
+
+  <h3>關鍵技術</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>技術</th><th>原理</th><th>首次出現</th><th>對家用的好處</th></tr>
+    <tr><td><b>多輸入多輸出</b><span class="en">（MIMO，空間多工）</span></td><td>多支天線同時送不同的資料串流，靠多路徑讓接收端分得開</td><td>11n</td><td>速率隨串流數倍增</td></tr>
+    <tr><td><b>多使用者 MIMO</b><span class="en">（MU-MIMO）</span></td><td>把空間串流分給不同使用者同時傳</td><td>11ac 下行；11ax 加上行</td><td>多台裝置同時下載時不必輪流</td></tr>
+    <tr><td><b>正交分頻多重存取</b><span class="en">（OFDMA）</span></td><td>把子載波切成資源單元（Resource Unit, RU）分給不同使用者（見第 4 節圖）</td><td>11ax</td><td>大量小封包（IoT、遊戲）延遲降低</td></tr>
+    <tr><td><b>波束成形</b><span class="en">（Beamforming）</span></td><td>調整各天線的相位，讓訊號在接收端方向同相疊加；先送 NDP 探測取得通道資訊</td><td>11n 可選；11ac 標準化</td><td>邊緣距離的訊號約可提升數 dB</td></tr>
+    <tr><td><b>寬頻道</b>（160／320 MHz）</td><td>子載波數加倍，速率約加倍</td><td>11ac／11be</td><td>近距離速率高；但頻道少、易受干擾</td></tr>
+    <tr><td><b>多重連結運作</b><span class="en">（Multi-Link Operation, MLO）</span></td><td>同一台裝置同時用 2.4／5／6 GHz 多條連線收發或即時切換</td><td>11be</td><td>速率相加、某頻段被干擾時延遲不暴增</td></tr>
+    <tr><td><b>目標喚醒時間</b><span class="en">（Target Wake Time, TWT）</span></td><td>AP 與裝置約好喚醒時間，其餘時間休眠</td><td>11ax</td><td>IoT 與手機省電（延伸講義的 Power Management）</td></tr>
+    <tr><td><b>BSS 著色</b><span class="en">（BSS Coloring）</span></td><td>在 PHY header 標記 BSS 顏色，聽到別的顏色且訊號弱時可忽略並照傳</td><td>11ax</td><td>公寓大樓同頻干擾多時提升空間重用</td></tr>
+    <tr><td><b>頻段導引</b><span class="en">（Band Steering）</span></td><td>同一個 SSID，AP 引導支援 5／6 GHz 的裝置離開 2.4 GHz</td><td>廠商功能（常配合 11k／11v）</td><td>不用手動選頻段</td></tr>
+  </table></div>
+
+  <h3>天線</h3>
+  <div class="figure" id="fig-ant-wrap">
+    <div class="fig-title">天線增益與輻射場型 <span class="tag">互動</span></div>
+    <div class="fig-body"><div id="fig-ant"></div><div class="readout" id="ant-out"></div></div>
+    <div class="controls">
+      <div class="seg" id="ant-type"><button type="button" class="on" data-v="o2">全向 2 dBi</button><button type="button" data-v="o5">全向 5 dBi</button><button type="button" data-v="o9">全向 9 dBi</button><button type="button" data-v="d14">指向 14 dBi</button></div>
+    </div>
+    <div class="caption">左為側視（垂直切面），右為俯視（水平切面）；虛線圓是 0 dBi 的等向性天線。圖形大小以相對距離（∝ √增益）表示。全向天線增益越高，場型越扁：水平方向傳得越遠，上下樓越弱。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>種類</th><th>典型增益</th><th>場型</th><th>常見用途</th></tr>
+    <tr><td>偶極天線<span class="en">（Dipole）</span>，外接棒狀天線</td><td>2–5 dBi</td><td>全向，甜甜圈形；天線軸的正上下方最弱</td><td>家用路由器</td></tr>
+    <tr><td>內建 PCB／PIFA 天線</td><td>2–5 dBi</td><td>近似全向，外殼設計決定形狀</td><td>Mesh 節點、手機、筆電</td></tr>
+    <tr><td>吸頂 AP 天線</td><td>3–6 dBi</td><td>向下的半球形</td><td>企業、商用空間（裝天花板）</td></tr>
+    <tr><td>平板／八木／碟形天線<span class="en">（Patch / Yagi / Parabolic）</span></td><td>8–24 dBi</td><td>指向，一個主波束</td><td>點對點長距離橋接、戶外</td></tr>
+  </table></div>
+  <ul>
+    <li><b>dBi</b>：相對於等向性天線<span class="en">（isotropic）</span>的增益；<b>dBd</b> 相對於半波偶極天線，dBi = dBd + 2.15。天線<b>不會放大總功率</b>，增益只是把能量集中到某些方向，所以「高增益」一定伴隨「某些方向變弱」。</li>
+    <li><b>天線長度與波長</b>：λ = c ／ f，2.4 GHz 約 12.5 cm、5 GHz 約 6 cm、6 GHz 約 5 cm；半波偶極天線長度約 λ／2。MIMO 天線之間通常至少相隔 λ／2，訊號才夠不相關。</li>
+    <li><b>天線數與串流數</b>：N×N MIMO 每個頻段至少要 N 支天線；空間串流數 ≤ min（AP 天線數, 用戶端天線數）。外接 4 支天線的雙頻機，常見是兩個頻段共用同一組雙頻天線（經分頻器），所以天線多不一定代表串流多，要看規格表。</li>
+    <li><b>頻率越高衰減越大</b>：自由空間路徑損耗 FSPL(dB) = 20 log<sub>10</sub>(d<sub>km</sub>) + 20 log<sub>10</sub>(f<sub>MHz</sub>) + 32.44。同距離下 5 GHz 比 2.4 GHz 多約 6.4 dB、6 GHz 多約 8 dB，穿牆後差距更大。所以 2.4 GHz 傳得遠、6 GHz 快但短。</li>
+    <li><b>擺放</b>：放在屋子中央、架高，遠離金屬、魚缸（水）、微波爐。外接天線不要全部平行：一支垂直、一支斜 45° 或水平，可以兼顧不同擺放角度的手機（極化方向）與上下樓層。</li>
+  </ul>
+  <h4>發射功率與法規（EIRP）</h4>
+  <ul>
+    <li><b>EIRP</b>（等效全向輻射功率<span class="en">（Equivalent Isotropically Radiated Power）</span>）= 發射功率（dBm）＋ 天線增益（dBi）－ 線材損耗（dB）。例：20 dBm（100 mW）＋ 5 dBi － 1 dB = 24 dBm ≈ 250 mW。</li>
+    <li>法規限制的是 EIRP 與傳導功率，所以換上高增益天線時，發射功率必須降低。台灣由 NCC《低功率射頻器材技術規範》（LP0002）規定各頻段上限，產品要通過型式認證；自行改裝高增益天線可能違規。</li>
+    <li>6 GHz 各國開放範圍不同：美國開放 5925–7125 MHz 共 1200 MHz（第 12 節）；台灣目前只開放下半段約 500 MHz，且限室內低功率使用（實際範圍以 NCC 最新公告為準）。</li>
+    <li>延伸講義 802.11h：5 GHz 的部分頻道要做 <b>DFS</b>，偵測到雷達就得換頻道；啟用前也要先監聽約 1 分鐘（CAC），所以開機或換到 DFS 頻道時會暫時斷線。</li>
+  </ul>
+
+  <h3>家庭佈建</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>方式</th><th>適合</th><th>優點</th><th>缺點</th></tr>
+    <tr><td>單台 AP</td><td>小套房、單層 30 坪以內</td><td>簡單、便宜、沒有回程損耗</td><td>邊角、樓上訊號弱</td></tr>
+    <tr><td>無線 Mesh</td><td>多房間、透天、沒辦法拉線</td><td>同一個 SSID，自動漫遊（11k／v／r）</td><td>回程佔用無線頻寬；單一頻段兼回程時速率約剩一半，三頻機可用專屬頻段當回程</td></tr>
+    <tr><td>有線回程<span class="en">（Wired Backhaul）</span></td><td>有預埋網路線</td><td>效能最好，每台 AP 都是全速</td><td>要佈線；2.5 Gbps 以上的 AP 要搭配 2.5GBASE-T（第 1 章 802.3bz）</td></tr>
+    <tr><td>無線延伸器<span class="en">（Repeater／Extender）</span></td><td>臨時補一個死角</td><td>最便宜</td><td>同頻收再轉送，速率減半；常是不同 SSID，漫遊差</td></tr>
+  </table></div>
+  <ul>
+    <li><b>家用 Mesh 與講義的 Mesh</b>：講義第 6 節的 Mesh 指 802.11s；市售家用 Mesh 多為廠商自有協定，或 Wi-Fi Alliance 的 <b>EasyMesh</b>，概念相同（AP 之間無線互連成 DS），但不一定互通。</li>
+    <li><b>頻道選擇</b>：2.4 GHz 只用 1／6／11 三個不重疊頻道（第 14 節），頻寬固定 20 MHz；5 GHz 一般用 80 MHz，選非 DFS 頻道較穩定；6 GHz 最乾淨，可開 160／320 MHz。</li>
+    <li>鄰居 AP 多時，頻寬開越寬越容易重疊，反而變慢；先用 Wi-Fi 分析 App 看哪個頻道最空。</li>
+  </ul>
+
+  <h2 id="glossary">18. 專有名詞對照</h2>
+  <details><summary>展開 75 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
     <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
     <tr><td>載波偵測多重存取／碰撞避免</td><td>CSMA/CA</td><td>用隨機退避與 RTS/CTS 事先避免碰撞，再用 ACK 確認</td></tr>
     <tr><td>隱藏節點問題</td><td>Hidden Node Problem</td><td>兩個彼此聽不到的站台同時傳給中間站台，導致碰撞</td></tr>
@@ -445,6 +831,8 @@ flowchart LR
     <tr><td>隨意網路</td><td>Ad Hoc Network（IBSS）</td><td>不需 AP，站台直接互連</td></tr>
     <tr><td>基礎架構網路／網狀網路</td><td>Infrastructure / Mesh</td><td>站台透過 AP 連到 DS／AP 之間用無線互連（802.11s）</td></tr>
     <tr><td>行動／車載隨意網路</td><td>MANET / VANET</td><td>站台會移動的 ad hoc 網路／以車輛為節點的 ad hoc 網路</td></tr>
+    <tr><td>車用無線存取／非 BSS 模式</td><td>802.11p（WAVE）/ OCB</td><td>5.9 GHz 車間通訊；不建 BSS、不做 Association 直接收發（補充）</td></tr>
+    <tr><td>路側設施／地理路由</td><td>RSU / Geographic Routing</td><td>路邊的固定車聯網設備／依位置把封包交給離目的地最近的鄰居（補充）</td></tr>
     <tr><td>漫遊</td><td>Roaming</td><td>站台移動時從一個 AP 切換到另一個 AP</td></tr>
     <tr><td>存取點間協定</td><td>IAPP</td><td>802.11f，AP 之間交換站台資訊以支援漫遊</td></tr>
     <tr><td>信標</td><td>Beacon</td><td>AP 定期廣播的管理訊框，用於時間同步與宣告網路存在</td></tr>
@@ -477,6 +865,9 @@ flowchart LR
     <tr><td>分貝</td><td>Decibel（dB）</td><td>功率比的對數表示：10 log<sub>10</sub>(P1/P2)</td></tr>
     <tr><td>互補碼鍵控／封包二元卷積碼</td><td>CCK / PBCC</td><td>11b 必要的 5.5 / 11 Mbps 編碼／可選編碼，也延伸到 22 / 33 Mbps</td></tr>
     <tr><td>脈衝位置調變</td><td>PPM</td><td>用脈衝出現的位置表示資料，紅外線 PHY 使用</td></tr>
+    <tr><td>分段／重組</td><td>Fragmentation / Defragmentation</td><td>大 MSDU 切成多個 MPDU 分別傳送與確認，接收端再組回（補充）</td></tr>
+    <tr><td>分段門檻／RTS 門檻</td><td>Fragmentation Threshold / RTS Threshold</td><td>超過此長度才分段／才先用 RTS/CTS（補充）</td></tr>
+    <tr><td>免競爭期／競爭期</td><td>CFP / CP</td><td>PCF 中 AP 輪詢、沒有碰撞的時段／一般 DCF 競爭的時段（補充）</td></tr>
     <tr><td>擾亂器</td><td>Scrambler</td><td>打散連續相同位元，避免訊號頻譜集中</td></tr>
     <tr><td>載波／基頻／帶通</td><td>Carrier / Baseband / Passband</td><td>被調變的週期性波形／原始低頻訊號／調變到載波附近的訊號</td></tr>
     <tr><td>符號率／鮑率／位元率</td><td>Symbol Rate / Baud / Bit Rate</td><td>每秒幾個符號／符號率的單位／每秒幾個位元</td></tr>
@@ -486,9 +877,19 @@ flowchart LR
     <tr><td>差分二元／四相位移鍵控</td><td>DBPSK / DQPSK</td><td>以相位變化表示資料，每個符號分別載 1 / 2 bits</td></tr>
     <tr><td>高斯頻移鍵控</td><td>GFSK</td><td>先經高斯濾波再做 FSK，FHSS PHY 使用</td></tr>
     <tr><td>快速漫遊／無線資源管理</td><td>11r / 11k</td><td>加快 AP 切換／讓站台取得周圍頻道與 AP 的資訊</td></tr>
+    <tr><td>Wi-Fi 世代名稱</td><td>Wi-Fi 4 / 5 / 6 / 6E / 7</td><td>Wi-Fi Alliance 的商品名，對應 11n / ac / ax / ax（6 GHz）/ be（補充）</td></tr>
+    <tr><td>前端模組</td><td>Front-End Module（FEM）</td><td>含功率放大器 PA、低雜訊放大器 LNA 與收發切換開關（補充）</td></tr>
+    <tr><td>空間串流</td><td>Spatial Stream</td><td>MIMO 同時傳送的獨立資料流，數量 ≤ 收發兩端天線數的較小者（補充）</td></tr>
+    <tr><td>資源單元</td><td>Resource Unit（RU）</td><td>OFDMA 分給單一使用者的一組子載波（補充）</td></tr>
+    <tr><td>多重連結運作</td><td>Multi-Link Operation（MLO）</td><td>Wi-Fi 7 同時使用多個頻段連線（補充）</td></tr>
+    <tr><td>目標喚醒時間／BSS 著色</td><td>TWT / BSS Coloring</td><td>11ax 的省電排程／標記 BSS 以提升同頻空間重用（補充）</td></tr>
+    <tr><td>頻段導引</td><td>Band Steering</td><td>AP 引導雙頻裝置改連 5／6 GHz（補充）</td></tr>
+    <tr><td>等向性天線增益／偶極天線增益</td><td>dBi / dBd</td><td>相對等向性天線／半波偶極天線的增益，dBi = dBd + 2.15（補充）</td></tr>
+    <tr><td>等效全向輻射功率</td><td>EIRP</td><td>發射功率 + 天線增益 − 線材損耗，法規限制的對象（補充）</td></tr>
+    <tr><td>全向天線／輻射場型</td><td>Omnidirectional Antenna / Radiation Pattern</td><td>水平各方向均勻的天線／天線在各方向的增益分布圖（補充）</td></tr>
   </table></div></div></details>
 
-  <h2 id="check">18. 考前自我檢查</h2>
+  <h2 id="check">19. 考前自我檢查</h2>
   <ul class="checklist">
     <li><details><summary>說出 802.11 / 11a / 11b / 11g / 11n / 11ac 的頻段、技術與最高速率</summary><div class="inner">802.11：2.4GHz FHSS/DSSS/IR 2M；11a：5GHz OFDM 54M；11b：2.4GHz DSSS/CCK 11M；11g：2.4GHz ERP 54M；11n：2.4/5GHz OFDM+MIMO 600M；11ac：5GHz VHT 6933.3M。</div></details></li>
     <li><details><summary>解釋 hidden node 問題以及 RTS/CTS、virtual carrier sense 的作用</summary><div class="inner">A、C 都聽得到 B 但彼此聽不到，同時傳就在 B 碰撞。RTS/CTS 讓 B 的 CTS 被 C 聽到；C 依 Duration 設 NAV，不實際聽通道也知道要等多久（virtual carrier sense）。</div></details></li>
@@ -501,6 +902,9 @@ flowchart LR
     <li><details><summary>計算 dB 值</summary><div class="inner">10 log<sub>10</sub>(P1/P2)。100W→1W = 20 dB；2 倍 ≈ 3 dB；100 mW = 20 dBm。</div></details></li>
     <li><details><summary>說明 Long 與 Short PLCP 的差別與 192 / 96 μs</summary><div class="inner">Long：144-bit preamble + 48-bit header 都用 1 Mbps → 192 μs，相容舊設備。Short：72-bit preamble（1 Mbps）+ 48-bit header（2 Mbps）→ 96 μs，降低 overhead。</div></details></li>
     <li><details><summary>背出 SIGNAL 欄位的速率代碼與 DQPSK 相位對應</summary><div class="inner">h0A 1M、h14 2M、h37 5.5M、h6E 11M（單位 100 kbps）。DQPSK：00→0、01→π/2、11→π、10→3π/2。</div></details></li>
+    <li><details><summary>說明家用 AP 規格「AX3000」的意義，以及 Wi-Fi 4～7 的關鍵技術</summary><div class="inner">各頻段最高速率相加（2.4G 574 + 5G 2402）。Wi-Fi 4：MIMO；5：MU-MIMO、160 MHz、256-QAM；6：OFDMA、1024-QAM、TWT、BSS Coloring；6E：6 GHz；7：320 MHz、4096-QAM、MLO。</div></details></li>
+    <li><details><summary>解釋天線增益（dBi）、輻射場型與 EIRP 的關係</summary><div class="inner">天線不放大總功率，只把能量集中；全向天線增益越高場型越扁、上下樓越弱。EIRP = 發射功率 + 天線增益 − 損耗，法規限 EIRP，所以換高增益天線要降發射功率。</div></details></li>
+    <li><details><summary>比較單台 AP、無線 Mesh、有線回程的優缺點</summary><div class="inner">單台：簡單但覆蓋有限。無線 Mesh：自動漫遊，但回程佔頻寬。有線回程：效能最好但要佈線。</div></details></li>
   </ul>
 </main>
 <aside class="toc"></aside>
