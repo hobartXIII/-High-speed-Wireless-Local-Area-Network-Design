@@ -6,6 +6,7 @@
     { href: 'ch1-csma-cd.html', label: '1. 802.3 CSMA/CD' },
     { href: 'ch2-1-80211-phy.html', label: '2-1. 802.11 架構與 PHY' },
     { href: 'ch2-2-80211-mac.html', label: '2-2. 802.11 MAC 服務' },
+    { href: 'ch2-3-80211-frame.html', label: '2-3. WEP 與訊框格式' },
   ];
 
   /* ---------- theme ---------- */
