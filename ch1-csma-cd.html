@@ -83,6 +83,25 @@ flowchart LR
     <li>從 802.3u（100 Mbps）起，實體層改寫成 <b>RS → MII → PCS → PMA → PMD → MDI</b>：PLS 的角色變成 RS＋PCS、AUI 換成 xMII、MAU 拆成 PMA 與 PMD、MDI 名稱不變，一路沿用到 400G／800G。10BASE-T 起 MAU 通常就做在網卡上，看不到外接的 AUI 電纜；MDI 是 RJ-45，雙絞線最長 100 m。</li>
   </ul>
 
+  <h3><span class="sup">補充</span>過去與現代比較：講義的 10BASE5 vs. 家用網路</h3>
+  <p><b>講義的終端器、收發器、訊號增益器在家用網路裡感受不到：終端器和收發器縮進了晶片裡，訊號增益器則已經用不到。</b>CSMA/CD 的規則還在標準裡，只是全雙工的 switch 網路不會碰撞，所以它不再運作。</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>項目</th><th>過去（講義 10BASE5，1980 年代）</th><th>現代家用網路</th><th>為什麼變了</th></tr>
+    <tr><td>拓樸</td><td>匯流排：所有站台掛在同一條同軸電纜上</td><td>星狀：每台設備一條線接到路由器或 switch</td><td>一條線壞了只影響一台，好查好維護</td></tr>
+    <tr><td>傳輸媒介</td><td>粗同軸電纜，直徑 10 mm，又硬又難彎</td><td>Cat5e／Cat6 雙絞線，或直接用 Wi-Fi</td><td>雙絞線便宜、細、好佈線</td></tr>
+    <tr><td>速率</td><td>10 Mbps，全網路共用</td><td>1 Gbps（新設備 2.5 Gbps），每個埠獨享</td><td>switch 讓每條線都是獨立的通道</td></tr>
+    <tr><td><b>終端器</b></td><td>電纜兩端外接 50 Ω 電阻頭；掉了整段網路都會壞</td><td><b>不用外接</b>，終端電阻做在 PHY 晶片與隔離變壓器電路裡</td><td>點對點線路，阻抗匹配在兩端設備內完成</td></tr>
+    <tr><td><b>收發器</b>（MAU）</td><td>獨立的盒子，用穿刺式接頭（vampire tap）夾在粗纜上，只能裝在每 2.5 m 的標記處</td><td><b>網卡上的 PHY 晶片</b>；光纖則是 SFP 光模組、光世代的光纖數據機（ONT）</td><td>晶片整合，體積和成本都降到幾乎看不見</td></tr>
+    <tr><td>收發器電纜（AUI）</td><td>最長 50 m 的粗線，15-pin D 型接頭</td><td>電路板上幾公分的 RGMII／SGMII 走線</td><td>收發器搬進網卡，就不需要這條線</td></tr>
+    <tr><td>接頭（MDI）</td><td>收發器直接咬在同軸電纜上</td><td>RJ-45</td><td>家裡唯一還「看得到」的實體層元件，就是網路線和 RJ-45</td></tr>
+    <tr><td><b>訊號增益器</b></td><td>接兩段同軸電纜延長距離，最多 4 個（5-4-3 規則）</td><td><b>用不到</b>：一段線 100 m 就夠；真的要延長就再加一台 switch</td><td>switch 每個埠都重新產生訊號，而且會切開碰撞網域</td></tr>
+    <tr><td>中心設備</td><td>Hub（多埠 repeater），所有埠共用頻寬</td><td>Switch（家用路由器通常內建 4 埠）</td><td>switch 依 MAC 位址只送往目的埠</td></tr>
+    <tr><td>雙工與碰撞</td><td>半雙工，會碰撞，靠 CSMA/CD 處理</td><td>全雙工，不會碰撞，CSMA/CD 實際上不運作</td><td>收發分開、一條線只有兩端</td></tr>
+    <tr><td>網路範圍</td><td>每段 500 m，全網路最長 2500 m</td><td>每段 100 m，但 switch 可以一直串下去</td><td>碰撞網域只到每一條線為止</td></tr>
+    <tr><td>加一台電腦</td><td>在纜線標記處鑽孔、裝收發器</td><td>插上網路線，或連上 Wi-Fi</td><td>隨插即用</td></tr>
+  </table></div>
+  <div class="callout warn">⚠️ <b>「Wi-Fi 增益器」不是講義的訊號增益器。</b>講義的 repeater 在<b>實體層</b>，只把電訊號放大轉送、不看內容，接起來的區段仍是同一個碰撞網域。市售的 Wi-Fi 增益器（Repeater／Extender）會把整個訊框收下來、看懂位址再重新發送，運作比較像 bridge 或 AP；用同一個頻段收和發時，速率大約剩一半。</div>
+
   <h2 id="protocol">3. CSMA/CD 協定的五個概念<span class="en">（CSMA/CD Protocol）</span></h2>
   <ul>
     <li><b>Carrier Sense</b>：<b>傳送前</b><span class="en">（before transmission）</span>先聽通道是否有訊號，<b>傳送中</b><span class="en">（while transmission）</span>也持續聽（這是 CD 的關鍵）。</li>
