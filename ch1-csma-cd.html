@@ -17,6 +17,16 @@
     <div class="meta"><span>來源：1CSMA_CD.pdf</span><span>動畫與互動 4 個・圖解 6 張</span></div>
   </div>
 
+  <div class="callout key">
+    <p><span class="sup">補充</span><b>CSMA/CD 是有線網路的協定，不是無線。</b>它是 IEEE 802.3 乙太網路（Ethernet）的媒介存取控制（MAC）協定，規定共用同一條線的站台什麼時候可以傳送。無線區域網路（802.11）用的是 CSMA/CA。</p>
+    <ul>
+      <li><b>用在哪裡</b>：多個站台共用同一條纜線的半雙工 Ethernet，例如早期的同軸電纜匯流排、接在 hub 上的雙絞線。</li>
+      <li><b>名稱拆解</b>：<b>Carrier Sense</b> 傳送前先聽線上有沒有人在傳；<b>Multiple Access</b> 多個站台共用同一條線；<b>Collision Detection</b> 傳送中持續監聽，一發現碰撞就停止、送 jam，再隨機退避重傳。</li>
+      <li><b>為什麼只能用在有線</b>：在線路上，站台可以一邊傳一邊比對線上的訊號，所以偵測得到碰撞。無線網路做不到：自己發射的訊號遠強於收到的訊號，傳送時聽不到別人；而且有隱藏節點，碰撞發生在接收端，傳送端根本不知道。所以 802.11 改用 <b>CSMA/CA</b>（Collision <b>Avoidance</b>），在第 2 章介紹。</li>
+      <li><b>現況</b>：現代乙太網路用 switch＋全雙工，每條線只有兩端而且收發分開，不會碰撞，CSMA/CD 實際上已不運作（見第 11 節）；但它是理解 802.11 CSMA/CA 的基礎。</li>
+    </ul>
+  </div>
+
   <h2 id="std">1. 標準依據</h2>
   <ul>
     <li><b>IEEE 802.3</b>：Carrier Sense Multiple Access with Collision Detection（CSMA/CD），即 Ethernet 的 MAC 與 PHY 標準。</li>
