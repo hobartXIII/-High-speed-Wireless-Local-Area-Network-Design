@@ -17,6 +17,15 @@
     <div class="meta"><span>來源：2-1 CSMA_CA.pdf</span><span>動畫與互動 10 個・圖解 19 張</span></div>
   </div>
 
+  <div class="callout key">
+    <p><b>IEEE 802.11 是無線區域網路（Wi-Fi）的標準，定義 MAC 與 PHY 兩層。本章講它的網路架構與 PHY（實體層）。</b></p>
+    <ul>
+      <li><b>架構</b>：三種配置：Independent（ad hoc，站台直接互傳）、Infrastructure（經 AP 連到 DS）、Mesh（AP 之間無線互連）。</li>
+      <li><b>PHY 演進</b>：802.11／11b 用 DSSS（2.4 GHz）、11a 用 OFDM（5 GHz）、11g 用 ERP（把 OFDM 帶到 2.4 GHz）、11n 用 HT（MIMO）。</li>
+      <li><b>存取方法是 CSMA/CA，不是 CSMA/CD</b>：無線站台無法一邊傳一邊偵測碰撞，所以改成事先避免碰撞；協調功能分 DCF 與 PCF。</li>
+    </ul>
+  </div>
+
   <h2 id="outline">0. 本章大綱（講義）</h2>
   <ol>
     <li>802.11 架構與概論<span class="en">（802.11 Architecture and Overview）</span></li>

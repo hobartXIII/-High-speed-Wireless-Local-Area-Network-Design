@@ -17,6 +17,16 @@
     <div class="meta"><span>來源：2-2 CSMA_CA.pdf（講義章節：7. IEEE 802.11 Wireless LAN MAC Standard）</span><span>動畫與互動 5 個・圖解 11 張</span></div>
   </div>
 
+  <div class="callout key">
+    <p><b>802.11 MAC 讓無線網路對上層（LLC）看起來就像一般的 802 LAN。它用 BSS、ESS、DS、AP 組成網路，並提供 9＋1 項服務。</b></p>
+    <ul>
+      <li><b>無線和有線的差別</b>：位址 ≠ 位置（站台會移動）、媒介共享且不可靠、拓樸動態變化，這些都要在 MAC 層處理。</li>
+      <li><b>架構元件</b>：BSS 是基本單位；DS 把多個 BSS 串成 ESS；AP＝具 STA 功能＋提供 DS 存取；Portal 接到有線 LAN。</li>
+      <li><b>服務</b>：SS（Authentication、Deauthentication、Privacy、MSDU delivery）與 DSS（Association、Reassociation、Disassociation、Distribution、Integration），第 10 項是 QoS。</li>
+      <li><b>必考</b>：先 Authentication 才能 Association；Association、Reassociation 只能由 STA 發起；Disassociation 雙方都能發，是通知、不能拒絕。</li>
+    </ul>
+  </div>
+
   <h2 id="std">1. 標準依據</h2>
   <ul>
     <li>本章內容依據 <b>IEEE Std 802.11</b> 的 MAC 架構與服務定義。</li>

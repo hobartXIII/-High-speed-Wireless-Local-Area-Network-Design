@@ -18,6 +18,16 @@
   </div>
   <div class="callout note">PDF 共 32 頁，對應投影片第 1–33 頁；<b>第 22 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-2「IEEE 802.11 MAC 架構與服務」：2-2 講 Authentication、Association、Privacy 這些<b>服務</b>，這一章講它們實際用到的<b>訊框</b>長什麼樣子。</div>
 
+  <div class="callout key">
+    <p><b>本章講 802.11 的服務實際用到的訊框：WEP 怎麼加密，以及 MAC 訊框每個欄位的意義。</b></p>
+    <ul>
+      <li><b>WEP</b>：802.11 原始的選用加密，用 RC4＋24-bit IV，只加密資料訊框的 payload、只保護無線這一段。<span class="sup">補充</span>已被破解，由 802.11i（WPA2）取代。</li>
+      <li><b>站台狀態</b>：State 1／2／3 決定能送 Class 1／2／3 訊框；Deauthentication 退回 State 1，Disassociation 退回 State 2。</li>
+      <li><b>MAC 訊框</b>＝Header＋Frame Body（0–2312 bytes）＋FCS；To DS／From DS 決定 4 個位址欄位怎麼填。</li>
+      <li><b>三類訊框</b>：控制（RTS、CTS、ACK、PS-Poll）、資料、管理（Beacon、Probe、Authentication、Association）。</li>
+    </ul>
+  </div>
+
   <h2 id="std">1. 標準依據</h2>
   <div class="tbl-wrap"><table>
     <tr><th>標準</th><th>年份</th><th>本章用到的部分</th></tr>
