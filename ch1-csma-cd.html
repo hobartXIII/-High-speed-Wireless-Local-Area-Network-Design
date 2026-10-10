@@ -108,7 +108,7 @@ flowchart LR
     <li><b>Deference</b>：通道忙碌就延後傳送<span class="en">（Defers transmission if channel is sensed busy）</span>。</li>
     <li><b>Collision</b>：兩個以上站台同時傳送<span class="en">（Two or more stations transmitting simultaneously）</span>。</li>
     <li><b>Backoff</b>：碰撞後等待隨機時間再重傳<span class="en">（Random delay after collision）</span>。</li>
-    <li><b>Collision Window（Slot time）</b>：來回傳播延遲加上一些載波偵測時間<span class="en">（Round-trip propagation delay time plus some carrier sense time）</span>；802.3 定義為 <b>51.2 μs</b>。</li>
+    <li><b>Collision Window（Slot time）</b>：來回傳播延遲加上一些載波偵測時間<span class="en">（Round-trip propagation delay time plus some carrier sense time）</span>；802.3 定義為 <b>51.2 μs</b>（<span class="sup">補充</span>1 μs = 10<sup>−6</sup> 秒，所以 51.2 μs = 0.0000512 秒 = 0.0512 ms，約兩萬分之一秒）。</li>
   </ul>
   <p><span class="sup">補充</span>Ethernet 屬於 <b>1-persistent CSMA</b>：通道一空就立刻傳。其他變形有 non-persistent（忙碌時隨機等一段再聽）與 p-persistent（通道空時以機率 p 傳送）。Slot time 本質是 <b>512 bit times</b>：10 Mbps 下為 51.2 μs，100 Mbps 下為 5.12 μs。</p>
   <h3><span class="sup">補充</span>載波偵測＝偵測媒介上的能量</h3>
