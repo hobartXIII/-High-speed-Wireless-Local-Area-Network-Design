@@ -834,7 +834,123 @@ flowchart LR
     <li>鄰居 AP 多時，頻寬開越寬越容易重疊，反而變慢；先用 Wi-Fi 分析 App 看哪個頻道最空。</li>
   </ul>
 
-  <h2 id="glossary">18. 專有名詞對照</h2>
+  <h2 id="calc">18. 公式拆解與範例計算</h2>
+  <div class="callout note">把本章出現的公式逐一拆開：先寫公式、說明每個符號，再代入範例數值一步一步算，最後解釋結果的意義。<b>對數速查</b>：log<sub>10</sub>2 ≈ 0.301、log<sub>10</sub>3 ≈ 0.477、log<sub>10</sub>11 ≈ 1.041；log<sub>10</sub>(a×b) = log<sub>10</sub>a + log<sub>10</sub>b；反算用 x = 10<sup>dB/10</sup>。</div>
+
+  <h3>① 分貝與功率比（講義 p.60）</h3>
+  <div class="callout tip"><b>dB = 10 log<sub>10</sub>(P1 ÷ P2)</b>　　反算：<b>P1 ÷ P2 = 10<sup>dB/10</sup></b></div>
+  <p>符號：P1、P2＝兩個功率（同單位，例如 W）。</p>
+  <ol>
+    <li>講義例題 P1 = 100 W、P2 = 1 W：比值 100 ÷ 1 = 100。</li>
+    <li>log<sub>10</sub>100 = 2（因為 10<sup>2</sup> = 100）。</li>
+    <li>10 × 2 = <b>20 dB</b>。</li>
+    <li>功率變 2 倍：10 × log<sub>10</sub>2 = 10 × 0.301 = <b>3.01 dB ≈ 3 dB</b>；變一半則是 −3 dB。</li>
+    <li>反算 13 dB 是幾倍：10<sup>13/10</sup> = 10<sup>1.3</sup> = 10 × 10<sup>0.3</sup> ≈ 10 × 2 = <b>約 20 倍</b>（13 dB = 10 dB ＋ 3 dB → 10 倍 × 2 倍）。</li>
+  </ol>
+  <p><b>意義</b>：乘法變加法。功率連乘的增益、損耗，用 dB 直接加減即可。</p>
+
+  <h3>② <span class="sup">補充</span>dBm 與 dBW</h3>
+  <div class="callout tip"><b>dBm = 10 log<sub>10</sub>(P<sub>mW</sub> ÷ 1 mW)</b>　　<b>dBW = 10 log<sub>10</sub>(P<sub>W</sub> ÷ 1 W)</b>　　<b>dBm = dBW + 30</b></div>
+  <ol>
+    <li>100 mW：100 ÷ 1 = 100 → 10 × 2 = <b>20 dBm</b>。</li>
+    <li>1 W = 1000 mW：10 × log<sub>10</sub>1000 = 10 × 3 = <b>30 dBm</b>；用 dBW 算 10 × log<sub>10</sub>1 = 0 dBW，0 + 30 = 30 dBm ✓。</li>
+    <li>反算 −70 dBm（常見的 Wi-Fi 收訊強度）：10<sup>−70/10</sup> = 10<sup>−7</sup> mW = <b>0.0000001 mW</b>。</li>
+  </ol>
+
+  <h3>③ 展頻：chip rate 與處理增益（講義 p.55–61）</h3>
+  <div class="callout tip"><b>chip rate = symbol rate × 11</b>　　<b>處理增益 G<sub>p</sub> = 10 log<sub>10</sub>(chips 數 ÷ symbol)</b></div>
+  <ol>
+    <li>1 Mbps DBPSK：每個 symbol 1 bit → symbol rate = 1 Msymbol/s。</li>
+    <li>chip rate = 1 M × 11 = <b>11 Mchip/s</b>；每個 chip 時間 = 1 ÷ (11×10<sup>6</sup>) ≈ 0.0909 μs ≈ <b>90.9 ns</b>。</li>
+    <li>2 Mbps DQPSK：每個 symbol 2 bits，symbol rate 仍是 2 ÷ 2 = 1 Msymbol/s → chip rate 同樣 11 Mchip/s，佔用的頻寬不變。</li>
+    <li>G<sub>p</sub> = 10 × log<sub>10</sub>11 = 10 × 1.041 = <b>10.41 dB ≈ 10.4 dB</b>。</li>
+  </ol>
+  <p><b>意義</b>：速率從 1 升到 2 Mbps 是靠一個 symbol 載更多 bits，不是把 chip 打得更快。</p>
+
+  <h3>④ Barker 相關值</h3>
+  <div class="callout tip"><b>相關值 C = 11 − 2e</b>（e＝被翻掉的 chip 數）；送 1 時 C &gt; 0 判為 1，送 0 時取負號</div>
+  <ol>
+    <li>11 個 chip 對 11 個：對的貢獻 +1、錯的貢獻 −1 → C = (11 − e) × 1 + e × (−1) = 11 − 2e。</li>
+    <li>e = 0：C = 11（完美對齊）。</li>
+    <li>e = 3：C = 11 − 6 = <b>5</b> &gt; 0 → 仍正確判為 1。</li>
+    <li>e = 5：C = 11 − 10 = 1 &gt; 0 → 仍正確（極限）。</li>
+    <li>e = 6：C = 11 − 12 = <b>−1</b> &lt; 0 → 判錯成 0。</li>
+  </ol>
+
+  <h3>⑤ 符號率與位元率（講義 p.72–73）</h3>
+  <div class="callout tip"><b>bit rate = symbol rate × log<sub>2</sub>M</b>（M＝symbol 種類數）</div>
+  <ol>
+    <li>講義數據機：M = 4 → log<sub>2</sub>4 = 2 bits/symbol。</li>
+    <li>1000 baud × 2 = <b>2000 bps</b>。</li>
+    <li>64-QAM：log<sub>2</sub>64 = 6；1024-QAM：log<sub>2</sub>1024 = 10；4096-QAM：log<sub>2</sub>4096 = 12。</li>
+  </ol>
+
+  <h3>⑥ <span class="sup">補充</span>OFDM 速率（802.11a/g）</h3>
+  <div class="callout tip"><b>R = N<sub>SD</sub> × N<sub>BPSC</sub> × R<sub>code</sub> ÷ T<sub>sym</sub></b></div>
+  <p>符號：N<sub>SD</sub>＝資料子載波數（11a 為 48）；N<sub>BPSC</sub>＝每個子載波每個 symbol 載幾 bits；R<sub>code</sub>＝卷積碼碼率；T<sub>sym</sub>＝一個 OFDM symbol 的時間（4 μs）。</p>
+  <ol>
+    <li>子載波間距 = 20 MHz ÷ 64 = <b>312.5 kHz</b>；有效 symbol = 1 ÷ 312.5 kHz = 3.2 μs；加保護間隔 0.8 μs → T<sub>sym</sub> = <b>4 μs</b>。</li>
+    <li>佔用頻寬：52 個子載波加中間的 DC，共 53 × 312.5 kHz ≈ <b>16.6 MHz</b>。</li>
+    <li>54 Mbps（64-QAM、3/4）：48 × 6 = 288 → × 3/4 = 216 bits/symbol → 216 ÷ 4 μs = <b>54 Mbps</b>。</li>
+    <li>6 Mbps（BPSK、1/2）：48 × 1 × 1/2 = 24 bits → 24 ÷ 4 = <b>6 Mbps</b>。</li>
+    <li>24 Mbps（16-QAM、1/2）：48 × 4 × 1/2 = 96 → 96 ÷ 4 = <b>24 Mbps</b>。</li>
+  </ol>
+
+  <h3>⑦ <span class="sup">補充</span>Wi-Fi 6 速率與「AX3000」</h3>
+  <div class="callout tip"><b>R = N<sub>SD</sub> × N<sub>BPSC</sub> × R<sub>code</sub> × N<sub>SS</sub> ÷ (T<sub>DFT</sub> + T<sub>GI</sub>)</b>（11ax：T<sub>DFT</sub> = 12.8 μs、短 GI 0.8 μs，合計 13.6 μs）</div>
+  <ol>
+    <li>160 MHz、1024-QAM（10 bits）、碼率 5/6、1 條串流：N<sub>SD</sub> = 1960 → 1960 × 10 × 5/6 = 16333.3 bits。</li>
+    <li>16333.3 ÷ 13.6 μs ≈ <b>1201 Mbps</b>；2 條串流 × 2 = <b>2402 Mbps</b>。</li>
+    <li>40 MHz（2.4 GHz）：N<sub>SD</sub> = 468 → 468 × 10 × 5/6 = 3900；3900 ÷ 13.6 ≈ 286.8 Mbps；× 2 串流 ≈ <b>574 Mbps</b>。</li>
+    <li>AX3000 = 574 + 2402 = 2976 ≈ <b>3000</b>。</li>
+    <li>串流數取兩端較小者：AP 4×4、手機 2×2 → min(4, 2) = <b>2</b> 條。</li>
+  </ol>
+
+  <h3>⑧ <span class="sup">補充</span>2.4 GHz 頻道中心頻率</h3>
+  <div class="callout tip"><b>f<sub>c</sub>(n) = 2407 + 5n MHz</b>（n = 1…13）</div>
+  <ol>
+    <li>n = 1：2407 + 5 = <b>2412 MHz</b>；n = 6：2407 + 30 = <b>2437 MHz</b>；n = 11：2407 + 55 = <b>2462 MHz</b>。</li>
+    <li>頻道 1 與 6 相距 2437 − 2412 = <b>25 MHz</b> ≥ 22 MHz（DSSS 頻寬）→ 不重疊。</li>
+    <li>頻道 1 與 3 相距 2 × 5 = 10 MHz &lt; 22 → 重疊 22 − 10 = <b>12 MHz</b>。</li>
+  </ol>
+
+  <h3>⑨ <span class="sup">補充</span>波長與天線長度</h3>
+  <div class="callout tip"><b>λ = c ÷ f</b>（c = 3×10<sup>8</sup> m/s）　　半波偶極天線長度 ≈ <b>λ ÷ 2</b></div>
+  <ol>
+    <li>2.4 GHz：3×10<sup>8</sup> ÷ 2.4×10<sup>9</sup> = 0.125 m = <b>12.5 cm</b>；λ/2 = <b>6.25 cm</b>。</li>
+    <li>5 GHz：3×10<sup>8</sup> ÷ 5×10<sup>9</sup> = 0.06 m = <b>6 cm</b>；λ/2 = 3 cm。</li>
+    <li>6 GHz：3×10<sup>8</sup> ÷ 6×10<sup>9</sup> = 0.05 m = <b>5 cm</b>。</li>
+  </ol>
+
+  <h3>⑩ <span class="sup">補充</span>自由空間路徑損耗 FSPL</h3>
+  <div class="callout tip"><b>FSPL(dB) = 20 log<sub>10</sub>(d<sub>km</sub>) + 20 log<sub>10</sub>(f<sub>MHz</sub>) + 32.44</b></div>
+  <ol>
+    <li>d = 10 m = 0.01 km：20 × log<sub>10</sub>0.01 = 20 × (−2) = <b>−40</b>。</li>
+    <li>f = 2400 MHz：20 × log<sub>10</sub>2400 = 20 × 3.380 = <b>67.60</b>。</li>
+    <li>FSPL = −40 + 67.60 + 32.44 = <b>60.04 dB</b>。</li>
+    <li>f = 5000 MHz：20 × 3.699 = 73.98 → FSPL = −40 + 73.98 + 32.44 = <b>66.42 dB</b>；比 2.4 GHz 多 66.42 − 60.04 = <b>6.38 dB</b>。</li>
+    <li>捷徑：差值只看頻率比，20 × log<sub>10</sub>(5000 ÷ 2400) = 20 × 0.319 = 6.38 dB；6 GHz 為 20 × log<sub>10</sub>2.5 = <b>7.96 dB</b>。</li>
+    <li>距離加倍：20 × log<sub>10</sub>2 = <b>+6.02 dB</b>。</li>
+  </ol>
+
+  <h3>⑪ <span class="sup">補充</span>EIRP 與天線增益換算</h3>
+  <div class="callout tip"><b>EIRP(dBm) = P<sub>tx</sub>(dBm) + G<sub>ant</sub>(dBi) − L<sub>cable</sub>(dB)</b>　　<b>dBi = dBd + 2.15</b></div>
+  <ol>
+    <li>P<sub>tx</sub> = 100 mW → 10 log<sub>10</sub>100 = 20 dBm。</li>
+    <li>EIRP = 20 + 5 − 1 = <b>24 dBm</b>。</li>
+    <li>換回 mW：10<sup>24/10</sup> = 10<sup>2.4</sup> ≈ <b>251 mW</b>（約原本的 2.5 倍，因為 +4 dB ≈ ×2.5）。</li>
+    <li>天線標 3 dBd：3 + 2.15 = <b>5.15 dBi</b>。</li>
+  </ol>
+
+  <h3>⑫ <span class="sup">補充</span>PLCP 長前導的時間</h3>
+  <div class="callout tip"><b>T<sub>PLCP</sub> = (Preamble + Header bits) ÷ 1 Mbps</b></div>
+  <ol>
+    <li>Preamble 144 bits（SYNC 128 + SFD 16）＋ Header 48 bits（8 + 8 + 16 + 16）= <b>192 bits</b>。</li>
+    <li>固定用 1 Mbps 送：192 ÷ 1 bit/μs = <b>192 μs</b>。</li>
+    <li>對照 11 Mbps 送 1500 bytes：12000 ÷ 11 ≈ 1090.9 μs，PLCP 佔 192 ÷ (192 + 1090.9) ≈ <b>15%</b>。</li>
+  </ol>
+
+  <h2 id="glossary">19. 專有名詞對照</h2>
   <details><summary>展開 75 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
     <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
     <tr><td>載波偵測多重存取／碰撞避免</td><td>CSMA/CA</td><td>用隨機退避與 RTS/CTS 事先避免碰撞，再用 ACK 確認</td></tr>
@@ -914,7 +1030,7 @@ flowchart LR
     <tr><td>全向天線／輻射場型</td><td>Omnidirectional Antenna / Radiation Pattern</td><td>水平各方向均勻的天線／天線在各方向的增益分布圖（補充）</td></tr>
   </table></div></div></details>
 
-  <h2 id="check">19. 考前自我檢查</h2>
+  <h2 id="check">20. 考前自我檢查</h2>
   <ul class="checklist">
     <li><details><summary>說出 802.11 / 11a / 11b / 11g / 11n / 11ac 的頻段、技術與最高速率</summary><div class="inner">802.11：2.4GHz FHSS/DSSS/IR 2M；11a：5GHz OFDM 54M；11b：2.4GHz DSSS/CCK 11M；11g：2.4GHz ERP 54M；11n：2.4/5GHz OFDM+MIMO 600M；11ac：5GHz VHT 6933.3M。</div></details></li>
     <li><details><summary>解釋 hidden node 問題以及 RTS/CTS、virtual carrier sense 的作用</summary><div class="inner">A、C 都聽得到 B 但彼此聽不到，同時傳就在 B 碰撞。RTS/CTS 讓 B 的 CTS 被 C 聽到；C 依 Duration 設 NAV，不實際聽通道也知道要等多久（virtual carrier sense）。</div></details></li>

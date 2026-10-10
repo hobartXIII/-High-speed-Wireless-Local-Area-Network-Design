@@ -461,43 +461,68 @@ sequenceDiagram
   </div>
 
   <h2 id="calc">17. 公式與計算</h2>
+  <div class="callout note">每個公式先寫出來、說明符號，再代入範例數值一步一步算。<b>單位提醒</b>：1 byte = 8 bits；R 以 Mbps 表示時等於「每 µs 幾個 bits」，所以 bits ÷ Mbps 直接得到 µs。</div>
   <h3>MAC 訊框長度</h3>
   <div class="callout tip"><b>L<sub>MPDU</sub> = L<sub>hdr</sub> + L<sub>body</sub> + L<sub>FCS</sub></b>（bytes；L<sub>body</sub> 為 0–2312，L<sub>FCS</sub> = 4）</div>
+  <p>符號：L<sub>hdr</sub>＝MAC 標頭；L<sub>body</sub>＝Frame Body；L<sub>FCS</sub>＝CRC-32 檢查碼。</p>
   <ol>
-    <li>4 位址標頭：2 + 2 + 6×3 + 2 + 6 = <b>30 bytes</b>；3 位址為 24 bytes。</li>
-    <li>最大資料訊框：30 + 2312 + 4 = <b>2346 bytes</b>（3 位址為 2340 bytes）。</li>
-    <li>RTS = 2+2+6+6+4 = <b>20</b>；CTS = ACK = 2+2+6+4 = <b>14</b>；PS-Poll = CF-End = <b>20</b> bytes。</li>
+    <li>4 位址標頭逐欄相加：Frame Control 2 + Duration/ID 2 + Address 1–3 共 6×3 = 18 + Sequence Control 2 + Address 4 6 → 2 + 2 + 18 + 2 + 6 = <b>30 bytes</b>。</li>
+    <li>3 位址（沒有 Address 4）：30 − 6 = <b>24 bytes</b>。</li>
+    <li>最大資料訊框：30 + 2312 + 4 = <b>2346 bytes</b>；3 位址為 24 + 2312 + 4 = 2340 bytes。</li>
+    <li>控制訊框：RTS = FC 2 + Duration 2 + RA 6 + TA 6 + FCS 4 = <b>20</b>；CTS = ACK = 2 + 2 + RA 6 + 4 = <b>14</b>；PS-Poll = 2 + AID 2 + BSSID 6 + TA 6 + 4 = <b>20</b>；CF-End 同樣 20 bytes。</li>
   </ol>
   <h3>訊框傳輸時間</h3>
   <div class="callout tip"><b>T = 8 × L ÷ R</b>（T：µs；L：bytes；R：Mbps，等於 bits/µs）</div>
   <ol>
-    <li>ACK 14 bytes = 112 bits；1 Mbps → <b>112 µs</b>；11 Mbps → 112 ÷ 11 ≈ <b>10.18 µs</b>。</li>
-    <li>最大資料訊框 2346 bytes = 18768 bits；11 Mbps → ≈ <b>1706.2 µs</b>。</li>
+    <li>ACK：L = 14 bytes → 14 × 8 = 112 bits。</li>
+    <li>1 Mbps：112 ÷ 1 = <b>112 µs</b>；11 Mbps：112 ÷ 11 ≈ <b>10.18 µs</b>。</li>
+    <li>最大資料訊框：2346 × 8 = 18768 bits；18768 ÷ 11 ≈ <b>1706.2 µs</b>。</li>
+    <li><span class="sup">補充</span>加上 802.11b 長前導 PLCP 192 µs：1706.2 + 192 = <b>1898.2 µs</b>；ACK 在 11 Mbps 則是 10.18 + 192 ≈ 202.2 µs，PLCP 佔了 95%。</li>
   </ol>
-  <p><b>計算陷阱</b>：bytes 要 ×8；這裡沒算 PHY 的 Preamble 與 PLCP Header（<span class="sup">補充</span>802.11b 長前導 PLCP 固定 192 µs，要另外加）。</p>
+  <p><b>計算陷阱</b>：bytes 要 ×8；PHY 的 Preamble 與 PLCP Header 要另外加，短訊框時它才是主角。</p>
   <h3>Duration/ID 數值</h3>
   <div class="callout tip"><b>D<sub>max</sub> = 2<sup>15</sup> − 1 = 32767 µs</b>　<b>D<sub>CFP</sub> = 2<sup>15</sup> = 32768</b>　<b>PS-Poll 欄位值 = 2<sup>15</sup> + 2<sup>14</sup> + AID = 49152 + AID</b></div>
   <ol>
+    <li>欄位 16 bits，bit 15 = 0 時剩 15 bits 表示時間：最大 2<sup>15</sup> − 1 = 32768 − 1 = <b>32767 µs</b>（約 32.8 ms）。</li>
+    <li>CFP 期間只設 bit 15 = 1、其餘 0：2<sup>15</sup> = <b>32768</b>。</li>
+    <li>PS-Poll 設 bit 15 = bit 14 = 1：2<sup>15</sup> + 2<sup>14</sup> = 32768 + 16384 = <b>49152</b>（0xC000），低 14 bits 放 AID。</li>
     <li>AID = 5：49152 + 5 = <b>49157（0xC005）</b>。</li>
-    <li>最大 AID 2007 → 49152 + 2007 = <b>51159（0xC7D7）</b>。</li>
+    <li>最大 AID 2007 → 49152 + 2007 = <b>51159（0xC7D7）</b>；2007 = 0x7D7，所以只是把 0xC000 的低位補上 0x7D7。</li>
   </ol>
   <p><b>計算陷阱</b>：PS-Poll 的這兩個 bytes 不是時間，不能拿來更新 NAV。</p>
   <h3>Sequence Control 範圍</h3>
-  <div class="callout tip"><b>N<sub>seq</sub> = 2<sup>12</sup> = 4096</b>（0–4095，用完從 0 重來）　<b>N<sub>frag</sub> = 2<sup>4</sup> = 16</b></div>
-  <p>例：2000 bytes 的 MSDU，每段 Frame Body 最多 600 bytes（自訂數字）→ ⌈2000 ÷ 600⌉ = 4 段（600、600、600、200）；每段加 24 + 4 = 28 bytes，總長 2000 + 4×28 = <b>2112 bytes</b>，比不分段（2028 bytes）多 84 bytes。</p>
+  <div class="callout tip"><b>N<sub>seq</sub> = 2<sup>12</sup> = 4096</b>（0–4095，用完從 0 重來）　<b>N<sub>frag</sub> = 2<sup>4</sup> = 16</b>　<b>分段數 = ⌈L<sub>MSDU</sub> ÷ L<sub>frag</sub>⌉</b></div>
+  <ol>
+    <li>Sequence Number 12 bits：2<sup>12</sup> = <b>4096</b> 個值（0–4095）；Fragment Number 4 bits：2<sup>4</sup> = <b>16</b>（0–15）。</li>
+    <li>例：2000 bytes 的 MSDU，每段 Frame Body 最多 600 bytes（自訂數字）→ 2000 ÷ 600 = 3.33，無條件進位 = <b>4 段</b>（600、600、600、200）。</li>
+    <li>每段都要自己的標頭與 FCS：24 + 4 = 28 bytes；4 段共 4 × 28 = 112 bytes。</li>
+    <li>總長 2000 + 112 = <b>2112 bytes</b>；不分段只需 2000 + 28 = 2028 bytes，多出 2112 − 2028 = <b>84 bytes</b>。</li>
+  </ol>
   <h3>WEP 種子長度與 IV 空間</h3>
-  <div class="callout tip"><b>L<sub>seed</sub> = L<sub>key</sub> + L<sub>IV</sub></b>　<b>N<sub>IV</sub> = 2<sup>24</sup> = 16,777,216</b></div>
+  <div class="callout tip"><b>L<sub>seed</sub> = L<sub>key</sub> + L<sub>IV</sub></b>　<b>N<sub>IV</sub> = 2<sup>24</sup> = 16,777,216</b>　<b>用完時間 = N<sub>IV</sub> ÷ 每秒訊框數</b></div>
   <ol>
     <li>40 + 24 = <b>64</b>；104 + 24 = <b>128</b>；128 + 24 = <b>152</b>（<span class="sup">補充</span>104、128 是由講義的 128、152 倒推）。</li>
-    <li><span class="sup">補充</span>11 Mbps、每框 1500 bytes：每秒約 11×10<sup>6</sup> ÷ 12000 ≈ 916.7 框；用完 IV ≈ 16,777,216 ÷ 916.7 ≈ 18,302 秒 ≈ <b>5.1 小時</b>。同 IV ＋ 同金鑰 → 同金鑰序列，這是 WEP 被破解的原因之一。</li>
+    <li>IV 有 24 bits：2<sup>24</sup> = 2<sup>10</sup> × 2<sup>10</sup> × 2<sup>4</sup> = 1024 × 1024 × 16 = <b>16,777,216</b> 種。</li>
+    <li><span class="sup">補充</span>11 Mbps、每框 1500 bytes = 12000 bits：每秒 11×10<sup>6</sup> ÷ 12000 ≈ <b>916.7 框</b>。</li>
+    <li>16,777,216 ÷ 916.7 ≈ 18,302 秒；÷ 3600 ≈ <b>5.1 小時</b>就會重複 IV。</li>
+    <li><span class="sup">補充</span>若 IV 是隨機選，依生日問題約 1.18 × √(2<sup>24</sup>) = 1.18 × 4096 ≈ <b>4823 框</b>就有一半機率撞到重複 IV，換算 4823 ÷ 916.7 ≈ <b>5 秒</b>。同 IV ＋ 同金鑰 → 同金鑰序列，這是 WEP 被破解的原因之一。</li>
   </ol>
   <p><b>計算陷阱</b>：「64-bit WEP」含 IV，真正的秘密只有 40 bits。</p>
   <h3>WEP 額外負擔</h3>
   <div class="callout tip"><b>L<sub>body,WEP</sub> = L<sub>MSDU</sub> + 4（IV 欄位）+ 4（ICV）</b></div>
-  <p><span class="sup">補充</span>標準 MSDU 上限 2304 bytes → 2304 + 8 = 2312，正好是講義的 Frame Body 上限。</p>
+  <ol>
+    <li>IV 欄位 = IV 24 bits + Pad 6 bits + Key ID 2 bits = 32 bits = <b>4 bytes</b>；ICV 是 CRC-32 = <b>4 bytes</b>。</li>
+    <li>例：MSDU 1500 bytes → 1500 + 4 + 4 = <b>1508 bytes</b>。</li>
+    <li><span class="sup">補充</span>標準 MSDU 上限 2304 bytes → 2304 + 8 = <b>2312</b>，正好是講義的 Frame Body 上限。</li>
+  </ol>
   <h3><span class="sup">補充</span>2.4 GHz 頻道中心頻率</h3>
   <div class="callout tip"><b>f<sub>c</sub>(n) = 2407 + 5n MHz</b>，n = 1…13</div>
-  <p>北美 Set 1：2412、2437、2462 → 間距 25 MHz；歐洲 Set 1：2412、2442、2472 → 間距 30 MHz；Set 2 相隔 2 頻道 → 10 MHz。DSSS 頻寬約 22 MHz：25、30 ≥ 22 不重疊；10 &lt; 22 重疊 12 MHz，所以叫「半重疊」。</p>
+  <ol>
+    <li>北美 Set 1 是頻道 1、6、11：2407 + 5×1 = <b>2412</b>、2407 + 5×6 = <b>2437</b>、2407 + 5×11 = <b>2462</b> MHz → 間距 2437 − 2412 = <b>25 MHz</b>。</li>
+    <li>歐洲 Set 1 是頻道 1、7、13：2412、2407 + 35 = <b>2442</b>、2407 + 65 = <b>2472</b> MHz → 間距 <b>30 MHz</b>。</li>
+    <li>Set 2 相隔 2 個頻道：2 × 5 = <b>10 MHz</b>。</li>
+    <li>和 DSSS 頻寬約 22 MHz 比：25、30 ≥ 22 不重疊；10 &lt; 22，重疊 22 − 10 = <b>12 MHz</b>，所以叫「半重疊」。</li>
+  </ol>
   <h3>講義數字重算對照</h3>
   <p>講義沒有附數值例題，以下把講義上的數字逐一重算：</p>
   <div class="tbl-wrap"><table>
