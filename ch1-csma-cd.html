@@ -84,7 +84,7 @@ flowchart LR
   </ul>
 
   <h3><span class="sup">補充</span>過去與現代比較：講義的 10BASE5 vs. 家用網路</h3>
-  <p><b>講義的終端器、收發器、訊號增益器在家用網路裡感受不到：終端器和收發器縮進了晶片裡，訊號增益器則已經用不到。</b>CSMA/CD 的規則還在標準裡，只是全雙工的 switch 網路不會碰撞，所以它不再運作。</p>
+  <p><b>講義的終端器、收發器、訊號增益器在家用網路裡感受不到：終端器和收發器縮進了晶片裡，訊號增益器和 hub 被 switch 取代，bridge 則改名叫 switch；router 還在，只是家用的跟 switch、AP 做成同一台。</b>CSMA/CD 的規則還在標準裡，只是全雙工的 switch 網路不會碰撞，所以它不再運作。</p>
   <div class="tbl-wrap"><table>
     <tr><th>項目</th><th>過去（講義 10BASE5，1980 年代）</th><th>現代家用網路</th><th>為什麼變了</th></tr>
     <tr><td>拓樸</td><td>匯流排：所有站台掛在同一條同軸電纜上</td><td>星狀：每台設備一條線接到路由器或 switch</td><td>一條線壞了只影響一台，好查好維護</td></tr>
@@ -96,6 +96,9 @@ flowchart LR
     <tr><td>接頭（MDI）</td><td>收發器直接咬在同軸電纜上</td><td>RJ-45</td><td>家裡唯一還「看得到」的實體層元件，就是網路線和 RJ-45</td></tr>
     <tr><td><b>訊號增益器</b></td><td>接兩段同軸電纜延長距離，最多 4 個（5-4-3 規則）</td><td><b>用不到</b>：一段線 100 m 就夠；真的要延長就再加一台 switch</td><td>switch 每個埠都重新產生訊號，而且會切開碰撞網域</td></tr>
     <tr><td>中心設備</td><td>Hub（多埠 repeater），所有埠共用頻寬</td><td>Switch（家用路由器通常內建 4 埠）</td><td>switch 依 MAC 位址只送往目的埠</td></tr>
+    <tr><td><b>橋接器</b>（bridge，第 2 層）</td><td>獨立設備，通常只有 2 埠，依 MAC 位址過濾、轉送，隔開兩個碰撞網域</td><td><b>就是 switch</b>：switch 等於多埠 bridge，一樣學 MAC 位址、一樣跑 Spanning Tree（802.1D）</td><td>晶片便宜到每個埠都能做 bridge 的事</td></tr>
+    <tr><td><b>路由器</b>（router，第 3 層）</td><td>獨立設備，接不同的 IP 網路與 WAN 專線</td><td><b>還在</b>。家用「路由器」其實是 router ＋ 4 埠 switch ＋ Wi-Fi AP ＋ DHCP／NAT 合成一台</td><td>家裡只需要一個出口，把功能合併最省事</td></tr>
+    <tr><td>連到外地（WAN）</td><td>租電信業者的 T1/E1 專線、X.25、Frame Relay</td><td>ISP 光纖到府（FTTH）；企業用 MPLS、SD-WAN 或 VPN 走網際網路</td><td>光纖頻寬大、便宜，網際網路取代了專線</td></tr>
     <tr><td>雙工與碰撞</td><td>半雙工，會碰撞，靠 CSMA/CD 處理</td><td>全雙工，不會碰撞，CSMA/CD 實際上不運作</td><td>收發分開、一條線只有兩端</td></tr>
     <tr><td>網路範圍</td><td>每段 500 m，全網路最長 2500 m</td><td>每段 100 m，但 switch 可以一直串下去</td><td>碰撞網域只到每一條線為止</td></tr>
     <tr><td>加一台電腦</td><td>在纜線標記處鑽孔、裝收發器</td><td>插上網路線，或連上 Wi-Fi</td><td>隨插即用</td></tr>
@@ -298,6 +301,32 @@ flowchart TD
     <li>講義提醒：Slot Time = 51.2 μs。這些限制都是為了讓最遠兩站之間的來回延遲不超過一個 slot time。</li>
     <li><span class="sup">補充</span>常見記法是 <b>5-4-3 規則</b>：最多 5 個區段、4 個 repeater，其中只有 3 個區段可以接工作站。</li>
   </ul>
+
+  <h3><span class="sup">補充</span>不同區域的網路如何連接</h3>
+  <div class="callout key"><b>「頭尾各一個終端器」指的是每一段同軸電纜，不是整個網路。</b>要接到別的網路，是在電纜上夾一個收發器、接上連接設備。依距離由近到遠有三種做法：同棟延長用 <b>repeater（第 1 層）</b>，分隔部門用 <b>bridge（第 2 層）</b>，跨城市用 <b>遠端 bridge 或 router 加上 WAN 專線</b>。</div>
+  <div class="figure">
+    <div class="fig-title">由近到遠的三種連接方式 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  subgraph B1["A 大樓（LAN）"]
+    direction LR
+    SA["段 A<br>終端器…終端器"] -- "repeater<br>第 1 層" --- SB["段 B<br>終端器…終端器"]
+    SB -- "bridge<br>第 2 層" --- SC["段 C<br>終端器…終端器"]
+  end
+  SC --- R1["router<br>第 3 層"]
+  R1 -- "WAN 專線<br>T1／Frame Relay" --- R2["router"]
+  R2 --- L2["另一個城市的 LAN"]
+    </div></div>
+    <div class="caption">每一段同軸電纜都自己兩端接終端器；repeater、bridge 都透過收發器夾在電纜上，跟一般工作站一樣。</div>
+  </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>情境</th><th>設備</th><th>OSI 層</th><th>做法與特性</th></tr>
+    <tr><td>同一棟樓，要延長距離</td><td><b>訊號增益器</b>（repeater）</td><td>1 實體層</td><td>把一段的訊號放大後轉送到另一段，不看內容；接起來仍是<b>同一個 LAN、同一個碰撞網域</b>，受 5-4-3 規則與總長約 2500 m 限制。兩棟樓之間可用光纖連兩個半訊號增益器（FOIRL／10BASE-FL），就是講義「兩個半訊號增益器之間最長 1000 m」那段；光纖不怕雷擊與兩棟樓的地電位差</td></tr>
+    <tr><td>不同部門，要把流量分開</td><td><b>橋接器</b>（bridge）</td><td>2 鏈結層</td><td>看 MAC 位址，本地的訊框不轉送，只轉送要到另一邊的；兩邊是<b>不同的碰撞網域</b>，所以能突破 5-4-3 限制、減少碰撞。第 0 章的 <b>802.1D Local Bridge</b>；接成迴圈時靠 Spanning Tree 關掉多餘路徑</td></tr>
+    <tr><td>不同城市</td><td><b>遠端橋接器</b>（remote bridge）</td><td>2 鏈結層</td><td>兩地各一台，中間租電信業者的 T1/E1、X.25、Frame Relay 專線；兩地看起來像同一個 LAN。第 0 章的 <b>802.1G Remote Bridge</b></td></tr>
+    <tr><td>不同城市、不同網路</td><td><b>路由器</b>（router）</td><td>3 網路層</td><td>兩邊是不同的 IP 網路，依 IP 位址找路；不轉送廣播，規模大時主要用這種</td></tr>
+  </table></div>
+  <div class="callout tip">💡 <b>到現代仍是同樣三層概念：</b>switch 取代 bridge 和 hub，ISP 光纖、MPLS 取代專線，router 還是負責不同網路之間的轉送。對照上面「過去與現代比較」表。</div>
 
   <h2 id="phy">9. 實體層選項比較<span class="en">（Alternative Physical Layers）</span></h2>
   <div class="tbl-wrap"><table>
@@ -592,6 +621,7 @@ flowchart TD
 
   <h2 id="check">14. 考前自我檢查</h2>
   <ul class="checklist">
+    <li><details><summary>能說出 repeater、bridge、router 連接網路的差別，以及它們在現代變成什麼</summary><div class="inner">Repeater（第 1 層）：放大轉送訊號，接起來仍是同一個碰撞網域，受 5-4-3 限制；現代被 switch 取代。Bridge（第 2 層）：依 MAC 位址過濾，隔開碰撞網域（802.1D；遠端版 802.1G）；現代就是 switch。Router（第 3 層）：連接不同 IP 網路與 WAN；現在還在，家用的與 switch、AP 合成一台。終端器與收發器則縮進網卡與 switch 埠的 PHY 晶片。</div></details></li>
     <li><details><summary>說明 slot time 51.2 μs 的意義，以及它與最小訊框 64 bytes 的關係</summary><div class="inner">Slot time 是碰撞視窗（來回傳播延遲＋載波偵測時間），也是 BEBA 的時間單位。64 bytes = 512 bits，在 10 Mbps 下傳完剛好 51.2 μs，保證送完之前一定能偵測到碰撞。</div></details></li>
     <li><details><summary>解釋為何碰撞偵測視窗是 2a</summary><div class="inner">最壞情況是最遠端 B 在 A 的訊號抵達前一瞬間開始送；碰撞發生在 B 附近，碰撞訊號要再花 a 才回到 A，所以 A 在 t<sub>0</sub> + 2a − ε 才知道。</div></details></li>
     <li><details><summary>能寫出 BEBA 的 n、k、r 公式，並算出第 n 次碰撞的隨機範圍</summary><div class="inner">k = min(n, 10)，0 ≤ r &lt; 2<sup>k</sup>（單位 slot time）。例如 n = 4：k = 4，r ∈ 0–15；n = 12：k = 10，r ∈ 0–1023；n &gt; 16 放棄。</div></details></li>
