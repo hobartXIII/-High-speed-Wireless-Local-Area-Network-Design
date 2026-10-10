@@ -105,6 +105,36 @@
     <li>低成本<span class="en">（Low cost）</span></li>
   </ol>
 
+  <h3><span class="sup">補充</span>Mbps 與 MB/s 的差異與換算</h3>
+  <div class="callout key"><b>Mbps 是「每秒百萬 bits」，MB/s 是「每秒百萬 bytes」，1 byte = 8 bits，所以 MB/s = Mbps ÷ 8。</b>網路速率（講義、規格、ISP 方案）一律用 <b>bps</b>；下載軟體、檔案總管顯示的是 <b>B/s</b>。</div>
+  <div class="tbl-wrap"><table>
+    <tr><th>寫法</th><th>意思</th><th>單位</th><th>常見於</th></tr>
+    <tr><td><b>Mbps</b>（Mb/s、Mbit/s）</td><td>Mega <b>bits</b> per second</td><td>小寫 <b>b</b> = bit</td><td>802.3／802.11 規格、ISP 方案「1000M 光世代」、Wi-Fi 連線速率</td></tr>
+    <tr><td><b>MB/s</b>（MBps）</td><td>Mega <b>Bytes</b> per second</td><td>大寫 <b>B</b> = byte = 8 bits</td><td>瀏覽器／Steam 下載速度、檔案複製、硬碟與 USB 讀寫速度</td></tr>
+  </table></div>
+  <div class="callout tip"><b>Mbps → MB/s：÷ 8</b>　　<b>MB/s → Mbps：× 8</b>　　<b>傳輸時間 = 檔案大小（MB）× 8 ÷ 速率（Mbps）</b></div>
+  <div class="tbl-wrap"><table>
+    <tr><th>網路速率</th><th>÷ 8 理論上限</th><th>實際下載約（扣掉 overhead）</th></tr>
+    <tr><td>10 Mbps（10BASE5 Ethernet）</td><td>1.25 MB/s</td><td>約 1.1 MB/s</td></tr>
+    <tr><td>11 Mbps（802.11b）</td><td>1.375 MB/s</td><td>約 0.6 MB/s（無線 MAC 負擔大，實際約一半）</td></tr>
+    <tr><td>54 Mbps（802.11a/g）</td><td>6.75 MB/s</td><td>約 3 MB/s</td></tr>
+    <tr><td>100 Mbps（Fast Ethernet）</td><td>12.5 MB/s</td><td>約 11–12 MB/s</td></tr>
+    <tr><td>1000 Mbps = 1 Gbps（Gigabit Ethernet）</td><td>125 MB/s</td><td>約 110–118 MB/s</td></tr>
+  </table></div>
+  <p><b>範例計算</b>：用 100 Mbps 下載 1 GB（以 1000 MB 計）的檔案要多久？</p>
+  <ol>
+    <li>檔案換成 bits：1000 MB × 8 = 8000 Mb。</li>
+    <li>除以速率：8000 Mb ÷ 100 Mbps = <b>80 秒</b>（理論最快）。</li>
+    <li>反過來看：100 Mbps ÷ 8 = 12.5 MB/s，1000 MB ÷ 12.5 MB/s = 80 秒，結果相同。</li>
+    <li>如果誤把 100 Mbps 當成 100 MB/s，會算成 10 秒，差了 8 倍。</li>
+  </ol>
+  <p><b>容易搞混的地方：</b></p>
+  <ul>
+    <li><b>大小寫</b>：b（bit）與 B（byte）差 8 倍；M（10<sup>6</sup>）與 m（milli，10<sup>−3</sup>）差很多，速率不會用小寫 m。</li>
+    <li><b>網路用十進位</b>：1 Mbps = 10<sup>6</sup> bits/s，1 Gbps = 1000 Mbps。檔案大小有時用二進位：Windows 顯示的「MB」其實是 <b>MiB</b> = 2<sup>20</sup> = 1,048,576 bytes，所以 1000 Mbps 的 125 MB/s 在 Windows 上約顯示成 119 MB/s。</li>
+    <li><b>實際比理論低</b>：每個訊框都有 header、preamble、FCS、訊框間隔，TCP／IP 也有 header 與 ACK；Ethernet 實際約為理論的 94–95%，Wi-Fi 因為 CSMA/CA 的退避與 ACK（<a href="ch2-2-80211-mac.html">2-2 章</a>）通常只有標示速率的一半上下。</li>
+  </ul>
+
   <h2 id="comp">4. LAN 組成<span class="en">（LAN Components）</span></h2>
   <ul>
     <li>電腦／網路裝置<span class="en">（Computers / Networking devices）</span>；講義圖中稱工作站</li>
@@ -302,7 +332,7 @@
   </ul>
 
   <h2 id="glossary">10. 專有名詞對照</h2>
-  <details><summary>展開 40 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
+  <details><summary>展開 41 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
     <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
     <tr><td>個人區域網路</td><td>Personal Area Network（PAN）</td><td>範圍約數公尺，連接個人身邊的裝置，如藍牙耳機</td></tr>
     <tr><td>區域網路</td><td>Local Area Network（LAN）</td><td>中等範圍（1–5 km 內）內的裝置直接互相通訊的網路</td></tr>
@@ -344,6 +374,7 @@
     <tr><td>多輸入多輸出</td><td>MIMO</td><td>多支天線同時收發，提高速率與可靠度（11n 起）</td></tr>
     <tr><td>認知無線電／電視空白頻段</td><td>Cognitive Radio / TVWS</td><td>自動找空閒頻段使用的無線電（11af）／電視頻段中沒被使用的部分</td></tr>
     <tr><td>微微網</td><td>Piconet</td><td>藍牙的基本網路單位，由一個 controller（master）協調</td></tr>
+    <tr><td>每秒百萬位元／每秒百萬位元組</td><td>Mbps / MB/s</td><td>bit 與 byte 差 8 倍：MB/s = Mbps ÷ 8，例如 1 Gbps ≈ 125 MB/s</td></tr>
   </table></div></div></details>
 
   <h2 id="check">11. 考前自我檢查</h2>
@@ -356,6 +387,7 @@
     <li><details><summary>能分辨 11a / b / g / n / ac / ax / be 的頻段與速率等級</summary><div class="inner">a：5GHz OFDM 54M；b：2.4GHz DSSS/CCK 11M；g：2.4GHz 54M；n：2.4/5GHz MIMO 600M；ac：5GHz VHT 6.93G；ax：2.4/5/6GHz HE 9.6G；be：2.4/5/6GHz EHT。</div></details></li>
     <li><details><summary>能區分 11ah 與 11af（都在 1GHz 以下）</summary><div class="inner">11ah：Wi-Fi HaLow，免執照 900MHz，100 kbps、約 1 km，給 IoT 用。11af：White-Fi／Super Wi-Fi，利用 54–790MHz 的 TV white space（需執照頻段），靠認知無線電找空閒頻道；6、7MHz 通道 26.7 Mbps，8MHz 通道 35.6 Mbps。</div></details></li>
     <li><details><summary>能說出 11e、11i、11n 在講義中對應的別名或提案</summary><div class="inner">11e = WME（Wi-Fi Alliance 認證名稱 WMM）；11i 對照 WPA（PSK）／WPA2.0；11n 有兩個競爭提案陣營：WWiSE 與 TGnSync。</div></details></li>
+    <li><details><summary>能換算 Mbps 與 MB/s，並算出下載時間</summary><div class="inner">1 byte = 8 bits，MB/s = Mbps ÷ 8：100 Mbps = 12.5 MB/s，1 Gbps = 125 MB/s。傳輸時間 = 檔案大小（MB）× 8 ÷ 速率（Mbps），例如 1000 MB 用 100 Mbps 要 80 秒。實際速率會因各層 header 與 MAC 負擔而更低。</div></details></li>
     <li><details><summary>能分辨 802.15.1 / 15.4 / 15.6 / 15.7</summary><div class="inner">15.1 Bluetooth；15.4 Low Rate WPAN（Zigbee 底層）；15.6 Body Area Network；15.7 可見光通訊。</div></details></li>
   </ul>
 </main>
