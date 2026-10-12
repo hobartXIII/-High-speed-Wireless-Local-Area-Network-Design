@@ -213,5 +213,6 @@ python3 plot_ampdu.py results.csv results_noampdu.csv ampdu_compare.png
 | `plot_ampdu.py` | A-MPDU 開關對照圖 |
 | `results.csv`、`results_noampdu.csv` | 原始模擬數據 |
 | `throughput_vs_rate.png`、`throughput_vs_rate_noampdu.png`、`ampdu_compare.png` | 結果圖 |
+| `ns3-guide.md` | ns-3 功能介紹與基本安裝使用說明 |
 | `ns3-hw1.md` | 完整操作教學（安裝、程式碼、畫圖） |
 | `../高速網路_作業一.pptx` | 作業題目 |

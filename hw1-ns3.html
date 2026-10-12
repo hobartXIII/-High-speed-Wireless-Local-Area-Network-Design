@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ns-3 使用說明</title>
+<meta name="description" content="作業一：ns-3 網路模擬器的功能、核心概念、安裝步驟（WSL2）、基本使用與常見問題，對照 802.11n throughput 模擬程式 hw1.cc。">
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/common.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">HW 1</div>
+    <h1>🧪 ns-3 功能與基本安裝使用說明</h1>
+    <div class="meta"><span>作業一：802.11n Throughput vs. Arrival Rate</span><span>環境：WSL2 Ubuntu 24.04・ns-3.49</span></div>
+  </div>
+  <div class="callout key"><p><b>ns-3 是開源的離散事件網路模擬器：用 C++ 把節點、網卡、通道、協定堆疊和應用程式組成一個虛擬網路，跑完後輸出封包層級的統計結果。</b> 作業一用它模擬 802.11n 的 DCF（CSMA/CA），量測不同 STA 數、到達率、RTS/CTS 設定下的 throughput。</p>
+    <ul>
+      <li><b>離散事件</b>：模擬器只處理「事件」（封包送出、退避倒數結束、ACK 逾時…），事件之間直接跳過，所以 20 秒的模擬幾秒內就跑完，而且結果可重現。</li>
+      <li><b>協定細節完整</b>：802.11 的 IFS、退避、ACK、RTS/CTS、NAV、A-MPDU、Block Ack 都照標準實作，不是用公式近似。</li>
+      <li><b>開源免費</b>：GPLv2 授權，原始碼在 <a href="https://gitlab.com/nsnam/ns-3-dev">https://gitlab.com/nsnam/ns-3-dev</a>，官方文件在 <a href="https://www.nsnam.org/documentation/">https://www.nsnam.org/documentation/</a>。</li>
+      <li><b>不是 ns-2 的新版</b>：ns-3 從頭重寫，和 ns-2 的 Tcl 腳本不相容。</li>
+    </ul>
+  </div>
+  <p>本份作業使用的環境：</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>項目</th><th>版本</th></tr>
+    <tr><td>系統</td><td>Windows 11 + WSL2 Ubuntu 24.04.2 LTS</td></tr>
+    <tr><td>ns-3</td><td>ns-3.49（optimized 建置）</td></tr>
+    <tr><td>編譯器／建置工具</td><td>g++ 13.3、CMake 3.28、Ninja</td></tr>
+    <tr><td>畫圖</td><td>Python 3 + pandas + matplotlib</td></tr>
+  </table></div>
+
+  <h2 id="s1">1. ns-3 的主要功能</h2>
+  <h3>1.1 模組</h3>
+  <p>ns-3 由許多模組組成（原始碼在 <code>src/</code> 下），需要哪些就啟用哪些。</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>模組</th><th>功能</th><th>作業一有沒有用</th></tr>
+    <tr><td><code>core</code></td><td>模擬器核心：事件排程、時間、亂數、屬性系統、log</td><td>✔（一定會載入）</td></tr>
+    <tr><td><code>network</code></td><td>Node、Packet、Socket、位址等基本型別</td><td>✔（一定會載入）</td></tr>
+    <tr><td><code>wifi</code></td><td>IEEE 802.11 a/b/g/n/ac/ax/be 的 MAC 與 PHY</td><td>✔ 主角</td></tr>
+    <tr><td><code>internet</code></td><td>IPv4／IPv6、UDP、TCP、路由</td><td>✔ UDP</td></tr>
+    <tr><td><code>applications</code></td><td>流量產生器（OnOff、BulkSend、UdpClient）、PacketSink</td><td>✔ PacketSink</td></tr>
+    <tr><td><code>mobility</code></td><td>節點位置與移動模型</td><td>✔ 固定位置</td></tr>
+    <tr><td><code>propagation</code></td><td>路徑損耗、衰落模型</td><td>✔（wifi 自動帶入）</td></tr>
+    <tr><td><code>stats</code></td><td>統計收集、Gnuplot 輸出</td><td>已啟用，未直接使用</td></tr>
+    <tr><td><code>flow-monitor</code></td><td>每條 flow 的 throughput、延遲、遺失率（輸出 XML）</td><td>未啟用</td></tr>
+    <tr><td><code>netanim</code></td><td>產生封包流動動畫的 XML，用 NetAnim 程式播放</td><td>未啟用</td></tr>
+    <tr><td><code>lte</code>、<code>lr-wpan</code>、<code>csma</code>、<code>point-to-point</code>、<code>mesh</code>…</td><td>其他網路技術</td><td>未使用</td></tr>
+  </table></div>
+  <h3>1.2 Wi-Fi 模組能模擬什麼</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>功能</th><th>說明</th><th>對應課程</th></tr>
+    <tr><td>標準</td><td><code>WIFI_STANDARD_80211a/b/g/n/ac/ax/be</code> 一行切換</td><td>2-1 PHY 演進</td></tr>
+    <tr><td>存取機制</td><td>DCF／EDCA：DIFS（AIFS）、隨機退避、二元指數退避、ACK、重傳上限</td><td>2-4 DCF</td></tr>
+    <tr><td>RTS/CTS</td><td>用 <code>RtsCtsThreshold</code> 控制，NAV 依 Duration 欄位更新</td><td>2-4 Hidden node</td></tr>
+    <tr><td>聚合</td><td>A-MPDU、A-MSDU、Block Ack</td><td>802.11n</td></tr>
+    <tr><td>速率控制</td><td><code>ConstantRateWifiManager</code>（固定速率）、<code>MinstrelHtWifiManager</code>、<code>IdealWifiManager</code> 等</td><td>2-1 速率切換</td></tr>
+    <tr><td>PHY 模型</td><td><code>YansWifiPhy</code>（簡單、快）、<code>SpectrumWifiPhy</code>（考慮頻譜重疊、OFDMA）</td><td>2-1 PHY</td></tr>
+    <tr><td>通道</td><td>傳播延遲＋路徑損耗（預設 LogDistance），可換其他模型</td><td>2-1 無線環境</td></tr>
+    <tr><td>拓樸</td><td>AP＋STA（Infrastructure）、ad hoc、mesh</td><td>2-1、2-2 架構</td></tr>
+  </table></div>
+  <h3>1.3 結果輸出與分析工具</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>工具</th><th>輸出</th><th>用途</th></tr>
+    <tr><td>Application 計數器（如 <code>PacketSink::GetTotalRx()</code>）</td><td>程式內的數字</td><td>算 throughput（作業一用這個）</td></tr>
+    <tr><td>Trace source（<code>Config::Connect</code>）</td><td>自訂 callback</td><td>監聽 MAC 碰撞、重傳、PHY 收發等事件</td></tr>
+    <tr><td>PCAP</td><td><code>.pcap</code> 檔</td><td>用 Wireshark 看每個 802.11 訊框</td></tr>
+    <tr><td>ASCII trace</td><td><code>.tr</code> 文字檔</td><td>逐行列出封包事件</td></tr>
+    <tr><td>FlowMonitor</td><td>XML</td><td>每條 flow 的延遲、遺失率</td></tr>
+    <tr><td>NetAnim</td><td>XML 動畫</td><td>看封包在節點間流動</td></tr>
+    <tr><td><code>NS_LOG</code></td><td>終端機文字</td><td>除錯用，印出模組內部的流程</td></tr>
+  </table></div>
+  <p>ns-3 本身不太畫圖，一般做法是輸出 CSV，再用 Python 或 gnuplot 畫（作業一的做法見 <a href="https://github.com/hobartXIII/-High-speed-Wireless-Local-Area-Network-Design/blob/main/hw1/ns3-hw1.md#4-畫圖"><code>ns3-hw1.md</code> 第 4 節</a>）。</p>
+
+  <h2 id="s2">2. 核心概念</h2>
+  <p>ns-3 的程式就是用下面這些「積木」搭出一個網路，再交給 <code>Simulator</code> 執行。</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>概念</th><th>是什麼</th><th>真實世界的對應</th><th>作業一 <code>hw1.cc</code> 裡的寫法</th></tr>
+    <tr><td><b>Node</b></td><td>一台裝置的空殼</td><td>電腦、手機、AP</td><td><code>NodeContainer apNode, staNodes</code></td></tr>
+    <tr><td><b>NetDevice</b></td><td>網卡（含 MAC 與 PHY）</td><td>Wi-Fi 網卡</td><td><code>wifi.Install(phy, mac, staNodes)</code></td></tr>
+    <tr><td><b>Channel</b></td><td>連接網卡的媒介</td><td>空氣中的電波</td><td><code>YansWifiChannelHelper::Default()</code></td></tr>
+    <tr><td><b>Protocol stack</b></td><td>IP、UDP、TCP</td><td>作業系統的網路堆疊</td><td><code>InternetStackHelper</code></td></tr>
+    <tr><td><b>Application</b></td><td>產生或接收流量的程式</td><td>使用者程式</td><td>STA 上的 Poisson 來源、AP 上的 <code>PacketSink</code></td></tr>
+    <tr><td><b>Mobility</b></td><td>節點位置</td><td>實際擺放位置</td><td><code>ListPositionAllocator</code>（半徑 5 m 的圓）</td></tr>
+    <tr><td><b>Helper</b></td><td>一次幫多個節點安裝、設定的工具類別</td><td>—</td><td><code>WifiHelper</code>、<code>WifiMacHelper</code>、<code>YansWifiPhyHelper</code></td></tr>
+    <tr><td><b>Attribute</b></td><td>物件的可調參數，可用字串設定</td><td>設定頁面上的選項</td><td><code>&quot;RtsCtsThreshold&quot;</code>、<code>&quot;DataMode&quot;</code>、<code>&quot;ChannelSettings&quot;</code></td></tr>
+    <tr><td><b>Simulator</b></td><td>事件排程與執行</td><td>時間本身</td><td><code>Simulator::Schedule</code>、<code>Run</code>、<code>Stop</code>、<code>Destroy</code></td></tr>
+  </table></div>
+  <div class="figure">
+    <div class="fig-title">作業一在 ns-3 裡的組成 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  subgraph STA["STA（Node）× N"]
+    A1["Application&lt;br&gt;Poisson 來源"] --&gt; U1["UDP / IP&lt;br&gt;InternetStack"] --&gt; M1["StaWifiMac&lt;br&gt;DCF、RTS/CTS、A-MPDU"] --&gt; P1["WifiPhy&lt;br&gt;802.11n HtMcs7"]
+  end
+  P1 -. "YansWifiChannel&lt;br&gt;（無線媒介）" .-&gt; P2
+  subgraph AP["AP（Node）"]
+    P2["WifiPhy"] --&gt; M2["ApWifiMac"] --&gt; U2["UDP / IP"] --&gt; A2["PacketSink&lt;br&gt;計算收到的 bytes"]
+  end
+    </div></div>
+  </div>
+  <p>一個 ns-3 程式的固定步驟：</p>
+  <ol>
+    <li>建 <b>Node</b>。</li>
+    <li>設定 <b>Channel</b> 與 <b>PHY</b>。</li>
+    <li>設定 <b>MAC</b> 與標準，用 Helper 安裝成 <b>NetDevice</b>。</li>
+    <li>設定 <b>Mobility</b>（位置）。</li>
+    <li>安裝 <b>Internet stack</b>、分配 IP。</li>
+    <li>安裝 <b>Application</b>（流量來源與接收端），設定開始與結束時間。</li>
+    <li><code>Simulator::Run()</code> 執行，<code>Simulator::Destroy()</code> 收尾。</li>
+    <li>讀出統計值並輸出。</li>
+  </ol>
+
+  <h2 id="s3">3. 安裝</h2>
+  <h3>3.1 Windows：先裝 WSL2</h3>
+  <p>ns-3 只支援 Linux 與 macOS，Windows 要透過 WSL2 執行。</p>
+  <pre><code># PowerShell（系統管理員）
+wsl --install -d Ubuntu</code></pre>
+  <p>重新開機後打開「Ubuntu」，設定使用者名稱與密碼。之後的指令都在 Ubuntu 裡執行。</p>
+  <h3>3.2 安裝相依套件</h3>
+  <pre><code>sudo apt update
+sudo apt install -y g++ cmake ninja-build python3 python3-pip git
+sudo apt install -y python3-pandas python3-matplotlib    # 畫圖用</code></pre>
+  <p>選用：<code>gnuplot</code>（ns-3 的 Gnuplot 輸出）、<code>wireshark</code>（看 pcap）、<code>gdb</code>（除錯）。</p>
+  <h3>3.3 下載 ns-3</h3>
+  <pre><code>cd ~
+git clone https://gitlab.com/nsnam/ns-3-dev.git
+cd ns-3-dev
+git checkout ns-3.49        # 固定版本，結果才能重現</code></pre>
+  <p>也可以從官網下載 release 壓縮檔（<code>ns-allinone-3.xx.tar.bz2</code>），解壓後進入 <code>ns-3.xx/</code> 目錄，步驟相同。</p>
+  <h3>3.4 設定與編譯</h3>
+  <pre><code># 作業一用的設定：optimized（執行快），只開需要的模組（編譯快）
+./ns3 configure --build-profile=optimized \
+    --enable-modules='wifi;applications;internet;mobility;stats'
+./ns3 build</code></pre>
+  <div class="tbl-wrap"><table>
+    <tr><th>建置設定（<code>--build-profile</code>）</th><th>特性</th><th>適合</th></tr>
+    <tr><td><code>debug</code></td><td>有除錯資訊、<code>NS_LOG</code> 與 assert 都開，執行最慢</td><td>開發、找錯</td></tr>
+    <tr><td><code>default</code></td><td>介於兩者之間</td><td>一般學習</td></tr>
+    <tr><td><code>optimized</code></td><td>編譯器最佳化、<b><code>NS_LOG</code> 被關掉</b>，執行最快</td><td>正式跑大量模擬</td></tr>
+  </table></div>
+  <p>想完整安裝、順便跑官方範例和測試：</p>
+  <pre><code>./ns3 configure --enable-examples --enable-tests
+./ns3 build
+./test.py          # 跑全部單元測試，需要一段時間</code></pre>
+  <h3>3.5 確認安裝成功</h3>
+  <pre><code>./ns3 show version                    # 印出 "ns-3 version: ns-3.49"
+./ns3 run scratch-simulator           # debug／default 建置會印出 "Scratch Simulator"
+./ns3 run "hw1 --PrintHelp"           # 能列出參數表，表示 hw1.cc 已編譯成功</code></pre>
+  <p>注意：optimized 建置會把 <code>NS_LOG_UNCOND</code> 一起關掉，所以 <code>scratch-simulator</code> 不會印字，只要沒有錯誤訊息就代表成功。</p>
+  <p>有開 <code>--enable-examples</code> 的話，也可以跑官方的 Wi-Fi 範例：</p>
+  <pre><code>./ns3 run wifi-simple-infra
+./ns3 run wifi-ht-network        # 802.11n 的 throughput 範例，和作業一最接近</code></pre>
+
+  <h2 id="s4">4. 基本使用</h2>
+  <h3>4.1 寫自己的程式：放在 <code>scratch/</code></h3>
+  <p><code>scratch/</code> 底下的 <code>.cc</code> 檔會自動被編譯，不必改 CMake 設定。</p>
+  <pre><code>cp hw1.cc ~/ns-3-dev/scratch/
+cd ~/ns-3-dev
+./ns3 build                  # 只會重新編譯有改過的檔案
+./ns3 run hw1                # 程式名稱 = 檔名去掉 .cc</code></pre>
+  <h3>4.2 傳參數：<code>CommandLine</code></h3>
+  <p>程式裡用 <code>cmd.AddValue(&quot;nSta&quot;, &quot;Number of STAs&quot;, nSta)</code> 註冊參數，執行時用 <code>--名稱=值</code> 指定。<b>整串要用雙引號包起來</b>，否則 <code>./ns3</code> 會把參數當成自己的選項。</p>
+  <pre><code>./ns3 run "hw1 --nSta=20 --rate=800 --rts=1"
+./ns3 run "hw1 --PrintHelp"                      # 列出這個程式所有參數與預設值</code></pre>
+  <p><code>--PrintHelp</code> 的輸出（作業一）：</p>
+  <pre><code>Program Options:
+    --nSta:     Number of STAs [5]
+    --rate:     Arrival rate per STA (packets/s) [200]
+    --rts:      Enable RTS/CTS [false]
+    --ampdu:    Enable A-MPDU aggregation [true]
+    --pktSize:  UDP payload size (bytes) [1472]
+    --mcs:      HT MCS (e.g. HtMcs7) [HtMcs7]
+    --simTime:  Simulation end time (s) [20]
+    --run:      RNG run number [1]
+    --out:      Output CSV file [results.csv]</code></pre>
+  <h3>4.3 查詢與設定 Attribute</h3>
+  <p>每個 ns-3 類別都有一組 Attribute。忘了名稱或預設值時，直接問程式：</p>
+  <pre><code>./ns3 run "hw1 --PrintAttributes=ns3::WifiRemoteStationManager"   # RtsCtsThreshold、FragmentationThreshold…
+./ns3 run "hw1 --PrintAttributes=ns3::ConstantRateWifiManager"    # DataMode、ControlMode
+./ns3 run "hw1 --PrintAttributes=ns3::WifiPhy"                    # ChannelSettings、Sifs、Slot…
+./ns3 run "hw1 --PrintTypeIds"                                    # 列出所有類別</code></pre>
+  <p>程式裡設定 Attribute 有三種方式：</p>
+  <pre><code>// 1. 透過 Helper（作業一的主要寫法）
+wifi.SetRemoteStationManager("ns3::ConstantRateWifiManager",
+                             "DataMode", StringValue("HtMcs7"),
+                             "RtsCtsThreshold", UintegerValue(0));
+
+// 2. 改某個類別所有之後建立的物件的預設值（要在建立物件之前呼叫）
+Config::SetDefault("ns3::WifiRemoteStationManager::RtsCtsThreshold", UintegerValue(0));
+
+// 3. 用路徑改已經建好的物件（作業一關 A-MPDU 用這個）
+Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize",
+            UintegerValue(0));</code></pre>
+  <h3>4.4 排程事件</h3>
+  <pre><code>Simulator::Schedule(Seconds(1.0), &amp;PoissonSend, sock, size, iat, stop);  // 1 秒後呼叫函式
+Simulator::Stop(Seconds(20.0));                                           // 20 秒時結束
+Simulator::Run();                                                         // 開始執行
+Simulator::Destroy();                                                     // 釋放資源</code></pre>
+  <p>作業一的 Poisson 來源就是「送一個封包，再用 <code>Schedule</code> 排下一次送出，間隔取指數分布」，一直遞迴到結束時間。</p>
+  <h3>4.5 亂數與重現性</h3>
+  <p>ns-3 的亂數由 <b>seed</b> 和 <b>run</b> 兩個數字決定，兩者相同時結果完全相同。</p>
+  <pre><code>RngSeedManager::SetSeed(1);   // 固定 seed
+RngSeedManager::SetRun(run);  // 換 run 編號 = 換一組獨立的亂數</code></pre>
+  <p>作業一每組參數跑 run = 1、2、3 取平均，報告裡的數字都能重跑出一模一樣的結果。不寫程式時也可以用全域參數 <code>--RngRun=3</code>。</p>
+  <h3>4.6 除錯：Log 與 PCAP</h3>
+  <pre><code># Log：只有 debug 或 default 建置才有輸出（optimized 會把 NS_LOG 編譯掉）
+NS_LOG="Hw1=level_all|prefix_time" ./ns3 run hw1
+NS_LOG="WifiMac=level_debug" ./ns3 run hw1</code></pre>
+  <pre><code>// PCAP：在程式裡加這兩行，跑完會產生 hw1-&lt;node&gt;-&lt;device&gt;.pcap，用 Wireshark 開
+phy.SetPcapDataLinkType(WifiPhyHelper::DLT_IEEE802_11_RADIO);
+phy.EnablePcap("hw1", apDev.Get(0));</code></pre>
+  <p>在 Wireshark 裡可以直接看到 RTS、CTS、Data（A-MPDU）、Block Ack 的順序與 Duration 欄位，對照 2-3、2-4 章的訊框格式。</p>
+  <h3>4.7 <code>./ns3</code> 常用指令</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>指令</th><th>用途</th></tr>
+    <tr><td><code>./ns3 configure [選項]</code></td><td>設定建置方式與要編譯的模組</td></tr>
+    <tr><td><code>./ns3 build</code></td><td>編譯（只編改過的檔案）</td></tr>
+    <tr><td><code>./ns3 run &quot;程式 --參數&quot;</code></td><td>編譯後執行</td></tr>
+    <tr><td><code>./ns3 run --no-build &quot;程式&quot;</code></td><td>不檢查編譯直接執行（平行跑多組時用，避免同時編譯）</td></tr>
+    <tr><td><code>./ns3 run 程式 --gdb</code></td><td>用 gdb 執行（需 debug 建置）</td></tr>
+    <tr><td><code>./ns3 show profile</code></td><td>顯示目前的建置設定</td></tr>
+    <tr><td><code>./ns3 clean</code></td><td>刪除編譯產物</td></tr>
+  </table></div>
+
+  <h2 id="s5">5. 作業一怎麼用 ns-3</h2>
+  <h3>5.1 對應關係</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>作業需求</th><th>ns-3 的做法</th></tr>
+    <tr><td>802.11n</td><td><code>wifi.SetStandard(WIFI_STANDARD_80211n)</code>，5 GHz、20 MHz、通道 36</td></tr>
+    <tr><td>固定傳輸速率</td><td><code>ConstantRateWifiManager</code>，<code>DataMode = HtMcs7</code>（65 Mbps）</td></tr>
+    <tr><td>RTS/CTS 開／關</td><td><code>RtsCtsThreshold = 0</code>（每個訊框都先 RTS）／<code>999999</code>（永遠不用）</td></tr>
+    <tr><td>STA 數 5、20</td><td><code>staNodes.Create(nSta)</code>，放在 AP 周圍半徑 5 m 的圓上</td></tr>
+    <tr><td>Arrival rate 200、800 pkt/s</td><td>每台 STA 一個 Poisson 來源，平均間隔 1／rate 秒</td></tr>
+    <tr><td>Throughput</td><td>AP 上 <code>PacketSink</code> 在 2–20 s 收到的 bytes × 8 ÷ 18 s</td></tr>
+    <tr><td>多次取平均</td><td><code>--run=1,2,3</code></td></tr>
+  </table></div>
+  <p>DCF 的 SIFS、slot、AIFSN、CW<sub>min</sub>／CW<sub>max</sub> 用 ns-3 依 802.11n 自動帶入的預設值；實際數值的確認列在 <a href="https://github.com/hobartXIII/-High-speed-Wireless-Local-Area-Network-Design/blob/main/hw1/TODO.md"><code>TODO.md</code></a>。</p>
+  <h3>5.2 執行流程</h3>
+  <pre><code># 1. 放檔案
+cp hw1.cc ~/ns-3-dev/scratch/
+cp run_all.sh plot.py plot_ampdu.py ~/ns-3-dev/
+cd ~/ns-3-dev
+
+# 2. 跑一組確認
+./ns3 run "hw1 --nSta=5 --rate=200 --rts=0"
+# → nSta=5 rate=200 rts=0 offered=11.776 Mbps  throughput=... Mbps  loss=...
+
+# 3. 跑全部組合（STA × rate × RTS × run，平行執行）
+bash run_all.sh results.csv
+
+# 4. 畫圖
+python3 plot.py results.csv throughput_vs_rate.png</code></pre>
+  <p>程式碼逐段說明、批次腳本與畫圖細節見 <a href="https://github.com/hobartXIII/-High-speed-Wireless-Local-Area-Network-Design/blob/main/hw1/ns3-hw1.md"><code>ns3-hw1.md</code></a>；實驗設計與參數表見 <a href="https://github.com/hobartXIII/-High-speed-Wireless-Local-Area-Network-Design/blob/main/hw1/hw1-spec.md"><code>hw1-spec.md</code></a>。</p>
+
+  <h2 id="s6">6. 常見問題</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>狀況</th><th>原因與解法</th></tr>
+    <tr><td><code>pip install</code> 出現 <code>externally-managed-environment</code></td><td>Ubuntu 24.04 不讓 pip 裝到系統 Python。改用 <code>sudo apt install python3-pandas python3-matplotlib</code>，或建 venv。</td></tr>
+    <tr><td><code>./ns3 run hw1 --nSta=20</code> 參數沒作用</td><td>參數要和程式名稱一起用雙引號包住：<code>./ns3 run &quot;hw1 --nSta=20&quot;</code>。</td></tr>
+    <tr><td>設了 <code>NS_LOG</code> 卻沒有輸出</td><td>optimized 建置把 log 編譯掉了。改用 <code>./ns3 configure --build-profile=debug</code> 重新編譯。</td></tr>
+    <tr><td>平行跑多組時一直重新編譯、互相卡住</td><td>先 <code>./ns3 build</code> 一次，之後每組用 <code>./ns3 run --no-build</code>。</td></tr>
+    <tr><td>從 Windows 的 Git Bash 呼叫 <code>wsl</code> 時路徑被改掉</td><td>Git Bash 會自動轉換 <code>/</code> 開頭的路徑，指令前加 <code>MSYS_NO_PATHCONV=1</code>。</td></tr>
+    <tr><td><code>sudo</code> 要密碼，但在自動化腳本裡無法輸入</td><td>在 PowerShell 用 <code>wsl -d Ubuntu -u root &lt;指令&gt;</code> 以 root 身分執行。</td></tr>
+    <tr><td>改了 <code>hw1.cc</code> 結果沒變</td><td>改的是 repo 裡的檔案，要再 <code>cp</code> 到 <code>~/ns-3-dev/scratch/</code> 並重新 build。</td></tr>
+    <tr><td>Throughput 是 0</td><td>STA 還沒 associate 就開始送，或 sink 的 port 不對。作業一在 1 s 才開始送、2 s 才開始量。</td></tr>
+  </table></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>
