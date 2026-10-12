@@ -168,15 +168,19 @@ cd ~/ns-3-dev
 ./ns3 run "hw1 --PrintHelp"                      # 列出這個程式所有參數與預設值</code></pre>
   <p><code>--PrintHelp</code> 的輸出（作業一）：</p>
   <pre><code>Program Options:
-    --nSta:     Number of STAs [5]
-    --rate:     Arrival rate per STA (packets/s) [200]
-    --rts:      Enable RTS/CTS [false]
-    --ampdu:    Enable A-MPDU aggregation [true]
-    --pktSize:  UDP payload size (bytes) [1472]
-    --mcs:      HT MCS (e.g. HtMcs7) [HtMcs7]
-    --simTime:  Simulation end time (s) [20]
-    --run:      RNG run number [1]
-    --out:      Output CSV file [results.csv]</code></pre>
+    --nSta:         Number of STAs [5]
+    --rate:         Arrival rate per STA (packets/s) [200]
+    --rts:          Enable RTS/CTS [false]
+    --ampdu:        Enable A-MPDU aggregation [true]
+    --pktSize:      UDP payload size (bytes) [1472]
+    --mcs:          HT MCS (e.g. HtMcs7) [HtMcs7]
+    --cwMin:        Minimum contention window (BE) [15]
+    --cwMax:        Maximum contention window (BE) [1023]
+    --aifsn:        AIFSN of BE (DIFS = SIFS + aifsn * slot) [3]
+    --printParams:  Print effective PHY/MAC parameters and frame airtimes [false]
+    --simTime:      Simulation end time (s) [20]
+    --run:          RNG run number [1]
+    --out:          Output CSV file [results.csv]</code></pre>
   <h3>4.3 查詢與設定 Attribute</h3>
   <p>每個 ns-3 類別都有一組 Attribute。忘了名稱或預設值時，直接問程式：</p>
   <pre><code>./ns3 run "hw1 --PrintAttributes=ns3::WifiRemoteStationManager"   # RtsCtsThreshold、FragmentationThreshold…
@@ -238,11 +242,11 @@ phy.EnablePcap("hw1", apDev.Get(0));</code></pre>
     <tr><td>Throughput</td><td>AP 上 <code>PacketSink</code> 在 2–20 s 收到的 bytes × 8 ÷ 18 s</td></tr>
     <tr><td>多次取平均</td><td><code>--run=1,2,3</code></td></tr>
   </table></div>
-  <p>DCF 的 SIFS、slot、AIFSN、CW<sub>min</sub>／CW<sub>max</sub> 用 ns-3 依 802.11n 自動帶入的預設值；實際數值的確認列在 <a href="https://github.com/hobartXIII/-High-speed-Wireless-Local-Area-Network-Design/blob/main/hw1/TODO.md"><code>TODO.md</code></a>。</p>
+  <p>DCF 參數在程式中明確設定（<code>--cwMin=15 --cwMax=1023 --aifsn=3</code>），加 <code>--printParams=1</code> 會印出實際生效的值：SIFS 16 µs、slot 9 µs、DIFS 43 µs、CW<sub>min</sub> 15、PLCP 36 µs，以及每種訊框的空中時間（例如 1538 B 資料訊框 228 µs）。</p>
   <h3>5.2 執行流程</h3>
   <pre><code># 1. 放檔案
 cp hw1.cc ~/ns-3-dev/scratch/
-cp run_all.sh plot.py plot_ampdu.py ~/ns-3-dev/
+cp run_all.sh plot.py ~/ns-3-dev/
 cd ~/ns-3-dev
 
 # 2. 跑一組確認

@@ -1,0 +1,167 @@
+# 作業一補充（不在作業繳交範圍）
+
+> **這份補充不屬於作業。** 作業報告只依題目 PPT 呈現：STA 5、20 × λ 200、800 packets/s × RTS/CTS 開關，共 8 組。以下是做作業時額外跑的實驗與分析，留作學習參考，報告裡不引用。
+
+本資料夾的檔案：
+
+| 檔案 | 內容 |
+|---|---|
+| `results_all_rates.csv` | 6 種 arrival rate（100–1000 packets/s）× 2 種 STA 數 × RTS 開關 × 3 個 seed，共 72 筆，A-MPDU 開 |
+| `results_noampdu.csv` | 同上，A-MPDU 關 |
+| `throughput_vs_rate_all_rates.png` | 6 種 arrival rate 的 Throughput vs. Arrival Rate（A-MPDU 開） |
+| `throughput_vs_rate_noampdu.png` | 同上，A-MPDU 關 |
+| `ampdu_compare.png` | A-MPDU 開關對照圖 |
+| `plot_ampdu.py` | 畫 A-MPDU 開關對照圖 |
+| `theory.py` | 單一 STA 無碰撞上限與 Bianchi 模型，和模擬飽和值對照 |
+
+`results_all_rates.csv` 中 λ = 200、800 的 24 筆，與作業用的 `../results.csv` 完全相同。
+
+---
+
+## 1. 補點：arrival rate 100–1000 packets/s
+
+作業只要求 200、800 packets/s。另外補了 100、400、600、1000，用來看出飽和點在哪裡。
+
+![6 種 arrival rate 的 Throughput vs. Arrival Rate](throughput_vs_rate_all_rates.png)
+
+| STA | λ（pkt/s） | 負載（Mbps） | RTS 關 throughput（Mbps） | RTS 關遺失率 | RTS 開 throughput（Mbps） | RTS 開遺失率 |
+|---|---|---|---|---|---|---|
+| 5 | 100 | 5.9 | 5.9 | 0% | 5.9 | 0% |
+| 5 | 200 | 11.8 | 11.8 | 0% | 11.8 | 0% |
+| 5 | 400 | 23.6 | 23.6 | 0% | 23.6 | 0% |
+| 5 | 600 | 35.3 | 35.5 | 0% | 35.5 | 0% |
+| 5 | 800 | 47.1 | 46.6 | 1.4% | 47.2 | 0% |
+| 5 | 1000 | 58.9 | 47.9 | 18.7% | 57.7 | 2.1% |
+| 20 | 100 | 23.6 | 23.5 | 0% | 23.5 | 0% |
+| 20 | 200 | 47.1 | 32.8 | 30.3% | 44.9 | 4.5% |
+| 20 | 400 | 94.2 | 35.5 | 62.2% | 57.7 | 38.7% |
+| 20 | 600 | 141.3 | 35.7 | 74.7% | 58.2 | 58.7% |
+| 20 | 800 | 188.4 | 35.6 | 81.1% | 58.2 | 69.1% |
+| 20 | 1000 | 235.5 | 36.1 | 84.7% | 58.2 | 75.3% |
+
+- **飽和點**：20 STA 在 RTS 關時 200 packets/s 就飽和，RTS 開時到 400 packets/s 才飽和；5 STA 要到 800–1000 packets/s。
+- **飽和值**：A-MPDU 開時，RTS 關約 36 Mbps（20 STA）、48 Mbps（5 STA）；RTS 開兩者都約 58 Mbps。
+
+---
+
+## 2. A-MPDU 開關對照
+
+關閉 A-MPDU（`--ampdu=0`）後，RTS/CTS 從「提高 60%」變成「降低 15–22%」，說明 RTS/CTS 的好處來自長訊框。
+
+![A-MPDU 開關對照](ampdu_compare.png)
+
+圖中顏色區分 RTS/CTS，實線為 A-MPDU 開、虛線為 A-MPDU 關。只看 A-MPDU 關的版本：
+
+![A-MPDU 關的 Throughput vs. Arrival Rate](throughput_vs_rate_noampdu.png)
+
+飽和 throughput（λ = 1000 packets/s，Mbps）：
+
+| STA | A-MPDU 關、RTS 關 | A-MPDU 關、RTS 開 | A-MPDU 開、RTS 關 | A-MPDU 開、RTS 開 |
+|---|---|---|---|---|
+| 5 | 30.3 | 23.5（−22%） | 47.9 | 57.7（+20%） |
+| 20 | 26.7 | 22.8（−15%） | 36.1 | 58.2（+61%） |
+
+- **沒有 A-MPDU 時**，每個訊框只裝一個 1500 B 封包，在 65 Mbps 下約 0.2 ms。碰撞浪費的時間本來就短，RTS/CTS 省不到多少，每個訊框卻要多付 RTS + CTS + 2 個 SIFS，所以開了反而虧。
+- **5 STA 虧得比 20 STA 多**：5 STA 碰撞少，RTS/CTS 幾乎只有開銷，還讓飽和提早。600 packets/s 時，開 RTS/CTS 只剩 23.5 Mbps（遺失率 33.8%），不開是 30.2 Mbps（遺失率 14.8%）。20 STA 碰撞多，RTS/CTS 稍微扳回一點。
+- **A-MPDU 本身的效果**：5 STA、RTS 關時，飽和 throughput 從 30.3 提高到 47.9 Mbps。聚合讓多個封包共用一次 DIFS、退避、preamble 與 ACK，每個封包分攤的開銷大幅降低。
+- **只有「A-MPDU 開 + RTS 開」不受 STA 數影響**：5 STA 與 20 STA 都約 58 Mbps，碰撞代價只剩一個 RTS。
+
+---
+
+## 3. 理論值對照
+
+用題目參數算的理論飽和 throughput 和模擬相差 0–15%，趨勢一致：RTS/CTS 只有在 A-MPDU 開啟時才有利。
+
+### 3.1 ns-3 實際的訊框空中時間
+
+`hw1 --printParams=1` 印出（A-MPDU 開、RTS 開、5 STA、λ = 1000）：
+
+```text
+PLCP preamble+header (HT-MF, 1 SS) = 36us
+  A-MPDU(QOSDATA): 43230 B (28 MPDU), HtMcs7, 5360us
+  QOSDATA: 1538 B (1 MPDU), HtMcs7, 228us
+  CTL_ACK: 14 B (1 MPDU), OfdmRate6Mbps, 44us
+  CTL_BACKRESP: 32 B (1 MPDU), OfdmRate24Mbps, 32us
+  CTL_RTS: 20 B (1 MPDU), HtMcs0, 64us
+  CTL_CTS: 14 B (1 MPDU), OfdmRate6Mbps, 44us
+```
+
+A-MPDU 最多 28 個 MPDU，是因為 HT PPDU 的最長時間限制（約 5.484 ms）。
+
+### 3.2 模型
+
+**單一 STA 無碰撞上限**：每次傳送前平均退避 CW<sub>min</sub> / 2 = 7.5 個 slot。
+
+```
+S1 = k × 8L ÷ (CWmin/2 × σ + Ts)
+```
+
+**Bianchi 飽和模型**：每個 STA 都一直有封包要送；τ 是每個 slot 傳送的機率、p 是碰撞機率，W = CW<sub>min</sub> + 1 = 16、m = 6（CW<sub>max</sub> = 1023）。
+
+```
+τ = 2(1 − 2p) ÷ [(1 − 2p)(W + 1) + pW(1 − (2p)^m)]
+p = 1 − (1 − τ)^(n−1)
+P_tr = 1 − (1 − τ)^n
+P_s  = nτ(1 − τ)^(n−1) ÷ P_tr
+S = P_s P_tr × k × 8L ÷ [(1 − P_tr)σ + P_tr P_s Ts + P_tr(1 − P_s)Tc]
+```
+
+σ = 9 µs，L = 1472 B，k 是一次送出的 MPDU 數；碰撞後其他站台等 EIFS = SIFS + ACK + DIFS = 103 µs。
+
+| 情況 | k | Ts（µs） | Tc（µs） |
+|---|---|---|---|
+| 無 A-MPDU、基本存取 | 1 | Data + SIFS + ACK + DIFS = 331 | Data + EIFS = 331 |
+| 無 A-MPDU、RTS/CTS | 1 | RTS + SIFS + CTS + SIFS + 331 = 471 | RTS + EIFS = 167 |
+| A-MPDU、基本存取 | 28 | A-MPDU + SIFS + BA + DIFS = 5451 | A-MPDU + EIFS = 5463 |
+| A-MPDU、RTS/CTS | 28 | RTS + SIFS + CTS + SIFS + 5451 = 5591 | RTS + EIFS = 167 |
+
+### 3.3 結果（模擬取 λ = 1000 packets/s，3 個 seed 平均）
+
+| A-MPDU | RTS/CTS | STA | 碰撞機率 p | 單 STA 上限（Mbps） | Bianchi（Mbps） | 模擬（Mbps） | 模擬 − 理論 |
+|---|---|---|---|---|---|---|---|
+| 關 | 關 | 5 | 0.272 | 29.55 | 28.58 | 30.29 | +6.0% |
+| 關 | 關 | 20 | 0.481 | 29.55 | 24.46 | 26.71 | +9.2% |
+| 關 | 開 | 5 | 0.272 | 21.87 | 22.53 | 23.47 | +4.2% |
+| 關 | 開 | 20 | 0.481 | 21.87 | 21.29 | 22.77 | +7.0% |
+| 開 | 關 | 5 | 0.272 | 59.75 | 51.11 | 47.94 | −6.2% |
+| 開 | 關 | 20 | 0.481 | 59.75 | 42.63 | 36.06 | −15.4% |
+| 開 | 開 | 5 | 0.272 | 58.27 | 58.43 | 57.74 | −1.2% |
+| 開 | 開 | 20 | 0.481 | 58.27 | 58.12 | 58.17 | +0.1% |
+
+- **RTS/CTS 的得失由 Tc / Ts 決定**：無 A-MPDU 時，RTS/CTS 讓 Ts 多了 140 µs，卻只把 Tc 從 331 降到 167 µs，所以開了較差；A-MPDU 時 Tc 從 5463 降到 167 µs，碰撞幾乎不花時間，飽和值接近單 STA 上限。
+- **碰撞機率隨 STA 數上升**：p 從 0.27（5 STA）升到 0.48（20 STA）。
+- **無 A-MPDU 時模擬高 4–9%**：Bianchi 假設重傳次數無限、碰撞時間一律以 EIFS 計算，跟 ns-3 的實作細節不完全相同。5 STA 的模擬值（30.29）高於單 STA 上限（29.55），是因為多個 STA 同時倒數時，媒介閒置的時間是大家退避值中最小的那個，比一個 STA 的平均 7.5 slot 短。
+- **A-MPDU 基本存取時模擬低 6–15%**：Bianchi 假設每次都送滿 28 個 MPDU；實際上碰撞後還要送 Block Ack Request、重傳個別 MPDU，佇列也不一定每次都滿。STA 越多、碰撞越多，落差越大。
+
+---
+
+## 4. 與講義的對應：RTS threshold
+
+RTS threshold 的設計是「只有比 threshold 長的訊框才走 RTS/CTS」。802.11n 的聚合讓訊框變長很多，合適的 threshold 也跟著改變：上面的結果顯示，長訊框（A-MPDU）加上多 STA 時 RTS/CTS 明顯有利，短訊框時反而是負擔。
+
+---
+
+## 5. 可再延伸的方向
+
+- **掃描題目參數 2、4、5**：例如 CW<sub>min</sub> = 7、15、31、63（`--cwMin`）、AIFSN = 2、3、7（`--aifsn`），或 L = 256、512、1472 B（`--pktSize`）。
+- **MCS**：目前固定 MCS 7。換成低 MCS 時訊框變長，RTS/CTS 的效益可能改變。
+- **Hidden terminal**：目前拓樸沒有 hidden terminal，RTS/CTS 的好處只來自縮短碰撞代價。可以把 STA 分成兩群放在 AP 兩側、拉遠距離，讓兩群彼此聽不到，再比一次 RTS/CTS 開和關。
+- **RTS threshold**：目前只比較 0 和 999999，可以試中間值（例如 2000、8000 B），看 A-MPDU 長度與 threshold 的關係。
+- **Seed 數**：3 個 seed 的標準差大多小於 1 Mbps；要做更細的比較可以增加到 5–10 個。
+
+---
+
+## 6. 重現
+
+在 `~/ns-3-dev/` 下（`hw1.cc` 與 `run_all.sh` 的放法見 `../hw1-spec.md` 第 5 節）：
+
+```bash
+# 把 run_all.sh 的 rate 迴圈改成 100 200 400 600 800 1000，再跑：
+bash run_all.sh results_all_rates.csv
+bash run_all.sh results_noampdu.csv --ampdu=0
+
+python3 plot.py results_all_rates.csv throughput_vs_rate_all_rates.png
+python3 plot.py results_noampdu.csv throughput_vs_rate_noampdu.png
+python3 plot_ampdu.py results_all_rates.csv results_noampdu.csv ampdu_compare.png
+python3 theory.py results_all_rates.csv results_noampdu.csv
+```

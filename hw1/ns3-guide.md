@@ -209,15 +209,19 @@ cd ~/ns-3-dev
 
 ```text
 Program Options:
-    --nSta:     Number of STAs [5]
-    --rate:     Arrival rate per STA (packets/s) [200]
-    --rts:      Enable RTS/CTS [false]
-    --ampdu:    Enable A-MPDU aggregation [true]
-    --pktSize:  UDP payload size (bytes) [1472]
-    --mcs:      HT MCS (e.g. HtMcs7) [HtMcs7]
-    --simTime:  Simulation end time (s) [20]
-    --run:      RNG run number [1]
-    --out:      Output CSV file [results.csv]
+    --nSta:         Number of STAs [5]
+    --rate:         Arrival rate per STA (packets/s) [200]
+    --rts:          Enable RTS/CTS [false]
+    --ampdu:        Enable A-MPDU aggregation [true]
+    --pktSize:      UDP payload size (bytes) [1472]
+    --mcs:          HT MCS (e.g. HtMcs7) [HtMcs7]
+    --cwMin:        Minimum contention window (BE) [15]
+    --cwMax:        Maximum contention window (BE) [1023]
+    --aifsn:        AIFSN of BE (DIFS = SIFS + aifsn * slot) [3]
+    --printParams:  Print effective PHY/MAC parameters and frame airtimes [false]
+    --simTime:      Simulation end time (s) [20]
+    --run:          RNG run number [1]
+    --out:          Output CSV file [results.csv]
 ```
 
 ### 4.3 查詢與設定 Attribute
@@ -313,14 +317,14 @@ phy.EnablePcap("hw1", apDev.Get(0));
 | Throughput | AP 上 `PacketSink` 在 2–20 s 收到的 bytes × 8 ÷ 18 s |
 | 多次取平均 | `--run=1,2,3` |
 
-DCF 的 SIFS、slot、AIFSN、CW<sub>min</sub>／CW<sub>max</sub> 用 ns-3 依 802.11n 自動帶入的預設值；實際數值的確認列在 [`TODO.md`](TODO.md)。
+DCF 參數在程式中明確設定（`--cwMin=15 --cwMax=1023 --aifsn=3`），加 `--printParams=1` 會印出實際生效的值：SIFS 16 µs、slot 9 µs、DIFS 43 µs、CW<sub>min</sub> 15、PLCP 36 µs，以及每種訊框的空中時間（例如 1538 B 資料訊框 228 µs）。
 
 ### 5.2 執行流程
 
 ```bash
 # 1. 放檔案
 cp hw1.cc ~/ns-3-dev/scratch/
-cp run_all.sh plot.py plot_ampdu.py ~/ns-3-dev/
+cp run_all.sh plot.py ~/ns-3-dev/
 cd ~/ns-3-dev
 
 # 2. 跑一組確認

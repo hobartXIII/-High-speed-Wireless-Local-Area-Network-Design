@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include <fstream>
+#include <map>
 
 using namespace ns3;
 
@@ -27,6 +28,55 @@ PoissonSend(Ptr<Socket> sock, uint32_t size, Ptr<ExponentialRandomVariable> iat,
     Simulator::Schedule(Seconds(iat->GetValue()), &PoissonSend, sock, size, iat, stop);
 }
 
+// --printParams：記錄每種訊框最大的一個的大小、速率與空中時間
+struct FrameInfo
+{
+    uint32_t size;
+    uint32_t nMpdus;
+    std::string mode;
+    Time duration;
+};
+
+static std::map<std::string, FrameInfo> g_frames;
+
+static void
+PhyTxBegin(WifiConstPsduMap psduMap, WifiTxVector txVector, double /* txPowerW */)
+{
+    for (const auto& [staId, psdu] : psduMap)
+    {
+        std::string type = psdu->GetHeader(0).GetTypeString();
+        if (psdu->GetNMpdus() > 1)
+        {
+            type = "A-MPDU(" + type + ")";
+        }
+        if (g_frames.count(type) == 0 || psdu->GetSize() > g_frames[type].size)
+        {
+            g_frames[type] = {psdu->GetSize(),
+                              static_cast<uint32_t>(psdu->GetNMpdus()),
+                              txVector.GetMode().GetUniqueName(),
+                              WifiPhy::CalculateTxDuration(psdu->GetSize(),
+                                                           txVector,
+                                                           WIFI_PHY_BAND_5GHZ)};
+        }
+    }
+}
+
+// 印出實際生效的 PHY／MAC 參數（題目系統參數 1–5）
+static void
+PrintParams(Ptr<WifiNetDevice> dev, const std::string& name)
+{
+    Ptr<WifiPhy> phy = dev->GetPhy();
+    Ptr<QosTxop> be = dev->GetMac()->GetQosTxop(AC_BE);
+    Time sifs = phy->GetSifs();
+    Time slot = phy->GetSlot();
+    uint8_t aifsn = be->GetAifsn(0);
+    std::cout << name << ": SIFS=" << sifs.GetMicroSeconds() << "us slot=" << slot.GetMicroSeconds()
+              << "us PIFS=" << phy->GetPifs().GetMicroSeconds() << "us AIFSN=" << +aifsn
+              << " DIFS(AIFS_BE)=" << (sifs + aifsn * slot).GetMicroSeconds()
+              << "us CWmin=" << be->GetMinCw(0) << " CWmax=" << be->GetMaxCw(0)
+              << " width=" << phy->GetChannelWidth() << "MHz" << std::endl;
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -36,6 +86,10 @@ main(int argc, char* argv[])
     bool ampdu = true;
     uint32_t pktSize = 1472; // UDP payload (bytes)
     std::string mcs = "HtMcs7";
+    uint32_t cwMin = 15;     // 題目參數 4
+    uint32_t cwMax = 1023;
+    uint32_t aifsn = 3;      // DIFS(AIFS_BE) = SIFS + aifsn × slot
+    bool printParams = false;
     double startTime = 1.0;
     double warmup = 2.0;
     double simTime = 20.0;
@@ -49,6 +103,10 @@ main(int argc, char* argv[])
     cmd.AddValue("ampdu", "Enable A-MPDU aggregation", ampdu);
     cmd.AddValue("pktSize", "UDP payload size (bytes)", pktSize);
     cmd.AddValue("mcs", "HT MCS (e.g. HtMcs7)", mcs);
+    cmd.AddValue("cwMin", "Minimum contention window (BE)", cwMin);
+    cmd.AddValue("cwMax", "Maximum contention window (BE)", cwMax);
+    cmd.AddValue("aifsn", "AIFSN of BE (DIFS = SIFS + aifsn * slot)", aifsn);
+    cmd.AddValue("printParams", "Print effective PHY/MAC parameters and frame airtimes", printParams);
     cmd.AddValue("simTime", "Simulation end time (s)", simTime);
     cmd.AddValue("run", "RNG run number", run);
     cmd.AddValue("out", "Output CSV file", out);
@@ -87,6 +145,16 @@ main(int argc, char* argv[])
     {
         Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize",
                     UintegerValue(0));
+    }
+
+    // 明確設定 BE 的 EDCA 參數（題目參數 2、4）；AP 也設定，association 時 AP 會把同一組值通告給 STA
+    NetDeviceContainer allDevs(apDev, staDevs);
+    for (uint32_t i = 0; i < allDevs.GetN(); i++)
+    {
+        Ptr<QosTxop> be = DynamicCast<WifiNetDevice>(allDevs.Get(i))->GetMac()->GetQosTxop(AC_BE);
+        be->SetMinCw(cwMin, 0);
+        be->SetMaxCw(cwMax, 0);
+        be->SetAifsn(aifsn, 0);
     }
 
     // 拓樸：AP 在原點，STA 平均分布在半徑 5 m 的圓上
@@ -141,6 +209,18 @@ main(int argc, char* argv[])
         txAtWarmup = g_txPkts;
     });
 
+    if (printParams)
+    {
+        // 暖機結束時 association 已完成，印出的是實際生效的值
+        Simulator::Schedule(Seconds(warmup), [&]() {
+            PrintParams(DynamicCast<WifiNetDevice>(apDev.Get(0)), "AP  ");
+            PrintParams(DynamicCast<WifiNetDevice>(staDevs.Get(0)), "STA0");
+        });
+        Config::ConnectWithoutContext(
+            "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxPsduBegin",
+            MakeCallback(&PhyTxBegin));
+    }
+
     Simulator::Stop(Seconds(simTime));
     Simulator::Run();
 
@@ -165,6 +245,25 @@ main(int argc, char* argv[])
     std::cout << "nSta=" << nSta << " rate=" << rate << " rts=" << rts
               << " offered=" << offered << " Mbps  throughput=" << throughput
               << " Mbps  loss=" << loss << std::endl;
+
+    if (printParams)
+    {
+        WifiTxVector tv;
+        tv.SetMode(HtPhy::GetHtMcs7());
+        tv.SetPreambleType(WIFI_PREAMBLE_HT_MF);
+        tv.SetChannelWidth(MHz_u{20});
+        tv.SetGuardInterval(NanoSeconds(800));
+        tv.SetNss(1);
+        std::cout << "PLCP preamble+header (HT-MF, 1 SS) = "
+                  << WifiPhy::CalculatePhyPreambleAndHeaderDuration(tv).GetMicroSeconds() << "us"
+                  << std::endl;
+        for (const auto& [type, info] : g_frames)
+        {
+            std::cout << "  " << type << ": " << info.size << " B (" << info.nMpdus << " MPDU), "
+                      << info.mode << ", "
+                      << info.duration.GetMicroSeconds() << "us" << std::endl;
+        }
+    }
 
     Simulator::Destroy();
     return 0;

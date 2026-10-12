@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # 用法：python3 plot_ampdu.py [A-MPDU 開的 CSV] [A-MPDU 關的 CSV] [輸出圖檔]
-on_csv = sys.argv[1] if len(sys.argv) > 1 else "results.csv"
+on_csv = sys.argv[1] if len(sys.argv) > 1 else "results_all_rates.csv"
 off_csv = sys.argv[2] if len(sys.argv) > 2 else "results_noampdu.csv"
 dst = sys.argv[3] if len(sys.argv) > 3 else "ampdu_compare.png"
 

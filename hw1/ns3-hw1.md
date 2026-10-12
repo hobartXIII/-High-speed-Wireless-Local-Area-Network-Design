@@ -5,7 +5,7 @@
 | 參數 | 值 |
 |---|---|
 | STA 數 | 5、20 |
-| Arrival Rate（每個 STA） | 200、800 packets/s（建議再加 100、400、600、1000 讓曲線看得出飽和點） |
+| Arrival Rate（每個 STA） | 200、800 packets/s |
 | RTS/CTS | 關（threshold = 999999）／開（threshold = 0） |
 
 必跑組合是 2 × 2 × 2 = 8 組，每組用 3 個 random seed 跑完後取平均。
@@ -20,7 +20,7 @@
 | 流量模型 | Poisson 到達（封包間隔為指數分布，平均 1/λ） | 對應題目「arrival rate」 |
 | 拓樸 | AP 在原點，STA 平均分布在半徑 5 m 的圓上 | 每台都聽得到彼此，沒有 hidden terminal |
 | 方向 | 只有上行（STA → AP） | 所有 STA 一起搶通道 |
-| A-MPDU | 預設開（ns-3 的 HT 預設），可用 `--ampdu=0` 關掉 | 802.11n 的主要特色之一 |
+| A-MPDU | 預設開（ns-3 的 HT 預設） | 802.11n 的主要特色之一 |
 | 時間 | 1 s 開始送、2 s 開始量、20 s 結束 | 扣掉 association 和暖機 |
 
 每組負載換算（1500 B）：
@@ -75,6 +75,7 @@ git checkout $(git tag -l 'ns-3.4*' | sort -V | tail -1)   # 切到最新的正�
 
 #include <cmath>
 #include <fstream>
+#include <map>
 
 using namespace ns3;
 
@@ -95,6 +96,55 @@ PoissonSend(Ptr<Socket> sock, uint32_t size, Ptr<ExponentialRandomVariable> iat,
     Simulator::Schedule(Seconds(iat->GetValue()), &PoissonSend, sock, size, iat, stop);
 }
 
+// --printParams：記錄每種訊框最大的一個的大小、速率與空中時間
+struct FrameInfo
+{
+    uint32_t size;
+    uint32_t nMpdus;
+    std::string mode;
+    Time duration;
+};
+
+static std::map<std::string, FrameInfo> g_frames;
+
+static void
+PhyTxBegin(WifiConstPsduMap psduMap, WifiTxVector txVector, double /* txPowerW */)
+{
+    for (const auto& [staId, psdu] : psduMap)
+    {
+        std::string type = psdu->GetHeader(0).GetTypeString();
+        if (psdu->GetNMpdus() > 1)
+        {
+            type = "A-MPDU(" + type + ")";
+        }
+        if (g_frames.count(type) == 0 || psdu->GetSize() > g_frames[type].size)
+        {
+            g_frames[type] = {psdu->GetSize(),
+                              static_cast<uint32_t>(psdu->GetNMpdus()),
+                              txVector.GetMode().GetUniqueName(),
+                              WifiPhy::CalculateTxDuration(psdu->GetSize(),
+                                                           txVector,
+                                                           WIFI_PHY_BAND_5GHZ)};
+        }
+    }
+}
+
+// 印出實際生效的 PHY／MAC 參數（題目系統參數 1–5）
+static void
+PrintParams(Ptr<WifiNetDevice> dev, const std::string& name)
+{
+    Ptr<WifiPhy> phy = dev->GetPhy();
+    Ptr<QosTxop> be = dev->GetMac()->GetQosTxop(AC_BE);
+    Time sifs = phy->GetSifs();
+    Time slot = phy->GetSlot();
+    uint8_t aifsn = be->GetAifsn(0);
+    std::cout << name << ": SIFS=" << sifs.GetMicroSeconds() << "us slot=" << slot.GetMicroSeconds()
+              << "us PIFS=" << phy->GetPifs().GetMicroSeconds() << "us AIFSN=" << +aifsn
+              << " DIFS(AIFS_BE)=" << (sifs + aifsn * slot).GetMicroSeconds()
+              << "us CWmin=" << be->GetMinCw(0) << " CWmax=" << be->GetMaxCw(0)
+              << " width=" << phy->GetChannelWidth() << "MHz" << std::endl;
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -104,6 +154,10 @@ main(int argc, char* argv[])
     bool ampdu = true;
     uint32_t pktSize = 1472; // UDP payload (bytes)
     std::string mcs = "HtMcs7";
+    uint32_t cwMin = 15;     // 題目參數 4
+    uint32_t cwMax = 1023;
+    uint32_t aifsn = 3;      // DIFS(AIFS_BE) = SIFS + aifsn × slot
+    bool printParams = false;
     double startTime = 1.0;
     double warmup = 2.0;
     double simTime = 20.0;
@@ -117,6 +171,10 @@ main(int argc, char* argv[])
     cmd.AddValue("ampdu", "Enable A-MPDU aggregation", ampdu);
     cmd.AddValue("pktSize", "UDP payload size (bytes)", pktSize);
     cmd.AddValue("mcs", "HT MCS (e.g. HtMcs7)", mcs);
+    cmd.AddValue("cwMin", "Minimum contention window (BE)", cwMin);
+    cmd.AddValue("cwMax", "Maximum contention window (BE)", cwMax);
+    cmd.AddValue("aifsn", "AIFSN of BE (DIFS = SIFS + aifsn * slot)", aifsn);
+    cmd.AddValue("printParams", "Print effective PHY/MAC parameters and frame airtimes", printParams);
     cmd.AddValue("simTime", "Simulation end time (s)", simTime);
     cmd.AddValue("run", "RNG run number", run);
     cmd.AddValue("out", "Output CSV file", out);
@@ -155,6 +213,16 @@ main(int argc, char* argv[])
     {
         Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Mac/BE_MaxAmpduSize",
                     UintegerValue(0));
+    }
+
+    // 明確設定 BE 的 EDCA 參數（題目參數 2、4）；AP 也設定，association 時 AP 會把同一組值通告給 STA
+    NetDeviceContainer allDevs(apDev, staDevs);
+    for (uint32_t i = 0; i < allDevs.GetN(); i++)
+    {
+        Ptr<QosTxop> be = DynamicCast<WifiNetDevice>(allDevs.Get(i))->GetMac()->GetQosTxop(AC_BE);
+        be->SetMinCw(cwMin, 0);
+        be->SetMaxCw(cwMax, 0);
+        be->SetAifsn(aifsn, 0);
     }
 
     // 拓樸：AP 在原點，STA 平均分布在半徑 5 m 的圓上
@@ -209,6 +277,18 @@ main(int argc, char* argv[])
         txAtWarmup = g_txPkts;
     });
 
+    if (printParams)
+    {
+        // 暖機結束時 association 已完成，印出的是實際生效的值
+        Simulator::Schedule(Seconds(warmup), [&]() {
+            PrintParams(DynamicCast<WifiNetDevice>(apDev.Get(0)), "AP  ");
+            PrintParams(DynamicCast<WifiNetDevice>(staDevs.Get(0)), "STA0");
+        });
+        Config::ConnectWithoutContext(
+            "/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/PhyTxPsduBegin",
+            MakeCallback(&PhyTxBegin));
+    }
+
     Simulator::Stop(Seconds(simTime));
     Simulator::Run();
 
@@ -234,6 +314,25 @@ main(int argc, char* argv[])
               << " offered=" << offered << " Mbps  throughput=" << throughput
               << " Mbps  loss=" << loss << std::endl;
 
+    if (printParams)
+    {
+        WifiTxVector tv;
+        tv.SetMode(HtPhy::GetHtMcs7());
+        tv.SetPreambleType(WIFI_PREAMBLE_HT_MF);
+        tv.SetChannelWidth(MHz_u{20});
+        tv.SetGuardInterval(NanoSeconds(800));
+        tv.SetNss(1);
+        std::cout << "PLCP preamble+header (HT-MF, 1 SS) = "
+                  << WifiPhy::CalculatePhyPreambleAndHeaderDuration(tv).GetMicroSeconds() << "us"
+                  << std::endl;
+        for (const auto& [type, info] : g_frames)
+        {
+            std::cout << "  " << type << ": " << info.size << " B (" << info.nMpdus << " MPDU), "
+                      << info.mode << ", "
+                      << info.duration.GetMicroSeconds() << "us" << std::endl;
+        }
+    }
+
     Simulator::Destroy();
     return 0;
 }
@@ -247,6 +346,12 @@ cd ~/ns-3-dev
 ./ns3 run "hw1 --nSta=5 --rate=200 --rts=0"
 ```
 
+印出實際生效的 SIFS、slot、DIFS、CW 與各訊框空中時間（題目系統參數 2–5）：
+
+```bash
+./ns3 run "hw1 --nSta=5 --rate=800 --simTime=4 --printParams=1 --out=/tmp/x.csv"
+```
+
 **Throughput 的定義**：AP 的 sink 在量測期間收到的 UDP payload bits 除以量測時間，也就是應用層的 goodput（Mbps）。
 
 ---
@@ -256,14 +361,14 @@ cd ~/ns-3-dev
 ```bash
 #!/bin/bash
 # 在 ~/ns-3-dev/ 下執行：bash run_all.sh [輸出檔] [額外參數]
-# 例：bash run_all.sh results_noampdu.csv --ampdu=0
+# 例：bash run_all.sh results.csv
 # 每組參數寫到各自的暫存 CSV，用 xargs 平行跑，最後合併成一個檔
 OUT=${1:-results.csv}
 EXTRA=${2:-}
 TMP=$(mktemp -d)
 ./ns3 build || exit 1
 for n in 5 20; do
-  for r in 100 200 400 600 800 1000; do
+  for r in 200 800; do
     for rts in 0 1; do
       for run in 1 2 3; do
         echo "--nSta=$n --rate=$r --rts=$rts --run=$run $EXTRA --out=$TMP/$n-$r-$rts-$run.csv"
@@ -277,7 +382,7 @@ rm -rf "$TMP"
 echo "done -> $OUT ($(($(wc -l < "$OUT") - 1)) rows)"
 ```
 
-共 72 次，16 核心平行跑大約 1.5 分鐘。如果只跑必做的組合，把 `r` 改成 `200 800` 就好。想比較 A-MPDU 的影響，可以加 `--ampdu=0` 再跑一輪，存到另一個 CSV。
+共 8 組 × 3 個 seed = 24 次，平行執行約半分鐘。
 
 ---
 
@@ -321,6 +426,7 @@ for ax, n in zip(axes, stas):
     ax.plot(d.rate, d.offered, "k--", alpha=0.4, label="Offered load")
     ax.set_title(f"STA = {n}")
     ax.set_xlabel("Arrival rate per STA (packets/s)")
+    ax.set_xticks(sorted(sub.rate.unique()))
     ax.grid(alpha=0.3)
     ax.legend()
 axes[0].set_ylabel("Throughput (Mbps)")
@@ -334,15 +440,6 @@ print(g.to_string(index=False))
 
 ```bash
 python3 plot.py                                         # 讀 results.csv → throughput_vs_rate.png
-python3 plot.py results_noampdu.csv noampdu.png         # 指定輸入、輸出檔
-```
-
-### A-MPDU 對照圖 `plot_ampdu.py`
-
-把 A-MPDU 開、關兩份 CSV 畫在同一張圖：顏色區分 RTS/CTS，實線和實心點是 A-MPDU 開，虛線和空心點是 A-MPDU 關。
-
-```bash
-python3 plot_ampdu.py results.csv results_noampdu.csv ampdu_compare.png
 ```
 
 ### 若想用 gnuplot（不寫 Python）
@@ -367,11 +464,10 @@ unset multiplot
 
 ## 5. 報告要回答的現象（拿模擬結果對照）
 
-1. **未飽和區**：Throughput 約等於負載（曲線貼著虛線）。預期 5 STA、200 pkt/s 會落在這區。
-2. **飽和點**：Throughput 不再隨 rate 上升，loss 開始變大。看曲線在哪個 rate 開始離開虛線、變平。
+1. **未飽和區**：Throughput 約等於負載（曲線貼著虛線）。預期 5 STA 的 200、800 pkt/s 都落在這區。
+2. **飽和**：Throughput 不再隨 rate 上升，loss 變大。預期 20 STA 在 200 pkt/s 就已飽和。
 3. **STA 數的影響**：同樣的總負載下（5×800 和 20×200 都是 48 Mbps），20 STA 的 throughput 比較低。原因是競爭者多、碰撞機率上升，退避浪費的時間變多（DCF / Bianchi 模型）。
 4. **RTS/CTS**：
    - 低負載：多了 RTS/CTS/SIFS 的開銷，開了 throughput 略降。
    - 高競爭加上長訊框（A-MPDU）：碰撞只會撞掉短的 RTS，不會浪費整個長訊框，所以開了可能持平甚至比較好。
    - 這份拓樸沒有 hidden terminal，RTS/CTS 主要的好處沒有發揮出來，報告裡可以點出這一點。
-5. **（選做）hidden terminal**：把 STA 分成兩群放在 AP 兩側、距離拉遠，讓兩群彼此聽不到，再比一次 RTS/CTS 開和關。這種情況下 RTS/CTS 的效果會非常明顯。

@@ -39,16 +39,29 @@
 | # | 題目參數 | 本實驗設定 | 來源 |
 |---|---|---|---|
 | 1 | Channel Bandwidth | 20 MHz（5 GHz，通道 36） | `hw1.cc`：`ChannelSettings = {36, 20, BAND_5GHZ, 0}` |
-| 2 | SIFS / DIFS | SIFS = 16 µs，slot = 9 µs，DIFS（BE 的 AIFS，AIFSN = 3）= 16 + 3 × 9 = 43 µs | ns-3 802.11n 5 GHz 預設，程式中未修改 |
-| 2 | PLCP Length | HT-mixed preamble，1 條空間串流：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4 = 36 µs | ns-3 預設 |
-| 3 | MCS | 資料：HtMcs7（64-QAM 5/6，1 條空間串流，長 GI，65 Mbps）；控制訊框：HtMcs0 | `hw1.cc`：`ConstantRateWifiManager`，可用 `--mcs` 改 |
-| 4 | CW<sub>min</sub> | 15（CW<sub>max</sub> = 1023，EDCA Best Effort） | ns-3 預設，程式中未修改 |
+| 2 | SIFS / DIFS | SIFS = 16 µs，slot = 9 µs，DIFS（BE 的 AIFS，AIFSN = 3）= 16 + 3 × 9 = 43 µs | `hw1.cc`：`--aifsn=3`（AP 與 STA 都設定）；SIFS、slot 為 802.11n 5 GHz 標準值 |
+| 2 | PLCP Length | HT-mixed preamble，1 條空間串流：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4 = 36 µs | 由 HtMcs7、1 條空間串流決定 |
+| 3 | MCS | 資料：HtMcs7（64-QAM 5/6，1 條空間串流，長 GI，65 Mbps）；RTS：HtMcs0；ACK、CTS：OFDM 6 Mbps；Block Ack：OFDM 24 Mbps | `hw1.cc`：`ConstantRateWifiManager`，可用 `--mcs` 改 |
+| 4 | CW<sub>min</sub> | 15（CW<sub>max</sub> = 1023，EDCA Best Effort） | `hw1.cc`：`--cwMin=15 --cwMax=1023`（AP 與 STA 都設定） |
 | 5 | Data Length L | UDP payload 1472 B（IP 封包 1500 B） | `hw1.cc`：`--pktSize`，預設 1472 |
 | 6 | Number of STAs | **5、20**（變數） | `--nSta` |
-| 7 | Arrival Rate λ | **200、800 packets/s**（必做）＋ 100、400、600、1000（補點看飽和） | `--rate` |
+| 7 | Arrival Rate λ | **200、800 packets/s**（變數） | `--rate` |
 | 8 | RTS/CTS | **關：threshold = 999999；開：threshold = 0**（變數） | `--rts=0/1` |
 
-> 待確認：第 2、4 列是 ns-3 的預設值，程式沒有明確寫出來。若報告要引用，可以在程式中加 `Config` 印出實際值再核對。
+已確認：`hw1 --printParams=1` 在 association 完成後印出 AP 與 STA 實際生效的值，和上表一致：
+
+```text
+AP  : SIFS=16us slot=9us PIFS=25us AIFSN=3 DIFS(AIFS_BE)=43us CWmin=15 CWmax=1023 width=20MHz
+STA0: SIFS=16us slot=9us PIFS=25us AIFSN=3 DIFS(AIFS_BE)=43us CWmin=15 CWmax=1023 width=20MHz
+PLCP preamble+header (HT-MF, 1 SS) = 36us
+  QOSDATA: 1538 B (1 MPDU), HtMcs7, 228us
+  CTL_ACK: 14 B (1 MPDU), OfdmRate6Mbps, 44us
+  CTL_RTS: 20 B (1 MPDU), HtMcs0, 64us
+  CTL_CTS: 14 B (1 MPDU), OfdmRate6Mbps, 44us
+  CTL_BACKRESP: 32 B (1 MPDU), OfdmRate24Mbps, 32us
+```
+
+這些值和 ns-3 原本的預設相同，所以明確設定之後，同一組 seed 跑出的結果和 `results.csv` 完全一樣（抽查），原始數據不需要重跑。
 
 ### 題目沒規定、由我們自行決定的設定
 
@@ -56,7 +69,7 @@
 |---|---|---|
 | 頻段 | 5 GHz | 避開 2.4 GHz 的干擾，slot 也較短（9 µs） |
 | 速率控制 | 固定 MCS（`ConstantRateWifiManager`） | 排除速率調整演算法的影響 |
-| 聚合 | A-MPDU 開（ns-3 HT 預設）；延伸實驗用 `--ampdu=0` 關閉 | 802.11n 的預設行為 |
+| 聚合 | A-MPDU 開（ns-3 HT 預設） | 802.11n 的預設行為 |
 | 拓樸 | AP 在原點，STA 平均分布在半徑 5 m 的圓上 | 所有節點彼此聽得到，沒有 hidden terminal |
 | 流量方向 | 只有上行（STA → AP），UDP | 讓所有 STA 一起競爭通道 |
 | 到達模型 | Poisson：封包間隔為指數分布，平均 1/λ；每個 STA 的起始時間加 0–10 ms 的隨機偏移 | 對應題目的 arrival rate |
@@ -85,12 +98,7 @@ Offered load = N_STA × λ × 1472 × 8  (bits/s)
 
 5 STA × 800 和 20 STA × 200 的總負載相同（47.1 Mbps），可以用來比較「同負載、不同競爭程度」。
 
-### 實際執行的矩陣
-
-| 實驗 | STA | λ（pkt/s） | RTS/CTS | A-MPDU | Seed | 次數 | 輸出 |
-|---|---|---|---|---|---|---|---|
-| 主實驗 | 5、20 | 100、200、400、600、800、1000 | 關、開 | 開 | 1–3 | 72 | `results.csv` |
-| 延伸：A-MPDU 對照 | 5、20 | 同上 | 關、開 | **關** | 1–3 | 72 | `results_noampdu.csv` |
+每組跑 3 個 RNG run（`--run=1,2,3`），共 8 × 3 = 24 次，輸出到 `results.csv`。作業範圍完全依題目 PPT；做作業時額外跑的實驗放在 `supplement/`，不放進報告。
 
 ---
 
@@ -137,20 +145,20 @@ git checkout ns-3.49
 ```bash
 # 1. 把本資料夾的檔案放到 ns-3 目錄
 cp hw1.cc ~/ns-3-dev/scratch/
-cp run_all.sh plot.py plot_ampdu.py ~/ns-3-dev/
+cp run_all.sh plot.py ~/ns-3-dev/
 cd ~/ns-3-dev
 
 # 2. 先跑一組確認能用
 ./ns3 run "hw1 --nSta=5 --rate=200 --rts=0"
 
-# 3. 主實驗與延伸實驗（各 72 次，16 核心平行約 1.5 分鐘）
+# 3. 跑全部 8 組 × 3 個 seed（24 次，平行執行）
 bash run_all.sh results.csv
-bash run_all.sh results_noampdu.csv --ampdu=0
 
 # 4. 畫圖
 python3 plot.py results.csv throughput_vs_rate.png
-python3 plot.py results_noampdu.csv throughput_vs_rate_noampdu.png
-python3 plot_ampdu.py results.csv results_noampdu.csv ampdu_compare.png
+
+# 5. 確認題目參數 2–5 的實際值
+./ns3 run "hw1 --nSta=5 --rate=800 --simTime=4 --printParams=1 --out=/tmp/x.csv"
 ```
 
 `hw1.cc` 的命令列參數：
@@ -160,9 +168,12 @@ python3 plot_ampdu.py results.csv results_noampdu.csv ampdu_compare.png
 | `--nSta` | 5 | STA 數 |
 | `--rate` | 200 | 每個 STA 的 arrival rate（packets/s） |
 | `--rts` | 0 | 1 = 啟用 RTS/CTS |
-| `--ampdu` | 1 | 0 = 關閉 A-MPDU |
+| `--ampdu` | 1 | A-MPDU 開關（本實驗維持 ns-3 預設的開） |
 | `--pktSize` | 1472 | UDP payload（bytes） |
 | `--mcs` | HtMcs7 | 資料速率 |
+| `--cwMin`、`--cwMax` | 15、1023 | BE 的競爭視窗（題目參數 4） |
+| `--aifsn` | 3 | BE 的 AIFSN，DIFS = SIFS + aifsn × slot（題目參數 2） |
+| `--printParams` | 0 | 1 = 印出實際生效的 SIFS、slot、DIFS、CW、PLCP 與各訊框空中時間 |
 | `--simTime` | 20 | 模擬結束時間（s） |
 | `--run` | 1 | RNG run 編號 |
 | `--out` | results.csv | 輸出 CSV（附加寫入） |
@@ -184,35 +195,19 @@ python3 plot_ampdu.py results.csv results_noampdu.csv ampdu_compare.png
 | 20 | 800 | 關 | 188.4 | 35.6 | 81.1% |
 | 20 | 800 | 開 | 188.4 | 58.2 | 69.1% |
 
-飽和 throughput（λ = 1000 pkt/s，Mbps）：
-
-| STA | A-MPDU 關、RTS 關 | A-MPDU 關、RTS 開 | A-MPDU 開、RTS 關 | A-MPDU 開、RTS 開 |
-|---|---|---|---|---|
-| 5 | 30.3 | 23.5 | 47.9 | 57.7 |
-| 20 | 26.7 | 22.8 | 36.1 | 58.2 |
-
 ---
 
-## 6. 待討論與可延伸的方向
-
-- **題目參數 2、4、5 尚未當成變數掃過**：SIFS/DIFS、CW<sub>min</sub>、資料長度 L 目前都固定。可以各挑一個掃看看，例如 CW<sub>min</sub> = 7、15、31、63（調 `BE_Txop` 的 `MinCw`），或 L = 256、512、1472 B（`--pktSize`）。
-- **MCS**：目前固定 MCS 7。換成低 MCS 時訊框變長，RTS/CTS 的效益可能改變。
-- **Hidden terminal**：目前拓樸沒有 hidden terminal，RTS/CTS 的好處只來自「縮短碰撞代價」。可以把 STA 分成兩群放在 AP 兩側、拉遠距離，讓兩群彼此聽不到，再比一次 RTS/CTS 開和關。
-- **RTS threshold**：目前只比較 0 和 999999，可以試中間值（例如 2000、8000 B），看 A-MPDU 長度與 threshold 的關係。
-- **Seed 數**：3 個 seed 的標準差大多小於 1 Mbps；若要做更細的比較，可以增加到 5–10 個。
-
----
-
-## 7. 檔案對照
+## 6. 檔案對照
 
 | 檔案 | 用途 |
 |---|---|
 | `hw1.cc` | ns-3 模擬程式（放在 `scratch/`） |
-| `run_all.sh` | 平行跑完 72 組並合併成一個 CSV |
+| `run_all.sh` | 平行跑完 8 組 × 3 個 seed 並合併成一個 CSV |
 | `plot.py` | Throughput vs. Arrival Rate，依 STA 數分兩張子圖 |
-| `plot_ampdu.py` | A-MPDU 開關對照圖 |
-| `results.csv`、`results_noampdu.csv` | 原始模擬數據 |
-| `throughput_vs_rate.png`、`throughput_vs_rate_noampdu.png`、`ampdu_compare.png` | 結果圖 |
+| `results.csv` | 原始模擬數據 |
+| `throughput_vs_rate.png` | 結果圖（Throughput vs. Arrival Rate，依 STA 數分組） |
 | `ns3-guide.md` | ns-3 功能介紹與基本安裝使用說明 |
 | `ns3-hw1.md` | 完整操作教學（安裝、程式碼、畫圖） |
+| `TODO.md` | 待辦事項（已全部完成） |
+| `supplement/` | 作業範圍外的補充（補點 arrival rate、A-MPDU 對照、理論值對照、可延伸方向），不放進作業報告，說明見 `supplement/supplement.md` |
 | `../高速網路_作業一.pptx` | 作業題目 |

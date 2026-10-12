@@ -23,6 +23,7 @@ for ax, n in zip(axes, stas):
     ax.plot(d.rate, d.offered, "k--", alpha=0.4, label="Offered load")
     ax.set_title(f"STA = {n}")
     ax.set_xlabel("Arrival rate per STA (packets/s)")
+    ax.set_xticks(sorted(sub.rate.unique()))
     ax.grid(alpha=0.3)
     ax.legend()
 axes[0].set_ylabel("Throughput (Mbps)")
