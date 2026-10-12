@@ -1,6 +1,6 @@
 # 作業一補充（不在作業繳交範圍）
 
-> **這份補充不屬於作業。** 作業報告只依題目 PPT 呈現：STA 5、20 × λ 200、800 packets/s × RTS/CTS 開關，共 8 組。以下是做作業時額外跑的實驗與分析，留作學習參考，報告裡不引用。
+> **這份補充不屬於作業。** 作業報告只依題目 PPT 呈現：STA 5、20 × λ 200、800 packets/s × RTS/CTS 開關，共 8 組。以下是做作業時額外跑的實驗與分析，以及報告精簡時移出的段落（第 7 節），留作參考，報告裡不引用。
 
 本資料夾的檔案：
 
@@ -165,3 +165,75 @@ python3 plot.py results_noampdu.csv throughput_vs_rate_noampdu.png
 python3 plot_ampdu.py results_all_rates.csv results_noampdu.csv ampdu_compare.png
 python3 theory.py results_all_rates.csv results_noampdu.csv
 ```
+
+---
+
+## 7. 報告精簡時移出的內容
+
+報告精簡成「參數表 → 圖 1 → 現象分析 → 結論」後，以下段落移到這裡保留原文。
+
+### 7.1 原「1. 題目與目標」
+
+題目要求在 IEEE 802.11n 網路中，觀察不同負載與競爭程度下的 throughput。調整的參數如下：
+
+- STA 數：5、20
+- Arrival rate（每個 STA）：200、800 packets/s
+- RTS/CTS：關閉、啟用
+
+分析目標是畫出 Throughput vs. Arrival Rate，依 STA 數分組比較，並說明觀察到的變化與現象。
+
+### 7.2 題目參數表的「程式中的設定」欄
+
+模擬工具是 ns-3.49，在 WSL2 的 Ubuntu 24.04 上執行。題目的 8 個系統參數都在程式中明確設定，數值以 `hw1 --printParams=1` 在 association 完成後印出的實際值為準。
+
+| # | 題目參數 | 本實驗的值 | 程式中的設定 |
+|---|---|---|---|
+| 1 | Channel Bandwidth | 20 MHz（5 GHz，通道 36） | `ChannelSettings = {36, 20, BAND_5GHZ, 0}` |
+| 2 | SIFS / DIFS | SIFS = 16 µs，slot = 9 µs；DIFS（BE 的 AIFS，AIFSN = 3）= 16 + 3 × 9 = 43 µs | `--aifsn=3`；SIFS、slot 為 802.11n 5 GHz 標準值 |
+| 2 | PLCP Length | 36 µs（HT-mixed：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4） | 由 HtMcs7、1 條空間串流決定 |
+| 3 | MCS | 資料 HtMcs7（64-QAM 5/6，65 Mbps）；RTS 用 HtMcs0；ACK、CTS 用 OFDM 6 Mbps，Block Ack 用 OFDM 24 Mbps | `--mcs=HtMcs7` |
+| 4 | CWmin | 15（CWmax = 1023） | `--cwMin=15 --cwMax=1023` |
+| 5 | Data Length L | UDP payload 1472 B（MAC 訊框 1538 B，空中時間 228 µs） | `--pktSize=1472` |
+| 6 | Number of STAs | 5、20（變數） | `--nSta` |
+| 7 | Arrival Rate λ | 200、800 pkt/s（變數） | `--rate` |
+| 8 | RTS/CTS | 關：threshold = 999999；開：threshold = 0（變數） | `--rts=0/1` |
+
+### 7.3 題目沒有規定、自行決定的設定（含理由）
+
+| 項目 | 設定 | 理由 |
+|---|---|---|
+| MAC | DCF（EDCA 的 Best Effort），A-MPDU 開啟（ns-3 預設） | 802.11n 的預設行為 |
+| 拓樸 | AP 在原點，STA 平均分布在半徑 5 m 的圓上 | 所有節點彼此聽得到，沒有 hidden terminal |
+| 流量 | 上行 UDP（STA → AP），payload 1472 B（IP 封包 1500 B） | 所有 STA 一起競爭通道 |
+| 到達模型 | Poisson：封包間隔為指數分布，平均 1/λ | 對應題目的「arrival rate」 |
+| 時間 | 1 s 開始送，2 s 開始量，20 s 結束 | 扣掉 association 和暖機階段 |
+| 重複次數 | 每組 3 個 random seed，取平均與標準差 | 降低隨機誤差 |
+
+### 7.4 Throughput 定義與實驗組合
+
+**Throughput 的定義**：AP 端在量測期間（2–20 s）收到的 UDP payload 位元數，除以 18 s，也就是應用層的 goodput。「負載」是所有 STA 加總要送的流量：
+
+```
+Offered load = N_STA × λ × 1472 × 8  bits/s
+```
+
+**實驗組合**：依題目，2 種 STA 數 × 2 種 arrival rate × RTS/CTS 開關，共 8 組；每組跑 3 個 seed，共 24 次模擬。
+
+### 7.5 原「附錄：程式與執行方式」
+
+| 檔案 | 用途 |
+|---|---|
+| `hw1.cc` | ns-3 模擬程式，放在 `scratch/` 下，參數 `--nSta --rate --rts --ampdu --run --cwMin --aifsn --printParams` |
+| `run_all.sh` | 平行跑完 8 組 × 3 個 seed 並合併成一個 CSV |
+| `plot.py` | 畫 Throughput vs. Arrival Rate（依 STA 數分兩張子圖） |
+| `results.csv` | 原始模擬數據 |
+
+```bash
+cd ~/ns-3-dev
+./ns3 run "hw1 --nSta=20 --rate=800 --rts=1"          # 跑單一組
+./ns3 run "hw1 --nSta=5 --rate=800 --simTime=4 --printParams=1 --out=/tmp/x.csv"   # 印出題目參數 2–5 的實際值
+bash run_all.sh results.csv                            # 8 組 × 3 個 seed
+python3 plot.py results.csv throughput_vs_rate.png
+```
+
+模擬經測試的環境是 ns-3.49、Ubuntu 24.04（WSL2）、g++ 13.3。
