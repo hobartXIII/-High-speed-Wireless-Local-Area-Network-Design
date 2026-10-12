@@ -19,7 +19,7 @@
   <div class="callout note">PDF 共 33 頁，對應投影片第 1–35 頁；<b>第 12、18 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-3「WEP 與 MAC 訊框格式」：2-3 講訊框<b>長什麼樣子</b>，這一章講站台<b>什麼時候可以送</b>。</div>
 
   <div class="callout key">
-    <p><b>本章講 802.11 站台「什麼時候可以送」：DCF 用 CSMA/CA＋ACK＋隨機退避讓大家輪流用同一個頻道。</b></p>
+    <p><b>DCF（分散式協調功能）就是 802.11 的 CSMA/CA：沒有裁判，每個站台自己「先聽媒介 → 閒置 DIFS → 隨機退避倒數 → 送出 → 等 ACK」，靠同一套規則輪流用同一個頻道。</b></p>
     <ul>
       <li><b>DCF</b>：802.11 最基本的存取方法，所有站台都必須實作；PCF 是蓋在 DCF 上面的選用輪詢機制。</li>
       <li><b>IFS 決定優先權</b>：SIFS ＜ PIFS ＜ DIFS ＜ EIFS，等得越短越優先（ACK／CTS 用 SIFS，PCF 用 PIFS，一般資料用 DIFS）。</li>
@@ -140,6 +140,23 @@ flowchart LR
   </div>
 
   <h2 id="dcf">5. DCF 的功能（p.9–11）<span class="en">（Distributed Coordination Function）</span></h2>
+  <div class="callout key">
+    <p><b>DCF 是 802.11 預設、所有站台都必須實作的媒介存取方法：沒有中央控制者，每個站台各自用「載波感測＋IFS＋隨機退避＋ACK」決定什麼時候可以送，也就是 CSMA/CA。</b></p>
+    <ul>
+      <li><b>名字拆開看</b>：<b>Distributed</b>＝沒有 AP 當裁判，每個站台自己判斷；<b>Coordination</b>＝大家遵守同一套等待規則，所以不必溝通也能錯開；<b>Function</b>＝它是 MAC 層的一個功能（PCF 才由 AP 這個 Point Coordinator 輪詢）。</li>
+      <li><b>送一個訊框的五步</b>：
+        <ol>
+          <li><b>先聽</b>：實體載波感測（CCA）與虛擬載波感測（NAV）都說閒置，媒介才算閒置。</li>
+          <li><b>等 DIFS</b>：媒介持續閒置 DIFS；若封包到達時媒介已閒置超過 DIFS，可直接送。</li>
+          <li><b>隨機退避</b>：從 [0, CW] 抽一個數 × Slot time 倒數；媒介一忙就<b>凍結</b>，閒置 DIFS 後接著數。</li>
+          <li><b>送出</b>：數到 0 就送（長訊框可先 RTS/CTS 預約）。</li>
+          <li><b>等 ACK</b>：接收端隔 SIFS 回 ACK 才算成功；沒收到 ACK → CW 加倍、重來，超過重試上限就丟棄。</li>
+        </ol>
+      </li>
+      <li><b>為什麼要這樣</b>：無線站台送的時候聽不到碰撞（不能 CD），只能事先<b>避免</b>（CA）、事後靠 <b>ACK</b> 確認。</li>
+      <li><span class="sup">補充</span><b>比喻</b>：沒有主持人的會議——先確認沒人在講話，再各自默數一個隨機秒數，先數完的人發言，對方點頭（ACK）才算講完；兩人同時開口就各自把數字範圍放大再來一次。</li>
+    </ul>
+  </div>
   <ul>
     <li><b>七項功能</b><span class="en">（Features）</span>：IFS、隨機退避、正向 ACK、實體載波感測、虛擬載波感測（在多速率環境仍有效）、選用 RTS/CTS（由 RTS_Threshold 控制）、選用分段（由 Fragmentation_Threshold 控制）。</li>
     <li><b>自動共享媒介</b>：相同或不同的 PHY 都能透過 CSMA/CA 加上「媒介忙碌之後的隨機退避」共用媒介。</li>
