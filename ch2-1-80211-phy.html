@@ -98,6 +98,15 @@
   </ul>
 
   <h2 id="overview">4. 架構總覽<span class="en">（Architecture Overview）</span></h2>
+  <div class="callout key">
+    <p><b>IEEE 802.11 就是 Wi-Fi 的標準：它規定無線裝置在鏈結層的 MAC（誰什麼時候可以送）和實體層的 PHY（怎麼把位元變成電波）。</b></p>
+    <ul>
+      <li><b>一個 MAC、多個 PHY</b>：不管 11b、11a、11g、11n，MAC 規則（DCF＝CSMA/CA）都一樣，換的是 PHY 的調變與頻段。</li>
+      <li><b>對上層透明</b>：802.11 對 LLC 看起來就和有線 802 LAN 一樣，所以 IP、TCP 完全不用改。</li>
+      <li><b>三種配置</b>：Independent（ad hoc，站台直接互傳）、Infrastructure（全部經過 AP）、Mesh（AP 之間無線互連）。</li>
+      <li><b>Wi-Fi 與 802.11 的關係</b><span class="sup">補充</span>：802.11 是 IEEE 的標準；Wi-Fi 是 Wi-Fi Alliance 的認證商標，通過互通測試的 802.11 產品才能標 Wi-Fi。</li>
+    </ul>
+  </div>
   <ul>
     <li><b>一個 MAC 對多個 PHY</b><span class="en">（One MAC supporting multiple PHYs）</span>：IR、FHSS、DSSS、OFDM、OFDMA（MIMO）。</li>
     <li><b>三種配置</b><span class="en">（Three Configurations）</span>：Independent（ad hoc）、Infrastructure（AP）、Mesh（Hybrid）。</li>
@@ -339,6 +348,14 @@
   </ul>
 
   <h2 id="phy-svc">10. PHY 層服務<span class="en">（PHY Layer Services）</span></h2>
+  <div class="callout key">
+    <p><b>PHY（實體層）就是負責「把 MAC 交下來的位元變成電波送出去、再把收到的電波變回位元」的那一層，還要告訴 MAC 頻道現在忙不忙。</b></p>
+    <ul>
+      <li><b>分兩個子層</b>：<b>PLCP</b> 在 MPDU 前面加 preamble 與 header（變成 PPDU），讓收方能同步與得知速率、長度；<b>PMD</b> 負責實際調變、經天線收發。</li>
+      <li><b>給 MAC 的三項服務</b>：傳送／接收資料（PHY_DATA）、回報頻道是否空閒（CCA，CSMA/CA 的「CS」就靠它）、PHY 管理（頻寬、MCS、天線數）。</li>
+      <li><b>不同 PHY 的差別</b>：頻段（2.4／5 GHz）、調變方式（DSSS、OFDM、MIMO）與速率；MAC 不需要知道這些細節。</li>
+    </ul>
+  </div>
   <ul>
     <li><b>PHY_DATA 傳輸</b>：多種速率。講義提問「如何決定適當的資料速率？<span class="en">（how to decide the proper data rate?）</span>」→ <b>速率切換演算法不在標準範圍內</b><span class="en">（The algorithm for performing rate switching is beyond the scope of the standard）</span>，由廠商自行實作。
       <ul>

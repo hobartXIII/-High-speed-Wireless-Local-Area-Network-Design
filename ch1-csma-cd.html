@@ -106,6 +106,22 @@ flowchart LR
   <div class="callout warn">⚠️ <b>「Wi-Fi 增益器」不是講義的訊號增益器。</b>講義的 repeater 在<b>實體層</b>，只把電訊號放大轉送、不看內容，接起來的區段仍是同一個碰撞網域。市售的 Wi-Fi 增益器（Repeater／Extender）會把整個訊框收下來、看懂位址再重新發送，運作比較像 bridge 或 AP；用同一個頻段收和發時，速率大約剩一半。</div>
 
   <h2 id="protocol">3. CSMA/CD 協定的五個概念<span class="en">（CSMA/CD Protocol）</span></h2>
+  <div class="callout key">
+    <p><b>CSMA/CD 就是 Ethernet 的「先聽再說、邊說邊聽、撞了就停、隨機等一下再試」規則：讓共用同一條線的站台自己決定什麼時候可以送。</b></p>
+    <ul>
+      <li><b>送一個訊框的五步</b>：
+        <ol>
+          <li><b>先聽</b>（Carrier Sense）：量線上有沒有訊號能量。</li>
+          <li><b>忙就等</b>（Deference）：線一空閒就立刻送（1-persistent）。</li>
+          <li><b>邊送邊聽</b>（Collision Detection）：傳送中持續比對線上的訊號。</li>
+          <li><b>撞了就停</b>：送出 32 bits 的 jam，確保大家都知道撞了。</li>
+          <li><b>隨機等待再試</b>（BEB）：第 n 次碰撞後等 r × 51.2 µs，0 ≤ r ≤ 2<sup>k</sup> − 1、k = min(n, 10)；第 16 次仍失敗就放棄。</li>
+        </ol>
+      </li>
+      <li><b>為什麼能「CD」</b>：在線路上自己送的訊號和別人的訊號強度差不多，疊在一起就量得出來；最小訊框 64 bytes（= 1 個 slot time）保證撞了一定還在送、一定聽得到。</li>
+      <li><b>和 CSMA/CA 的差別</b>：CD 是撞了<b>馬上知道、馬上停</b>；無線聽不到碰撞，只能事先<b>避免</b>（CA）並靠 ACK 確認。</li>
+    </ul>
+  </div>
   <ul>
     <li><b>Carrier Sense</b>：<b>傳送前</b><span class="en">（before transmission）</span>先聽通道是否有訊號，<b>傳送中</b><span class="en">（while transmission）</span>也持續聽（這是 CD 的關鍵）。</li>
     <li><b>Deference</b>：通道忙碌就延後傳送<span class="en">（Defers transmission if channel is sensed busy）</span>。</li>

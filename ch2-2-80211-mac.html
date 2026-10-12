@@ -104,6 +104,15 @@
   <p><span class="sup">補充</span>802.11i 的加密演進：WEP（RC4，已被破解）→ <b>TKIP</b>（WPA 過渡方案，仍用 RC4 但每個封包換金鑰）→ <b>CCMP</b>（以 AES 為基礎，WPA2 必要）；WRAP 是早期以 AES-OCB 為基礎的方案，後來由 CCMP 取代。</p>
 
   <h2 id="components">5. 802.11 架構元件（p.9–13）<span class="en">（802.11 Architecture Components）</span></h2>
+  <div class="callout key">
+    <p><b>802.11 MAC 就是 Wi-Fi 鏈結層的下半部：它決定站台什麼時候可以用無線媒介、訊框送給誰，並讓會移動的無線站台對上層看起來像接在一般有線 LAN 上。</b></p>
+    <ul>
+      <li><b>它要解決有線沒有的問題</b>：站台會移動（位址 ≠ 位置）、媒介共享且不可靠、別人隨時可能進出範圍。</li>
+      <li><b>怎麼組網</b>：一個 AP 和它的站台組成 BSS；多個 BSS 透過 DS 串成 ESS；Portal 接到有線 LAN。</li>
+      <li><b>提供什麼</b>：9＋1 項服務，例如 Authentication（你是誰）、Association（掛在哪個 AP 下）、Distribution（訊框怎麼經 DS 送到目的地）、Privacy（加密）。</li>
+      <li><b>怎麼搶媒介</b>：DCF（CSMA/CA）在第 2-4 章詳細說明。</li>
+    </ul>
+  </div>
   <div class="figure" id="fig-arch-wrap">
     <div class="fig-title">ESS、DS 與 Portal：資料怎麼走 <span class="tag">動畫</span></div>
     <div class="fig-body"><div id="fig-arch"></div><div class="status info" id="arch-msg"></div></div>

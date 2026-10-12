@@ -19,7 +19,7 @@
   <div class="callout note">PDF 共 32 頁，對應投影片第 1–33 頁；<b>第 22 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-2「IEEE 802.11 MAC 架構與服務」：2-2 講 Authentication、Association、Privacy 這些<b>服務</b>，這一章講它們實際用到的<b>訊框</b>長什麼樣子。</div>
 
   <div class="callout key">
-    <p><b>本章講 802.11 的服務實際用到的訊框：WEP 怎麼加密，以及 MAC 訊框每個欄位的意義。</b></p>
+    <p><b>802.11 MAC 訊框就是無線站台之間實際送出的資料單位：Header（誰送給誰、怎麼處理）＋Frame Body（內容）＋FCS（檢查碼）；WEP 是 802.11 最早用來加密 Frame Body 的方法。</b></p>
     <ul>
       <li><b>WEP</b>：802.11 原始的選用加密，用 RC4＋24-bit IV，只加密資料訊框的 payload、只保護無線這一段。<span class="sup">補充</span>已被破解，由 802.11i（WPA2）取代。</li>
       <li><b>站台狀態</b>：State 1／2／3 決定能送 Class 1／2／3 訊框；Deauthentication 退回 State 1，Disassociation 退回 State 2。</li>
@@ -41,6 +41,15 @@
   </table></div>
 
   <h2 id="wep">2. 隱私與存取控制：WEP（p.1–2）<span class="en">（Privacy and Access Control）</span></h2>
+  <div class="callout key">
+    <p><b>WEP 就是 802.11 最早的加密方式：用一把共享的秘密金鑰加上 24-bit IV 餵給 RC4 產生金鑰串流，和資料做 XOR，讓旁人收到電波也看不懂。</b></p>
+    <ul>
+      <li><b>名字的意思</b>：Wired Equivalent Privacy，目標只是「和有線網路一樣安全」，不是端對端加密。</li>
+      <li><b>保護範圍</b>：只加密<b>資料訊框的 payload</b>，只保護<b>站台到 AP 這一段無線</b>；標頭仍是明文。</li>
+      <li><b>完整性</b>：附 ICV（CRC-32）檢查資料有沒有被改。</li>
+      <li><span class="sup">補充</span><b>現況</b>：IV 太短會重複、ICV 是線性的，WEP 幾分鐘就能被破解；已由 802.11i（WPA2）取代，只在考試與歷史脈絡中出現。</li>
+    </ul>
+  </div>
   <ul>
     <li>802.11 的目標是提供<b>有線等效隱私</b><span class="en">（Goal of 802.11 is to provide Wired Equivalent Privacy (WEP)）</span>，而且全球通用<span class="en">（Usable worldwide）</span>。白話：有線網路要接上線才聽得到，電波誰都收得到，至少要讓旁人聽到也看不懂。</li>
     <li>802.11 提供 <b>Authentication</b> 機制協助存取控制<span class="en">（To aid in access control）</span>，可用 Open System、Shared Key 或廠商自訂延伸<span class="en">（proprietary authentication extensions）</span>。</li>
@@ -198,6 +207,15 @@ sequenceDiagram
   </ul>
 
   <h2 id="format">6. MAC 訊框格式（p.11–13）<span class="en">（Frame and MPDU Formats）</span></h2>
+  <div class="callout key">
+    <p><b>MAC 訊框就是 802.11 MAC 層實際送上空中的一個封包（MPDU），由 MAC Header、Frame Body、FCS 三段組成。</b></p>
+    <ul>
+      <li><b>Header 說「怎麼處理」</b>：Frame Control 標明類型與旗標、Duration 讓別人設 NAV、最多 4 個位址說明誰送給誰、Sequence Control 用來過濾重複與重組分段。</li>
+      <li><b>Frame Body 是「內容」</b>：資料訊框放上層封包（0–2312 bytes），管理訊框放資訊元素，控制訊框通常沒有 body。</li>
+      <li><b>FCS 是「檢查碼」</b>：32-bit CRC，錯了就丟、不回 ACK。</li>
+      <li><b>三種訊框</b>：控制（RTS、CTS、ACK）管媒介，管理（Beacon、Authentication、Association）管連線，資料訊框送使用者資料。</li>
+    </ul>
+  </div>
   <ul>
     <li>每個訊框由三部分組成：
       <ul>

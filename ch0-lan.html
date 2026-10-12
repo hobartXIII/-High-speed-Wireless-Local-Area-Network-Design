@@ -65,6 +65,15 @@
   <div class="callout tip">💡 <b>觀念：</b>IEEE 802 只定義到<b>第 2 層</b>，而且把鏈結層再切成兩個子層：上面共用的 <b>LLC（802.2）</b>，下面依技術不同的 <b>MAC</b>（802.3、802.11…）。所以不管底下是有線還是無線，上層看到的都是同一個 LLC 介面。</div>
 
   <h2 id="def">2. LAN 定義與範圍</h2>
+  <div class="callout key">
+    <p><b>LAN 就是「一個建築物或校園範圍內、裝置之間不經過電信業者就能直接互傳資料」的網路，例如家裡的 Wi-Fi、辦公室的乙太網路。</b></p>
+    <ul>
+      <li><b>關鍵字拆開看</b>：<b>Local</b>＝範圍小（1–5 km），線路與設備歸自己所有、自己管；<b>Area Network</b>＝一群獨立裝置共用通道互相通訊。</li>
+      <li><b>和 WAN 的差別</b>：LAN 的裝置<b>直接</b>互相通訊、速率中等到高、錯誤率低；WAN 要經過電信業者的線路與路由器，跨城市、跨國。</li>
+      <li><b>IEEE 802 管的範圍</b>：只定義 LAN 的<b>實體層與鏈結層</b>（線怎麼接、訊框怎麼送、誰可以送）；IP 以上交給 IETF。</li>
+      <li><b>本課重點</b>：LAN 裡「多個站台共用同一個媒介」，所以一定要有 MAC 規則決定誰先送：有線用 CSMA/CD（第 1 章），無線用 CSMA/CA（第 2 章起）。</li>
+    </ul>
+  </div>
   <ul>
     <li><b>LAN</b>：讓多個獨立裝置<span class="en">（independent devices）</span>在中等地理範圍<span class="en">（moderately sized geographic area）</span>內，透過實體通道<span class="en">（physical communications channel）</span>以中等速率<span class="en">（moderate data rates）</span><b>直接</b>互相通訊的資料通訊系統<span class="en">（data communication system）</span>。</li>
     <li>範圍：PAN（個人，802.15）→ LAN（區域，802.3 / 802.11）→ MAN（都會，802.16、802.6）→ WAN（廣域）；<span class="sup">補充</span>802.22 WRAN 為區域型無線網路（Regional Area）。</li>
