@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>802.11 DCF 存取機制</title>
+<meta name="description" content="第 2-4 章 IEEE 802.11 DCF 存取機制（CSMA/CA）：資訊元素、ERP 保護、DCF/PCF、SIFS/PIFS/DIFS/EIFS、隨機退避與二元指數退避、CSMA/CA＋ACK、Hidden node 與 RTS/CTS、NAV、分段、廣播規則，附互動動畫。">
+<link rel="stylesheet" href="assets/css/style.css">
+<script src="assets/js/common.js"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 2-4</div>
+    <h1>⏱️ IEEE 802.11 DCF 存取機制（CSMA/CA）</h1>
+    <div class="meta"><span>來源：2-4 CSMA_CA | iLearning 3.pdf（投影片標題「802.11 Architecture」，NCHU CSE CSMA/CA p.1–35）</span><span>動畫與互動 9 個・圖解 4 張</span></div>
+  </div>
+  <div class="callout note">PDF 共 33 頁，對應投影片第 1–35 頁；<b>第 12、18 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-3「WEP 與 MAC 訊框格式」：2-3 講訊框<b>長什麼樣子</b>，這一章講站台<b>什麼時候可以送</b>。</div>
+
+  <div class="callout key">
+    <p><b>本章講 802.11 站台「什麼時候可以送」：DCF 用 CSMA/CA＋ACK＋隨機退避讓大家輪流用同一個頻道。</b></p>
+    <ul>
+      <li><b>DCF</b>：802.11 最基本的存取方法，所有站台都必須實作；PCF 是蓋在 DCF 上面的選用輪詢機制。</li>
+      <li><b>IFS 決定優先權</b>：SIFS ＜ PIFS ＜ DIFS ＜ EIFS，等得越短越優先（ACK／CTS 用 SIFS，PCF 用 PIFS，一般資料用 DIFS）。</li>
+      <li><b>退避</b>：Backoff = Random(0..CW) × Slot time；媒介忙時計時器凍結，失敗一次 CW 加倍（15 → 31 → … → 1023）。</li>
+      <li><b>RTS/CTS＋NAV</b>：用 Duration 預約媒介，解決 hidden node；超過 RTS_Threshold 才用，廣播／群播不用、也不回 ACK。</li>
+    </ul>
+  </div>
+
+  <h2 id="std">1. 標準依據</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>標準</th><th>年份</th><th>本章用到的部分</th></tr>
+    <tr><td>IEEE 802.11（原始標準）</td><td>1997／1999</td><td>資訊元素、DCF／PCF、IFS、退避、RTS/CTS、NAV、分段、廣播規則；FHSS／IR／DSSS 的 CW 範圍（講義引 802.11-1997 表 49、58、74）</td></tr>
+    <tr><td>802.11a</td><td><span class="sup">補充</span>1999</td><td>p.22 的數字（SIFS 16 µs、Slot 9 µs、DIFS 34 µs、PLCP Preamble 16 µs）<span class="sup">補充</span>講義沒寫 PHY，由數字推得是 OFDM</td></tr>
+    <tr><td>802.11g</td><td>2001 草案／<span class="sup">補充</span>2003</td><td>ERP 資訊元素、Extended Supported Rates、ERP PHY 的 CW、保護機制</td></tr>
+    <tr><td>802.11e</td><td><span class="sup">補充</span>2005</td><td>AIFS（p.13 只列名稱）</td></tr>
+    <tr><td>802.11n</td><td><span class="sup">補充</span>2009</td><td>RIFS（p.13）、CW 15–1023（p.17）</td></tr>
+    <tr><td>802.11-2016</td><td>2016</td><td>SBIFS／BRPIFS／MBIFS／LBIFS（p.13，講義寫 check DIY；<span class="sup">補充</span>來自 802.11ad 60 GHz）</td></tr>
+  </table></div>
+
+  <h2 id="ie">2. 資訊元素（p.1–4）<span class="en">（Information Element）</span></h2>
+  <ul>
+    <li><b>定義</b>：管理訊框（Beacon、Probe、Association…）Frame Body 裡的可變長度欄位，一律是「Element ID（1）＋ Length（1）＋ Information（Length 個 octets）」。</li>
+    <li><b>白話</b>：像「標籤＋長度＋內容」的貼紙，收方看 Element ID 就知道在講什麼，看不懂的 ID 用 Length 直接跳過。</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>資訊元素</th><th class="num">Element ID</th><th>資訊元素</th><th class="num">Element ID</th></tr>
+    <tr><td>SSID</td><td class="num">0</td><td>IBSS Parameter Set</td><td class="num">6</td></tr>
+    <tr><td>Supported rates</td><td class="num">1</td><td>Country</td><td class="num">7</td></tr>
+    <tr><td>FH Parameter Set</td><td class="num">2</td><td>Legacy Indication（11g）</td><td class="num">8</td></tr>
+    <tr><td>DS Parameter Set</td><td class="num">3</td><td>Reserved</td><td class="num">9–15</td></tr>
+    <tr><td>CF Parameter Set</td><td class="num">4</td><td>Challenge Text</td><td class="num">16</td></tr>
+    <tr><td>TIM</td><td class="num">5</td><td>Reserved（challenge text 延伸 17–31）</td><td class="num">17–255</td></tr>
+  </table></div>
+  <div class="figure" id="fig-ie-wrap">
+    <div class="fig-title">資訊元素瀏覽器 <span class="tag">互動</span></div>
+    <div class="fig-body"><div id="fig-ie"></div><div class="status info" id="ie-msg"></div></div>
+    <div class="controls"></div>
+    <div class="caption">依講義第 1–5 頁重繪。方塊寬度大致依 octets 比例；選一個元素看它的欄位。</div>
+  </div>
+  <ul>
+    <li><b>SSID</b>（p.3）：表示 ESS 或 IBSS 的名稱；<b>Length = 0 表示廣播 SSID</b>（<span class="sup">補充</span>Probe Request 用它問「附近所有網路」）。</li>
+    <li><b>Supported Rates</b>（p.4）：
+      <ul>
+        <li>802.11（a、b）只有 Supported Rates（1–8 octets）；802.11g 另加 <b>Extended Supported Rates</b>（1–255 octets）。</li>
+        <li>a/b/g 合計支援的速率有 <b>14 種</b><span class="en">（The number of supported rates is 14 (a/b/g)）</span>。</li>
+        <li>屬於 <b>BSSBasicRateSet</b> 的速率，<b>msb（bit 7）設 1</b>；不屬於的設 0。例：1 Mbps（基本）= X'82'（1000 0010）；2 Mbps（非基本）= X'04'（0000 0100）。</li>
+      </ul>
+    </li>
+    <li><span class="sup">補充</span>最終的 802.11g 標準把 ERP Information 定為 Element ID <b>42</b>、Extended Supported Rates 定為 <b>50</b>；講義的「Legacy Indication = 8」應是草案時期的編號，考試以講義為準。</li>
+  </ul>
+  <div class="figure" id="fig-rate-wrap">
+    <div class="fig-title">Supported Rates 編碼器 <span class="tag">互動</span></div>
+    <div class="fig-body">
+      <div class="grid-form">
+        <div class="field"><label for="rate-r">速率（Mbps）</label><select id="rate-r"><option>1</option><option selected>2</option><option>5.5</option><option>6</option><option>9</option><option>11</option><option>12</option><option>18</option><option>22</option><option>24</option><option>33</option><option>36</option><option>48</option><option>54</option></select></div>
+        <div class="field"><label for="rate-b">屬於 BSSBasicRateSet？</label><select id="rate-b"><option value="0">否（msb = 0）</option><option value="1">是（msb = 1）</option></select></div>
+      </div>
+      <div id="fig-rate"></div>
+      <div class="readout" id="rate-out"></div>
+    </div>
+    <div class="caption"><span class="sup">補充</span>速率以 500 kbps 為單位存在低 7 bits（最多 127 × 0.5 = 63.5 Mbps）。講義的兩個例子：1 Mbps 基本 = X'82'、2 Mbps 非基本 = X'04'。</div>
+  </div>
+
+  <h2 id="erp">3. ERP 資訊元素與保護機制（p.5）<span class="en">（ERP Information Elements）</span></h2>
+  <ul>
+    <li>由 BSS 的 AP（或 IBSS 的 STA）送出，<b>802.11g</b> 定義；Information 只有 1 octet，用到 b0、b1，其餘保留（r）。</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>位元</th><th>名稱</th><th>0</th><th>1</th></tr>
+    <tr><td>b0</td><td>NonERP_Present</td><td>BSS 內沒有 Non-ERP 站台</td><td>BSS 內有 Non-ERP 站台</td></tr>
+    <tr><td>b1</td><td>Use_Protection</td><td>ERP 站台用 ERP-OFDM 速率送 MPDU 時<b>不應</b>使用保護機制</td><td>ERP 站台用 ERP-OFDM 速率送 MPDU 時<b>必須</b>使用保護機制</td></tr>
+  </table></div>
+  <ul>
+    <li><b>Non-ERP 就是 802.11b 裝置</b>，聽不懂 OFDM。</li>
+    <li><b>保護機制</b>：在送出「接收端不一定聽得懂」的訊框之前，先用 <b>CTS 訊框</b>更新所有接收站台的 NAV；更新後的 NAV 要 ≥ 送資料加上所有回應訊框的總時間<span class="en">（Use CTS frame to update the NAV of all receiving STAs prior to the transmission of a frame that may or may not be understood by receivers）</span>。</li>
+    <li><span class="sup">補充</span>這就是 2-3 提到的 CTS-to-self：CTS 用 11b 聽得懂的 DSSS 速率送，11b 站台設好 NAV 就不會插話。</li>
+  </ul>
+
+  <h2 id="arch">4. MAC 架構：DCF 與 PCF（p.6–8）<span class="en">（MAC Architecture）</span></h2>
+  <div class="figure">
+    <div class="fig-title">DCF 與 PCF 的層次 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart TB
+  PCF["Point Coordination Function（PCF）<br>Required for Contention Free Services"]
+  DCF["Distributed Coordination Function（DCF）<br>Used for Contention Services and basis for PCF"]
+  PHY["PHY"]
+  PCF --> DCF --> PHY
+    </div></div>
+    <div class="caption">依講義第 6 頁圖重繪。PCF 是 MAC extension，蓋在 DCF 上面。</div>
+  </div>
+  <ul>
+    <li><b>DCF</b>
+      <ul>
+        <li>802.11 MAC 的<b>基本存取方法</b>，就是 <b>CSMA/CA</b><span class="en">（Carrier Sense Multiple Access with Collision Avoidance）</span>。</li>
+        <li><b>所有</b>站台與 AP 都必須實作；ad hoc 與 infrastructure <b>兩種</b>配置都用。</li>
+      </ul>
+    </li>
+    <li><b>PCF</b>
+      <ul>
+        <li><b>另一種</b>存取方法，必須建在 DCF 之上。</li>
+        <li>由<b>點協調器（Point Coordinator，輪詢主控 polling master）</b>決定目前誰有權傳送。</li>
+        <li>透過「存取優先權」從 DCF 建構出來：不同流量用<b>不同長度的 IFS</b> 區分，<b>PIFS ＜ DIFS</b>。</li>
+        <li>點協調的流量優先權較高，可提供<b>無競爭（contention-free）</b>存取；PIFS 較短，讓 PC 能從其他站台手上搶到媒介。</li>
+      </ul>
+    </li>
+    <li><b>共存</b>：DCF 與 PCF 必須互不干擾；整合在一個<b>超級訊框（superframe）</b>中，開頭是無競爭期（contention-free burst），接著是競爭期（contention period）。</li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">Superframe <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  subgraph SF["Super frame"]
+    CFP["Contention-free frames<br>（PCF 輪詢）"] --> CP["Contention frames<br>（DCF 競爭）"]
+  end
+  CP --> NEXT["下一個 Super frame"]
+    </div></div>
+    <div class="caption">依講義第 8 頁圖重繪。</div>
+  </div>
+
+  <h2 id="dcf">5. DCF 的功能（p.9–11）<span class="en">（Distributed Coordination Function）</span></h2>
+  <ul>
+    <li><b>七項功能</b><span class="en">（Features）</span>：IFS、隨機退避、正向 ACK、實體載波感測、虛擬載波感測（在多速率環境仍有效）、選用 RTS/CTS（由 RTS_Threshold 控制）、選用分段（由 Fragmentation_Threshold 控制）。</li>
+    <li><b>自動共享媒介</b>：相同或不同的 PHY 都能透過 CSMA/CA 加上「媒介忙碌之後的隨機退避」共用媒介。</li>
+    <li><b>正向 ACK</b>：所有<b>單播（directed）</b>流量都要立即回 ACK；沒收到 ACK，由<b>傳送端</b>安排重傳。</li>
+    <li><b>虛擬載波感測</b>：在真正的資料訊框前交換小的 RTS、CTS 訊框（帶 Duration 欄位），把「媒介會忙多久」散播出去。
+      <ul>
+        <li><b>只用於單播</b><span class="en">（Unicast only, not used in multicast/broadcast）</span>。</li>
+        <li>由 <b>RTS_Threshold</b> 控制：payload 長度低於門檻就不加 RTS/CTS。</li>
+      </ul>
+    </li>
+    <li><b>多速率</b>：所有站台都必須能<b>接收</b>基本速率組內任一速率的訊框，並至少能用其中一種速率<b>傳送</b>，所以虛擬載波感測在多速率環境仍然有效。<span class="sup">補充</span>控制訊框用基本速率送，大家都解得出 Duration。</li>
+    <li><b>兩種載波感測</b>（p.11）：
+      <ul>
+        <li><b>實體</b>：由 PHY 提供，也就是空閒頻道評估（Clear Channel Assessment, CCA）。</li>
+        <li><b>虛擬</b>：由 MAC 提供，叫做<b>網路配置向量（Network Allocation Vector, NAV）</b>，依 RTS/CTS 宣告的 Duration 預測未來的流量。</li>
+      </ul>
+    </li>
+    <li><b>MAC 層確認</b>：成功收到訊框後<b>立即</b>回 ACK，<b>間隔是 SIFS</b>；要回 ACK 的訊框類型：Data、Poll、Request、Response。<b>沒收到 ACK 就表示出錯</b><span class="en">（The lack of an ACK frame means that an error has occurred）</span>。</li>
+  </ul>
+  <div class="callout tip">
+    <p><b>💡 講義提問（p.11）：為什麼 Ethernet 不用 ACK 訊框？</b></p>
+    <p>有線網路可以「邊送邊聽」，碰撞會被 CSMA/CD 偵測到並立刻重送，而且銅線／光纖的位元錯誤率很低，交給上層（TCP）處理就夠了。無線則不行：自己的發射訊號比收到的訊號強太多，送的時候聽不到碰撞（無法 CD）；hidden node 讓傳送端根本感測不到干擾；加上無線錯誤率高，所以必須由接收端用 ACK 明確告訴傳送端「收到了」。</p>
+  </div>
+  <div class="callout warn">
+    <p><b>⚠️ 講義勘誤（p.11、p.25）</b></p>
+    <p>原文：「<b>Net</b> Allocation Vector (NAV)」<br>正確：「<b>Network</b> Allocation Vector (NAV)」</p>
+    <p>理由：IEEE 802.11 標準用語是 Network Allocation Vector；2-3 講義也用 Network。</p>
+  </div>
+
+  <h2 id="ifs">6. 訊框間隔 IFS（p.13–15）<span class="en">（Inter-Frame Space）</span></h2>
+  <ul>
+    <li><b>定義</b>：媒介變成空閒後，站台必須先等的一段時間；<b>等越短的越優先</b>，所以 IFS 就是優先權<span class="en">（Three different IFS's are defined to provide priority levels）</span>。</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>IFS</th><th>誰用</th><th>講義說明</th></tr>
+    <tr><td><b>SIFS</b>（Short IFS）</td><td>ACK、CTS、回應輪詢的站台；PC 在 CFP 內送任何訊框</td><td>最短，最高優先：一次交換中的「回應」不用跟別人搶</td></tr>
+    <tr><td><b>PIFS</b>（PCF IFS）</td><td>只有 PCF</td><td>PC 偵測到媒介空閒 PIFS 後就能送 CFP 訊框（CF-Burst 開始與期間）</td></tr>
+    <tr><td><b>DIFS</b>（DCF IFS）</td><td>DCF 送非同步 MPDU</td><td>偵測到媒介空閒 DIFS，且不在退避期間，就能送</td></tr>
+    <tr><td><b>EIFS</b>（Extended IFS）</td><td>上一個收到的訊框有錯時</td><td>最長，見下方</td></tr>
+  </table></div>
+  <ul>
+    <li>新增的 IFS：<b>11e 的 AIFS</b>（Arbitrated IFS）、<b>11n 的 RIFS</b>（Reduced IFS）、<b>802.11-2016 的 SBIFS／BRPIFS／MBIFS／LBIFS</b>（講義：check DIY）。</li>
+    <li><b>時間關係</b>（p.14 圖）：<b>PIFS = SIFS + 1 slot</b>、<b>DIFS = SIFS + 2 slots</b>，DIFS 之後才是第一個退避時槽（First backoff slot）。</li>
+    <li>p.14 圖中的元件：D1 = aRxRFDelay + aRxPLCPDelay；D2 = D1 + 空中傳播時間；Rx/Tx = aRxTxTurnaroundTime；M1 = M2 = aMACPrcDelay；CCAdel = aCCATime − D1。</li>
+    <li><b>EIFS</b>（p.15）
+      <ul>
+        <li>從 PHY 指出「收到<b>錯誤訊框</b>後媒介已空閒」開始計時，<b>不管虛擬載波感測</b>。</li>
+        <li>目的：給別的站台足夠時間，對「這個站台收錯的那個訊框」回 ACK，再讓這個站台開始傳送。</li>
+        <li><b>EIFS = aSIFSTime + (8 × ACKsize) + aPreambleLength + PLCPHeaderLength + DIFS</b>，ACKsize 以 <b>1 Mbps</b> 計算。</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="figure" id="fig-ifs-wrap">
+    <div class="fig-title">IFS 尺規：誰先能送？ <span class="tag">互動</span></div>
+    <div class="fig-body"><div id="fig-ifs"></div><div class="status info" id="ifs-msg"></div></div>
+    <div class="controls"></div>
+    <div class="caption">依講義第 14 頁的時間關係繪製，數值為 <span class="sup">補充</span>各 PHY 的標準值。EIFS：DSSS、FHSS、ERP 用講義公式（ACK 以 1 Mbps 計）；OFDM 用標準的 SIFS + DIFS + 6 Mbps ACK。</div>
+  </div>
+
+  <h2 id="backoff">7. 隨機退避與二元指數退避（p.16–17）<span class="en">（Random Backoff Time）</span></h2>
+  <ul>
+    <li>送非同步 MPDU 之前，先用載波感測判斷媒介狀態。</li>
+    <li><b>媒介忙</b>：等到偵測到 DIFS 的空閒，再產生一段<b>隨機退避</b>時間，額外延後（化解競爭）。</li>
+  </ul>
+  <div class="callout tip"><b>Backoff time = Random() × Slot time</b><br>Random()：在 <b>[0, CW]</b> 均勻分布的虛擬亂數整數；CW：介於 CW<sub>min</sub> 與 CW<sub>max</sub> 之間的整數<br>Slot time = 傳送端開機延遲 + 媒介傳播延遲 + 媒介忙碌偵測反應時間</div>
+  <ul>
+    <li><span class="sup">補充</span>標準把 Slot time 寫成 aCCATime + aRxTxTurnaroundTime + aAirPropagationTime + aMACProcessingDelay。</li>
+    <li><b>二元指數退避</b>：每重傳一次，CW 加倍（2 的次方減 1），到 CW<sub>max</sub> 為止。</li>
+  </ul>
+  <div class="tbl-wrap"><table>
+    <tr><th>PHY</th><th>CW<sub>min</sub>～CW<sub>max</sub></th><th>出處（講義）</th></tr>
+    <tr><td>FHSS</td><td>15～1023</td><td>802.11-1997 14.8.2 Table 49</td></tr>
+    <tr><td>IR</td><td>63～1023</td><td>802.11-1997 16.4 Table 74</td></tr>
+    <tr><td>DSSS</td><td>31～1023</td><td>802.11-1997 15.3.2 Table 58</td></tr>
+    <tr><td>DSSS ERP（＞20 Mb/s）</td><td>15～1023</td><td>802.11g-2001 19.4.3.8.5</td></tr>
+    <tr><td>DSSS ERP（≤20 Mb/s）</td><td>31～1023</td><td>802.11g-2001 19.4.3.8.5</td></tr>
+    <tr><td>802.11n</td><td>15～1023</td><td>—</td></tr>
+  </table></div>
+  <div class="figure" id="fig-beb-wrap">
+    <div class="fig-title">二元指數退避：CW 怎麼長大 <span class="tag">互動</span></div>
+    <div class="fig-body"><div id="fig-beb"></div><div class="readout" id="beb-out"></div></div>
+    <div class="controls"><button class="btn primary" type="button" data-act="fail">✕ 這次又失敗了（重傳）</button><button class="btn" type="button" data-act="ok">✓ 成功（CW 回 CW<sub>min</sub>）</button></div>
+    <div class="caption">依講義第 17 頁重繪（講義圖以 CW<sub>min</sub> = 7 示意：7、15、31、63、127、255、255）。縱軸是對數刻度；每次重傳都真的從 [0, CW] 抽一個數，橙點是抽到的退避值。</div>
+  </div>
+  <div class="callout warn">
+    <p><b>⚠️ 講義勘誤（p.17）</b></p>
+    <p>原文：「Binary <b>Exponentional</b> Backoff Window」<br>正確：「Binary <b>Exponential</b> Backoff Window」</p>
+    <p>理由：拼字錯誤。</p>
+  </div>
+
+  <h2 id="basic">8. 基本存取協定（p.19–21）<span class="en">（Basic Access Protocol）</span></h2>
+  <ul>
+    <li><b>特點</b>（p.19）
+      <ul>
+        <li>用 DCF 有效率地共享媒介，<b>不受重疊限制</b>；以 CSMA/CA 為基礎，載波感測來自 PHY 的 <b>CCA</b>。</li>
+        <li><b>對干擾強健</b>：單播用 <b>CSMA/CA＋ACK</b>，MAC 層就能重傳；廣播用 CSMA/CA（沒有 ACK）。</li>
+        <li>參數化使用 RTS/CTS，提供<b>虛擬載波感測</b>，對抗 <b>hidden node</b>；Duration 由傳送端與接收端分別透過 RTS、CTS 散播。</li>
+        <li>有<b>分段</b>，因應不同 PHY 的特性；訊框格式支援 Infrastructure、Ad-Hoc 與 WDS。</li>
+      </ul>
+    </li>
+    <li><b>CSMA/CA 解說</b>（p.20）
+      <ul>
+        <li>媒介空閒超過 DIFS → <b>直接送</b><span class="en">（Free access when medium is free longer than DIFS）</span>。</li>
+        <li>否則<b>延後（Defer）</b>，等媒介空閒 DIFS 後進入競爭視窗，選一個時槽，<b>媒介空閒時才遞減</b>退避值，歸零就送。</li>
+        <li>在最需要的地方<b>降低碰撞機率</b>：大家都在等媒介空閒的那一刻最容易撞，所以這時才隨機退避。</li>
+        <li>退避演算法在<b>高負載下穩定</b>：重傳時視窗指數成長；只有媒介空閒時退避計時器才前進。</li>
+        <li>固定的<b>優先權等級</b>：讓立即回應（ACK、CTS）與 PCF 能共存。</li>
+      </ul>
+    </li>
+    <li><b>CSMA/CA＋ACK 協定</b>（p.21）
+      <ul>
+        <li>依載波感測延後：PHY 的 CCA <b>加上</b>虛擬載波感測（NAV）狀態。</li>
+        <li>媒介空閒超過 DIFS 直接存取，否則延後並退避。</li>
+        <li>單播的接收端在 <b>CRC 正確</b>時立即回 ACK。</li>
+        <li><b>沒收到 ACK → 隨機退避後重傳</b>（有次數上限）。</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="figure" id="fig-basic-wrap">
+    <div class="fig-title">CSMA/CA＋ACK 時序 <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-basic"></div><div class="status info" id="basic-msg"></div></div>
+    <div class="caption">依講義第 20、21 頁重繪（時間比例為示意）。Other 在 Data 期間由 CCA 判斷媒介忙；Data 的 Duration 再讓它的 NAV 蓋住 SIFS＋ACK。</div>
+  </div>
+
+  <h2 id="overhead">9. DCF 的缺點：額外負擔（p.22–23）<span class="en">（Drawback of DCF）</span></h2>
+  <ul>
+    <li>DCF 在 PHY 與 MAC 上產生大量額外負擔：前導碼（Preamble）、PHY 與 MAC 標頭、退避、IFS、ACK。</li>
+    <li>講義 p.22 的數字：<b>DIFS 34 µs、Backoff 9 µs × [0, CW]、PLCP Preamble 16 µs、PLCP Header ≥ 4 µs、MAC Header ≥ 30 octets、FCS 4 octets、SIFS 16 µs、ACK ≥ 24 µs</b>。<span class="sup">補充</span>這組數字是 802.11a OFDM。</li>
+    <li><b>吞吐量效率</b>（p.23 圖，23 µs Slot time）：負載增加時吞吐量先上升後持平，<b>過載時仍穩定</b>，能支援突發（bursty）流量。576 bytes 訊框最高（約 195 KByte/s），60% 短＋40% 長次之（約 160），64 bytes 最低（約 88）：<b>訊框越短，固定額外負擔佔比越大</b>。</li>
+  </ul>
+  <div class="figure" id="fig-tput-wrap">
+    <div class="fig-title">一筆傳送的時間都花在哪？ <span class="tag">互動</span></div>
+    <div class="fig-body">
+      <div class="grid-form">
+        <div class="field"><label for="tp-len">Payload（MSDU，bytes）：<b id="tp-lenv"></b></label><input id="tp-len" type="range" min="40" max="2304" step="4" value="1500"></div>
+        <div class="field"><label for="tp-rate">資料速率（802.11a OFDM）</label><select id="tp-rate"><option>6</option><option>9</option><option>12</option><option>18</option><option>24</option><option>36</option><option>48</option><option selected>54</option></select></div>
+        <div class="field"><label for="tp-ctrl">控制訊框（RTS／CTS／ACK）速率</label><select id="tp-ctrl"><option value="same" selected>與資料相同</option><option value="6">6 Mbps</option><option value="24">24 Mbps</option></select></div>
+        <div class="field"><label for="tp-rts">RTS/CTS</label><select id="tp-rts"><option value="0" selected>不用</option><option value="1">使用</option></select></div>
+      </div>
+      <div id="fig-tput"></div>
+      <div class="readout" id="tp-out"></div>
+    </div>
+    <div class="caption"><span class="sup">補充</span>單一站台、沒有碰撞、退避取平均 CW<sub>min</sub>/2 = 7.5 slots。OFDM 訊框時間 = 20 + 4 × ⌈(16 + 8L + 6) ÷ N<sub>DBPS</sub>⌉ µs，N<sub>DBPS</sub> = 4 × 速率；MAC Header 24 + FCS 4 bytes。下方曲線是吞吐量對 payload 大小。</div>
+  </div>
+  <div class="callout note">
+    <p><b>待確認</b> <span class="pill">待確認</span></p>
+    <p>1. p.22「MAC Header ≥ 30 octets」：3 位址標頭是 24 octets、4 位址是 30 octets；<span class="sup">補充</span>QoS 資料訊框標頭 26 ＋ FCS 4 也是 30。講義的 30 指哪一種請對照上課說明。</p>
+    <p>2. p.23「23 usec Slot time」：FHSS 50、DSSS 20、OFDM 9 µs，<span class="sup">補充</span>沒有 PHY 用 23 µs，可能是早期模擬參數。</p>
+  </div>
+
+  <h2 id="hidden">10. Hidden Node 與 RTS/CTS（p.24–26）<span class="en">（Hidden Node Problem／Provisions）</span></h2>
+  <ul>
+    <li><b>問題</b>：競爭媒介的傳送端可能<b>互相聽不到</b><span class="en">（may not "Hear each other"）</span>：兩個 STA 都聽得到 AP，彼此卻聽不到，載波感測失效，兩邊同時送就在 AP 撞在一起。</li>
+    <li><b>解法</b>：傳送端與接收端先交換獨立的控制訊框 <b>RTS／CTS</b>，為後續的資料存取<b>預約媒介</b><span class="en">（Reserve the Medium）</span>；Duration 會散播到<b>傳送端與接收端兩邊</b>。</li>
+    <li><b>Hidden Node 的配套</b>（p.25）
+      <ul>
+        <li>RTS、CTS 的 Duration 欄位散播「媒介預約」資訊，存進 <b>NAV</b>。</li>
+        <li><b>NAV 或 CCA 任一個</b>表示媒介忙，就延後。</li>
+        <li>RTS/CTS 是<b>選用的，但一定要實作</b><span class="en">（optional but must be implemented）</span>。</li>
+        <li>每個站台用 <b>RTS_Threshold</b> 參數控制要不要用：限制短訊框的額外負擔（講義例：200 bytes）。</li>
+      </ul>
+    </li>
+    <li><b>RTS/CTS 的額外負擔</b>（p.26 圖，60% 短＋40% 長訊框）：Plain CSMA/CA 最高（約 160 KByte/s）、Mixed 次之（約 155）、全部用 RTS/CTS 最低（約 135）。<b>Mixed（只有長的上行訊框用 RTS/CTS）效率很好</b><span class="en">（Good mixed Throughput (long inbound frames) efficiency）</span>。</li>
+  </ul>
+  <div class="figure" id="fig-hidden-wrap">
+    <div class="fig-title">Hidden node：沒有／有 RTS/CTS <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-hidden"></div><div class="status info" id="hidden-msg"></div></div>
+    <div class="caption">依講義第 24、25 頁重繪。A 與 C 都在 AP 的範圍內，但彼此在對方範圍外。下方時間軸的黃色是 C 的 NAV。</div>
+  </div>
+
+  <h2 id="proc">11. DCF 存取程序（p.27–28）<span class="en">（DCF Access Procedure）</span></h2>
+  <ul>
+    <li><b>退避程序</b>（p.27）
+      <ul>
+        <li>先選好退避時間。媒介<b>忙時計時器凍結（frozen）</b>，<b>只有空閒時才遞減</b>（每次空閒超過 DIFS 才恢復倒數）。</li>
+        <li>計時器到 0 就送。</li>
+        <li>剛送完一個訊框、佇列裡還有下一個的站台，<b>也必須執行退避</b>（公平性考量），不能連續霸佔。</li>
+        <li>整體趨向<b>先到先服務（FCFS）</b>的公平存取：上一輪沒輪到的站台保留<b>剩餘退避值</b>，下一輪通常比新來的先到 0。</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="figure" id="fig-bo-wrap">
+    <div class="fig-title">五個站台的退避：凍結與恢復 <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-bo"></div><div class="status info" id="bo-msg"></div></div>
+    <div class="caption">依講義第 27 頁的 A–E 情境模擬（以 slot 為單位；DIFS 畫成 2 slots、每個 Frame 含 SIFS＋ACK 畫成 8 slots；CW<sub>min</sub> = 7 方便看）。藍色＝這段時間在倒數，紅色＝被凍結的剩餘退避，數字是當下的退避值。兩站同時到 0 會碰撞（紅框），CW 加倍重抽。</div>
+  </div>
+  <ul>
+    <li><b>RTS/CTS 復原程序與重傳上限</b>（p.28）
+      <ul>
+        <li>送出 RTS 後，若在 <b>CTS_Timeout（T1）</b>內沒收到 CTS，就產生新的 RTS（<b>CW 加倍</b>），直到 RTS_Re-Transmit_Counter 到達 <b>RTS_Re-Transmit_Limit</b>。</li>
+        <li>單播 DATA 送出後，若在 <b>ACK_Window（T3）</b>內沒收到 ACK，用同樣的退避機制重傳，直到 ACK_Re-Transmit_Counter 到達 <b>ACK_Re-Transmit_Limit</b>。</li>
+        <li>每個 MSDU／MMPDU 有兩個計數器：<b>短重傳計數（short retry count）</b>給長度 ≤ RTS_Threshold 的訊框，<b>長重傳計數（long retry count）</b>給 ＞ RTS_Threshold 的訊框；兩者獨立遞增、獨立歸零。</li>
+        <li><span class="sup">補充</span>標準預設 dot11ShortRetryLimit = 7、dot11LongRetryLimit = 4。</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">DCF 傳送流程 <span class="tag static">圖解</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart TD
+  A["有 MPDU 要送"] --> B{"媒介空閒 ≥ DIFS<br>且 NAV = 0？"}
+  B -- "是，且不在退避中" --> TX["傳送"]
+  B -- "否" --> C["等媒介空閒 DIFS"]
+  C --> D["選 Backoff = Random(0..CW) × Slot"]
+  D --> E{"這個 slot 媒介空閒？"}
+  E -- "是" --> F["Backoff − 1 slot"]
+  E -- "否" --> G["凍結，等媒介空閒 DIFS"] --> E
+  F --> H{"Backoff = 0？"}
+  H -- "否" --> E
+  H -- "是" --> TX
+  TX --> I{"時限內收到 ACK／CTS？"}
+  I -- "是" --> J["成功，CW = CWmin"]
+  I -- "否" --> K["retry +1，CW = min(2(CW+1)−1, CWmax)"]
+  K --> L{"retry ＞ limit？"}
+  L -- "否" --> C
+  L -- "是" --> M["丟棄，CW = CWmin"]
+    </div></div>
+    <div class="caption">依講義第 16、20、27、28 頁整理。</div>
+  </div>
+
+  <h2 id="frag">12. 分段（p.29–33）<span class="en">（Fragmentation）</span></h2>
+  <ul>
+    <li><b>控制頻道</b>（p.29）：站台搶到頻道後會<b>連續送完所有分段</b>，段與段之間只隔 <b>SIFS</b>，別人插不進來；直到以下任一情況才停：
+      <ul>
+        <li>MSDU 的所有分段都送完；</li>
+        <li>某段<b>沒收到 ACK</b>；</li>
+        <li>碰到<b>駐留時間（dwell time）邊界</b>，不能再送（<span class="sup">補充</span>FHSS 跳頻時）。</li>
+      </ul>
+    </li>
+    <li>沒收到 ACK → 之後依退避演算法<b>只重傳那一段</b>，重傳時要重新在競爭視窗中競爭。</li>
+    <li><b>RTS/CTS 搭配分段</b>（p.30–31）
+      <ul>
+        <li>RTS/CTS 的 Duration 只涵蓋<b>第一個分段與它的 ACK</b>。</li>
+        <li><b>Data 與 ACK 的 Duration 涵蓋「下一個分段＋它的 ACK」</b>：每個分段與 ACK 都扮演虛擬的 RTS 與 CTS，一路把 NAV 往後延。</li>
+        <li>最後一個分段與 ACK 的 Duration 設為 0（講義）。</li>
+        <li><b>ACK 沒收到</b>（最壞情況）：只聽得到目的端的站台<b>不會更新 NAV</b>，可以存取頻道；聽得到來源端的站台在 <b>Fragment 1 的 NAV 到期後</b>可以存取；來源端也必須等 NAV（Fragment 1）到期才能重新競爭。</li>
+      </ul>
+    </li>
+    <li><b>Fragmentation (1/2)</b>（p.32）：一串個別確認的分段，<b>只用於單播</b>；某段沒 ACK → 隨機退避後重傳該段；Data 與 ACK 的 Duration 設定 NAV 作為媒介預約。</li>
+    <li><b>Fragmentation (2/2)</b>（p.33）
+      <ul>
+        <li>除最後一段可以較短，其他分段的長度<b>都一樣</b>。</li>
+        <li>分段長度<b>不可超過 aFragmentationThreshold</b>，除非該 MPDU 有用 WEP（因為會多出 IV 與 ICV）。</li>
+        <li>同一個 MSDU／MMPDU 的所有分段 <b>Sequence Number 相同</b>；依 Fragment Number <b>由小到大</b>依序送（從 0 開始，每次加 1）。</li>
+        <li><b>More Fragments 位元</b>標示最後（或唯一）一段。</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="figure" id="fig-frag-wrap">
+    <div class="fig-title">RTS/CTS＋分段的 NAV 鏈 <span class="tag">動畫</span></div>
+    <div class="fig-body"><div id="fig-frag"></div><div class="status info" id="frag-msg"></div></div>
+    <div class="caption">依講義第 30–32 頁重繪（時間比例為示意）。上排是聽得到來源端的站台，下排是只聽得到目的端的站台；切到「ACK 1 遺失」看最壞情況。</div>
+  </div>
+  <div class="callout note">
+    <p><b>待確認（p.30）</b> <span class="pill">待確認</span></p>
+    <p>講義寫「最後一個 Fragment 與 ACK 的 Duration 設為 0」。<span class="sup">補充</span>依 IEEE 802.11 標準，最後一個分段的 Duration = SIFS + ACK 時間（還要保護自己的 ACK），只有最後的 ACK 是 0。請對照上課說明。</p>
+  </div>
+
+  <h2 id="defrag">13. 重組（p.34）<span class="en">（Defragmentation）</span></h2>
+  <ul>
+    <li>每個分段的標頭帶有目的端重組 MSDU／MMPDU 需要的資訊：<b>Frame type、傳送端位址、目的位址、Sequence Control</b>、More Fragments 指示。</li>
+    <li>若用了 WEP，<b>先解密再重組</b><span class="en">（decrypted before the defragmentation）</span>。</li>
+    <li>每個站台對每個 MSDU／MMPDU 維護一個<b>接收計時器（Receive Timer）</b>；沒維護計時器的話，該 MSDU 的分段全部丟棄。</li>
+    <li>接收計時器超過 <b>aMaxReceiveLifetime</b>，已收到的分段全部丟棄。</li>
+  </ul>
+
+  <h2 id="bcast">14. 廣播與群播（p.35）<span class="en">（DCF – Broadcast and multicast）</span></h2>
+  <ul>
+    <li>沒有 PCF 時，STA 送 <b>ToDS = 0</b> 的廣播／群播 MPDU：只用<b>基本存取程序</b>；不管多長<b>都不用 RTS/CTS</b>，也<b>不會收到 ACK</b>。</li>
+    <li>STA 送 <b>ToDS = 1</b> 的廣播／群播 MPDU：要<b>遵守 RTS/CTS 規則</b>，因為這個 MPDU 是送給 AP 的（單播給 AP，<b>會收到 ACK</b>）。</li>
+    <li>廣播／群播<b>沒有 MAC 層復原</b>，除了 ToDS = 1 的那些。</li>
+    <li>廣播／群播訊息會被散播到整個 BSS，<b>發送者自己也會收到</b>；所以每個站台都要濾掉「來源位址是自己」的廣播／群播。</li>
+    <li>廣播／群播 MSDU 會傳遍整個 <b>ESS</b>。</li>
+  </ul>
+  <div class="callout warn">
+    <p><b>⚠️ 講義勘誤（p.35）</b></p>
+    <p>原文：「<b>This</b> no MAC-level recovery on broadcast or multicast frames…」<br>正確：「<b>There is</b> no MAC-level recovery on broadcast or multicast frames…」</p>
+    <p>理由：原句缺動詞，應是 There is 的筆誤。</p>
+  </div>
+
+  <h2 id="calc">15. 公式與計算</h2>
+  <div class="callout note">每個公式先寫出來、說明符號，再代入數值一步一步算。<b>單位提醒</b>：1 byte = 8 bits；1 Mbps = 1 bit/µs。</div>
+  <h3>IFS 的組成</h3>
+  <div class="callout tip"><b>PIFS = SIFS + T<sub>slot</sub></b>　<b>DIFS = SIFS + 2 T<sub>slot</sub></b></div>
+  <div class="tbl-wrap"><table>
+    <tr><th>PHY（<span class="sup">補充</span>標準值）</th><th class="num">SIFS</th><th class="num">Slot</th><th class="num">PIFS</th><th class="num">DIFS</th></tr>
+    <tr><td>FHSS</td><td class="num">28</td><td class="num">50</td><td class="num">28 + 50 = 78</td><td class="num">28 + 100 = 128</td></tr>
+    <tr><td>DSSS（11b）</td><td class="num">10</td><td class="num">20</td><td class="num">10 + 20 = 30</td><td class="num">10 + 40 = 50</td></tr>
+    <tr><td>OFDM（11a）</td><td class="num">16</td><td class="num">9</td><td class="num">16 + 9 = 25</td><td class="num">16 + 18 = <b>34</b>（＝講義 p.22）</td></tr>
+    <tr><td>ERP（11g 短時槽）</td><td class="num">10</td><td class="num">9</td><td class="num">19</td><td class="num">28</td></tr>
+  </table></div>
+  <p><span class="sup">補充</span>作業一的「DIFS 43 µs」其實是 11e 的 AIFS：AIFS = SIFS + AIFSN × slot = 16 + 3 × 9 = <b>43 µs</b>（Best Effort，AIFSN = 3）。</p>
+  <h3>EIFS</h3>
+  <div class="callout tip"><b>EIFS = SIFS + 8 × ACKsize ÷ 1 Mbps + Preamble + PLCP Header + DIFS</b></div>
+  <ol>
+    <li>802.11b 長前導（<span class="sup">補充</span>Preamble 144 µs、PLCP Header 48 µs）；ACK = 14 bytes → 8 × 14 = 112 bits → 1 Mbps 下 <b>112 µs</b>。</li>
+    <li>EIFS = 10 + 112 + 144 + 48 + 50 = <b>364 µs</b>。</li>
+    <li>比 DIFS（50 µs）多 314 µs，剛好是 SIFS 10 + PLCP 192 + ACK 112 = <b>314 µs</b>：夠別人送完一個 1 Mbps 的 ACK。</li>
+  </ol>
+  <p><b>計算陷阱</b>：ACKsize 是 bytes，要 ×8；講義規定用 1 Mbps 算，不是目前的資料速率。</p>
+  <h3>退避時間與競爭視窗</h3>
+  <div class="callout tip"><b>T<sub>backoff</sub> = Random[0, CW] × T<sub>slot</sub></b>　<b>CW<sub>i</sub> = min(2<sup>i</sup>(CW<sub>min</sub> + 1) − 1, CW<sub>max</sub>)</b>　平均退避 = CW ÷ 2 × T<sub>slot</sub>（i：重傳次數，初次 = 0）</div>
+  <ol>
+    <li>CW<sub>min</sub> = 15：i = 0 → 15；i = 1 → 2 × 16 − 1 = 31；i = 2 → 63；i = 3 → 127；i = 4 → 255；i = 5 → 511；i = 6 → 1023；i = 7 → min(2047, 1023) = <b>1023</b>。</li>
+    <li>OFDM（slot 9 µs）初次平均退避 = 15 ÷ 2 × 9 = <b>67.5 µs</b>；最大 15 × 9 = 135 µs；CW = 1023 時最大 1023 × 9 = <b>9207 µs ≈ 9.2 ms</b>。</li>
+    <li>DSSS（CW<sub>min</sub> 31、slot 20 µs）初次平均退避 = 31 ÷ 2 × 20 = <b>310 µs</b>，最大 620 µs。</li>
+    <li>兩個站台同時開始退避、CW = 15，抽到同一個值（碰撞）的機率 = 1 ÷ 16 = <b>6.25%</b>；碰撞後 CW = 31 → 1 ÷ 32 ≈ <b>3.1%</b>。</li>
+  </ol>
+  <p><b>計算陷阱</b>：Random 範圍是 [0, CW]，共 <b>CW + 1</b> 個值。</p>
+  <h3><span class="sup">補充</span>單一站台無碰撞的最大吞吐量（802.11a，54 Mbps）</h3>
+  <div class="callout tip"><b>S = 8 × L<sub>payload</sub> ÷ (DIFS + 平均退避 + T<sub>DATA</sub> + SIFS + T<sub>ACK</sub>)</b>　OFDM：<b>T = 20 + 4 × ⌈(16 + 8L + 6) ÷ N<sub>DBPS</sub>⌉ µs</b>，54 Mbps 時 N<sub>DBPS</sub> = 216</div>
+  <ol>
+    <li>Payload 1500 bytes：MPDU = 1500 + 24 + 4 = 1528 bytes → 16 + 12224 + 6 = 12246 bits → 12246 ÷ 216 = 56.7 → 57 個符號 → T<sub>DATA</sub> = 20 + 57 × 4 = <b>248 µs</b>。</li>
+    <li>ACK 14 bytes → 16 + 112 + 6 = 134 bits → 1 個符號 → T<sub>ACK</sub> = 20 + 4 = <b>24 µs</b>（＝講義 p.22 的 ≥ 24 µs）。</li>
+    <li>總時間 = 34 + 67.5 + 248 + 16 + 24 = <b>389.5 µs</b>。</li>
+    <li>S = 12000 ÷ 389.5 ≈ <b>30.8 Mbps</b>，效率 30.8 ÷ 54 ≈ <b>57%</b>。</li>
+    <li>Payload 64 bytes：MPDU 92 bytes → 758 bits → 4 個符號 → 36 µs；總時間 34 + 67.5 + 36 + 16 + 24 = 177.5 µs；S = 512 ÷ 177.5 ≈ <b>2.9 Mbps（5.3%）</b>，對照 p.23「64 Byte Frames 最低」。</li>
+  </ol>
+  <h3><span class="sup">補充</span>RTS/CTS 的成本與 NAV 數值</h3>
+  <div class="callout tip"><b>T<sub>RTS/CTS</sub> = T<sub>RTS</sub> + SIFS + T<sub>CTS</sub> + SIFS</b>　<b>Duration<sub>RTS</sub> = 3 SIFS + T<sub>CTS</sub> + T<sub>DATA</sub> + T<sub>ACK</sub></b></div>
+  <ol>
+    <li>RTS 20 bytes → 182 bits → 1 個符號 → 24 µs；CTS 14 bytes → 24 µs。</li>
+    <li>額外 = 24 + 16 + 24 + 16 = <b>80 µs</b>；總時間 389.5 + 80 = 469.5 µs → S = 12000 ÷ 469.5 ≈ <b>25.6 Mbps</b>（少約 17%）。</li>
+    <li>RTS Duration = 16 + 24 + 16 + 248 + 16 + 24 = <b>344 µs</b>；CTS Duration = 344 − 16 − 24 = <b>304 µs</b>；DATA Duration = 16 + 24 = <b>40 µs</b>；ACK Duration = <b>0</b>。</li>
+  </ol>
+  <p><b>計算陷阱</b>：實際設備的控制訊框常用較低的基本速率送，RTS/CTS 成本會更高；上面為了和講義 p.22 一致都用 54 Mbps（可在第 9 節的計算器切換）。</p>
+  <h3>Supported Rates 編碼</h3>
+  <div class="callout tip"><b>octet = B × 128 + R ÷ 0.5 Mbps</b>（B：屬於 BSSBasicRateSet 時 = 1）</div>
+  <ol>
+    <li>1 Mbps 基本：128 + 2 = 130 = <b>X'82'</b>（1000 0010），與講義一致。</li>
+    <li>2 Mbps 非基本：0 + 4 = <b>X'04'</b>（0000 0100），與講義一致。</li>
+    <li>5.5 Mbps 基本：128 + 11 = 139 = <b>X'8B'</b>；54 Mbps 非基本：108 = <b>X'6C'</b>。</li>
+    <li><span class="sup">補充</span>14 種速率 = 11b 的 1、2、5.5、11（4）＋ OFDM 的 6、9、12、18、24、36、48、54（8）＋ PBCC 的 22、33（2）；Supported Rates 最多放 8 個，其餘 6 個放 Extended Supported Rates。</li>
+  </ol>
+  <h3>講義數字重算對照</h3>
+  <p>講義沒有附數值例題，以下把講義上的數字逐一重算：</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>講義數字</th><th>重算</th><th>對照</th></tr>
+    <tr><td>p.4：1 Mbps 基本 = X'82'</td><td>128 + 1 ÷ 0.5 = 130 = 0x82</td><td>一致</td></tr>
+    <tr><td>p.4：2 Mbps 非基本 = X'04'</td><td>2 ÷ 0.5 = 4</td><td>一致</td></tr>
+    <tr><td>p.4：a/b/g 共 14 種速率</td><td>4 + 8 + 2（PBCC 22、33）</td><td>一致（<span class="sup">補充</span>PBCC 兩種是推得）</td></tr>
+    <tr><td>p.17：7、15、31、63、127、255</td><td>2 × (CW + 1) − 1</td><td>一致</td></tr>
+    <tr><td>p.22：DIFS 34 µs</td><td>16 + 2 × 9 = 34</td><td>一致（OFDM）</td></tr>
+    <tr><td>p.22：ACK ≥ 24 µs</td><td>20 + 1 × 4 = 24（54 Mbps）</td><td>一致</td></tr>
+    <tr><td>p.22：MAC Header ≥ 30 octets</td><td>24 或 30（＋QoS 2）</td><td><span class="pill">待確認</span></td></tr>
+    <tr><td>p.23：23 µs Slot time</td><td>沒有 PHY 用 23 µs</td><td><span class="pill">待確認</span></td></tr>
+    <tr><td>p.25：RTS_Threshold 200 bytes</td><td>講義的範例值</td><td>—</td></tr>
+  </table></div>
+
+  <h2 id="confuse">16. 易混淆處</h2>
+  <div class="tbl-wrap"><table>
+    <tr><th>比較項目</th><th>A</th><th>B</th><th>判斷關鍵</th></tr>
+    <tr><td>DCF vs. PCF</td><td>競爭式，CSMA/CA，所有站台必備</td><td>無競爭，AP 輪詢，選用，建在 DCF 上</td><td>誰決定誰能送</td></tr>
+    <tr><td>SIFS vs. PIFS vs. DIFS</td><td>SIFS：ACK、CTS、輪詢回應</td><td>PIFS = SIFS + 1 slot：PC；DIFS = SIFS + 2 slots：一般資料</td><td>越短越優先</td></tr>
+    <tr><td>DIFS vs. EIFS</td><td>上一個訊框正確收到</td><td>上一個訊框有錯，多等一個 ACK 的時間</td><td>上一個訊框對不對</td></tr>
+    <tr><td>實體 vs. 虛擬載波感測</td><td>PHY 的 CCA，真的聽到能量</td><td>MAC 的 NAV，依 Duration 推算</td><td>任一個忙就當忙</td></tr>
+    <tr><td>CSMA/CD vs. CSMA/CA</td><td>邊送邊聽，碰撞後停送、退避</td><td>送前等 IFS＋退避，靠 ACK 判斷成功</td><td>能不能偵測碰撞</td></tr>
+    <tr><td>退避凍結 vs. 重抽</td><td>媒介忙：凍結，保留剩餘值</td><td>傳送失敗：CW 加倍、重抽新值</td><td>被打斷還是失敗</td></tr>
+    <tr><td>Short vs. Long retry count</td><td>訊框 ≤ RTS_Threshold</td><td>訊框 ＞ RTS_Threshold</td><td>和 RTS_Threshold 比</td></tr>
+    <tr><td>CTS_Timeout（T1）vs. ACK_Window（T3）</td><td>等 CTS 的時限</td><td>等 ACK 的時限</td><td>等的是哪個回應</td></tr>
+    <tr><td>NAV(RTS) vs. NAV(CTS)</td><td>聽得到傳送端的站台設定</td><td>聽得到接收端的站台（含 hidden node）設定</td><td>聽得到誰</td></tr>
+    <tr><td>RTS_Threshold vs. Fragmentation_Threshold</td><td>超過才加 RTS/CTS</td><td>超過就切段</td><td>預約媒介 vs. 切小塊</td></tr>
+    <tr><td>廣播 ToDS = 0 vs. ToDS = 1</td><td>基本存取，不用 RTS/CTS，沒 ACK</td><td>單播給 AP，照 RTS/CTS 規則，有 ACK</td><td>這一跳是不是單播</td></tr>
+    <tr><td>Supported vs. Extended Supported Rates</td><td>Element ID 1，最多 8 個速率</td><td>802.11g 新增，放剩下的速率</td><td>超過 8 個速率才用</td></tr>
+  </table></div>
+
+  <h2 id="review">17. 複習問題</h2>
+  <h3>觀念題</h3>
+  <details><summary>1. DCF 與 PCF 的關係是什麼？為什麼 PCF 能搶到媒介？</summary><div class="inner">DCF 是 802.11 的基本存取方法（CSMA/CA），所有站台都必須實作；PCF 是選用的無競爭存取方法，建在 DCF 之上，由 AP 上的點協調器輪詢。PC 只要等 PIFS（= SIFS + 1 slot），比 DCF 站台要等的 DIFS（= SIFS + 2 slots）短，所以媒介一空閒，PC 一定比一般站台先送，就能「搶」到媒介開始無競爭期。</div></details>
+  <details><summary>2. 為什麼 ACK 與 CTS 用 SIFS？如果改用 DIFS 會發生什麼事？</summary><div class="inner">SIFS 最短，回應的站台一定比任何正在等 DIFS 的站台先送，整個 Data–ACK（或 RTS–CTS–Data–ACK）交換不會被打斷。若改用 DIFS，別的站台可能退避剛好到 0、在 ACK 之前搶先傳送，ACK 被撞掉，傳送端以為失敗而重傳，浪費頻寬。</div></details>
+  <details><summary>3. 退避計時器為什麼在媒介忙時「凍結」而不是重新抽？</summary><div class="inner">凍結保留剩餘值，等越久的站台剩餘值越小，下一輪更容易先到 0，整體趨向先到先服務（FCFS）的公平；若每次都重抽，運氣不好的站台可能一直抽到大數字而餓死。可以在第 11 節的動畫看 B、D 的紅色剩餘值。</div></details>
+  <details><summary>4. Hidden node 是什麼？RTS/CTS 怎麼解決？為什麼廣播不能用 RTS/CTS？</summary><div class="inner">兩個 STA 都在 AP 範圍內但彼此聽不到，載波感測失效，同時送就在 AP 碰撞。RTS/CTS 讓接收端（AP）用 CTS 把 Duration 廣播給它範圍內的所有站台，hidden node 聽到 CTS 就設 NAV 不送。廣播有很多接收者，不可能讓所有人都回 CTS（會互撞），所以廣播／群播只用基本存取，也沒有 ACK。</div></details>
+  <details><summary>5. 什麼時候用 EIFS？為什麼要比 DIFS 長？</summary><div class="inner">站台收到錯誤的訊框後（PHY 指出媒介空閒），要等 EIFS 而不是 DIFS。因為這個訊框可能是別人的 Data，它的接收端收到正確的話會在 SIFS 後回 ACK；EIFS 多等了一個以 1 Mbps 送的 ACK 時間，避免撞掉那個 ACK。</div></details>
+  <h3>計算題</h3>
+  <details><summary>6. 802.11b（SIFS 10 µs、Slot 20 µs、CWmin 31、CWmax 1023），算 PIFS、DIFS、初次的平均與最大退避時間，以及第 3 次重傳時的 CW。</summary><div class="inner">PIFS = 10 + 20 = 30 µs；DIFS = 10 + 2 × 20 = 50 µs。初次平均退避 = 31 ÷ 2 × 20 = 310 µs；最大 = 31 × 20 = 620 µs。CW：31 → 63 → 127 → 255，第 3 次重傳時 CW = 255。</div></details>
+  <details><summary>7. 802.11a 54 Mbps、RTS/CTS 啟用、Data 248 µs、RTS／CTS／ACK 各 24 µs、SIFS 16 µs。算 RTS、CTS、Data 的 Duration。</summary><div class="inner">RTS = SIFS + CTS + SIFS + Data + SIFS + ACK = 16 + 24 + 16 + 248 + 16 + 24 = 344 µs。CTS = 344 − 16 − 24 = 304 µs。Data = SIFS + ACK = 16 + 24 = 40 µs。</div></details>
+  <details><summary>8. 18 Mbps 設為基本速率、48 Mbps 設為非基本，Supported Rates 裡各編成什麼？</summary><div class="inner">18 ÷ 0.5 = 36 = 0x24，基本速率 bit 7 設 1 → 0x24 + 0x80 = 0xA4。48 ÷ 0.5 = 96 = 0x60，非基本 → 0x60。可以用第 2 節的編碼器驗證。</div></details>
+  <h3>情境應用題</h3>
+  <details><summary>9. 大型會議廳裡一台 AP 服務很多筆電，彼此距離遠、常常互相聽不到，使用者抱怨很慢。RTS_Threshold 該怎麼調？</summary><div class="inner">互相聽不到代表 hidden node 多，碰撞會發生在長的 Data 上，代價大。把 RTS_Threshold 調低（例如講義的 200 bytes），讓較長的訊框先 RTS/CTS：碰撞只發生在 20 bytes 的 RTS，損失小，而且 CTS 讓 hidden node 設 NAV。短訊框仍不用 RTS/CTS，避免額外負擔（講義 p.26：Mixed 的效率最好）。</div></details>
+  <details><summary>10. 11g AP 的 BSS 裡加入一台舊的 11b 印表機，AP 的 ERP 資訊元素會怎麼變？11g 筆電的傳送方式會怎麼變？</summary><div class="inner">AP 把 NonERP_Present（b0）設 1，通常也把 Use_Protection（b1）設 1。11g 筆電之後用 ERP-OFDM 速率送資料前，要先用保護機制：用 11b 聽得懂的 DSSS 速率送 CTS（CTS-to-self）或 RTS/CTS，讓印表機設 NAV，再用 OFDM 送資料。吞吐量會因此下降。</div></details>
+
+  <h2 id="recap">18. 一頁速記</h2>
+  <ol>
+    <li>資訊元素 = Element ID（1）＋ Length（1）＋ Information；SSID 0、Rates 1、FH 2、DS 3、CF 4、TIM 5、IBSS 6、Country 7、Challenge 16；SSID 長度 0 = 廣播。</li>
+    <li>Supported Rates 單位 500 kbps，基本速率 bit 7 = 1：1 Mbps = X'82'、2 Mbps（非基本）= X'04'；11g 加 Extended Supported Rates。</li>
+    <li>ERP：b0 NonERP_Present、b1 Use_Protection；Non-ERP = 11b；保護 = 先送 CTS 設 NAV。</li>
+    <li>DCF = CSMA/CA，所有站台必備；PCF 建在 DCF 上、AP 輪詢、用 PIFS；superframe = CFP + CP。</li>
+    <li>SIFS（ACK、CTS）＜ PIFS = SIFS + slot ＜ DIFS = SIFS + 2 slot ＜ EIFS。</li>
+    <li>EIFS = SIFS + 8 × ACK ÷ 1 Mbps + Preamble + PLCP Header + DIFS（11b：364 µs）。</li>
+    <li>Backoff = Random[0, CW] × slot；忙時凍結、空閒才倒數；失敗 CW 加倍（15 → … → 1023；DSSS 31、IR 63 起跳）。</li>
+    <li>單播一定回 ACK（SIFS 後）；沒 ACK = 失敗；短／長 retry count 以 RTS_Threshold 區分。</li>
+    <li>RTS/CTS：單播且超過 RTS_Threshold 才用；Duration → NAV；NAV 或 CCA 忙就延後；解決 hidden node。</li>
+    <li>分段：同 Seq、Frag 號遞增、SIFS 連發；Data／ACK 的 Duration 涵蓋下一段＋ACK；廣播 ToDS = 0 無 RTS/CTS、無 ACK、無 MAC 復原。</li>
+  </ol>
+
+  <h2 id="glossary">19. 專有名詞對照</h2>
+  <details><summary>展開 36 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
+    <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
+    <tr><td>資訊元素</td><td>Information Element（IE）</td><td>管理訊框中「ID＋長度＋內容」的可變欄位</td></tr>
+    <tr><td>服務集識別碼</td><td>Service Set Identifier（SSID）</td><td>ESS 或 IBSS 的名稱，0–32 octets</td></tr>
+    <tr><td>基本速率組</td><td>BSSBasicRateSet</td><td>BSS 內所有站台都必須支援的速率</td></tr>
+    <tr><td>延伸支援速率</td><td>Extended Supported Rates</td><td>802.11g 新增，放超過 8 個的速率</td></tr>
+    <tr><td>流量指示圖</td><td>Traffic Indication Map（TIM）</td><td>Beacon 中標示哪些省電站台有緩衝資料</td></tr>
+    <tr><td>傳送流量指示圖</td><td>Delivery TIM（DTIM）</td><td><span class="sup">補充</span>每 DTIM Period 個 Beacon 一次，之後送出緩衝的廣播／群播</td></tr>
+    <tr><td>延伸速率 PHY</td><td>Extended Rate PHY（ERP）</td><td>802.11g 的 PHY；Non-ERP 指 802.11b</td></tr>
+    <tr><td>保護機制</td><td>Protection mechanism</td><td>先用舊站台聽得懂的 CTS 設 NAV，再送 OFDM 訊框</td></tr>
+    <tr><td>分散式協調功能</td><td>Distributed Coordination Function（DCF）</td><td>802.11 的基本存取方法，即 CSMA/CA</td></tr>
+    <tr><td>點協調功能</td><td>Point Coordination Function（PCF）</td><td>選用的無競爭存取方法，AP 輪詢</td></tr>
+    <tr><td>點協調器</td><td>Point Coordinator（PC）</td><td>執行 PCF 的輪詢主控（polling master）</td></tr>
+    <tr><td>超級訊框</td><td>Superframe</td><td>無競爭期加競爭期組成的週期</td></tr>
+    <tr><td>載波感測多重存取／碰撞避免</td><td>CSMA/CA</td><td>送前感測＋IFS＋隨機退避，靠 ACK 確認</td></tr>
+    <tr><td>空閒頻道評估</td><td>Clear Channel Assessment（CCA）</td><td>PHY 的實體載波感測</td></tr>
+    <tr><td>網路配置向量</td><td>Network Allocation Vector（NAV）</td><td>MAC 的虛擬載波感測計時器，由 Duration 設定</td></tr>
+    <tr><td>訊框間隔</td><td>Inter-Frame Space（IFS）</td><td>媒介空閒後必須等的時間，決定優先權</td></tr>
+    <tr><td>短訊框間隔</td><td>Short IFS（SIFS）</td><td>最短，給 ACK、CTS、輪詢回應</td></tr>
+    <tr><td>PCF 訊框間隔</td><td>PCF IFS（PIFS）</td><td>SIFS + 1 slot，給 PC</td></tr>
+    <tr><td>DCF 訊框間隔</td><td>DCF IFS（DIFS）</td><td>SIFS + 2 slots，給一般資料</td></tr>
+    <tr><td>延伸訊框間隔</td><td>Extended IFS（EIFS）</td><td>收到錯誤訊框後使用，比 DIFS 長</td></tr>
+    <tr><td>仲裁訊框間隔</td><td>Arbitrated IFS（AIFS）</td><td>802.11e 依存取類別區分的 IFS</td></tr>
+    <tr><td>縮減訊框間隔</td><td>Reduced IFS（RIFS）</td><td>802.11n 連續傳送時使用</td></tr>
+    <tr><td>時槽</td><td>Slot time</td><td>退避倒數的單位時間</td></tr>
+    <tr><td>競爭視窗</td><td>Contention Window（CW）</td><td>退避亂數的上限，CW<sub>min</sub>～CW<sub>max</sub></td></tr>
+    <tr><td>二元指數退避</td><td>Binary Exponential Backoff</td><td>每失敗一次 CW 約加倍</td></tr>
+    <tr><td>正向確認</td><td>Positive Acknowledgment（ACK）</td><td>接收端成功收到後主動回覆</td></tr>
+    <tr><td>隱藏節點</td><td>Hidden Node</td><td>彼此聽不到、但共用同一個接收端的站台</td></tr>
+    <tr><td>要求傳送／允許傳送</td><td>Request To Send / Clear To Send（RTS / CTS）</td><td>預約媒介的控制訊框</td></tr>
+    <tr><td>RTS 門檻</td><td>RTS_Threshold</td><td>訊框超過此長度才用 RTS/CTS</td></tr>
+    <tr><td>分段門檻</td><td>Fragmentation_Threshold（aFragmentationThreshold）</td><td>超過此長度就切段</td></tr>
+    <tr><td>短／長重傳計數</td><td>Short / Long retry count</td><td>以 RTS_Threshold 區分的兩個重傳計數器</td></tr>
+    <tr><td>CTS 逾時</td><td>CTS_Timeout（T1）</td><td>等 CTS 的時限</td></tr>
+    <tr><td>ACK 視窗</td><td>ACK_Window（T3）</td><td>等 ACK 的時限</td></tr>
+    <tr><td>駐留時間</td><td>Dwell time</td><td>FHSS 停在一個頻率的時間</td></tr>
+    <tr><td>接收計時器</td><td>Receive Timer（aMaxReceiveLifetime）</td><td>重組時等分段的時限，逾時全丟</td></tr>
+    <tr><td>先到先服務</td><td>First Come First Served（FCFS）</td><td>退避凍結帶來的公平傾向</td></tr>
+  </table></div></div></details>
+
+  <h2 id="check">20. 考前自我檢查</h2>
+  <ul class="checklist">
+    <li><details><summary>寫出資訊元素的格式，背出 SSID、Supported Rates、TIM 等的 Element ID</summary><div class="inner">Element ID（1）＋ Length（1）＋ Information；SSID 0、Supported Rates 1、FH 2、DS 3、CF 4、TIM 5、IBSS 6、Country 7、Legacy Indication 8、Challenge Text 16。</div></details></li>
+    <li><details><summary>把某個速率編成 Supported Rates 的 octet</summary><div class="inner">速率 ÷ 0.5 Mbps 放低 7 bits；屬於 BSSBasicRateSet 時再加 0x80。例：1 Mbps 基本 = 0x82。</div></details></li>
+    <li><details><summary>說明 ERP 的 b0、b1 與保護機制</summary><div class="inner">b0 NonERP_Present：BSS 內有沒有 11b 站台；b1 Use_Protection：用 OFDM 前要不要先保護。保護 = 先用 CTS 設所有站台的 NAV。</div></details></li>
+    <li><details><summary>畫出 DCF／PCF 架構圖並說明 superframe</summary><div class="inner">PHY 上是 DCF（競爭服務，PCF 的基礎），DCF 上是 PCF（無競爭服務）；superframe 開頭是 PCF 的無競爭期，接著是 DCF 的競爭期。</div></details></li>
+    <li><details><summary>列出 DCF 的七項功能</summary><div class="inner">IFS、隨機退避、正向 ACK、實體載波感測、虛擬載波感測、選用 RTS/CTS、選用分段。</div></details></li>
+    <li><details><summary>說出 SIFS、PIFS、DIFS、EIFS 各給誰用，並算出 PIFS、DIFS</summary><div class="inner">SIFS：ACK、CTS、輪詢回應；PIFS = SIFS + slot：PC；DIFS = SIFS + 2 slots：一般資料；EIFS：收錯後。11b：30、50 µs；11a：25、34 µs。</div></details></li>
+    <li><details><summary>寫出 EIFS 公式並算出 11b 的 364 µs</summary><div class="inner">10 + 8 × 14（1 Mbps）+ 144 + 48 + 50 = 10 + 112 + 192 + 50 = 364 µs。</div></details></li>
+    <li><details><summary>寫出 Backoff 公式、CW 加倍規則與各 PHY 的範圍</summary><div class="inner">Random[0, CW] × slot；CW<sub>i</sub> = min(2<sup>i</sup>(CW<sub>min</sub>+1) − 1, CW<sub>max</sub>)；FHSS 15、DSSS 31、IR 63、ERP（＞20 Mb/s）15、11n 15，CW<sub>max</sub> 都是 1023。</div></details></li>
+    <li><details><summary>畫出 Src／Dest／Other 的 CSMA/CA＋ACK 時序</summary><div class="inner">Src：DIFS → Data；Dest：SIFS → Ack；Other：Data＋ACK 期間 Defer Access，之後 DIFS → Contention Window（Backoff after Defer）→ Next MPDU。</div></details></li>
+    <li><details><summary>說明退避計時器何時凍結、何時恢復，以及為什麼公平</summary><div class="inner">媒介忙時凍結；媒介空閒 DIFS 後恢復倒數。剩餘值保留，等越久越先到 0，趨向 FCFS；剛送完的站台也要退避。</div></details></li>
+    <li><details><summary>解釋 hidden node，畫出 RTS／CTS／Data／ACK 與 NAV(RTS)、NAV(CTS)</summary><div class="inner">兩站彼此聽不到但都聽得到 AP。Src：DIFS → RTS；Dest：SIFS → CTS；Src：SIFS → Data；Dest：SIFS → Ack。Other 從 RTS 設 NAV(RTS)、從 CTS 設 NAV(CTS)，到 ACK 結束後再 DIFS、退避。</div></details></li>
+    <li><details><summary>算出 RTS、CTS、Data 的 Duration 值</summary><div class="inner">RTS = 3 SIFS + CTS + Data + ACK；CTS = RTS 的值 − SIFS − CTS；Data = SIFS + ACK；ACK = 0。</div></details></li>
+    <li><details><summary>說明 short／long retry count、CTS_Timeout、ACK_Window</summary><div class="inner">≤ RTS_Threshold 用 short、＞ 用 long，獨立計數；T1 內沒 CTS → 重送 RTS 且 CW 加倍；T3 內沒 ACK → 同樣退避重傳；到 limit 就丟棄。</div></details></li>
+    <li><details><summary>說明分段規則、RTS/CTS＋分段時 NAV 的延伸，以及 ACK 遺失時誰可以存取頻道</summary><div class="inner">同 Seq、Frag 號從 0 遞增、除最後一段等長、不超過 aFragmentationThreshold（WEP 除外）、SIFS 連發；Data／ACK 的 Duration 涵蓋下一段＋ACK。ACK 遺失：只聽得到目的端的站台馬上可存取；聽得到來源端的站台等 Fragment 的 NAV 到期；來源端也要等到期再競爭。</div></details></li>
+    <li><details><summary>說出廣播／群播在 ToDS = 0 與 ToDS = 1 時的差異</summary><div class="inner">ToDS = 0：基本存取、不用 RTS/CTS、沒 ACK、沒 MAC 復原；ToDS = 1：送給 AP 的單播，照 RTS/CTS 規則、有 ACK。發送者自己也會收到，要濾掉來源是自己的。</div></details></li>
+  </ul>
+</main>
+<aside class="toc"></aside>
+</div>
+<script src="assets/js/ch2-4.js"></script>
+</body>
+</html>
