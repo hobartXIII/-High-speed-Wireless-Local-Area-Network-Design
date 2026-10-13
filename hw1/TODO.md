@@ -1,6 +1,8 @@
 # 作業一：待辦事項
 
-題目的「系統參數」1–8 都要在報告中有明確數值並實際用到；只有 STA 數、Arrival Rate、RTS/CTS 是要掃的變數。~~目前 SIFS/DIFS、PLCP、CW<sub>min</sub> 只靠 ns-3 預設，報告也沒寫出來。~~ 已處理（2026-10-13）：`hw1.cc` 明確設定並可用 `--printParams=1` 印出，報告第 2 節補齊 8 項參數。
+題目的「系統參數」1–8 都要在報告中有明確數值並實際用到；只有 STA 數、Arrival Rate、RTS/CTS 是要掃的變數。~~目前 SIFS/DIFS、PLCP、CW<sub>min</sub> 只靠 ns-3 預設，報告也沒寫出來。~~ 已處理（2026-10-13）：`hw1.cc` 明確設定並可用 `--printParams=1` 印出，報告補齊 8 項參數（現在是第 1 章表 1）。
+
+報告以 Word 為準（2026-10-14 起）：`report/build_report.js` 產生 `HW1_report.docx`，`report/to_pdf.ps1` 轉出 `HW1_report.pdf`。下面提到的「Claude 文件」報告已停用，不再更新。
 
 - [x] **確認實際參數值**：在 `hw1.cc` 明確設定或印出 SIFS、slot、AIFSN（DIFS）、CW<sub>min</sub>/CW<sub>max</sub>、PLCP preamble 長度，核對 `hw1-spec.md` 第 2 節的數值（SIFS 16 µs、DIFS 43 µs、PLCP 36 µs、CW<sub>min</sub> 15）。需要 WSL 的 ns-3 環境。
 - [x] **報告參數表補齊題目 8 項**：在 Claude 文件「高速網路 作業一：802.11n Throughput 分析」第 2 節，補上 SIFS/DIFS、PLCP Length、CW<sub>min</sub> 的數值，並對應題目的編號。
@@ -14,6 +16,7 @@
   4. [x] 更新 Claude 文件報告的參數表（DIFS、PLCP 註明與講義的差別）與結果數字、`HW1_report.pdf`（跟下一項排版一起做）。
 - [x] **報告排版改成「結論摘要 → 參數 → 設計 → 結果與分析」**（2026-10-13 討論）：Claude 文件報告最前面放 3–5 行結論（三個變數的影響與關鍵數字）；參數表與實驗設計精簡；結果依題目要回答的現象分小節，每節「現象 → 數據 → 用參數或機制解釋」，解釋要回頭用到第 2 節的參數（例如 DIFS、CW<sub>min</sub>、RTS/CTS 的 T<sub>c</sub>）。重跑完數據再一起改。
 - [x] **報告名詞說明**：報告用到的英文縮寫首次出現時寫全名或中文，意思可參考 `glossary.md`。
+- [x] **報告改依 PPT 範圍、改用 Word**（2026-10-14）：取代上面兩項的結構，改成四章「1 實驗目的與參數設定 → 2 實驗結果（圖 1、表 2 只有 Throughput）→ 3 結果分析與討論（3.1 負載與 STA 數量、3.2 RTS/CTS）→ 4 結論」，3 頁，作者邱勇嘉。PPT 沒要求的內容（遺失率、hidden terminal、A-MPDU 實測長度、CTS 逾時計算、PLCP 與講義的比較）移到 `supplement.md` 7.6；專有名詞只放 `glossary.md`，報告不另做名詞表。
 - [ ] **重跑後更新補充的理論值**：`supplement/theory.py` 的 `AIFSN` 改成 2，用 `supplement/results_all_rates.csv`、`results_noampdu.csv` 的新數據（也要用 `--aifsn=2` 重跑）更新 `supplement.md` 3.3 節的表，3.4 節改成實測值。補充不在繳交範圍，有空再做。
 - [x] **檢查 `hw1-ns3.html` 第 7 節**：在瀏覽器確認名詞表能展開、右側目錄有出現第 7 節、手機寬度表格不會溢出。（2026-10-13 已確認；順便修正第 1 節長網址在手機寬度撐出 28px 橫向捲動，`style.css` 的 `main` 加 `overflow-wrap: break-word`）
 - [x] **決定 `ch2-4-80211-dcf.html` 第 451 行要不要還原**：那句講義筆記的補充原本寫「作業一的 DIFS 43 µs 其實是 11e 的 AIFS」，2026-10-13 改成「作業一依講義用 DIFS 34 µs」。（2026-10-13 決定維持現在的寫法）
