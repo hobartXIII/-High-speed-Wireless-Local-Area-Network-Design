@@ -1,0 +1,11 @@
+{
+  "name": "hw1-report",
+  "private": true,
+  "description": "Build HW1_report.docx",
+  "scripts": {
+    "build": "node build_report.js"
+  },
+  "dependencies": {
+    "docx": "9.10.0"
+  }
+}
