@@ -62,7 +62,7 @@ const CW = (s) => ["CW", { t: s, sub: true }];
 const TC = ["T", { t: "c", sub: true }];
 
 const paramTable = table([560, 2700, 6152], [
-  ["#", "題目參數", "我的設定"],
+  ["#", "題目參數", "設定"],
   ["1", "Channel Bandwidth", "20 MHz（5 GHz，通道 36）"],
   ["2", "SIFS / DIFS", "SIFS = 16 µs，slot = 9 µs，DIFS = SIFS + 2 × slot = 34 µs（題目沒給數值，照講義 p.22）"],
   ["2", "PLCP Length", "36 µs（802.11n HT-mixed 前導：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4 µs）"],
@@ -117,11 +117,12 @@ const doc = new Document({
 
       h1("一、做了什麼"),
       ...lines(
-        "這次用 ns-3.49 模擬一個 802.11n 的無線網路。",
-        "想看三件事會怎麼影響 Throughput：",
-        "STA（連到 AP 的無線裝置）有幾台、每台每秒產生多少封包（Arrival Rate，λ），還有 RTS/CTS 開或關。",
+        "這次作業要在 IEEE 802.11n Wi-Fi 網路中，觀察不同負載與競爭程度下的 Throughput。",
+        "主要調整三個參數：STA 數（5、20）、每個 STA 的 Arrival Rate λ（200、800 packets/s），以及 RTS/CTS（開、關）。",
+        "最後畫出 Throughput vs. Arrival Rate，依 STA 數分組比較，並說明觀察到的變化與現象。",
+        "模擬工具是 ns-3.49。",
       ),
-      ...lines("題目給的 8 個系統參數，我的設定如表 1。"),
+      ...lines("題目的 8 個系統參數，設定如表 1。"),
       caption("表 1　系統參數"),
       paramTable,
       new Paragraph({ spacing: { after: 60 } }),
