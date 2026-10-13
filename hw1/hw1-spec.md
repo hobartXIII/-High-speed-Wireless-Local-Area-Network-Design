@@ -3,6 +3,7 @@
 這份文件整理作業一的完整題目、實驗設計，以及重現步驟，方便後續討論和重跑。
 
 - 程式碼、安裝步驟與畫圖程式的詳細說明見 [`ns3-hw1.md`](ns3-hw1.md)
+- 英文與縮寫名詞的意思見 [`glossary.md`](glossary.md)
 - 結果分析報告：Claude 文件「高速網路 作業一：802.11n Throughput 分析」
 
 ---
@@ -39,8 +40,8 @@
 | # | 題目參數 | 本實驗設定 | 來源 |
 |---|---|---|---|
 | 1 | Channel Bandwidth | 20 MHz（5 GHz，通道 36） | `hw1.cc`：`ChannelSettings = {36, 20, BAND_5GHZ, 0}` |
-| 2 | SIFS / DIFS | SIFS = 16 µs，slot = 9 µs，DIFS（BE 的 AIFS，AIFSN = 3）= 16 + 3 × 9 = 43 µs | `hw1.cc`：`--aifsn=3`（AP 與 STA 都設定）；SIFS、slot 為 802.11n 5 GHz 標準值 |
-| 2 | PLCP Length | HT-mixed preamble，1 條空間串流：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4 = 36 µs | 由 HtMcs7、1 條空間串流決定 |
+| 2 | SIFS / DIFS | SIFS = 16 µs，slot = 9 µs，DIFS = SIFS + 2 × slot = 16 + 2 × 9 = 34 µs | 題目 PPT 未給數值，依講義 p.22（SIFS 16、Slot 9、DIFS 34 µs）與 p.14（DIFS = SIFS + 2 slots）；`hw1.cc`：`--aifsn=2`（AP 與 STA 都設定） |
+| 2 | PLCP Length | HT-mixed preamble，1 條空間串流：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4 = 36 µs | 由 HtMcs7、1 條空間串流決定。講義 p.22 的 PLCP Preamble 16 µs 只含 L-STF + L-LTF（802.11a）；題目指定 802.11n，須再加 L-SIG 與 HT 欄位，所以是 36 µs |
 | 3 | MCS | 資料：HtMcs7（64-QAM 5/6，1 條空間串流，長 GI，65 Mbps）；RTS：HtMcs0；ACK、CTS：OFDM 6 Mbps；Block Ack：OFDM 24 Mbps | `hw1.cc`：`ConstantRateWifiManager`，可用 `--mcs` 改 |
 | 4 | CW<sub>min</sub> | 15（CW<sub>max</sub> = 1023，EDCA Best Effort） | `hw1.cc`：`--cwMin=15 --cwMax=1023`（AP 與 STA 都設定） |
 | 5 | Data Length L | UDP payload 1472 B（IP 封包 1500 B） | `hw1.cc`：`--pktSize`，預設 1472 |
@@ -48,7 +49,9 @@
 | 7 | Arrival Rate λ | **200、800 packets/s**（變數） | `--rate` |
 | 8 | RTS/CTS | **關：threshold = 999999；開：threshold = 0**（變數） | `--rts=0/1` |
 
-已確認：`hw1 --printParams=1` 在 association 完成後印出 AP 與 STA 實際生效的值，和上表一致：
+> **待重跑確認（2026-10-13）**：DIFS 改依講義用 AIFSN = 2（34 µs）。下面是改之前（AIFSN = 3）印出的結果，重跑後 `AIFSN=2 DIFS(AIFS_BE)=34us`，其他值應不變。
+
+`hw1 --printParams=1` 在 association 完成後印出 AP 與 STA 實際生效的值：
 
 ```text
 AP  : SIFS=16us slot=9us PIFS=25us AIFSN=3 DIFS(AIFS_BE)=43us CWmin=15 CWmax=1023 width=20MHz
@@ -61,13 +64,13 @@ PLCP preamble+header (HT-MF, 1 SS) = 36us
   CTL_BACKRESP: 32 B (1 MPDU), OfdmRate24Mbps, 32us
 ```
 
-這些值和 ns-3 原本的預設相同，所以明確設定之後，同一組 seed 跑出的結果和 `results.csv` 完全一樣（抽查），原始數據不需要重跑。
+AIFSN = 2 和 ns-3 預設（BE 為 3）不同，`results.csv`、圖與下方「驗證重現結果」表都要用新設定重跑更新。
 
 ### 題目沒規定、由我們自行決定的設定
 
 | 項目 | 設定 | 理由 |
 |---|---|---|
-| 頻段 | 5 GHz | 避開 2.4 GHz 的干擾，slot 也較短（9 µs） |
+| 頻段 | 5 GHz | 講義 p.22 的時序（SIFS 16 µs、slot 9 µs）是 OFDM 5 GHz 的數值；模擬中沒有其他干擾源，頻道號碼不影響結果 |
 | 速率控制 | 固定 MCS（`ConstantRateWifiManager`） | 排除速率調整演算法的影響 |
 | 聚合 | A-MPDU 開（ns-3 HT 預設） | 802.11n 的預設行為 |
 | 拓樸 | AP 在原點，STA 平均分布在半徑 5 m 的圓上 | 所有節點彼此聽得到，沒有 hidden terminal |
@@ -172,7 +175,7 @@ python3 plot.py results.csv throughput_vs_rate.png
 | `--pktSize` | 1472 | UDP payload（bytes） |
 | `--mcs` | HtMcs7 | 資料速率 |
 | `--cwMin`、`--cwMax` | 15、1023 | BE 的競爭視窗（題目參數 4） |
-| `--aifsn` | 3 | BE 的 AIFSN，DIFS = SIFS + aifsn × slot（題目參數 2） |
+| `--aifsn` | 2 | BE 的 AIFSN，DIFS = SIFS + aifsn × slot（題目參數 2） |
 | `--printParams` | 0 | 1 = 印出實際生效的 SIFS、slot、DIFS、CW、PLCP 與各訊框空中時間 |
 | `--simTime` | 20 | 模擬結束時間（s） |
 | `--run` | 1 | RNG run 編號 |
@@ -182,7 +185,9 @@ python3 plot.py results.csv throughput_vs_rate.png
 
 ### 驗證重現結果
 
-重跑後，3 個 seed 的平均應與下表一致（差距在 1 Mbps 內）：
+重跑後，3 個 seed 的平均應與下表一致（差距在 1 Mbps 內）。
+
+> 下表為 AIFSN = 3（DIFS 43 µs）時的舊數據，改用 AIFSN = 2 後需重跑更新。
 
 | STA | λ | RTS/CTS | 負載（Mbps） | Throughput（Mbps） | 遺失率 |
 |---|---|---|---|---|---|

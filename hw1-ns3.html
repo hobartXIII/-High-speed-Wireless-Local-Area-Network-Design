@@ -176,7 +176,7 @@ cd ~/ns-3-dev
     --mcs:          HT MCS (e.g. HtMcs7) [HtMcs7]
     --cwMin:        Minimum contention window (BE) [15]
     --cwMax:        Maximum contention window (BE) [1023]
-    --aifsn:        AIFSN of BE (DIFS = SIFS + aifsn * slot) [3]
+    --aifsn:        AIFSN of BE (DIFS = SIFS + aifsn * slot) [2]
     --printParams:  Print effective PHY/MAC parameters and frame airtimes [false]
     --simTime:      Simulation end time (s) [20]
     --run:          RNG run number [1]
@@ -242,7 +242,7 @@ phy.EnablePcap("hw1", apDev.Get(0));</code></pre>
     <tr><td>Throughput</td><td>AP 上 <code>PacketSink</code> 在 2–20 s 收到的 bytes × 8 ÷ 18 s</td></tr>
     <tr><td>多次取平均</td><td><code>--run=1,2,3</code></td></tr>
   </table></div>
-  <p>DCF 參數在程式中明確設定（<code>--cwMin=15 --cwMax=1023 --aifsn=3</code>），加 <code>--printParams=1</code> 會印出實際生效的值：SIFS 16 µs、slot 9 µs、DIFS 43 µs、CW<sub>min</sub> 15、PLCP 36 µs，以及每種訊框的空中時間（例如 1538 B 資料訊框 228 µs）。</p>
+  <p>DCF 參數在程式中明確設定（<code>--cwMin=15 --cwMax=1023 --aifsn=2</code>），加 <code>--printParams=1</code> 會印出實際生效的值：SIFS 16 µs、slot 9 µs、DIFS 34 µs（依講義 p.22）、CW<sub>min</sub> 15、PLCP 36 µs，以及每種訊框的空中時間（例如 1538 B 資料訊框 228 µs）。</p>
   <h3>5.2 執行流程</h3>
   <pre><code># 1. 放檔案
 cp hw1.cc ~/ns-3-dev/scratch/
@@ -272,6 +272,191 @@ python3 plot.py results.csv throughput_vs_rate.png</code></pre>
     <tr><td>改了 <code>hw1.cc</code> 結果沒變</td><td>改的是 repo 裡的檔案，要再 <code>cp</code> 到 <code>~/ns-3-dev/scratch/</code> 並重新 build。</td></tr>
     <tr><td>Throughput 是 0</td><td>STA 還沒 associate 就開始送，或 sink 的 port 不對。作業一在 1 s 才開始送、2 s 才開始量。</td></tr>
   </table></div>
+
+  <h2 id="s7">7. 專有名詞對照</h2>
+  <p>作業一用到的英文與縮寫名詞（與 <code>hw1/glossary.md</code> 相同）。「講義」欄標示哪一章的筆記有提到；「—」表示講義筆記沒有。</p>
+  <details><summary>展開 156 個名詞</summary><div class="inner">
+  <h3>802.11 架構與 MAC</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>名詞</th><th>英文全名</th><th>中文</th><th>意思</th><th>講義</th></tr>
+    <tr><td>IEEE 802.11</td><td>Institute of Electrical and Electronics Engineers 802.11</td><td>無線區域網路標準</td><td>Wi-Fi 的標準；a/b/g/n/ac/ax 是各版修訂</td><td>2-1</td></tr>
+    <tr><td>802.11n</td><td>—</td><td>—</td><td>2009 年的修訂，又稱 Wi-Fi 4；加入 MIMO、40 MHz、A-MPDU，PHY 叫 HT</td><td>2-1</td></tr>
+    <tr><td>802.11e</td><td>—</td><td>—</td><td>2005 年的 QoS 修訂，加入 EDCA 與 AIFS</td><td>2-4</td></tr>
+    <tr><td>Wi-Fi</td><td>—</td><td>—</td><td>Wi-Fi Alliance 的認證商標，一般用來指 802.11 網路</td><td>2-1</td></tr>
+    <tr><td>AP</td><td>Access Point</td><td>存取點</td><td>BSS 的中心，STA 透過它連到其他網路；本作業只當接收端</td><td>2-1</td></tr>
+    <tr><td>STA</td><td>Station</td><td>站台</td><td>有 802.11 MAC 與 PHY 的裝置；本作業的 STA 都往 AP 送資料</td><td>2-1</td></tr>
+    <tr><td>BSS</td><td>Basic Service Set</td><td>基本服務集</td><td>一個 AP 和連上它的 STA</td><td>2-1</td></tr>
+    <tr><td>Infrastructure</td><td>Infrastructure mode</td><td>基礎架構模式</td><td>透過 AP 通訊的模式（相對於 ad hoc 直接互傳）</td><td>2-1</td></tr>
+    <tr><td>ad hoc</td><td>—</td><td>隨意網路</td><td>STA 之間不經 AP 直接通訊</td><td>2-1</td></tr>
+    <tr><td>mesh</td><td>—</td><td>網狀網路</td><td>多個節點互相轉送封包的網路</td><td>—</td></tr>
+    <tr><td>association</td><td>—</td><td>連結</td><td>STA 加入 AP 的程序；完成前不能傳資料，所以模擬 1 s 才開始送</td><td>2-2</td></tr>
+    <tr><td>MAC</td><td>Medium Access Control</td><td>媒介存取控制</td><td>決定誰、何時可以用通道的子層</td><td>2-2</td></tr>
+    <tr><td>PHY</td><td>Physical layer</td><td>實體層</td><td>調變、編碼、前導碼、無線電收發</td><td>2-1</td></tr>
+    <tr><td>QoS</td><td>Quality of Service</td><td>服務品質</td><td>依流量類別給不同優先權</td><td>2-4</td></tr>
+    <tr><td>DCF</td><td>Distributed Coordination Function</td><td>分散式協調功能</td><td>802.11 基本的存取方法，即 CSMA/CA</td><td>2-4</td></tr>
+    <tr><td>CSMA/CA</td><td>Carrier Sense Multiple Access with Collision Avoidance</td><td>載波感測多重存取／碰撞避免</td><td>先聽通道、閒置 DIFS 後隨機退避再送，靠 ACK 確認</td><td>2-4</td></tr>
+    <tr><td>EDCA</td><td>Enhanced Distributed Channel Access</td><td>增強型分散式通道存取</td><td>802.11e 的 DCF 加強版：分 4 種存取類別，各用不同 AIFS 與 CW</td><td>2-1、2-2</td></tr>
+    <tr><td>AC</td><td>Access Category</td><td>存取類別</td><td>EDCA 的 4 種流量類別：BK、BE、VI、VO</td><td>—</td></tr>
+    <tr><td>BE</td><td>Best Effort</td><td>盡力而為</td><td>EDCA 一般資料的類別，ns-3 預設 AIFSN = 3；本作業的流量都走 BE</td><td>—</td></tr>
+    <tr><td>IFS</td><td>Interframe Space</td><td>訊框間隔</td><td>兩個訊框之間必須空出的時間，越短越優先</td><td>2-4</td></tr>
+    <tr><td>SIFS</td><td>Short IFS</td><td>短訊框間隔</td><td>最短的間隔，給 ACK、CTS、Block Ack；本作業 16 µs</td><td>2-4</td></tr>
+    <tr><td>PIFS</td><td>PCF IFS</td><td>PCF 訊框間隔</td><td>SIFS + 1 slot = 25 µs，給 PCF 的 AP 搶通道</td><td>2-4</td></tr>
+    <tr><td>DIFS</td><td>DCF IFS</td><td>DCF 訊框間隔</td><td>SIFS + 2 slot；本作業依講義 p.22 為 34 µs</td><td>2-4</td></tr>
+    <tr><td>AIFS</td><td>Arbitration IFS</td><td>仲裁訊框間隔</td><td>EDCA 用的 DIFS：SIFS + AIFSN × slot</td><td>2-4</td></tr>
+    <tr><td>AIFSN</td><td>AIFS Number</td><td>AIFS 的 slot 數</td><td>AIFS 公式裡的 slot 個數；AIFSN = 2 時 AIFS 就等於 DIFS</td><td>2-4</td></tr>
+    <tr><td>EIFS</td><td>Extended IFS</td><td>延伸訊框間隔</td><td>收到錯誤訊框後改等的較長間隔，避免打斷別人的 ACK</td><td>2-4</td></tr>
+    <tr><td>PCF</td><td>Point Coordination Function</td><td>點協調功能</td><td>AP 輪詢的無競爭存取，本作業沒用到</td><td>2-4</td></tr>
+    <tr><td>slot / slot time</td><td>—</td><td>時槽</td><td>退避倒數的時間單位；本作業 9 µs</td><td>2-4</td></tr>
+    <tr><td>backoff</td><td>—</td><td>退避</td><td>從 [0, CW] 隨機抽一個數 × slot 倒數，倒數到 0 才送</td><td>2-4</td></tr>
+    <tr><td>CW</td><td>Contention Window</td><td>競爭視窗</td><td>退避亂數的上限；每次失敗加倍</td><td>2-4</td></tr>
+    <tr><td>CW<sub>min</sub> / CW<sub>max</sub></td><td>Minimum / Maximum CW</td><td>最小／最大競爭視窗</td><td>CW 的起始值與上限；本作業 15 與 1023</td><td>2-4</td></tr>
+    <tr><td>ACK</td><td>Acknowledgement</td><td>確認訊框</td><td>收到正確訊框後隔 SIFS 回的訊框，沒收到就重傳</td><td>2-4</td></tr>
+    <tr><td>Block Ack（BA）</td><td>Block Acknowledgement</td><td>區塊確認</td><td>一次確認一整個 A-MPDU 裡的多個 MPDU</td><td>—</td></tr>
+    <tr><td>BAR</td><td>Block Ack Request</td><td>區塊確認請求</td><td>沒收到 Block Ack 時，傳送端用來要求補回</td><td>—</td></tr>
+    <tr><td>RTS</td><td>Request To Send</td><td>請求傳送</td><td>送資料前先送的短訊框，用來預約通道</td><td>2-4</td></tr>
+    <tr><td>CTS</td><td>Clear To Send</td><td>允許傳送</td><td>接收端回 RTS 的短訊框；其他站台聽到後設定 NAV</td><td>2-4</td></tr>
+    <tr><td>RTS/CTS</td><td>—</td><td>—</td><td>先交換 RTS、CTS 再送資料；碰撞時只浪費短短的 RTS</td><td>2-4</td></tr>
+    <tr><td>RTS threshold</td><td>—</td><td>RTS 門檻</td><td>訊框比門檻長才走 RTS/CTS；本作業開 = 0（全部走）、關 = 999999（都不走）</td><td>2-4</td></tr>
+    <tr><td>NAV</td><td>Network Allocation Vector</td><td>網路配置向量</td><td>依訊框的 Duration 欄位設定的計時器，倒數完前不搶通道（虛擬載波感測）</td><td>2-4</td></tr>
+    <tr><td>Duration</td><td>Duration/ID field</td><td>持續時間欄位</td><td>MAC 標頭中的欄位，告訴別人這次交換還要佔用多久（µs）</td><td>2-3</td></tr>
+    <tr><td>hidden terminal / hidden node</td><td>—</td><td>隱藏終端</td><td>兩個 STA 互相聽不到，但都聽得到 AP，容易碰撞；本作業的拓樸沒有</td><td>2-4</td></tr>
+    <tr><td>collision</td><td>—</td><td>碰撞</td><td>兩個以上 STA 同時送，接收端無法正確解出</td><td>1、2-4</td></tr>
+    <tr><td>retry limit</td><td>—</td><td>重傳上限</td><td>超過次數就丟棄該封包</td><td>2-4</td></tr>
+  </table></div>
+  <h3>訊框與資料單位</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>名詞</th><th>英文全名</th><th>中文</th><th>意思</th><th>講義</th></tr>
+    <tr><td>MSDU</td><td>MAC Service Data Unit</td><td>MAC 服務資料單元</td><td>上層交給 MAC 的資料（本作業是 IP 封包加 LLC 標頭）</td><td>2-1</td></tr>
+    <tr><td>MPDU</td><td>MAC Protocol Data Unit</td><td>MAC 協定資料單元</td><td>MAC 送出的一個訊框 = MAC 標頭 + MSDU + FCS；本作業 1538 B</td><td>2-1</td></tr>
+    <tr><td>A-MPDU</td><td>Aggregate MPDU</td><td>聚合 MPDU</td><td>802.11n 把多個 MPDU 接在一起，用一個前導碼送出，大幅減少額外負擔</td><td>—</td></tr>
+    <tr><td>PSDU</td><td>PLCP Service Data Unit</td><td>PLCP 服務資料單元</td><td>PHY 收到的 MAC 資料，即 MPDU 或 A-MPDU</td><td>2-1</td></tr>
+    <tr><td>PPDU</td><td>PLCP Protocol Data Unit</td><td>PLCP 協定資料單元</td><td>真正在空中傳的單位 = 前導碼 + PHY 標頭 + PSDU</td><td>2-1</td></tr>
+    <tr><td>QoS Data（QOSDATA）</td><td>—</td><td>QoS 資料訊框</td><td>有 QoS 控制欄位的資料訊框，802.11n 的資料都用這種</td><td>2-3</td></tr>
+    <tr><td>FCS</td><td>Frame Check Sequence</td><td>訊框檢查序列</td><td>訊框尾端的 CRC-32，用來檢查錯誤</td><td>2-3</td></tr>
+    <tr><td>LLC</td><td>Logical Link Control</td><td>邏輯鏈路控制</td><td>MAC 之上的子層，加 8 B 標頭（LLC/SNAP）</td><td>0</td></tr>
+    <tr><td>payload</td><td>—</td><td>酬載</td><td>訊框或封包裡真正的資料部分；本作業 UDP payload 1472 B</td><td>—</td></tr>
+    <tr><td>header</td><td>—</td><td>標頭</td><td>加在資料前面的控制資訊</td><td>—</td></tr>
+    <tr><td>B / bytes / octets</td><td>—</td><td>位元組</td><td>8 bits</td><td>—</td></tr>
+  </table></div>
+  <h3>實體層</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>名詞</th><th>英文全名</th><th>中文</th><th>意思</th><th>講義</th></tr>
+    <tr><td>HT</td><td>High Throughput</td><td>高輸送量</td><td>802.11n 的 PHY 名稱</td><td>2-1</td></tr>
+    <tr><td>OFDM</td><td>Orthogonal Frequency Division Multiplexing</td><td>正交分頻多工</td><td>把頻寬切成許多子載波同時傳；802.11a/g/n 都用</td><td>2-1</td></tr>
+    <tr><td>MIMO</td><td>Multiple-Input Multiple-Output</td><td>多輸入多輸出</td><td>多根天線同時傳多條資料流</td><td>2-1</td></tr>
+    <tr><td>SS</td><td>Spatial Stream</td><td>空間串流</td><td>MIMO 的一條獨立資料流；本作業 1 條</td><td>2-1</td></tr>
+    <tr><td>MCS</td><td>Modulation and Coding Scheme</td><td>調變與編碼方式</td><td>802.11n 用編號（0–31）代表調變、碼率、串流數的組合</td><td>2-1</td></tr>
+    <tr><td>HtMcs7</td><td>HT MCS 7</td><td>—</td><td>64-QAM、碼率 5/6、1 條串流；20 MHz 長 GI 下 65 Mbps</td><td>2-1</td></tr>
+    <tr><td>HtMcs0</td><td>HT MCS 0</td><td>—</td><td>BPSK、碼率 1/2；20 MHz 下 6.5 Mbps，本作業送 RTS 用</td><td>2-1</td></tr>
+    <tr><td>QAM</td><td>Quadrature Amplitude Modulation</td><td>正交振幅調變</td><td>64-QAM 每個符號帶 6 bits</td><td>2-1</td></tr>
+    <tr><td>BPSK</td><td>Binary Phase Shift Keying</td><td>二元相移鍵控</td><td>每個符號帶 1 bit，最穩但最慢</td><td>2-1</td></tr>
+    <tr><td>code rate</td><td>—</td><td>碼率</td><td>有用資料占傳送位元的比例，5/6 表示每 6 bits 有 5 bits 是資料</td><td>2-1</td></tr>
+    <tr><td>GI</td><td>Guard Interval</td><td>保護間隔</td><td>OFDM 符號之間的空白，防止多路徑干擾；長 GI 800 ns、短 GI 400 ns</td><td>2-1</td></tr>
+    <tr><td>PLCP</td><td>Physical Layer Convergence Procedure</td><td>實體層匯聚程序</td><td>PHY 加上前導碼與 PHY 標頭的子層；題目的「PLCP Length」就是它佔的時間</td><td>2-1</td></tr>
+    <tr><td>preamble</td><td>—</td><td>前導碼</td><td>讓接收端同步、估測通道的已知訊號</td><td>2-1</td></tr>
+    <tr><td>HT-mixed（HT-MF）</td><td>HT Mixed Format</td><td>HT 混合格式</td><td>前段相容舊 802.11a/g、後段是 HT 欄位的前導格式；本作業 36 µs</td><td>—</td></tr>
+    <tr><td>L-STF</td><td>Legacy Short Training Field</td><td>傳統短訓練欄位</td><td>8 µs，偵測訊號、自動增益</td><td>—</td></tr>
+    <tr><td>L-LTF</td><td>Legacy Long Training Field</td><td>傳統長訓練欄位</td><td>8 µs，通道估測；L-STF + L-LTF = 講義 p.22 的 16 µs preamble</td><td>—</td></tr>
+    <tr><td>L-SIG</td><td>Legacy Signal Field</td><td>傳統信號欄位</td><td>4 µs，帶速率與長度</td><td>—</td></tr>
+    <tr><td>HT-SIG</td><td>HT Signal Field</td><td>HT 信號欄位</td><td>8 µs，帶 MCS、頻寬等 HT 參數</td><td>—</td></tr>
+    <tr><td>HT-STF / HT-LTF</td><td>HT Short / Long Training Field</td><td>HT 短／長訓練欄位</td><td>各 4 µs，MIMO 的增益與通道估測</td><td>—</td></tr>
+    <tr><td>Channel Bandwidth</td><td>—</td><td>通道頻寬</td><td>一個通道佔的頻寬；本作業 20 MHz</td><td>2-1</td></tr>
+    <tr><td>channel 36</td><td>—</td><td>通道 36</td><td>5 GHz 頻段中心頻率 5180 MHz 的通道</td><td>—</td></tr>
+    <tr><td>channel bonding</td><td>—</td><td>頻道聚合</td><td>把相鄰 20 MHz 合成 40 MHz</td><td>2-2</td></tr>
+    <tr><td>band</td><td>—</td><td>頻段</td><td>2.4 GHz 或 5 GHz</td><td>2-1</td></tr>
+    <tr><td>propagation loss</td><td>—</td><td>傳播損耗</td><td>訊號隨距離衰減；本作業用 log-distance 模型</td><td>—</td></tr>
+  </table></div>
+  <h3>流量、量測與模型</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>名詞</th><th>英文全名</th><th>中文</th><th>意思</th></tr>
+    <tr><td>IP</td><td>Internet Protocol</td><td>網際網路協定</td><td>第 3 層；IP 標頭 20 B</td></tr>
+    <tr><td>UDP</td><td>User Datagram Protocol</td><td>使用者資料包協定</td><td>第 4 層，沒有重傳與壅塞控制；本作業的流量</td></tr>
+    <tr><td>TCP</td><td>Transmission Control Protocol</td><td>傳輸控制協定</td><td>有確認與壅塞控制的第 4 層協定，本作業沒用</td></tr>
+    <tr><td>uplink</td><td>—</td><td>上行</td><td>STA → AP 的方向</td></tr>
+    <tr><td>throughput</td><td>—</td><td>吞吐量</td><td>單位時間成功收到的資料量（Mbps）</td></tr>
+    <tr><td>goodput</td><td>—</td><td>有效吞吐量</td><td>只算應用層 payload 的 throughput；本作業的 throughput 就是 goodput</td></tr>
+    <tr><td>offered load</td><td>—</td><td>提供負載</td><td>所有 STA 加起來想送的流量 = N<sub>STA</sub> × λ × 1472 × 8</td></tr>
+    <tr><td>arrival rate（λ）</td><td>—</td><td>到達率</td><td>每個 STA 每秒產生的封包數（packets/s、pkt/s）</td></tr>
+    <tr><td>Poisson</td><td>Poisson process</td><td>卜瓦松過程</td><td>封包間隔為指數分布的隨機到達；平均間隔 1/λ</td></tr>
+    <tr><td>iat</td><td>inter-arrival time</td><td>到達間隔</td><td>程式中產生封包間隔的變數</td></tr>
+    <tr><td>loss rate</td><td>—</td><td>遺失率</td><td>送出但沒收到的比例</td></tr>
+    <tr><td>saturation</td><td>—</td><td>飽和</td><td>每個 STA 佇列一直有封包，throughput 不再隨 λ 上升</td></tr>
+    <tr><td>Mbps</td><td>Megabits per second</td><td>百萬位元每秒</td><td>10<sup>6</sup> bits/s；數值等於每 µs 幾個 bits</td></tr>
+    <tr><td>µs / ms</td><td>microsecond / millisecond</td><td>微秒／毫秒</td><td>10<sup>−6</sup> s／10<sup>−3</sup> s</td></tr>
+    <tr><td>Bianchi model</td><td>—</td><td>Bianchi 模型</td><td>2000 年 G. Bianchi 提出的 DCF 飽和 throughput 理論模型</td></tr>
+    <tr><td>τ</td><td>—</td><td>傳送機率</td><td>Bianchi 模型中，某 STA 在一個 slot 開始傳送的機率</td></tr>
+    <tr><td>p</td><td>—</td><td>碰撞機率</td><td>某 STA 傳送時，至少有另一個 STA 也在傳的機率</td></tr>
+    <tr><td>P<sub>tr</sub></td><td>probability of transmission</td><td>有人傳送的機率</td><td>一個 slot 中至少一個 STA 傳送的機率</td></tr>
+    <tr><td>P<sub>s</sub></td><td>probability of success</td><td>成功機率</td><td>有人傳送時，剛好只有一個 STA 傳的機率</td></tr>
+    <tr><td>T<sub>s</sub></td><td>successful transmission time</td><td>成功傳送時間</td><td>一次成功傳送佔用通道的時間（資料 + SIFS + ACK + DIFS）</td></tr>
+    <tr><td>T<sub>c</sub></td><td>collision time</td><td>碰撞時間</td><td>一次碰撞浪費的通道時間</td></tr>
+    <tr><td>σ</td><td>—</td><td>slot 時間</td><td>Bianchi 公式中的 slot，9 µs</td></tr>
+    <tr><td>W / m</td><td>—</td><td>—</td><td>W = CW<sub>min</sub> + 1；m 是 CW 最多加倍幾次（W × 2<sup>m</sup> − 1 = CW<sub>max</sub>）</td></tr>
+    <tr><td>seed / RNG run</td><td>random number generator</td><td>亂數種子／亂數串流編號</td><td>固定後結果可重現；本作業 seed = 1、run = 1、2、3，取平均</td></tr>
+  </table></div>
+  <h3>ns-3</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>名詞</th><th>意思</th></tr>
+    <tr><td>ns-3</td><td>network simulator 3，開源的離散事件網路模擬器；ns-2 是舊版，兩者不相容</td></tr>
+    <tr><td>discrete-event simulation</td><td>離散事件模擬：只處理事件發生的時間點，中間直接跳過</td></tr>
+    <tr><td>Node</td><td>節點，一台裝置的空殼，要再裝 NetDevice、協定與 Application</td></tr>
+    <tr><td>NetDevice</td><td>網路卡；Wi-Fi 是 <code>WifiNetDevice</code>（內含 WifiMac、WifiPhy）</td></tr>
+    <tr><td>Channel</td><td>通道，連接多個 NetDevice 的傳輸媒介</td></tr>
+    <tr><td>Application</td><td>產生或接收流量的程式（如 <code>PacketSink</code>）</td></tr>
+    <tr><td>Helper</td><td>輔助類別，一次幫很多節點裝好設備或協定（如 <code>WifiHelper</code>）</td></tr>
+    <tr><td>Attribute</td><td>物件的可調參數（如 <code>RtsCtsThreshold</code>），可用 Config 或 Helper 設定</td></tr>
+    <tr><td>Config</td><td>用路徑字串設定或連接所有物件的 Attribute 與 trace</td></tr>
+    <tr><td>trace / TraceSource</td><td>物件在事件發生時呼叫的掛勾，用來收集統計（如 <code>PhyTxBegin</code>）</td></tr>
+    <tr><td>Simulator</td><td>模擬器核心：<code>Schedule</code> 排事件、<code>Run</code> 執行、<code>Stop</code> 結束、<code>Destroy</code> 釋放</td></tr>
+    <tr><td>Ptr</td><td>ns-3 的智慧指標，自動管理物件生命週期</td></tr>
+    <tr><td>scratch</td><td>ns-3 目錄中放自己程式的資料夾，放進去就會自動編譯</td></tr>
+    <tr><td>build profile</td><td>建置模式：<code>debug</code>（可開 log、較慢）、<code>optimized</code>（最快，log 被移除）</td></tr>
+    <tr><td><code>./ns3</code></td><td>ns-3 的建置與執行指令（包 CMake）：<code>configure</code>、<code>build</code>、<code>run</code></td></tr>
+    <tr><td>YANS</td><td>Yet Another Network Simulator，ns-3 簡化的 Wi-Fi 通道與 PHY 模型（<code>YansWifiChannelHelper</code>、<code>YansWifiPhy</code>）</td></tr>
+    <tr><td>WifiMacHelper</td><td>設定 MAC 類型：AP 用 <code>ApWifiMac</code>、STA 用 <code>StaWifiMac</code></td></tr>
+    <tr><td>ConstantRateWifiManager</td><td>固定速率的速率控制器，不會依訊號自動調整 MCS</td></tr>
+    <tr><td>WifiRemoteStationManager</td><td>速率控制器的基底類別，也管 RTS threshold</td></tr>
+    <tr><td>DataMode / ControlMode</td><td>資料訊框／控制訊框用的速率</td></tr>
+    <tr><td>ChannelSettings</td><td>設定通道的 Attribute：<code>{通道號碼, 頻寬, 頻段, 主通道}</code></td></tr>
+    <tr><td>WifiTxVector</td><td>一次傳送的 PHY 參數（MCS、頻寬、GI、串流數）</td></tr>
+    <tr><td>PSDU map（WifiConstPsduMap）</td><td>一次傳送的 PSDU 集合，trace 回呼的參數</td></tr>
+    <tr><td>PacketSink</td><td>接收端 Application，統計收到的位元組</td></tr>
+    <tr><td>Socket</td><td>應用程式送收封包的介面；本作業用 UDP socket</td></tr>
+    <tr><td>MobilityModel</td><td>節點的位置與移動模型；<code>ConstantPositionMobilityModel</code> 是固定不動</td></tr>
+    <tr><td>ListPositionAllocator</td><td>依清單指定每個節點的座標</td></tr>
+    <tr><td>RngSeedManager</td><td>設定全域亂數 seed 與 run 編號</td></tr>
+    <tr><td>FlowMonitor</td><td>統計每條流 throughput、延遲、遺失的模組</td></tr>
+    <tr><td>PCAP</td><td>packet capture，封包擷取檔格式，可用 Wireshark 開</td></tr>
+    <tr><td>NS_LOG / Log</td><td>ns-3 的除錯訊息輸出，要 debug 建置才有</td></tr>
+    <tr><td>NetAnim</td><td>ns-3 的動畫顯示工具</td></tr>
+    <tr><td>PrintHelp / PrintAttributes</td><td>印出命令列參數說明／某類別所有 Attribute</td></tr>
+    <tr><td>CommandLine（<code>cmd.AddValue</code>）</td><td>讓程式接受 <code>--參數=值</code> 的命令列參數</td></tr>
+  </table></div>
+  <h3>工具與環境</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>名詞</th><th>意思</th></tr>
+    <tr><td>WSL / WSL2</td><td>Windows Subsystem for Linux，在 Windows 裡跑 Linux（本作業用 Ubuntu）</td></tr>
+    <tr><td>Ubuntu</td><td>Linux 發行版</td></tr>
+    <tr><td>PowerShell</td><td>Windows 的命令列 shell</td></tr>
+    <tr><td>Bash / sh</td><td>Linux 的命令列 shell；<code>.sh</code> 是 shell 腳本</td></tr>
+    <tr><td>terminal</td><td>終端機，輸入指令的視窗</td></tr>
+    <tr><td>sudo</td><td>以系統管理員（root）權限執行指令</td></tr>
+    <tr><td>apt</td><td>Ubuntu 的套件管理工具（<code>apt install</code>）</td></tr>
+    <tr><td>pip / venv</td><td>Python 的套件管理工具／虛擬環境</td></tr>
+    <tr><td>git / clone / checkout</td><td>版本控制；clone 下載整個 repo，checkout 切換版本</td></tr>
+    <tr><td>repo</td><td>repository，版本控制的專案資料夾</td></tr>
+    <tr><td>CMake / Ninja</td><td>產生建置設定／實際執行編譯的工具</td></tr>
+    <tr><td>g++ / C++</td><td>GNU 的 C++ 編譯器／程式語言</td></tr>
+    <tr><td>gdb</td><td>GNU 除錯器</td></tr>
+    <tr><td>xargs / nproc</td><td>把輸入轉成指令參數並平行執行／查詢 CPU 核心數</td></tr>
+    <tr><td>Python / pandas / matplotlib</td><td>程式語言／表格資料處理套件／畫圖套件</td></tr>
+    <tr><td>gnuplot</td><td>指令式畫圖工具；<code>multiplot</code> 一張多圖、<code>smooth unique</code> 同 x 取平均</td></tr>
+    <tr><td>CSV</td><td>Comma-Separated Values，逗號分隔的表格文字檔</td></tr>
+    <tr><td>PNG / PDF / PPT（pptx）</td><td>圖檔／文件檔／PowerPoint 簡報檔</td></tr>
+    <tr><td>Wireshark</td><td>封包分析軟體，可開 PCAP</td></tr>
+    <tr><td>GPLv2</td><td>GNU General Public License 第 2 版，ns-3 的開源授權</td></tr>
+  </table></div>
+  </div></details>
 </main>
 <aside class="toc"></aside>
 </div>

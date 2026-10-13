@@ -448,7 +448,7 @@ flowchart TD
     <tr><td>OFDM（11a）</td><td class="num">16</td><td class="num">9</td><td class="num">16 + 9 = 25</td><td class="num">16 + 18 = <b>34</b>（＝講義 p.22）</td></tr>
     <tr><td>ERP（11g 短時槽）</td><td class="num">10</td><td class="num">9</td><td class="num">19</td><td class="num">28</td></tr>
   </table></div>
-  <p><span class="sup">補充</span>作業一的「DIFS 43 µs」其實是 11e 的 AIFS：AIFS = SIFS + AIFSN × slot = 16 + 3 × 9 = <b>43 µs</b>（Best Effort，AIFSN = 3）。</p>
+  <p><span class="sup">補充</span>作業一依講義用 DIFS = 34 µs（ns-3 以 AIFSN = 2 設定）。ns-3 的預設是 11e 的 AIFS：AIFS = SIFS + AIFSN × slot = 16 + 3 × 9 = <b>43 µs</b>（Best Effort，AIFSN = 3），比講義的 DIFS 多 1 個 slot。</p>
   <h3>EIFS</h3>
   <div class="callout tip"><b>EIFS = SIFS + 8 × ACKsize ÷ 1 Mbps + Preamble + PLCP Header + DIFS</b></div>
   <ol>

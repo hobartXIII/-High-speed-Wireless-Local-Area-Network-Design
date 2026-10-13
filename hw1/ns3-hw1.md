@@ -1,5 +1,7 @@
 # 作業一：802.11n Throughput vs. Arrival Rate（ns-3 實作）
 
+> 英文與縮寫名詞的意思見 [`glossary.md`](glossary.md)。
+
 ## 0. 題目與實驗設計
 
 | 參數 | 值 |
@@ -156,7 +158,7 @@ main(int argc, char* argv[])
     std::string mcs = "HtMcs7";
     uint32_t cwMin = 15;     // 題目參數 4
     uint32_t cwMax = 1023;
-    uint32_t aifsn = 3;      // DIFS(AIFS_BE) = SIFS + aifsn × slot
+    uint32_t aifsn = 2;      // DIFS = SIFS + aifsn × slot = 34 µs（講義 p.22）
     bool printParams = false;
     double startTime = 1.0;
     double warmup = 2.0;

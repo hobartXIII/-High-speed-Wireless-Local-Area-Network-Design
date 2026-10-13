@@ -7,6 +7,8 @@
 - **開源免費**：GPLv2 授權，原始碼在 <https://gitlab.com/nsnam/ns-3-dev>，官方文件在 <https://www.nsnam.org/documentation/>。
 - **不是 ns-2 的新版**：ns-3 從頭重寫，和 ns-2 的 Tcl 腳本不相容。
 
+英文與縮寫名詞的意思見 [`glossary.md`](glossary.md)。
+
 本份作業使用的環境：
 
 | 項目 | 版本 |
@@ -317,7 +319,7 @@ phy.EnablePcap("hw1", apDev.Get(0));
 | Throughput | AP 上 `PacketSink` 在 2–20 s 收到的 bytes × 8 ÷ 18 s |
 | 多次取平均 | `--run=1,2,3` |
 
-DCF 參數在程式中明確設定（`--cwMin=15 --cwMax=1023 --aifsn=3`），加 `--printParams=1` 會印出實際生效的值：SIFS 16 µs、slot 9 µs、DIFS 43 µs、CW<sub>min</sub> 15、PLCP 36 µs，以及每種訊框的空中時間（例如 1538 B 資料訊框 228 µs）。
+DCF 參數在程式中明確設定（`--cwMin=15 --cwMax=1023 --aifsn=2`），加 `--printParams=1` 會印出實際生效的值：SIFS 16 µs、slot 9 µs、DIFS 34 µs（依講義 p.22）、CW<sub>min</sub> 15、PLCP 36 µs，以及每種訊框的空中時間（例如 1538 B 資料訊框 228 µs）。
 
 ### 5.2 執行流程
 

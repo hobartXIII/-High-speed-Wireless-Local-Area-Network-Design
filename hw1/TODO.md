@@ -7,6 +7,11 @@
 - [x] ~~**理論值對照**~~（2026-10-13 依題目 PPT 範圍移出作業，改放 `supplement/`）：用題目參數算理論飽和 throughput（單一 STA 無碰撞上限 + Bianchi 模型的碰撞機率），和模擬的飽和值（5 STA 約 48、20 STA 約 36、開 RTS/CTS 約 58 Mbps）比對，寫進報告。
 - [x] **修正 `hw1-spec.md` 第 6 節**：「題目參數 2、4、5 尚未當成變數掃過」改成「固定並寫清楚」，掃描改列為選做延伸。
 
+- [ ] **DIFS 改依講義重跑**（2026-10-13）：題目 PPT 沒給 SIFS/DIFS 數值，依講義 p.22 用 DIFS 34 µs（AIFSN = 2，原本 3 → 43 µs）。`hw1.cc` 預設已改，需在有 ns-3 的環境：
+  1. `--printParams=1` 確認印出 `AIFSN=2 DIFS(AIFS_BE)=34us`，更新 `hw1-spec.md` 第 2 節的輸出。
+  2. `bash run_all.sh results.csv` 重跑 24 次、`plot.py` 重畫 `throughput_vs_rate.png`。
+  3. 更新 `hw1-spec.md` 第 5 節「驗證重現結果」表、Claude 文件報告的參數表（DIFS、PLCP 註明與講義的差別）與結果數字、`HW1_report.pdf`。
+
 ## 範圍
 
 報告與程式以題目 PPT 為準（2026-10-13）：只做 STA 5、20 × λ 200、800 × RTS/CTS 開關，不另加 arrival rate、A-MPDU 對照、理論值對照或 hidden terminal 實驗。這些延伸內容整理在 `supplement/supplement.md`，作業報告不呈現。
