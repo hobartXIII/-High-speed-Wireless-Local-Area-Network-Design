@@ -3,7 +3,7 @@
 //   npm install                     # 第一次，安裝 docx
 //   node build_report.js            # 讀 ../throughput_vs_rate.png，寫出 ../HW1_report.docx
 //   powershell -File to_pdf.ps1     # 用 Word 轉出 ../HW1_report.pdf
-// 內容範圍以題目 PPT 為準；移出的內容在 ../supplement/supplement.md 第 7.6 節。
+// 內容範圍以題目 PPT 為準；移出的內容在 ../supplement/supplement.md 第 7.6 節，專有名詞統一整理在 ../glossary.md。
 const fs = require("fs");
 const path = require("path");
 const {
@@ -38,22 +38,22 @@ const caption = (t) =>
   new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 60, after: 140 },
     children: [new TextRun({ text: t, font: BODY, size: 20, bold: true })] });
 
-function cell(parts, w, { header = false, align = AlignmentType.LEFT } = {}) {
+function cell(parts, w, { header = false, align = AlignmentType.LEFT, size = 20, pad = 50 } = {}) {
   return new TableCell({
     borders, width: { size: w, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
     shading: header ? { fill: "E7E6E6", type: ShadingType.CLEAR, color: "auto" } : undefined,
-    margins: { top: 50, bottom: 50, left: 90, right: 90 },
-    children: [new Paragraph({ alignment: align, spacing: { line: 260 },
-      children: runs(parts, { size: 20, bold: header || undefined }) })],
+    margins: { top: pad, bottom: pad, left: 90, right: 90 },
+    children: [new Paragraph({ alignment: align, spacing: { line: size * 13 },
+      children: runs(parts, { size, bold: header || undefined }) })],
   });
 }
-function table(widths, rows, aligns) {
+function table(widths, rows, aligns, { size, pad } = {}) {
   return new Table({
     width: { size: widths.reduce((a, b) => a + b), type: WidthType.DXA },
     columnWidths: widths, layout: TableLayoutType.FIXED, alignment: AlignmentType.CENTER,
     rows: rows.map((r, i) => new TableRow({
       tableHeader: i === 0, cantSplit: true,
-      children: r.map((c, j) => cell(c, widths[j], { header: i === 0, align: i === 0 ? AlignmentType.CENTER : aligns[j] })),
+      children: r.map((c, j) => cell(c, widths[j], { header: i === 0, align: i === 0 ? AlignmentType.CENTER : aligns[j], size, pad })),
     })),
   });
 }
@@ -120,8 +120,6 @@ const doc = new Document({
       para("本實驗以 ns-3.49 模擬 IEEE 802.11n 無線區域網路，探討站台（Station, STA）數量、每個 STA 的封包到達率（Arrival Rate, λ），以及 RTS/CTS（Request To Send / Clear To Send）機制對 Throughput 的影響。題目所列 8 項系統參數之設定如表 1。"),
       caption("表 1　系統參數設定"),
       paramTable,
-      para(["表中縮寫：SIFS（Short Interframe Space）、DIFS（DCF Interframe Space）、PLCP（Physical Layer Convergence Procedure）、MCS（Modulation and Coding Scheme）、", ...CW(""), "（Contention Window）。"],
-        { spacing: { before: 80, after: 120, line: 280 } }),
       para("實驗環境：存取點（Access Point, AP）位於原點，STA 平均分布於半徑 5 m 的圓上，所有節點彼此皆可偵聽。流量為上行 UDP（User Datagram Protocol，STA → AP），封包到達服從 Poisson 分布。媒介存取控制（Medium Access Control, MAC）採分散式協調功能（Distributed Coordination Function, DCF，即 CSMA/CA），並啟用 802.11n 預設的 A-MPDU（Aggregate MAC Protocol Data Unit）聚合。實驗組合為 STA 數 2 種 × λ 2 種 × RTS/CTS 開關 2 種，共 8 組，每組以 3 個 seed 執行後取平均；模擬於 1 s 開始送出封包，量測區間為 2–20 s。"),
 
       h1("2. 實驗結果"),
