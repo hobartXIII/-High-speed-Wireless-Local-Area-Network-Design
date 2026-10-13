@@ -11,6 +11,11 @@
   1. `--printParams=1` 確認印出 `AIFSN=2 DIFS(AIFS_BE)=34us`，更新 `hw1-spec.md` 第 2 節的輸出。
   2. `bash run_all.sh results.csv` 重跑 24 次、`plot.py` 重畫 `throughput_vs_rate.png`。
   3. 更新 `hw1-spec.md` 第 5 節「驗證重現結果」表、Claude 文件報告的參數表（DIFS、PLCP 註明與講義的差別）與結果數字、`HW1_report.pdf`。
+- [ ] **報告排版改成「結論摘要 → 參數 → 設計 → 結果與分析」**（2026-10-13 討論）：Claude 文件報告最前面放 3–5 行結論（三個變數的影響與關鍵數字）；參數表與實驗設計精簡；結果依題目要回答的現象分小節，每節「現象 → 數據 → 用參數或機制解釋」，解釋要回頭用到第 2 節的參數（例如 DIFS、CW<sub>min</sub>、RTS/CTS 的 T<sub>c</sub>）。重跑完數據再一起改。
+- [ ] **報告名詞說明**：報告用到的英文縮寫首次出現時寫全名或中文，意思可參考 `glossary.md`。
+- [ ] **重跑後更新補充的理論值**：`supplement/theory.py` 的 `AIFSN` 改成 2，用 `supplement/results_all_rates.csv`、`results_noampdu.csv` 的新數據（也要用 `--aifsn=2` 重跑）更新 `supplement.md` 3.3 節的表，3.4 節改成實測值。補充不在繳交範圍，有空再做。
+- [ ] **檢查 `hw1-ns3.html` 第 7 節**：在瀏覽器確認名詞表能展開、右側目錄有出現第 7 節、手機寬度表格不會溢出。
+- [ ] **決定 `ch2-4-80211-dcf.html` 第 451 行要不要還原**：那句講義筆記的補充原本寫「作業一的 DIFS 43 µs 其實是 11e 的 AIFS」，2026-10-13 改成「作業一依講義用 DIFS 34 µs」。
 
 ## 範圍
 
