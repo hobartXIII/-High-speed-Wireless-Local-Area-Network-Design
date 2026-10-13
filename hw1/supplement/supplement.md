@@ -257,3 +257,33 @@ python3 plot.py results.csv throughput_vs_rate.png
 ```
 
 模擬經測試的環境是 ns-3.49、Ubuntu 24.04（WSL2）、g++ 13.3。
+
+### 7.6 報告改依 PPT 範圍時移出的內容（2026-10-14）
+
+報告改寫成 Word／PDF（`HW1_report.docx`）時，以下內容超出題目 PPT 的要求而移出。數據來自 `results.csv`（AIFSN = 2，DIFS 34 µs）。
+
+**遺失率**：`loss` = 1 − 量測期間收到的封包數 ÷ 量測期間應用層送出的封包數。2 s 前送出、2 s 後才到的封包會被算進「收到」，所以偶爾有約 −5 × 10⁻⁵ 的負值，以 0% 呈現。
+
+| STA | λ（packets/s） | RTS/CTS | Throughput（Mbps） | 遺失率 |
+|---|---|---|---|---|
+| 5 | 200 | 關 | 11.8 | 0% |
+| 5 | 200 | 開 | 11.8 | 0% |
+| 5 | 800 | 關 | 46.5 | 1.5% |
+| 5 | 800 | 開 | 47.2 | 0% |
+| 20 | 200 | 關 | 33.6 | 28.7% |
+| 20 | 200 | 開 | 45.6 | 3.0% |
+| 20 | 800 | 關 | 35.6 | 81.1% |
+| 20 | 800 | 開 | 58.3 | 69.0% |
+
+- 5 STA、λ 800、RTS/CTS 關閉時遺失率 1.5%，顯示已接近飽和。
+- 20 STA、RTS/CTS 關閉，λ 200 → 800 時遺失率 28.7% → 81.1%；λ 200 開啟 RTS/CTS 後遺失率 28.7% → 3.0%。
+
+**A-MPDU 實際長度**：用 `--printParams=1 --simTime=4` 另跑 20 STA、λ 800（RTS/CTS 開、關各一次），觀察到的最大 A-MPDU 為 28 個 MPDU、43,230 B、空中時間 5360 µs（開關相同）。這是最大值，不是平均值；不在 24 次正式執行內。原報告寫的「最大 64 KB，約 8 ms」是理論上限，與實際不符。
+
+**CTS 逾時**：ns-3（`src/wifi/model/frame-exchange-manager.cc` 約第 935 行）的 CTS timeout = RTS 空中時間 + SIFS + slot + CTS 的 PHY 前導與標頭 = 64 + 16 + 9 + 20 = 109 µs。加上 DIFS 34 µs，RTS/CTS 開啟時一次碰撞約 143 µs（約 0.14 ms）。
+
+**PLCP 與講義的差別**：講義 p.22 的 PLCP Preamble 16 µs 只含 802.11a 的 L-STF + L-LTF；802.11n HT-mixed 另加 L-SIG 4、HT-SIG 8、HT-STF 4、HT-LTF 4 µs，共 36 µs。
+
+**Hidden terminal**：本實驗所有節點彼此聽得到，沒有 hidden terminal，所以 RTS/CTS 的好處全部來自縮短碰撞時間 T<sub>c</sub>，不是來自解決 hidden terminal（延伸做法見第 5 節）。
+
+**Bianchi 模型**：原報告在「碰撞機率隨 STA 數上升」後面註明「（Bianchi 模型）」，但報告沒有用到模型的公式或結果，所以刪掉；模型的計算見第 3 節。
