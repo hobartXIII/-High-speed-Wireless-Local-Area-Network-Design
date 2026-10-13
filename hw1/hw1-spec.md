@@ -49,22 +49,20 @@
 | 7 | Arrival Rate λ | **200、800 packets/s**（變數） | `--rate` |
 | 8 | RTS/CTS | **關：threshold = 999999；開：threshold = 0**（變數） | `--rts=0/1` |
 
-> **待重跑確認（2026-10-13）**：DIFS 改依講義用 AIFSN = 2（34 µs）。下面是改之前（AIFSN = 3）印出的結果，重跑後 `AIFSN=2 DIFS(AIFS_BE)=34us`，其他值應不變。
-
-`hw1 --printParams=1` 在 association 完成後印出 AP 與 STA 實際生效的值：
+`hw1 --printParams=1` 在 association 完成後印出 AP 與 STA 實際生效的值（2026-10-13，AIFSN = 2；`--nSta=5 --rate=200 --rts=0`，所以沒有 RTS/CTS 訊框）：
 
 ```text
-AP  : SIFS=16us slot=9us PIFS=25us AIFSN=3 DIFS(AIFS_BE)=43us CWmin=15 CWmax=1023 width=20MHz
-STA0: SIFS=16us slot=9us PIFS=25us AIFSN=3 DIFS(AIFS_BE)=43us CWmin=15 CWmax=1023 width=20MHz
+AP  : SIFS=16us slot=9us PIFS=25us AIFSN=2 DIFS(AIFS_BE)=34us CWmin=15 CWmax=1023 width=20MHz
+STA0: SIFS=16us slot=9us PIFS=25us AIFSN=2 DIFS(AIFS_BE)=34us CWmin=15 CWmax=1023 width=20MHz
 PLCP preamble+header (HT-MF, 1 SS) = 36us
-  QOSDATA: 1538 B (1 MPDU), HtMcs7, 228us
+  A-MPDU(QOSDATA): 6174 B (4 MPDU), HtMcs7, 800us
   CTL_ACK: 14 B (1 MPDU), OfdmRate6Mbps, 44us
-  CTL_RTS: 20 B (1 MPDU), HtMcs0, 64us
-  CTL_CTS: 14 B (1 MPDU), OfdmRate6Mbps, 44us
+  CTL_BACKREQ: 24 B (1 MPDU), OfdmRate24Mbps, 32us
   CTL_BACKRESP: 32 B (1 MPDU), OfdmRate24Mbps, 32us
+  QOSDATA: 1538 B (1 MPDU), HtMcs7, 228us
 ```
 
-AIFSN = 2 和 ns-3 預設（BE 為 3）不同，`results.csv`、圖與下方「驗證重現結果」表都要用新設定重跑更新。
+開 RTS/CTS 時另有 `CTL_RTS: 20 B, HtMcs0, 64us` 與 `CTL_CTS: 14 B, OfdmRate6Mbps, 44us`（AIFSN = 3 時印出，與 DIFS 無關）。AIFSN = 2 和 ns-3 預設（BE 為 3）不同，所以 `hw1.cc` 明確設定。
 
 ### 題目沒規定、由我們自行決定的設定
 
@@ -187,18 +185,18 @@ python3 plot.py results.csv throughput_vs_rate.png
 
 重跑後，3 個 seed 的平均應與下表一致（差距在 1 Mbps 內）。
 
-> 下表為 AIFSN = 3（DIFS 43 µs）時的舊數據，改用 AIFSN = 2 後需重跑更新。
+AIFSN = 2（DIFS 34 µs），2026-10-13 重跑：
 
 | STA | λ | RTS/CTS | 負載（Mbps） | Throughput（Mbps） | 遺失率 |
 |---|---|---|---|---|---|
 | 5 | 200 | 關 | 11.8 | 11.8 | 0% |
 | 5 | 200 | 開 | 11.8 | 11.8 | 0% |
-| 5 | 800 | 關 | 47.1 | 46.6 | 1.4% |
+| 5 | 800 | 關 | 47.1 | 46.5 | 1.5% |
 | 5 | 800 | 開 | 47.1 | 47.2 | 0% |
-| 20 | 200 | 關 | 47.1 | 32.8 | 30.3% |
-| 20 | 200 | 開 | 47.1 | 44.9 | 4.5% |
+| 20 | 200 | 關 | 47.1 | 33.6 | 28.7% |
+| 20 | 200 | 開 | 47.1 | 45.6 | 3.0% |
 | 20 | 800 | 關 | 188.4 | 35.6 | 81.1% |
-| 20 | 800 | 開 | 188.4 | 58.2 | 69.1% |
+| 20 | 800 | 開 | 188.4 | 58.3 | 69.0% |
 
 ---
 
