@@ -9,7 +9,7 @@ const path = require("path");
 const {
   Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell,
   WidthType, AlignmentType, ShadingType, BorderStyle, ImageRun, Footer, PageNumber,
-  LevelFormat, VerticalAlign, TableLayoutType,
+  LevelFormat, VerticalAlign, TableLayoutType, NoBreakHyphen,
 } = require("docx");
 
 const imgPath = process.argv[2] || path.join(__dirname, "..", "throughput_vs_rate.png");
@@ -23,11 +23,15 @@ const CONTENT_W = 9412; // A4 11906 - 2 × 1247
 const border = { style: BorderStyle.SINGLE, size: 4, color: "808080" };
 const borders = { top: border, bottom: border, left: border, right: border };
 
+// 數字與單位之間改為不斷行空格；A-MPDU 的連字號改為不斷行連字號
+const UNIT = /(\d) (µs|ms|B|Mbps|MHz|GHz|m|s|packets\/s)(?![A-Za-z0-9])/g;
+const nobreak = (t) => t.replace(UNIT, "$1\u00A0$2").split("A-MPDU")
+  .flatMap((x, i) => (i ? ["A", new NoBreakHyphen(), "MPDU" + x] : [x])).filter((x) => x !== "");
 // 文字片段：字串，或 {t, b, sub}
 function runs(parts, extra = {}) {
   return (Array.isArray(parts) ? parts : [parts]).map((p) => {
     const o = typeof p === "string" ? { t: p } : p;
-    return new TextRun({ text: o.t, bold: o.b, subScript: o.sub, font: BODY, size: SZ, ...extra });
+    return new TextRun({ children: nobreak(o.t), bold: o.b, subScript: o.sub, font: BODY, size: SZ, ...extra });
   });
 }
 const para = (parts, opts = {}) =>
@@ -39,8 +43,10 @@ const caption = (t) =>
     children: [new TextRun({ text: t, font: BODY, size: 20, bold: true })] });
 
 function cell(parts, w, { header = false, align = AlignmentType.LEFT, size = 20, pad = 50 } = {}) {
+  let rowSpan;
+  if (parts && parts.rowSpan) ({ rowSpan, parts } = parts);
   return new TableCell({
-    borders, width: { size: w, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER,
+    borders, width: { size: w, type: WidthType.DXA }, verticalAlign: VerticalAlign.CENTER, rowSpan,
     shading: header ? { fill: "E7E6E6", type: ShadingType.CLEAR, color: "auto" } : undefined,
     margins: { top: pad, bottom: pad, left: 90, right: 90 },
     children: [new Paragraph({ alignment: align, spacing: { line: size * 13 },
@@ -53,7 +59,7 @@ function table(widths, rows, aligns, { size, pad } = {}) {
     columnWidths: widths, layout: TableLayoutType.FIXED, alignment: AlignmentType.CENTER,
     rows: rows.map((r, i) => new TableRow({
       tableHeader: i === 0, cantSplit: true,
-      children: r.map((c, j) => cell(c, widths[j], { header: i === 0, align: i === 0 ? AlignmentType.CENTER : aligns[j], size, pad })),
+      children: r.map((c, j) => c === null ? null : cell(c, widths[j], { header: i === 0, align: i === 0 ? AlignmentType.CENTER : aligns[j], size, pad })).filter(Boolean),
     })),
   });
 }
@@ -64,8 +70,8 @@ const CW = (s) => ["CW", { t: s, sub: true }];
 const paramTable = table([560, 2700, 6152], [
   ["#", "題目參數", "本實驗設定"],
   ["1", "Channel Bandwidth", "20 MHz（5 GHz，通道 36）"],
-  ["2", "SIFS / DIFS", "SIFS = 16 µs，slot = 9 µs；DIFS = SIFS + 2 × slot = 34 µs（題目未給數值，依講義 p.22）"],
-  ["2", "PLCP Length", "36 µs（802.11n HT-mixed 前導：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4 µs）"],
+  [{ rowSpan: 2, parts: "2" }, "SIFS / DIFS", "SIFS = 16 µs，slot = 9 µs；DIFS = SIFS + 2 × slot = 34 µs（題目未給數值，依講義 p.22）"],
+  [null, "PLCP Length", "36 µs（802.11n HT-mixed 前導：L-STF 8 + L-LTF 8 + L-SIG 4 + HT-SIG 8 + HT-STF 4 + HT-LTF 4 µs）"],
   ["3", "MCS", "資料 HtMcs7（64-QAM 5/6，65 Mbps）；RTS 為 HtMcs0；ACK、CTS 為 OFDM 6 Mbps；Block Ack 為 OFDM 24 Mbps"],
   ["4", [...CW("min")], ["15（", ...CW("max"), " = 1023）"]],
   ["5", "Data Length L", "UDP payload 1472 B（MAC 訊框 1538 B，空中時間 228 µs）"],
@@ -114,13 +120,13 @@ const doc = new Document({
       new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 80 },
         children: [new TextRun({ text: "高速網路 作業一：802.11n Throughput 分析", font: HEAD, size: 34, bold: true })] }),
       new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 200 },
-        children: [new TextRun({ text: "邱勇嘉　　2026 年 10 月 13 日", font: BODY, size: SZ })] }),
+        children: [new TextRun({ text: "姓名：邱勇嘉　　學號：5115056022", font: BODY, size: SZ })] }),
 
       h1("1. 實驗目的與參數設定"),
       para("本實驗以 ns-3.49 模擬 IEEE 802.11n 無線區域網路，探討站台（Station, STA）數量、每個 STA 的封包到達率（Arrival Rate, λ），以及 RTS/CTS（Request To Send / Clear To Send）機制對 Throughput 的影響。題目所列 8 項系統參數之設定如表 1。"),
+      para("實驗環境：存取點（Access Point, AP）位於原點，STA 等間距分布於半徑 5 m 的圓上，且所有節點皆位於彼此的載波感測範圍內；流量為由 STA 傳送至 AP 的上行 UDP（User Datagram Protocol）流量，封包到達服從 Poisson 過程。媒介存取控制（Medium Access Control, MAC）採用分散式協調功能（Distributed Coordination Function, DCF，即 CSMA/CA），並啟用 802.11n 預設的 A-MPDU（Aggregate MAC Protocol Data Unit）聚合機制。實驗組合為 STA 數（2 種）× λ（2 種）× RTS/CTS 開啟與否（2 種），共 8 組，每組以 3 個 seed 執行後取平均，模擬自 1 s 起開始送出封包，並以 2–20 s 作為量測區間。"),
       caption("表 1　系統參數設定"),
       paramTable,
-      para("實驗環境：存取點（Access Point, AP）位於原點，STA 平均分布於半徑 5 m 的圓上，所有節點彼此皆可偵聽。流量為上行 UDP（User Datagram Protocol，STA → AP），封包到達服從 Poisson 分布。媒介存取控制（Medium Access Control, MAC）採分散式協調功能（Distributed Coordination Function, DCF，即 CSMA/CA），並啟用 802.11n 預設的 A-MPDU（Aggregate MAC Protocol Data Unit）聚合。實驗組合為 STA 數 2 種 × λ 2 種 × RTS/CTS 開關 2 種，共 8 組，每組以 3 個 seed 執行後取平均；模擬於 1 s 開始送出封包，量測區間為 2–20 s。"),
 
       h1("2. 實驗結果"),
       para(["Throughput 定義為 AP 在 2–20 s 收到的 UDP payload 位元數 ÷ 18 s；Offered Load = STA 數 × λ × 1472 B × 8。各組結果如圖 1 與表 2，圖中虛線為 Offered Load，誤差棒為 3 個 seed 的標準差（皆在 0.5 Mbps 以內）。"]),
@@ -139,12 +145,12 @@ const doc = new Document({
 
       h2("3.2 RTS/CTS 的改善效果"),
       para("20 STA 時開啟 RTS/CTS，Throughput 於 λ = 200 與 800 packets/s 分別提升約 36% 與 64%；5 STA 開啟與否差異不大。"),
-      para(["改善來自碰撞時間 T", { t: "c", sub: true }, " 的縮短。RTS/CTS 關閉時，碰撞會浪費整個 A-MPDU 的傳輸時間（最長可達數 ms）；開啟後碰撞僅發生於 RTS，T", { t: "c", sub: true }, " 僅為 RTS、等待 CTS 逾時與 DIFS 之和，約 0.14 ms。CTS 回覆後，其他 STA 依網路配置向量（Network Allocation Vector, NAV）延後存取，後續的資料訊框不會遭受碰撞。其代價為每次成功傳輸額外增加 RTS 64 + CTS 44 + 2 × SIFS 16 = 140 µs；在 20 STA 的高競爭情境下，此成本遠小於節省的碰撞時間。"]),
+      para(["改善來自碰撞時間 T", { t: "c", sub: true }, " 的縮短。RTS/CTS 關閉時，碰撞會浪費整個 A-MPDU 的傳輸時間（最長可達數 ms）；開啟後碰撞僅發生於 RTS，T", { t: "c", sub: true }, " 僅為 RTS、等待 CTS 逾時與 DIFS 之和，約 140 µs。CTS 回覆後，其他 STA 依網路配置向量（Network Allocation Vector, NAV）延後存取，後續的資料訊框不會遭受碰撞。其代價為每次成功傳輸額外增加 RTS 64 + CTS 44 + 2 × SIFS 16 = 140 µs；在 20 STA 的高競爭情境下，此成本遠小於節省的碰撞時間。"]),
 
       h1("4. 結論"),
       ...[
-        [{ t: "STA 數量與競爭：", b: true }, "STA 越多，碰撞機率越高。相同 Offered Load 47.1 Mbps 下，20 STA 僅達 33.6 Mbps，5 STA 則為 46.5 Mbps。"],
         [{ t: "Arrival Rate 與飽和：", b: true }, "未飽和時 Throughput 等於 Offered Load；飽和後不再隨 λ 上升，20 STA 由 200 增至 800 packets/s 時 Throughput 僅增加 2 Mbps。"],
+        [{ t: "STA 數量與競爭：", b: true }, "STA 越多，碰撞機率越高。相同 Offered Load 47.1 Mbps 下，20 STA 僅達 33.6 Mbps，5 STA 則為 46.5 Mbps。"],
         [{ t: "RTS/CTS：", b: true }, "在高競爭時明顯有利，20 STA 的 Throughput 提升 36%–64%，因碰撞僅浪費短的 RTS；5 STA 時影響不大。"],
       ].map((p) => new Paragraph({ numbering: { reference: "concl", level: 0 }, alignment: AlignmentType.JUSTIFIED,
         spacing: { after: 80, line: 300 }, children: runs(p) })),
