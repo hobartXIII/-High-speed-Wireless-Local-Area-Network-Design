@@ -8,6 +8,7 @@
     { href: 'ch2-2-80211-mac.html', label: '2-2. 802.11 MAC 服務' },
     { href: 'ch2-3-80211-frame.html', label: '2-3. WEP 與訊框格式' },
     { href: 'ch2-4-80211-dcf.html', label: '2-4. DCF 存取機制' },
+    { href: 'ch2-5-80211-pcf-mgmt.html', label: '2-5. PCF 與 MAC 管理' },
     { href: 'hw1-ns3.html', label: 'HW1. ns-3 使用說明' },
   ];
   // 課程識別：螢光筆（highlighter.js）的 localStorage 前綴與匯出檔名。同一個 github.io 網域的
