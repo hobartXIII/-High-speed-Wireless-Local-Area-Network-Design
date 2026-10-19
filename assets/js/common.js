@@ -10,6 +10,9 @@
     { href: 'ch2-4-80211-dcf.html', label: '2-4. DCF 存取機制' },
     { href: 'hw1-ns3.html', label: 'HW1. ns-3 使用說明' },
   ];
+  // 課程識別：螢光筆（highlighter.js）的 localStorage 前綴與匯出檔名。同一個 github.io 網域的
+  // 其他課程筆記共用 localStorage，靠這個前綴分開
+  const COURSE = { id: 'wlan', name: 'HighSpeedWLAN' };
 
   /* ---------- theme ---------- */
   const root = document.documentElement;
@@ -40,6 +43,7 @@
       '</nav>' +
       '<button class="theme-btn" type="button" aria-label="切換深淺色">◐</button></div>';
     document.body.prepend(header);
+    if (window.Highlighter) header.querySelector('.theme-btn').before(window.Highlighter.menu());
     header.querySelector('.theme-btn').addEventListener('click', () => {
       const next = isDark() ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
@@ -204,10 +208,22 @@
   window.WL = { S, clear, svgRoot, arrowDefs, Timeline, clamp, lerp, prog, reducedMotion, isDark };
 
   document.addEventListener('DOMContentLoaded', () => {
+    if (window.Highlighter) {
+      const here = location.pathname.split('/').pop() || 'index.html';
+      window.Highlighter.setup({
+        course: COURSE,
+        chapter: here === 'index.html' ? null : here.replace(/\.html$/, ''),   // 首頁不能標記
+        content: 'main',
+        // 動畫、自繪圖、Mermaid、操作區與即時數值會變動，不能標記
+        skip: '.fig-body, .controls, .readout, .status, .log, .mermaid-host, svg, .pager',
+        buttonClass: 'theme-btn',
+      });
+    }
     buildChrome();
     buildToc();
     renderMermaid();
   });
+  window.addEventListener('load', () => { if (window.Highlighter) window.Highlighter.start(); });
   document.addEventListener('themechange', renderMermaid);
   if (window.matchMedia) {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {

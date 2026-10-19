@@ -209,3 +209,7 @@ svg .hit:hover rect, svg .hit.sel rect { stroke: var(--accent); stroke-width: 2;
   .brand .full { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* 螢光筆（highlighter.css）沿用的 tokens：本站叫 --fg、--muted、--red */
+:root { --text: var(--fg); --text-2: var(--muted); --neg: var(--red); }
+.site-header .hl-menu-btn { width: auto; padding: 0 10px; }
