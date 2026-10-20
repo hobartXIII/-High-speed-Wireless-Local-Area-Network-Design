@@ -308,6 +308,21 @@ flowchart LR
     <p>1. p.22「MAC Header ≥ 30 octets」：3 位址標頭是 24 octets、4 位址是 30 octets；<span class="sup">補充</span>QoS 資料訊框標頭 26 ＋ FCS 4 也是 30。講義的 30 指哪一種請對照上課說明。</p>
     <p>2. p.23「23 usec Slot time」：FHSS 50、DSSS 20、OFDM 9 µs，<span class="sup">補充</span>沒有 PHY 用 23 µs，可能是早期模擬參數。</p>
   </div>
+  <h3 id="overhead-fix">如何降低額外負擔</h3>
+  <p>額外負擔多半是<b>每送一個訊框就要付一次的固定時間</b>（DIFS、退避、Preamble、標頭、SIFS、ACK），和 payload 大小無關。所以方向只有兩個：<b>讓每次付的固定成本變小</b>，或<b>讓一次固定成本載更多資料</b>。</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>做法</th><th>降低哪一塊</th><th>代價／限制</th></tr>
+    <tr><td><b>送大訊框</b>（p.23：576 bytes 效率最高、64 bytes 最低）</td><td>固定負擔分攤到更多 bytes</td><td>訊框越長，碰撞或出錯時重傳的損失越大</td></tr>
+    <tr><td><b>只對長訊框用 RTS/CTS</b>：調 RTS_Threshold（p.25–26 的 Mixed）</td><td>短訊框省掉 RTS＋CTS＋2 個 SIFS</td><td>門檻太高 → hidden node 碰撞變多；太低 → 每筆都多一次交換</td></tr>
+    <tr><td><b>適當的 Fragmentation_Threshold</b>（第 12 節）</td><td>干擾多時，出錯只重傳一小段</td><td>每段都要自己的標頭＋SIFS＋ACK；通道乾淨時切段反而更慢</td></tr>
+    <tr><td><b>PCF 輪詢</b>（第 4 節）</td><td>無競爭期內不用 DIFS 與退避，訊框之間只隔 SIFS／PIFS</td><td>選用功能，輪詢本身也有負擔，實務上很少實作</td></tr>
+    <tr><td><span class="sup">補充</span><b>短的 PHY 參數</b>：802.11b short preamble（96 µs 取代 192 µs）、802.11g short slot（9 µs 取代 20 µs）</td><td>Preamble、DIFS、每個退避 slot 變短</td><td>BSS 裡有舊站台時不能用</td></tr>
+    <tr><td><span class="sup">補充</span><b>保護時用 CTS-to-self</b> 取代 RTS/CTS（第 3 節）</td><td>少一個 RTS 和一個 SIFS</td><td>只有傳送端附近的站台聽得到，不能解決 hidden node</td></tr>
+    <tr><td><span class="sup">補充</span><b>TXOP／連續傳送</b>（802.11e）：搶到媒介後在 TXOP 時限內用 SIFS 連送多個訊框；802.11n 的 RIFS 更短</td><td>後面的訊框不用再 DIFS＋退避</td><td>佔用媒介較久，要用 TXOP limit 限制以維持公平</td></tr>
+    <tr><td><span class="sup">補充</span><b>訊框聚合</b>（802.11n）：A-MSDU 把多個 MSDU 包成一個 MPDU；A-MPDU 把多個 MPDU 包成一次 PHY 傳送</td><td>多筆資料只付一次 Preamble＋PHY 標頭＋DIFS＋退避</td><td>A-MSDU 任一處錯就整個重傳；A-MPDU 每個子訊框有自己的 FCS，可只重傳錯的</td></tr>
+    <tr><td><span class="sup">補充</span><b>Block ACK</b>（802.11e 引入，11n 起和 A-MPDU 搭配）</td><td>多個訊框只回一個 ACK（用 bitmap 標出收到哪些）</td><td>要先建立 Block ACK 協議（ADDBA）</td></tr>
+  </table></div>
+  <p>可以用上面的計算器驗證「送大訊框」和「RTS/CTS 只給長訊框」：把 payload 從 1500 拉到 100 bytes，效率會大幅下降；打開 RTS/CTS 時，短訊框掉得比長訊框多。</p>
 
   <h2 id="hidden">10. Hidden Node 與 RTS/CTS（p.24–26）<span class="en">（Hidden Node Problem／Provisions）</span></h2>
   <ul>
@@ -327,6 +342,31 @@ flowchart LR
     <div class="fig-title">Hidden node：沒有／有 RTS/CTS <span class="tag">動畫</span></div>
     <div class="fig-body"><div id="fig-hidden"></div><div class="status info" id="hidden-msg"></div></div>
     <div class="caption">依講義第 24、25 頁重繪。A 與 C 都在 AP 的範圍內，但彼此在對方範圍外。下方時間軸的黃色是 C 的 NAV。</div>
+  </div>
+  <h3 id="exposed">Exposed node（暴露節點）（p.19 上課講解）</h3>
+  <p>老師在 p.19（Basic Access Protocol Features：用虛擬載波感測防 hidden node）講到 exposed node，投影片上沒有這段文字。它是 hidden node 的反面，常和 hidden node 一起考（第 2-1 章也有提到）。下面的解法中，標「補充」的是講義以外的資料。</p>
+  <ul>
+    <li><b>情境</b>：B 正在送給 A；C 在 B 的範圍內，想送給 D。A 在 C 的範圍外，D 在 B 的範圍外。</li>
+    <li><b>問題</b>：C 的載波感測（CCA）聽到 B 在送，或從 B 的 RTS 設了 NAV，就判斷媒介忙而<b>延後</b>。但 C→D 的訊號到不了 A，<b>本來不會干擾 B→A</b>。可以同時進行的兩筆傳送被迫輪流，<b>空間重複使用</b><span class="en">（spatial reuse）</span>的機會浪費掉，吞吐量下降。</li>
+    <li><b>和 hidden node 的差別</b>：hidden node 是「該等卻沒等」→ <b>碰撞</b>；exposed node 是「不必等卻等了」→ <b>浪費</b>。兩者的根源相同：載波感測在<b>傳送端</b>做，但干擾只有在<b>接收端</b>才算數。</li>
+    <li><b>為什麼 802.11 的 RTS/CTS 解決不了</b>
+      <ul>
+        <li>C 聽得到 B 的 RTS，會設 NAV(RTS)，照樣延後。</li>
+        <li>就算讓 C 照 MACA 的規則「聽到 RTS、沒聽到 CTS 就可以送」：802.11 的單播需要對方回 CTS 與 ACK。D 回給 C 的 CTS／ACK 會在 C 被 B 的 Data 蓋掉；C 送的 Data 也會在 B 蓋掉 A 回給 B 的 ACK。<b>雙向交換讓兩邊互相干擾</b>，所以 802.11 保守地延後。</li>
+      </ul>
+    </li>
+    <li><b>解決或減輕的方法</b>
+      <ul>
+        <li><span class="sup">補充</span><b>調整載波感測門檻與傳送功率</b>：降低功率、提高 CCA 門檻，讓 C 不把遠處 B 的弱訊號當成忙碌。802.11ax 的 <b>BSS Coloring</b> 加 <b>OBSS_PD 空間重複使用</b>就是這個方向：聽到別的 BSS（顏色不同）的弱訊號時可以忽略並照常傳送，同時降低自己的傳送功率。代價是門檻放太寬會把 hidden node 碰撞帶回來。</li>
+        <li><span class="sup">補充</span><b>雙忙音</b><span class="en">（Dual Busy Tone Multiple Access, DBTMA）</span>：另開窄頻通道，接收端送「接收忙音」、傳送端送「傳送忙音」。只有聽到接收忙音的站台才延後，所以 exposed 的 C（只聽到傳送忙音）可以送，hidden 的站台聽到接收忙音則會延後。代價是多一個通道和硬體，802.11 沒有採用。</li>
+        <li><span class="sup">補充</span><b>網路規劃</b>：相鄰的 BSS 用不重疊的通道（2.4 GHz 的 1、6、11），或用指向性／分區天線，讓 B 和 C 根本不互相干擾。</li>
+      </ul>
+    </li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">Exposed node：C 聽到 B 在送，就不敢送給 D <span class="tag static">圖解</span></div>
+    <div class="fig-body" id="fig-exposed"></div>
+    <div class="caption">橙色虛線是 B 的範圍，綠色虛線是 C 的範圍。C 在 B 的範圍內；A 不在 C 的範圍內，D 不在 B 的範圍內。</div>
   </div>
 
   <h2 id="proc">11. DCF 存取程序（p.27–28）<span class="en">（DCF Access Procedure）</span></h2>
@@ -519,6 +559,7 @@ flowchart TD
     <tr><td>退避凍結 vs. 重抽</td><td>媒介忙：凍結，保留剩餘值</td><td>傳送失敗：CW 加倍、重抽新值</td><td>被打斷還是失敗</td></tr>
     <tr><td>Short vs. Long retry count</td><td>訊框 ≤ RTS_Threshold</td><td>訊框 ＞ RTS_Threshold</td><td>和 RTS_Threshold 比</td></tr>
     <tr><td>CTS_Timeout（T1）vs. ACK_Window（T3）</td><td>等 CTS 的時限</td><td>等 ACK 的時限</td><td>等的是哪個回應</td></tr>
+    <tr><td>Hidden node vs. Exposed node（p.19）</td><td>彼此聽不到，送給同一個接收端 → 在接收端碰撞</td><td>聽得到別人在送，其實不會干擾卻延後 → 浪費頻寬</td><td>碰撞 vs. 白等；RTS/CTS 只解決前者</td></tr>
     <tr><td>NAV(RTS) vs. NAV(CTS)</td><td>聽得到傳送端的站台設定</td><td>聽得到接收端的站台（含 hidden node）設定</td><td>聽得到誰</td></tr>
     <tr><td>RTS_Threshold vs. Fragmentation_Threshold</td><td>超過才加 RTS/CTS</td><td>超過就切段</td><td>預約媒介 vs. 切小塊</td></tr>
     <tr><td>廣播 ToDS = 0 vs. ToDS = 1</td><td>基本存取，不用 RTS/CTS，沒 ACK</td><td>單播給 AP，照 RTS/CTS 規則，有 ACK</td><td>這一跳是不是單播</td></tr>
@@ -532,13 +573,15 @@ flowchart TD
   <details><summary>3. 退避計時器為什麼在媒介忙時「凍結」而不是重新抽？</summary><div class="inner">凍結保留剩餘值，等越久的站台剩餘值越小，下一輪更容易先到 0，整體趨向先到先服務（FCFS）的公平；若每次都重抽，運氣不好的站台可能一直抽到大數字而餓死。可以在第 11 節的動畫看 B、D 的紅色剩餘值。</div></details>
   <details><summary>4. Hidden node 是什麼？RTS/CTS 怎麼解決？為什麼廣播不能用 RTS/CTS？</summary><div class="inner">兩個 STA 都在 AP 範圍內但彼此聽不到，載波感測失效，同時送就在 AP 碰撞。RTS/CTS 讓接收端（AP）用 CTS 把 Duration 廣播給它範圍內的所有站台，hidden node 聽到 CTS 就設 NAV 不送。廣播有很多接收者，不可能讓所有人都回 CTS（會互撞），所以廣播／群播只用基本存取，也沒有 ACK。</div></details>
   <details><summary>5. 什麼時候用 EIFS？為什麼要比 DIFS 長？</summary><div class="inner">站台收到錯誤的訊框後（PHY 指出媒介空閒），要等 EIFS 而不是 DIFS。因為這個訊框可能是別人的 Data，它的接收端收到正確的話會在 SIFS 後回 ACK；EIFS 多等了一個以 1 Mbps 送的 ACK 時間，避免撞掉那個 ACK。</div></details>
+  <details><summary>6. 什麼是 exposed node problem（p.19）？為什麼 802.11 的 RTS/CTS 解決不了？有哪些解決或減輕的方法？</summary><div class="inner"><b>定義</b>：B 正在送給 A，C 在 B 的範圍內想送給 D（A 不在 C 的範圍、D 不在 B 的範圍）。C 的載波感測聽到 B，或從 B 的 RTS 設了 NAV，就延後；但 C→D 其實不會干擾 A，兩筆傳送本來可以同時進行，結果被迫輪流，浪費頻寬（spatial reuse 降低）。和 hidden node 相反：hidden 是該等沒等 → 碰撞；exposed 是不必等卻等 → 浪費。<br><b>RTS/CTS 為什麼沒用</b>：C 聽到 RTS 仍會設 NAV。就算讓 C「聽到 RTS、沒聽到 CTS 就送」，802.11 的單播需要 CTS 與 ACK 回傳：D 回給 C 的 CTS／ACK 會在 C 被 B 的 Data 干擾，C 的 Data 也會在 B 干擾 A 回的 ACK，所以仍然不能同時送。<br><b>解法</b>（補充）：(1) 調整 CCA 門檻與傳送功率，例如 802.11ax 的 BSS Coloring＋OBSS_PD 空間重複使用；(2) 雙忙音（DBTMA），只有聽到「接收忙音」的站台才延後；(3) 網路規劃：相鄰 BSS 用不重疊通道、指向性天線。代價：門檻放太寬會把 hidden node 碰撞帶回來。可以看第 10 節的圖。</div></details>
+  <details><summary>7. DCF 的額外負擔來自哪裡？如何解決或降低？</summary><div class="inner"><b>來源</b>：每個訊框都要付一次的固定時間：DIFS、隨機退避、PLCP Preamble 與 Header、MAC Header 與 FCS、SIFS、ACK；用 RTS/CTS 時再加 RTS、CTS 與兩個 SIFS。這些和 payload 大小無關，所以訊框越短效率越差（p.23：64 bytes 約 88 KByte/s，576 bytes 約 195）。<br><b>降低方法</b>：(1) 送較大的訊框，分攤固定負擔；(2) 調 RTS_Threshold，只讓長訊框用 RTS/CTS（p.26 的 Mixed 效率好）；(3) 依通道品質調 Fragmentation_Threshold，干擾多時切段減少重傳量，乾淨時不切；(4) PCF 無競爭期省掉 DIFS 與退避。補充：(5) short preamble、short slot time；(6) 保護時用 CTS-to-self 取代 RTS/CTS；(7) 802.11e TXOP，搶到一次媒介就用 SIFS 連送多個訊框；(8) 802.11n 訊框聚合（A-MSDU、A-MPDU）加 Block ACK，多筆資料只付一次 Preamble、競爭與 ACK。可以用第 9 節的計算器驗證。</div></details>
   <h3>計算題</h3>
-  <details><summary>6. 802.11b（SIFS 10 µs、Slot 20 µs、CWmin 31、CWmax 1023），算 PIFS、DIFS、初次的平均與最大退避時間，以及第 3 次重傳時的 CW。</summary><div class="inner">PIFS = 10 + 20 = 30 µs；DIFS = 10 + 2 × 20 = 50 µs。初次平均退避 = 31 ÷ 2 × 20 = 310 µs；最大 = 31 × 20 = 620 µs。CW：31 → 63 → 127 → 255，第 3 次重傳時 CW = 255。</div></details>
-  <details><summary>7. 802.11a 54 Mbps、RTS/CTS 啟用、Data 248 µs、RTS／CTS／ACK 各 24 µs、SIFS 16 µs。算 RTS、CTS、Data 的 Duration。</summary><div class="inner">RTS = SIFS + CTS + SIFS + Data + SIFS + ACK = 16 + 24 + 16 + 248 + 16 + 24 = 344 µs。CTS = 344 − 16 − 24 = 304 µs。Data = SIFS + ACK = 16 + 24 = 40 µs。</div></details>
-  <details><summary>8. 18 Mbps 設為基本速率、48 Mbps 設為非基本，Supported Rates 裡各編成什麼？</summary><div class="inner">18 ÷ 0.5 = 36 = 0x24，基本速率 bit 7 設 1 → 0x24 + 0x80 = 0xA4。48 ÷ 0.5 = 96 = 0x60，非基本 → 0x60。可以用第 2 節的編碼器驗證。</div></details>
+  <details><summary>8. 802.11b（SIFS 10 µs、Slot 20 µs、CWmin 31、CWmax 1023），算 PIFS、DIFS、初次的平均與最大退避時間，以及第 3 次重傳時的 CW。</summary><div class="inner">PIFS = 10 + 20 = 30 µs；DIFS = 10 + 2 × 20 = 50 µs。初次平均退避 = 31 ÷ 2 × 20 = 310 µs；最大 = 31 × 20 = 620 µs。CW：31 → 63 → 127 → 255，第 3 次重傳時 CW = 255。</div></details>
+  <details><summary>9. 802.11a 54 Mbps、RTS/CTS 啟用、Data 248 µs、RTS／CTS／ACK 各 24 µs、SIFS 16 µs。算 RTS、CTS、Data 的 Duration。</summary><div class="inner">RTS = SIFS + CTS + SIFS + Data + SIFS + ACK = 16 + 24 + 16 + 248 + 16 + 24 = 344 µs。CTS = 344 − 16 − 24 = 304 µs。Data = SIFS + ACK = 16 + 24 = 40 µs。</div></details>
+  <details><summary>10. 18 Mbps 設為基本速率、48 Mbps 設為非基本，Supported Rates 裡各編成什麼？</summary><div class="inner">18 ÷ 0.5 = 36 = 0x24，基本速率 bit 7 設 1 → 0x24 + 0x80 = 0xA4。48 ÷ 0.5 = 96 = 0x60，非基本 → 0x60。可以用第 2 節的編碼器驗證。</div></details>
   <h3>情境應用題</h3>
-  <details><summary>9. 大型會議廳裡一台 AP 服務很多筆電，彼此距離遠、常常互相聽不到，使用者抱怨很慢。RTS_Threshold 該怎麼調？</summary><div class="inner">互相聽不到代表 hidden node 多，碰撞會發生在長的 Data 上，代價大。把 RTS_Threshold 調低（例如講義的 200 bytes），讓較長的訊框先 RTS/CTS：碰撞只發生在 20 bytes 的 RTS，損失小，而且 CTS 讓 hidden node 設 NAV。短訊框仍不用 RTS/CTS，避免額外負擔（講義 p.26：Mixed 的效率最好）。</div></details>
-  <details><summary>10. 11g AP 的 BSS 裡加入一台舊的 11b 印表機，AP 的 ERP 資訊元素會怎麼變？11g 筆電的傳送方式會怎麼變？</summary><div class="inner">AP 把 NonERP_Present（b0）設 1，通常也把 Use_Protection（b1）設 1。11g 筆電之後用 ERP-OFDM 速率送資料前，要先用保護機制：用 11b 聽得懂的 DSSS 速率送 CTS（CTS-to-self）或 RTS/CTS，讓印表機設 NAV，再用 OFDM 送資料。吞吐量會因此下降。</div></details>
+  <details><summary>11. 大型會議廳裡一台 AP 服務很多筆電，彼此距離遠、常常互相聽不到，使用者抱怨很慢。RTS_Threshold 該怎麼調？</summary><div class="inner">互相聽不到代表 hidden node 多，碰撞會發生在長的 Data 上，代價大。把 RTS_Threshold 調低（例如講義的 200 bytes），讓較長的訊框先 RTS/CTS：碰撞只發生在 20 bytes 的 RTS，損失小，而且 CTS 讓 hidden node 設 NAV。短訊框仍不用 RTS/CTS，避免額外負擔（講義 p.26：Mixed 的效率最好）。</div></details>
+  <details><summary>12. 11g AP 的 BSS 裡加入一台舊的 11b 印表機，AP 的 ERP 資訊元素會怎麼變？11g 筆電的傳送方式會怎麼變？</summary><div class="inner">AP 把 NonERP_Present（b0）設 1，通常也把 Use_Protection（b1）設 1。11g 筆電之後用 ERP-OFDM 速率送資料前，要先用保護機制：用 11b 聽得懂的 DSSS 速率送 CTS（CTS-to-self）或 RTS/CTS，讓印表機設 NAV，再用 OFDM 送資料。吞吐量會因此下降。</div></details>
 
   <h2 id="recap">18. 一頁速記</h2>
   <ol>
@@ -552,10 +595,12 @@ flowchart TD
     <li>單播一定回 ACK（SIFS 後）；沒 ACK = 失敗；短／長 retry count 以 RTS_Threshold 區分。</li>
     <li>RTS/CTS：單播且超過 RTS_Threshold 才用；Duration → NAV；NAV 或 CCA 忙就延後；解決 hidden node。</li>
     <li>分段：同 Seq、Frag 號遞增、SIFS 連發；Data／ACK 的 Duration 涵蓋下一段＋ACK；廣播 ToDS = 0 無 RTS/CTS、無 ACK、無 MAC 復原。</li>
+    <li>Exposed node（p.19）：聽得到別人在送就延後，其實不會干擾 → 浪費；RTS/CTS 解決不了（CTS／ACK 要回傳）；<span class="sup">補充</span>解法：調 CCA 門檻／功率（11ax BSS Coloring）、雙忙音、通道規劃。</li>
+    <li>降低額外負擔：大訊框、RTS_Threshold（Mixed）、適當分段、PCF；<span class="sup">補充</span>short preamble／slot、CTS-to-self、TXOP、A-MSDU／A-MPDU＋Block ACK。</li>
   </ol>
 
   <h2 id="glossary">19. 專有名詞對照</h2>
-  <details><summary>展開 36 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
+  <details><summary>展開 42 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
     <tr><th>中文</th><th>英文（縮寫）</th><th>解釋</th></tr>
     <tr><td>資訊元素</td><td>Information Element（IE）</td><td>管理訊框中「ID＋長度＋內容」的可變欄位</td></tr>
     <tr><td>服務集識別碼</td><td>Service Set Identifier（SSID）</td><td>ESS 或 IBSS 的名稱，0–32 octets</td></tr>
@@ -584,6 +629,12 @@ flowchart TD
     <tr><td>二元指數退避</td><td>Binary Exponential Backoff</td><td>每失敗一次 CW 約加倍</td></tr>
     <tr><td>正向確認</td><td>Positive Acknowledgment（ACK）</td><td>接收端成功收到後主動回覆</td></tr>
     <tr><td>隱藏節點</td><td>Hidden Node</td><td>彼此聽不到、但共用同一個接收端的站台</td></tr>
+    <tr><td>暴露節點</td><td>Exposed Node</td><td>（p.19）聽得到別人在送就延後，其實不會干擾，浪費頻寬</td></tr>
+    <tr><td>空間重複使用</td><td>Spatial reuse</td><td><span class="sup">補充</span>互不干擾的傳送在不同位置同時進行</td></tr>
+    <tr><td>BSS 著色</td><td>BSS Coloring（OBSS_PD）</td><td><span class="sup">補充</span>802.11ax 用顏色辨別別的 BSS，弱訊號可忽略而照常傳送</td></tr>
+    <tr><td>雙忙音多重存取</td><td>Dual Busy Tone Multiple Access（DBTMA）</td><td><span class="sup">補充</span>另用窄頻通道送傳送／接收忙音，同時處理 hidden 與 exposed node</td></tr>
+    <tr><td>訊框聚合</td><td>Frame aggregation（A-MSDU／A-MPDU）</td><td><span class="sup">補充</span>802.11n 把多個訊框合成一次傳送，分攤額外負擔</td></tr>
+    <tr><td>區塊確認</td><td>Block ACK</td><td><span class="sup">補充</span>一個 ACK 用 bitmap 確認多個訊框</td></tr>
     <tr><td>要求傳送／允許傳送</td><td>Request To Send / Clear To Send（RTS / CTS）</td><td>預約媒介的控制訊框</td></tr>
     <tr><td>RTS 門檻</td><td>RTS_Threshold</td><td>訊框超過此長度才用 RTS/CTS</td></tr>
     <tr><td>分段門檻</td><td>Fragmentation_Threshold（aFragmentationThreshold）</td><td>超過此長度就切段</td></tr>
@@ -608,6 +659,8 @@ flowchart TD
     <li><details><summary>畫出 Src／Dest／Other 的 CSMA/CA＋ACK 時序</summary><div class="inner">Src：DIFS → Data；Dest：SIFS → Ack；Other：Data＋ACK 期間 Defer Access，之後 DIFS → Contention Window（Backoff after Defer）→ Next MPDU。</div></details></li>
     <li><details><summary>說明退避計時器何時凍結、何時恢復，以及為什麼公平</summary><div class="inner">媒介忙時凍結；媒介空閒 DIFS 後恢復倒數。剩餘值保留，等越久越先到 0，趨向 FCFS；剛送完的站台也要退避。</div></details></li>
     <li><details><summary>解釋 hidden node，畫出 RTS／CTS／Data／ACK 與 NAV(RTS)、NAV(CTS)</summary><div class="inner">兩站彼此聽不到但都聽得到 AP。Src：DIFS → RTS；Dest：SIFS → CTS；Src：SIFS → Data；Dest：SIFS → Ack。Other 從 RTS 設 NAV(RTS)、從 CTS 設 NAV(CTS)，到 ACK 結束後再 DIFS、退避。</div></details></li>
+    <li><details><summary>解釋 exposed node，說明 RTS/CTS 為什麼解決不了，並列出解法</summary><div class="inner">B→A 時，C 聽到 B 就不送給 D，其實 C→D 不干擾 A → 浪費。RTS/CTS 不行：C 仍設 NAV(RTS)；而且 D 回的 CTS／ACK 會在 C 被 B 蓋掉。解法：調 CCA 門檻與功率（11ax BSS Coloring＋OBSS_PD）、雙忙音（DBTMA）、不重疊通道與指向性天線。</div></details></li>
+    <li><details><summary>列出 DCF 額外負擔的來源與降低方法</summary><div class="inner">DIFS、退避、Preamble、PHY／MAC 標頭、SIFS、ACK（＋RTS/CTS）。降低：大訊框、RTS_Threshold 只給長訊框、適當分段、PCF；補充：short preamble／slot、CTS-to-self、TXOP 連送、A-MSDU／A-MPDU＋Block ACK。</div></details></li>
     <li><details><summary>算出 RTS、CTS、Data 的 Duration 值</summary><div class="inner">RTS = 3 SIFS + CTS + Data + ACK；CTS = RTS 的值 − SIFS − CTS；Data = SIFS + ACK；ACK = 0。</div></details></li>
     <li><details><summary>說明 short／long retry count、CTS_Timeout、ACK_Window</summary><div class="inner">≤ RTS_Threshold 用 short、＞ 用 long，獨立計數；T1 內沒 CTS → 重送 RTS 且 CW 加倍；T3 內沒 ACK → 同樣退避重傳；到 limit 就丟棄。</div></details></li>
     <li><details><summary>說明分段規則、RTS/CTS＋分段時 NAV 的延伸，以及 ACK 遺失時誰可以存取頻道</summary><div class="inner">同 Seq、Frag 號從 0 遞增、除最後一段等長、不超過 aFragmentationThreshold（WEP 除外）、SIFS 連發；Data／ACK 的 Duration 涵蓋下一段＋ACK。ACK 遺失：只聽得到目的端的站台馬上可存取；聽得到來源端的站台等 Fragment 的 NAV 到期；來源端也要等到期再競爭。</div></details></li>

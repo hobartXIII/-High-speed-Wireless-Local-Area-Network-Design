@@ -1,6 +1,6 @@
-/* 第 2-4 章：資訊元素瀏覽器、Supported Rates 編碼器、IFS 尺規、二元指數退避、CSMA/CA＋ACK 時序、吞吐量計算器、Hidden node 與 RTS/CTS、五站退避模擬、分段 NAV 鏈 */
+/* 第 2-4 章：資訊元素瀏覽器、Supported Rates 編碼器、IFS 尺規、二元指數退避、CSMA/CA＋ACK 時序、吞吐量計算器、Hidden node 與 RTS/CTS、Exposed node、五站退避模擬、分段 NAV 鏈 */
 (function () {
-  const { S, clear, svgRoot, Timeline, lerp, prog } = WL;
+  const { S, clear, svgRoot, arrowDefs, Timeline, lerp, prog } = WL;
 
   function makeSeg(fig, opts, cb) {
     const seg = document.createElement('div');
@@ -369,6 +369,30 @@
     }
     const tl = Timeline(fig, { duration: 9, render: t => render(t / 9 * M[mode].end), format: t => `${(t / 9 * M[mode].end).toFixed(1)} 單位` });
     makeSeg(fig, [['basic', '沒有 RTS/CTS'], ['rts', '使用 RTS/CTS']], v => { mode = v; tl.pause(); tl.set(0); tl.play(); });
+  })();
+
+  /* ---------- 7b. Exposed node ---------- */
+  (function exposed() {
+    const host = document.getElementById('fig-exposed');
+    if (!host) return;
+    const svg = svgRoot(host, 720, 250, 'Exposed node 示意');
+    const ar = arrowDefs(svg);
+    const y = 100, P = { A: 90, B: 280, C: 440, D: 630 };
+    S('ellipse', { cx: P.B, cy: y, rx: 210, ry: 74, fill: 'var(--orange-soft)', opacity: 0.35, stroke: 'var(--orange)', 'stroke-dasharray': '5 4' }, svg);
+    S('ellipse', { cx: P.C, cy: y, rx: 210, ry: 74, fill: 'var(--green-soft)', opacity: 0.35, stroke: 'var(--green)', 'stroke-dasharray': '5 4' }, svg);
+    S('text', { x: 80, y: 20, 'font-size': 10.5, fill: 'var(--orange)', text: 'B 的範圍' }, svg);
+    S('text', { x: 650, y: 20, 'text-anchor': 'end', 'font-size': 10.5, fill: 'var(--green)', text: 'C 的範圍' }, svg);
+    S('path', { d: `M${P.B - 26} ${y} L${P.A + 26} ${y}`, stroke: 'var(--orange)', 'stroke-width': 3, 'marker-end': ar('orange') }, svg);
+    S('text', { x: (P.A + P.B) / 2, y: y - 12, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, fill: 'var(--orange)', text: 'B → A 傳送中' }, svg);
+    S('path', { d: `M${P.C + 26} ${y} L${P.D - 26} ${y}`, stroke: 'var(--muted)', 'stroke-width': 3, 'stroke-dasharray': '6 4', 'marker-end': ar('muted') }, svg);
+    S('text', { x: (P.C + P.D) / 2, y: y - 12, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 700, cls: 't-muted', text: 'C → D 被迫延後' }, svg);
+    S('text', { x: (P.C + P.D) / 2, y: y + 30, 'text-anchor': 'middle', 'font-size': 11, fill: 'var(--red)', text: '其實到不了 A，不會干擾' }, svg);
+    Object.entries(P).forEach(([k, x]) => {
+      S('circle', { cx: x, cy: y, r: 22, fill: 'var(--surface)', stroke: 'var(--fg)', 'stroke-width': 1.6 }, svg);
+      S('text', { x, y: y + 5, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, text: k }, svg);
+    });
+    S('text', { x: 360, y: 205, 'text-anchor': 'middle', 'font-size': 12.5, text: 'C 的 CCA 聽到 B（或從 B 的 RTS 設了 NAV）→ 判斷媒介忙 → 兩筆本來可以同時進行的傳送變成輪流' }, svg);
+    S('text', { x: 360, y: 228, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: '即使讓 C 送：D 回的 CTS／ACK 會在 C 被 B 的 Data 蓋掉，所以 RTS/CTS 也救不了' }, svg);
   })();
 
   /* ---------- 8. 五站退避模擬 ---------- */
