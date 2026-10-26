@@ -111,6 +111,11 @@
       <p>PCF 輪詢與超級訊框、CFP 時序、Type/Subtype、TSF 同步與 TBTT、Beacon 產生、省電（TIM、DTIM、PS-Poll、ATIM）、掃描、Association、Roaming。</p>
       <div class="anims">▶ PCF 輪詢動畫・CFP 時序・TBTT・IBSS Beacon 競爭・省電動畫・TIM bitmap・ATIM・主動掃描・漫遊模擬</div>
     </a>
+    <a class="card" href="ch3-80211e-qos.html">
+      <span class="num">CH 3</span><h3>🎚️ IEEE 802.11e Enhanced QoS</h3>
+      <p>QoS 需求、UP 與 AC、TSPEC 與 TID、QoS Control、Ack Policy、TXOP、HCF（EDCA、HCCA）、AIFS 與預設參數、DLS、Block Ack、APSD 與 WMM Power Save、802.11ae／aa。</p>
+      <div class="anims">▶ QoS Control 解碼器・EDCA 參數尺規・EDCA 競爭模擬・PCF vs. HCF 超級訊框・TXOP 裝箱・Block Ack 動畫・VoIP 省電比較</div>
+    </a>
   </div>
 
   <h2 id="homework">作業</h2>
@@ -131,7 +136,7 @@
 
   <h2 id="sources">原始資料</h2>
   <ul>
-    <li>講義 PDF：Google 雲端硬碟「高速無線區域網路設計」資料夾（0Intro_LAN、1CSMA_CD、2-1 CSMA_CA、2-2 CSMA_CA、2-3 CSMA_CA、2-4 CSMA_CA、2-5 CSMA_CA）</li>
+    <li>講義 PDF：Google 雲端硬碟「高速無線區域網路設計」資料夾（0Intro_LAN、1CSMA_CD、2-1 CSMA_CA、2-2 CSMA_CA、2-3 CSMA_CA、2-4 CSMA_CA、2-5 CSMA_CA、11EnhancedQoS）</li>
     <li>筆記：Notion「📡 高速無線區域網路設計」</li>
     <li>原始碼：<a href="https://github.com/hobartXIII/-High-speed-Wireless-Local-Area-Network-Design">GitHub repo</a></li>
   </ul>
@@ -151,10 +156,10 @@
     { x: 370, y: 126, w: 160, t: '802.11 MAC 服務', s: 'CH 2-2', on: true, href: 'ch2-2-80211-mac.html' },
     { x: 570, y: 6, w: 140, t: 'DCF 存取機制', s: 'CH 2-4', on: true, href: 'ch2-4-80211-dcf.html' },
     { x: 570, y: 60, w: 140, t: 'PCF 與 MAC 管理', s: 'CH 2-5', on: true, href: 'ch2-5-80211-pcf-mgmt.html' },
-    { x: 570, y: 116, w: 140, t: '11e QoS・11i 安全', s: '延伸' },
-    { x: 570, y: 160, w: 140, t: '11n/ac/ax/be', s: '高速 PHY' },
-    { x: 570, y: 204, w: 140, t: '802.15 WPAN', s: 'BT・Zigbee・BAN' },
-    { x: 570, y: 248, w: 140, t: '802.16 WiMAX', s: 'WMAN' },
+    { x: 570, y: 114, w: 140, t: '802.11e QoS', s: 'CH 3', on: true, href: 'ch3-80211e-qos.html' },
+    { x: 570, y: 170, w: 140, t: '11n/ac/ax/be', s: '高速 PHY' },
+    { x: 570, y: 214, w: 140, t: '802.15 WPAN', s: 'BT・Zigbee・BAN' },
+    { x: 570, y: 258, w: 140, t: '802.16 WiMAX', s: 'WMAN' },
     { x: 370, y: 222, w: 160, t: 'WEP 與訊框格式', s: 'CH 2-3', on: true, href: 'ch2-3-80211-frame.html' },
   ];
   const H = 48;
