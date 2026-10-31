@@ -89,7 +89,7 @@ function build(srcFile) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${meta.eyebrow} 講義英中對照（本機）</title>
+<title>${meta.eyebrow} 講義英中對照</title>
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/highlighter.css">
 <link rel="stylesheet" href="assets/css/en-practice.css?v=4">
@@ -102,11 +102,11 @@ function build(srcFile) {
   <div class="page-head">
     <div class="eyebrow">${meta.eyebrow}・講義英中對照</div>
     <h1>${meta.title}</h1>
-    <div class="meta"><span>來源：${meta.source}</span><span>本機專用，不上 GitHub Pages</span></div>
+    <div class="meta"><span>來源：${meta.source}</span><span>需要密碼</span></div>
   </div>
 
   <div class="callout warn">
-    <p><b>這頁只在本機。</b>檔名 <code>tr-*.html</code> 已列在 <code>.gitignore</code>，不會 commit；由 <code>node tools/build-tr.js</code> 從 <code>tr-src/</code> 產生。</p>
+    <p><b>個人複習用。</b>網站上的版本（<code>lec-*.html</code>）以 StatiCrypt 密碼加密；明文的 <code>tr-*.html</code> 與來源 <code>tr-src/</code> 只在本機，不 commit。</p>
     <p>依 PDF 頁碼，每頁一個區塊：左欄英文、右欄中文，照字面翻譯。講義原本就寫中文的地方照原文保留、橫跨兩欄（標 <span class="zh-tag">中文原文</span>）。講義上的圖改用網頁筆記<a href="${meta.notes}">${meta.notes}</a>重繪的圖。PDF 抽出的文字順序會亂，已依投影片版面排回；若與講義原圖不同，以講義為準。</p>${meta.practice ? `\n    <p>英文練習題：<a href="${meta.practice}">${meta.practice}</a></p>` : ''}${meta.extra ? `\n    <p>${meta.extra}</p>` : ''}
   </div>
 

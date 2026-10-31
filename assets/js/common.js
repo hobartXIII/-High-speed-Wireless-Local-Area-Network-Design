@@ -12,6 +12,7 @@
     { href: 'ch3-80211e-qos.html', label: '3. 802.11e QoS' },
     { href: 'hw1-ns3.html', label: 'HW1. ns-3 使用說明' },
     { href: 'index.html#english', label: '英文練習' },
+    { href: 'index.html#lecture', label: '講義對照 🔒' },
   ];
   // 課程識別：螢光筆（highlighter.js）的 localStorage 前綴與匯出檔名。同一個 github.io 網域的
   // 其他課程筆記共用 localStorage，靠這個前綴分開
