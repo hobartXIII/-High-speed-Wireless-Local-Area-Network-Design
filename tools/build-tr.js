@@ -38,6 +38,30 @@ function figures(notesFile) {
 
 const KIND = { t: 't', b: 'b', s: 's', ss: 'ss', g: 'g', '-': '' };
 
+// 講義對照頁之間的切換列與上一章／下一章；連到網站上加密的 lec-*.html（記住密碼後會自動解鎖）
+const LECTURES = [
+  ['ch0-lan', '0. LAN 概論'],
+  ['ch1-csma-cd', '1. 802.3 CSMA/CD'],
+  ['ch2-1-80211-phy', '2-1. 802.11 架構與 PHY'],
+  ['ch2-2-80211-mac', '2-2. 802.11 MAC 服務'],
+  ['ch2-3-80211-frame', '2-3. WEP 與訊框格式'],
+  ['ch2-4-80211-dcf', '2-4. DCF 存取機制'],
+  ['ch2-5-80211-pcf-mgmt', '2-5. PCF 與 MAC 管理'],
+  ['ch3-80211e-qos', '3. 802.11e QoS'],
+];
+function lectureNav(file) {
+  const here = file.replace(/^tr-|\.html$/g, '');
+  const idx = LECTURES.findIndex(([b]) => b === here);
+  const bar = '  <nav class="lec-nav" aria-label="講義對照章節">\n    <span class="lec-nav-label">講義對照 🔒</span>\n' +
+    LECTURES.map(([b, label]) => `    <a href="lec-${b}.html"${b === here ? ' aria-current="page"' : ''}>${label}</a>`).join('\n') +
+    '\n  </nav>';
+  const prev = LECTURES[idx - 1], next = LECTURES[idx + 1];
+  const pager = '  <nav class="pager" aria-label="上一章與下一章">' +
+    (prev ? `<a href="lec-${prev[0]}.html"><small>← 上一章</small>${prev[1]}</a>` : '<span></span>') +
+    (next ? `<a class="next" href="lec-${next[0]}.html"><small>下一章 →</small>${next[1]}</a>` : '') + '</nav>';
+  return { bar, pager };
+}
+
 function build(srcFile) {
   const meta = {}, pages = [];
   let page = null, figs = null;
@@ -83,6 +107,7 @@ function build(srcFile) {
       p.rows.map(r => '    ' + r).join('\n') + '\n  </div>';
   }).join('\n\n');
   const unused = figs.filter(f => !f.used).map(f => f.html).join('\n');
+  const nav = lectureNav(meta.file);
 
   const html = `<!doctype html>
 <html lang="zh-Hant">
@@ -92,13 +117,15 @@ function build(srcFile) {
 <title>${meta.eyebrow} 講義英中對照</title>
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/highlighter.css">
-<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=5">
 <script src="assets/js/highlighter.js"></script>
 <script src="assets/js/common.js"></script>
 </head>
 <body>
 <div class="layout">
 <main>
+${nav.bar}
+
   <div class="page-head">
     <div class="eyebrow">${meta.eyebrow}・講義英中對照</div>
     <h1>${meta.title}</h1>
@@ -111,6 +138,8 @@ function build(srcFile) {
   </div>
 
 ${body}
+
+${nav.pager}
 ${unused ? `\n  <!-- 沒用到的筆記圖：${meta.script} 需要這些元素，否則會中斷 -->\n  <div hidden aria-hidden="true">\n${unused}\n  </div>` : ''}
 </main>
 <aside class="toc"></aside>

@@ -1,5 +1,14 @@
 /* 英文練習區（en-*.html）與本機講義對照（tr-*.html）共用樣式；顏色沿用 style.css 的 token */
 
+/* ---------- 講義對照頁之間的章節切換列（黏在網站頁首下方） ---------- */
+.lec-nav { position: sticky; top: var(--header-h, 56px); z-index: 5; display: flex; gap: 4px; align-items: center; overflow-x: auto; scrollbar-width: thin;
+  margin: 12px 0 0; padding: 6px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.lec-nav-label { font-size: .8rem; font-weight: 600; color: var(--muted); white-space: nowrap; padding: 0 6px; }
+.lec-nav a { padding: 4px 10px; border-radius: 6px; color: var(--muted); white-space: nowrap; font-size: .88rem; }
+.lec-nav a:hover { background: var(--surface-2); color: var(--fg); text-decoration: none; }
+.lec-nav a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.lec-nav ~ h2 { scroll-margin-top: 112px; }
+
 /* ---------- 講義對照：每頁一個區塊，左英右中，同一列左右對齊 ---------- */
 .pg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: 1.2em 0; overflow: hidden; }
 .pg .r { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding: 2px 16px; }
