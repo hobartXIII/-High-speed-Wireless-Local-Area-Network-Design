@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH2-3 英文練習：WEP 與訊框格式</title>
+<meta name="description" content="第 2-3 章 WEP 與 MAC 訊框格式的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近題目中單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'WEP only provides "confidentiality." Confidentiality means ____.',
+        zh: 'WEP 只提供 confidentiality。confidentiality 的意思是 ____。',
+        options: [
+          { en: 'keeping data secret from people who should not read it', zh: '讓不該讀的人看不到資料' },
+          { en: 'making data arrive faster', zh: '讓資料更快抵達' },
+          { en: 'proving who sent the data', zh: '證明資料是誰送的' },
+          { en: 'compressing the data', zh: '壓縮資料' }
+        ],
+        answer: 0,
+        full: { en: 'Confidentiality means keeping data secret from people who should not read it.', zh: '機密性是讓不該讀的人看不到資料。' },
+        why: '講義 p.1：Only implements Confidentiality function。證明身分是 authentication（認證）。'
+      },
+      {
+        en: 'The ICV allows an "integrity" check. Integrity means the data ____.',
+        zh: 'ICV 讓接收端能做 integrity 檢查。integrity 指資料 ____。',
+        options: [
+          { en: 'was sent at high speed', zh: '以高速送出' },
+          { en: 'is encrypted twice', zh: '加密了兩次' },
+          { en: 'was not changed on the way', zh: '在途中沒有被改動' },
+          { en: 'came from the AP', zh: '來自 AP' }
+        ],
+        answer: 2,
+        full: { en: 'Integrity means the data was not changed on the way; the receiver checks whether ICV\' equals ICV.', zh: '完整性指資料在途中沒有被改動；接收端檢查 ICV\' 是否等於 ICV。' },
+        why: '講義 p.1–2：includes an ICV to allow integrity check；If integrity check fails then frame is ACKed but discarded。'
+      },
+      {
+        en: 'Data frames with To DS = 0 and From DS = 0 are "direct" frames. "Direct" here means ____.',
+        zh: 'To DS = 0 且 From DS = 0 的資料訊框是 direct 訊框。這裡的 direct 是指 ____。',
+        options: [
+          { en: 'sent through the distribution system', zh: '經由分散式系統送出' },
+          { en: 'sent straight from one station to another without the DS', zh: '不經 DS，直接從一個站台送到另一個站台' },
+          { en: 'sent to every station', zh: '送給所有站台' },
+          { en: 'sent twice', zh: '送兩次' }
+        ],
+        answer: 1,
+        full: { en: 'A direct frame is sent straight from one station to another without going through the distribution system.', zh: '直接訊框是不經分散式系統、直接從一個站台送到另一個站台的訊框。' },
+        why: '講義 p.7–9：Class 1、2 只允許 direct data frames；Class 3 才允許 indirect（經 DS）。'
+      },
+      {
+        en: 'A frame is "discarded" when the integrity check fails. "Discarded" means ____.',
+        zh: '完整性檢查失敗時，訊框會被 discarded。discarded 的意思是 ____。',
+        options: [
+          { en: 'stored for later', zh: '存起來以後用' },
+          { en: 'forwarded to the AP', zh: '轉送給 AP' },
+          { en: 'decrypted again', zh: '再解密一次' },
+          { en: 'thrown away', zh: '丟棄' }
+        ],
+        answer: 3,
+        full: { en: '"Discarded" means thrown away: the frame is acknowledged but not passed up.', zh: 'discarded 是丟棄：訊框會被 ACK，但不會往上交。' },
+        why: 'dis-（去除）+ card。注意講義說 ACKed but discarded，也就是仍會回 ACK。'
+      },
+      {
+        en: 'The "Retry" bit helps a station eliminate "duplicate" frames. A duplicate is ____.',
+        zh: 'Retry 位元幫站台刪除 duplicate 訊框。duplicate 是 ____。',
+        options: [
+          { en: 'an exact copy of something received before', zh: '和先前收到的完全相同的副本' },
+          { en: 'a frame with errors', zh: '有錯誤的訊框' },
+          { en: 'a control frame', zh: '控制訊框' },
+          { en: 'a fragment', zh: '分段' }
+        ],
+        answer: 0,
+        full: { en: 'A duplicate is an exact copy of a frame received before; it appears when the sender retransmits because the ACK was lost.', zh: '重複訊框是和先前收到的完全相同的副本；ACK 遺失、傳送端重傳時就會出現。' },
+        why: '講義 p.12、p.14：Sequence Control 與 Retry 用來過濾 ACK 機制造成的重複訊框。'
+      },
+      {
+        en: 'An MSDU larger than the threshold is split into "fragments." A fragment is ____.',
+        zh: '超過門檻的 MSDU 會被切成 fragments。fragment 是 ____。',
+        options: [
+          { en: 'an extra header', zh: '一個額外的標頭' },
+          { en: 'a small piece of a larger whole', zh: '整體中的一小塊' },
+          { en: 'a broken antenna', zh: '壞掉的天線' },
+          { en: 'a type of encryption key', zh: '一種加密金鑰' }
+        ],
+        answer: 1,
+        full: { en: 'A fragment is a small piece of a larger whole; every fragment of the same MSDU keeps the same sequence number.', zh: '分段是整體中的一小塊；同一個 MSDU 的所有分段序號都相同。' },
+        why: '講義 p.17：The same value shall be used for all fragments of the same MSDU；Fragment Number 是 4 位元。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'WEP combines a 40-bit secret key with a 24-bit ____ to form a 64-bit seed.',
+        zh: 'WEP 把 40 位元的秘密金鑰和 24 位元的 ____ 組成 64 位元的種子。',
+        options: [
+          { en: 'checksum', zh: '檢查碼' },
+          { en: 'address', zh: '位址' },
+          { en: 'preamble', zh: '前導碼' },
+          { en: 'initialization vector', zh: '初始化向量' }
+        ],
+        answer: 3,
+        why: '講義 p.1：a 40-bit secret key … and a 24-bit IV … 40+24 = 64-bit PRNG seed。'
+      },
+      {
+        en: 'A station in State 2 is authenticated ____ not yet associated.',
+        zh: '處於狀態 2 的站台已經認證，____ 還沒關聯。',
+        options: [
+          { en: 'so', zh: '所以' },
+          { en: 'but', zh: '但' },
+          { en: 'because', zh: '因為' },
+          { en: 'or', zh: '或' }
+        ],
+        answer: 1,
+        why: '講義 p.5：State 2 : Authenticated, not Associated。前後語意相反，用 but。'
+      },
+      {
+        en: 'In an IBSS, only Class ____ frames are allowed because there is no DS.',
+        zh: '在 IBSS 中只允許類別 ____ 訊框，因為沒有 DS。',
+        options: [
+          { en: '1', zh: '1' },
+          { en: '2', zh: '2' },
+          { en: '3', zh: '3' },
+          { en: '4', zh: '4' }
+        ],
+        answer: 0,
+        why: '講義 p.10：In an IBSS, only class 1 frames are allowed since there is no DS in an IBSS。'
+      },
+      {
+        en: 'Address 1 always holds the address of the ____ of this hop.',
+        zh: '位址 1 永遠是這一跳的 ____ 的位址。',
+        options: [
+          { en: 'original source', zh: '原始來源' },
+          { en: 'transmitter', zh: '傳送端' },
+          { en: 'receiver', zh: '接收端' },
+          { en: 'portal', zh: 'portal' }
+        ],
+        answer: 2,
+        why: '講義 p.13：Addr 1 = All stations filter on this address；Addr 2 是 TA（傳送端）。'
+      },
+      {
+        en: 'In a PS-Poll frame, the Duration/ID field carries the ____ instead of a duration.',
+        zh: '在 PS-Poll 訊框中，Duration/ID 欄位攜帶的是 ____，而不是持續時間。',
+        options: [
+          { en: 'association ID', zh: '關聯 ID' },
+          { en: 'sequence number', zh: '序號' },
+          { en: 'secret key', zh: '秘密金鑰' },
+          { en: 'channel number', zh: '頻道編號' }
+        ],
+        answer: 0,
+        why: '講義 p.16：In PS-Poll control frame, Duration/ID carries association ID (AID) with the 2 MSB set as 1。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：Three States',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'An 802.11 station keeps track of two questions: has it been authenticated, and has it been associated? The answers give three possible states. A new station starts in State 1 and may send only Class 1 frames, such as probes, beacons, and authentication frames.',
+        zh: '一個 802.11 站台會追蹤兩個問題：它認證了沒有？它關聯了沒有？這兩個答案組成三種可能的狀態。新的站台從狀態 1 開始，只能送類別 1 訊框，例如探測、信標與認證訊框。'
+      },
+      {
+        en: 'After successful authentication it moves to State 2, where association frames become allowed. Only after a successful association does it reach State 3, in which it may send data through the distribution system. A deauthentication sends the station all the way back to State 1, while a disassociation only takes it back to State 2.',
+        zh: '認證成功後它進入狀態 2，可以送關聯訊框。只有在關聯成功之後，它才到達狀態 3，可以經由分散式系統送資料。解除認證會讓站台一路退回狀態 1，而解除關聯只會讓它退回狀態 2。'
+      }
+    ],
+    items: [
+      {
+        en: 'Which frames may a station send in State 1?',
+        zh: '站台在狀態 1 可以送哪些訊框？',
+        options: [
+          { en: 'Only data frames through the DS', zh: '只有經由 DS 的資料訊框' },
+          { en: 'Only association frames', zh: '只有關聯訊框' },
+          { en: 'All frames', zh: '所有訊框' },
+          { en: 'Only Class 1 frames such as probes and authentication', zh: '只有類別 1 訊框，例如探測與認證' }
+        ],
+        answer: 3,
+        full: { en: 'In State 1, a station may send only Class 1 frames, such as probes, beacons, and authentication frames.', zh: '在狀態 1，站台只能送類別 1 訊框，例如探測、信標與認證訊框。' },
+        why: '第一段最後一句；講義 p.7。'
+      },
+      {
+        en: 'What must happen before a station can send data through the distribution system?',
+        zh: '站台要經由分散式系統送資料，之前必須發生什麼事？',
+        options: [
+          { en: 'Successful authentication and then successful association', zh: '先認證成功，再關聯成功' },
+          { en: 'Only a beacon from the AP', zh: '只要收到 AP 的信標' },
+          { en: 'A disassociation', zh: '解除關聯' },
+          { en: 'A deauthentication', zh: '解除認證' }
+        ],
+        answer: 0,
+        full: { en: 'The station must be successfully authenticated and then successfully associated (State 3).', zh: '站台必須先認證成功，再關聯成功（狀態 3）。' },
+        why: '第二段前兩句。'
+      },
+      {
+        en: 'What is the difference between deauthentication and disassociation?',
+        zh: '解除認證與解除關聯有什麼不同？',
+        options: [
+          { en: 'There is no difference.', zh: '沒有不同。' },
+          { en: 'Deauthentication goes to State 3; disassociation goes to State 1.', zh: '解除認證到狀態 3；解除關聯到狀態 1。' },
+          { en: 'Deauthentication returns to State 1; disassociation returns to State 2.', zh: '解除認證回到狀態 1；解除關聯回到狀態 2。' },
+          { en: 'Only the AP can send either of them.', zh: '兩者都只有 AP 能送。' }
+        ],
+        answer: 2,
+        full: { en: 'Deauthentication returns the station to State 1, while disassociation returns it to State 2.', zh: '解除認證讓站台回到狀態 1，解除關聯則讓它回到狀態 2。' },
+        why: '第二段最後一句；講義 p.6 的狀態圖。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Four Addresses',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'An Ethernet frame needs only a source and a destination address. An 802.11 data frame can carry up to four, because the device that sends a frame over the air is not always the original source, and the device that receives it is not always the final destination.',
+        zh: '乙太網路訊框只需要來源與目的兩個位址。802.11 資料訊框最多可以攜帶四個位址，因為在空中送出訊框的裝置不一定是原始來源，收到它的裝置也不一定是最終目的地。'
+      },
+      {
+        en: 'The To DS and From DS bits tell the receiver how to read the address fields. When a station sends to its AP, To DS is 1 and Address 1 is the BSSID. When both bits are 1, the frame is traveling between two access points over a wireless distribution system, and all four addresses are needed.',
+        zh: 'To DS 與 From DS 位元告訴接收端如何解讀位址欄位。站台送給自己的 AP 時，To DS 為 1，位址 1 是 BSSID。兩個位元都是 1 時，表示訊框正在經由無線分散式系統在兩台存取點之間傳遞，這時四個位址都需要。'
+      }
+    ],
+    items: [
+      {
+        en: 'Why can an 802.11 data frame carry more addresses than an Ethernet frame?',
+        zh: '為什麼 802.11 資料訊框可以攜帶比乙太網路訊框更多的位址？',
+        options: [
+          { en: 'Because 802.11 addresses are shorter', zh: '因為 802.11 的位址比較短' },
+          { en: 'Because the transmitter and receiver over the air may differ from the original source and final destination', zh: '因為空中的傳送端與接收端，可能和原始來源與最終目的地不同' },
+          { en: 'Because Ethernet does not use addresses', zh: '因為乙太網路不用位址' },
+          { en: 'Because each address is encrypted', zh: '因為每個位址都要加密' }
+        ],
+        answer: 1,
+        full: { en: 'The transmitter and receiver over the air may differ from the original source and the final destination, so extra addresses are needed.', zh: '空中的傳送端與接收端可能和原始來源與最終目的地不同，所以需要額外的位址。' },
+        why: '第一段第二句。'
+      },
+      {
+        en: 'When a station sends a frame to its AP, what is Address 1?',
+        zh: '站台送訊框給自己的 AP 時，位址 1 是什麼？',
+        options: [
+          { en: 'The BSSID', zh: 'BSSID' },
+          { en: 'The source address', zh: '來源位址' },
+          { en: 'The final destination', zh: '最終目的地' },
+          { en: 'It is empty', zh: '空的' }
+        ],
+        answer: 0,
+        full: { en: 'When a station sends to its AP (To DS = 1), Address 1 is the BSSID.', zh: '站台送給自己的 AP 時（To DS = 1），位址 1 是 BSSID。' },
+        why: '講義 p.13 表格：To DS 1、From DS 0 → Addr1 BSSID、Addr2 SA、Addr3 DA。'
+      },
+      {
+        en: 'When are all four addresses needed?',
+        zh: '什麼時候四個位址都需要？',
+        options: [
+          { en: 'In an ad hoc network', zh: '在隨意網路中' },
+          { en: 'When the AP sends to a station', zh: 'AP 送給站台時' },
+          { en: 'For every control frame', zh: '每個控制訊框' },
+          { en: 'When the frame travels between two APs over a wireless distribution system', zh: '訊框經由無線分散式系統在兩台 AP 之間傳遞時' }
+        ],
+        answer: 3,
+        full: { en: 'All four addresses are needed when the frame travels between two APs over a wireless distribution system (To DS = From DS = 1).', zh: '訊框經由無線分散式系統在兩台 AP 之間傳遞時（To DS ＝ From DS ＝ 1），四個位址都需要。' },
+        why: '第二段最後一句；講義 p.13：Addr 4 = Only needed to identify the original source of WDS frames。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 2-3・英文練習</div>
+    <h1>WEP 與 MAC 訊框格式 英文練習</h1>
+    <div class="meta"><span>單字 6 題・克漏字 5 題・閱讀 2 篇 6 題</span><span>範圍：講義 2-3 CSMA_CA.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

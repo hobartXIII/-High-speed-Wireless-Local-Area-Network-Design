@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH1 英文練習：802.3 CSMA/CD</title>
+<meta name="description" content="第 1 章 IEEE 802.3 CSMA/CD 的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近畫線單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'In "Deference: defers transmission if the channel is sensed busy," the word "deference" is closest in meaning to ____.',
+        zh: '「Deference：偵測到通道忙碌時延後傳送」中，deference 的意思最接近 ____。',
+        options: [
+          { en: 'postponement', zh: '延後' },
+          { en: 'collision', zh: '碰撞' },
+          { en: 'amplification', zh: '放大' },
+          { en: 'synchronization', zh: '同步' }
+        ],
+        answer: 0,
+        full: { en: '"Deference" is closest in meaning to "postponement": a station postpones its transmission while the channel is busy.', zh: 'deference 的意思最接近「延後」：通道忙碌時，站台把傳送往後延。' },
+        why: 'defer 是「延後」，deference 是它的名詞。CSMA/CD 的 1-persistent 規則是：聽到通道忙就延後，等通道閒置再傳。'
+      },
+      {
+        en: 'A collision occurs when two or more stations transmit simultaneously. "Simultaneously" means ____.',
+        zh: '兩個以上的站台 simultaneously 傳送時就會碰撞。simultaneously 的意思是 ____。',
+        options: [
+          { en: 'one after another', zh: '一個接一個' },
+          { en: 'at the same time', zh: '同時' },
+          { en: 'occasionally', zh: '偶爾' },
+          { en: 'in reverse order', zh: '順序相反' }
+        ],
+        answer: 1,
+        full: { en: 'A collision occurs when two or more stations transmit at the same time.', zh: '兩個以上的站台同時傳送時，就會發生碰撞。' },
+        why: 'simultaneous（同時的）的副詞。one after another 是依序，正好相反。'
+      },
+      {
+        en: 'In networking, "backoff" refers to ____.',
+        zh: '在網路中，backoff 指的是 ____。',
+        options: [
+          { en: 'waiting a random time before trying to transmit again', zh: '等待一段隨機時間後再嘗試傳送' },
+          { en: 'sending a signal back to the source', zh: '把訊號送回來源端' },
+          { en: 'turning off the transceiver', zh: '關閉收發器' },
+          { en: 'increasing the transmission power', zh: '提高傳送功率' }
+        ],
+        answer: 0,
+        full: { en: 'In networking, "backoff" refers to waiting a random time before trying to transmit again.', zh: '在網路中，backoff（退避）是指等待一段隨機時間後再嘗試傳送。' },
+        why: '講義 p.6：Backoff: Random delay after collision。back off 字面是「退後」，在這裡是退一步、晚點再傳。'
+      },
+      {
+        en: 'In "Truncated Binary Exponential Backoff," the word "truncated" means ____.',
+        zh: '「Truncated Binary Exponential Backoff」中，truncated 的意思是 ____。',
+        options: [
+          { en: 'doubled', zh: '加倍' },
+          { en: 'cut off at a limit', zh: '到上限就截斷' },
+          { en: 'randomized', zh: '隨機化' },
+          { en: 'delayed', zh: '延遲' }
+        ],
+        answer: 1,
+        full: { en: '"Truncated" means "cut off at a limit": the backoff range stops growing after the 10th collision.', zh: 'truncated 的意思是「到上限就截斷」：第 10 次碰撞之後，退避範圍不再變大。' },
+        why: 'k = min(n, 10)，n 超過 10 以後 k 固定是 10，範圍停在 0～1023 個 slot。「加倍」是 exponential 的意思，不是 truncated。'
+      },
+      {
+        en: '"Propagation delay" is best defined as ____.',
+        zh: 'propagation delay 最好的定義是 ____。',
+        options: [
+          { en: 'the time needed to put all the bits of a frame onto the cable', zh: '把一個訊框所有位元送上線所需的時間' },
+          { en: 'the time a signal needs to travel from one end of the medium to the other', zh: '訊號從媒介一端傳到另一端所需的時間' },
+          { en: 'the time a station waits after a collision', zh: '站台碰撞後等待的時間' },
+          { en: 'the time needed to compute the CRC', zh: '計算 CRC 所需的時間' }
+        ],
+        answer: 1,
+        full: { en: '"Propagation delay" is the time a signal needs to travel from one end of the medium to the other.', zh: '傳播延遲是訊號從媒介一端傳到另一端所需的時間。' },
+        why: '(A) 是傳輸時間（transmission time），(C) 是退避時間。碰撞視窗 2a 用的是「來回」傳播延遲（round-trip propagation delay）。'
+      },
+      {
+        en: 'The jam signal is also called "collision enforcement." Here, "enforcement" means ____.',
+        zh: '擾亂訊號又叫 collision enforcement。這裡的 enforcement 是指 ____。',
+        options: [
+          { en: 'removal', zh: '移除' },
+          { en: 'prevention', zh: '預防' },
+          { en: 'making sure something takes effect', zh: '確保某件事確實生效' },
+          { en: 'estimation', zh: '估計' }
+        ],
+        answer: 2,
+        full: { en: '"Enforcement" here means making sure something takes effect: the jam makes sure every station notices the collision.', zh: 'enforcement 在這裡是「確保生效」：擾亂訊號確保每個站台都察覺到碰撞。' },
+        why: 'enforce 是「強制執行」。jam 不能預防碰撞（碰撞已經發生），而是讓碰撞「一定被看見」。'
+      },
+      {
+        en: 'SFD stands for "Start Frame Delimiter." A "delimiter" is ____.',
+        zh: 'SFD 是 Start Frame Delimiter。delimiter 是 ____。',
+        options: [
+          { en: 'a value used to check for errors', zh: '用來檢查錯誤的值' },
+          { en: 'the address of the receiver', zh: '接收端的位址' },
+          { en: 'extra bytes added to reach a minimum length', zh: '為了達到最小長度補上的位元組' },
+          { en: 'a marker that shows where something starts or ends', zh: '標示某段內容從哪裡開始或結束的記號' }
+        ],
+        answer: 3,
+        full: { en: 'A "delimiter" is a marker that shows where something starts or ends; the SFD marks where the frame begins.', zh: 'delimiter（分隔符）是標示開始或結束位置的記號；SFD 標出訊框從哪裡開始。' },
+        why: '(A) 是 FCS，(B) 是 DA，(C) 是 PAD。SFD 的位元樣式是 10101011，最後的 11 讓接收端知道前導碼結束了。'
+      },
+      {
+        en: 'The maximum frame size prevents a station from "dominating" the bandwidth. "Dominate" means ____.',
+        zh: '最大訊框長度是為了避免單一站台 dominate 頻寬。dominate 的意思是 ____。',
+        options: [
+          { en: 'share equally', zh: '平均分享' },
+          { en: 'take up most of', zh: '佔去大部分' },
+          { en: 'measure', zh: '測量' },
+          { en: 'reduce', zh: '減少' }
+        ],
+        answer: 1,
+        full: { en: 'The maximum frame size prevents a station from taking up most of the bandwidth.', zh: '最大訊框長度是為了避免單一站台佔去大部分頻寬。' },
+        why: '講義 p.8：Max 1518 bytes to prevent dominating bandwidth。訊框太長，一個站台會佔線太久。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'A station must listen to the channel ____ it starts transmitting.',
+        zh: '站台開始傳送 ____，必須先監聽通道。',
+        options: [
+          { en: 'before', zh: '之前' },
+          { en: 'unless', zh: '除非' },
+          { en: 'although', zh: '雖然' },
+          { en: 'whereas', zh: '然而' }
+        ],
+        answer: 0,
+        why: 'Carrier Sense before transmission：先聽再傳。其他三個連接詞的語意都不通。'
+      },
+      {
+        en: 'When two stations transmit at the same time, their signals ____ each other.',
+        zh: '兩個站台同時傳送時，它們的訊號會互相 ____。',
+        options: [
+          { en: 'corrupt', zh: '破壞' },
+          { en: 'amplify', zh: '放大' },
+          { en: 'encrypt', zh: '加密' },
+          { en: 'synchronize', zh: '同步' }
+        ],
+        answer: 0,
+        why: '碰撞時訊號疊加，資料被破壞（corrupt），接收端無法正確解讀。'
+      },
+      {
+        en: 'The jam signal makes sure that every station ____ in the collision detects it.',
+        zh: '擾亂訊號確保每個 ____ 碰撞的站台都偵測得到。',
+        options: [
+          { en: 'involved', zh: '涉入（過去分詞，表被動）' },
+          { en: 'involving', zh: '涉入（現在分詞，表主動）' },
+          { en: 'to involve', zh: '去涉入（不定詞）' },
+          { en: 'involves', zh: '涉入（動詞第三人稱單數）' }
+        ],
+        answer: 0,
+        full: { en: 'The jam signal makes sure that every station involved in the collision detects it.', zh: '擾亂訊號確保每個涉入碰撞的站台都偵測得到。' },
+        why: '文法題：be involved in（涉入）。這裡是 station (that is) involved in the collision 的分詞片語，用過去分詞。講義原文也是 stations involved in the collision。'
+      },
+      {
+        en: 'After the 10th collision, the backoff range stops growing. This limit is called ____.',
+        zh: '第 10 次碰撞之後，退避範圍不再變大。這個上限稱為 ____。',
+        options: [
+          { en: 'truncation', zh: '截斷' },
+          { en: 'preamble', zh: '前導碼' },
+          { en: 'padding', zh: '填充' },
+          { en: 'deference', zh: '延後傳送' }
+        ],
+        answer: 0,
+        why: '講義 p.7：k = Min(n, 10) -- Truncation。'
+      },
+      {
+        en: 'If the LLC data is shorter than 46 bytes, ____ bytes are added to the frame.',
+        zh: '如果 LLC 資料少於 46 位元組，訊框會補上 ____ 位元組。',
+        options: [
+          { en: 'preamble', zh: '前導碼' },
+          { en: 'address', zh: '位址' },
+          { en: 'padding', zh: '填充' },
+          { en: 'jam', zh: '擾亂' }
+        ],
+        answer: 2,
+        why: '講義 p.8：PAD: Padding when LLC-Frame < 46 bytes。46 = 64 − 18（DA 6 + SA 6 + LEN 2 + FCS 4）。'
+      },
+      {
+        en: 'A minimum frame size is required so that the sender is still transmitting ____ news of a collision arrives.',
+        zh: '規定最小訊框長度，是為了讓碰撞的消息傳回 ____，傳送端還在傳送。',
+        options: [
+          { en: 'unless', zh: '除非' },
+          { en: 'when', zh: '的時候' },
+          { en: 'since', zh: '自從' },
+          { en: 'until', zh: '直到' }
+        ],
+        answer: 1,
+        full: { en: 'A minimum frame size is required so that the sender is still transmitting when news of a collision arrives.', zh: '規定最小訊框長度，是為了讓碰撞的消息傳回來的時候，傳送端還在傳送。' },
+        why: '傳送時間至少要涵蓋來回傳播延遲（2a），傳送端才能在送完之前得知碰撞。until 會變成「一直傳到消息抵達」，語意不對。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：Sharing One Cable',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'Imagine several computers sharing a single cable. Before sending, each one listens to the cable; if another station is already talking, it waits. This rule, called carrier sense, prevents most conflicts, but not all of them. Because a signal needs time to travel along the cable, two stations far apart may both hear silence and start sending at almost the same moment.',
+        zh: '想像幾台電腦共用一條纜線。每台電腦送資料之前會先聽線上；如果已經有別的站台在傳，就先等。這條規則叫做載波偵測，能避免大部分的衝突，但不是全部。因為訊號沿著纜線傳遞需要時間，兩個相距很遠的站台可能都聽到線上沒人，然後幾乎同時開始傳送。'
+      },
+      {
+        en: 'When this happens, the signals overlap and the data is destroyed. Ethernet stations therefore keep listening while they transmit. As soon as a station notices that the signal on the cable differs from what it is sending, it stops, sends a short 32-bit jam pattern so that everyone notices the problem, and then waits for a random number of slot times before trying again.',
+        zh: '這時訊號會疊在一起，資料就被破壞了。所以乙太網路的站台在傳送時會持續監聽。站台一發現線上的訊號和自己送出的不一樣，就停止傳送，送出一段 32 位元的短擾亂樣式讓大家都察覺問題，然後等待隨機個時槽時間後再重試。'
+      },
+      {
+        en: 'The waiting range doubles after each collision, up to a limit reached at the tenth collision. After sixteen collisions, the station gives up and reports an error. One side effect is unfairness: a newcomer with no collision history picks from a small range and often wins the channel ahead of a station that has already waited a long time.',
+        zh: '每碰撞一次，等待範圍就加倍，到第十次碰撞時達到上限。碰撞十六次後，站台就放棄並回報錯誤。這樣做有個副作用是不公平：沒有碰撞紀錄的新站台從很小的範圍裡挑等待時間，常常比已經等很久的站台先搶到通道。'
+      }
+    ],
+    items: [
+      {
+        en: 'What is the main purpose of the passage?',
+        zh: '這篇短文的主要目的是什麼？',
+        options: [
+          { en: 'To explain how stations sharing a cable detect and recover from collisions', zh: '說明共用纜線的站台如何偵測碰撞並從中恢復' },
+          { en: 'To compare coaxial cable with twisted-pair cable', zh: '比較同軸電纜和雙絞線' },
+          { en: 'To describe how IP addresses are assigned', zh: '說明 IP 位址如何分配' },
+          { en: 'To argue that Ethernet should replace wireless LANs', zh: '主張乙太網路應該取代無線區域網路' }
+        ],
+        answer: 0,
+        full: { en: 'The main purpose of the passage is to explain how stations sharing a cable detect and recover from collisions.', zh: '這篇短文的主要目的是說明共用纜線的站台如何偵測碰撞並從中恢復。' },
+        why: '三段依序講載波偵測、碰撞偵測與 jam、退避與不公平，主軸就是 CSMA/CD 的碰撞處理。'
+      },
+      {
+        en: 'According to the passage, why can collisions still happen even with carrier sense?',
+        zh: '根據短文，為什麼有了載波偵測還是會碰撞？',
+        options: [
+          { en: 'Stations are not allowed to listen while they are sending.', zh: '站台在傳送時不准監聽。' },
+          { en: 'Signals take time to travel, so two distant stations may both hear an idle cable.', zh: '訊號傳遞需要時間，所以兩個遠距離的站台可能都聽到線上閒置。' },
+          { en: 'The jam signal is too long.', zh: '擾亂訊號太長。' },
+          { en: 'Every station transmits at a fixed time.', zh: '每個站台都在固定時間傳送。' }
+        ],
+        answer: 1,
+        full: { en: 'Collisions can still happen because signals take time to travel, so two distant stations may both hear an idle cable.', zh: '還是會碰撞，是因為訊號傳遞需要時間，兩個遠距離的站台可能都聽到線上閒置。' },
+        why: '第一段最後一句：Because a signal needs time to travel along the cable… 這就是碰撞視窗存在的原因。(A) 與第二段 keep listening while they transmit 矛盾。'
+      },
+      {
+        en: 'The word "overlap" in paragraph 2 is closest in meaning to ____.',
+        zh: '第二段的 overlap 意思最接近 ____。',
+        options: [
+          { en: 'travel faster', zh: '傳得更快' },
+          { en: 'become stronger', zh: '變得更強' },
+          { en: 'partly cover each other at the same time', zh: '同時部分疊在一起' },
+          { en: 'disappear completely', zh: '完全消失' }
+        ],
+        answer: 2,
+        full: { en: '"Overlap" is closest in meaning to "partly cover each other at the same time."', zh: 'overlap 的意思最接近「同時部分疊在一起」。' },
+        why: 'over（在上面）+ lap（覆蓋）。兩個訊號在線上疊在一起，所以資料被破壞。'
+      },
+      {
+        en: 'Which statement about the unfairness mentioned in the passage is true?',
+        zh: '關於短文提到的不公平，哪個敘述正確？',
+        options: [
+          { en: 'The station that has waited the longest always transmits first.', zh: '等最久的站台一定最先傳送。' },
+          { en: 'All stations pick their waiting time from the same range.', zh: '所有站台都從同樣的範圍挑等待時間。' },
+          { en: 'Unfairness occurs only after sixteen collisions.', zh: '只有碰撞十六次後才會不公平。' },
+          { en: 'A station with fewer collisions tends to get the channel before one that has waited longer.', zh: '碰撞次數少的站台，往往比等比較久的站台先拿到通道。' }
+        ],
+        answer: 3,
+        full: { en: 'A station with fewer collisions tends to get the channel before one that has waited longer.', zh: '碰撞次數少的站台，往往比等比較久的站台先拿到通道。' },
+        why: '這就是講義 p.7 的 First-in-Last-out effect。(B) 錯，因為範圍取決於各自的碰撞次數。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Inside an Ethernet Frame',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'An IEEE 802.3 frame begins with a seven-byte preamble, a repeating pattern of ones and zeros that lets the receiver lock onto the sender\'s clock. A one-byte start frame delimiter then marks the exact point where the real frame begins.',
+        zh: 'IEEE 802.3 訊框開頭是 7 位元組的前導碼，它是一串重複的 1 和 0，讓接收端能鎖定傳送端的時脈。接著是 1 位元組的訊框起始分隔符，標出真正的訊框從哪裡開始。'
+      },
+      {
+        en: 'Next come the destination and source addresses, followed by a length field that tells the receiver how many bytes of LLC data are carried. The data field can hold up to 1,500 bytes. If it carries fewer than 46 bytes, padding is added so that the frame, counted from the destination address to the end, is never shorter than 64 bytes.',
+        zh: '接下來是目的位址和來源位址，後面是長度欄位，告訴接收端裝了多少位元組的 LLC 資料。資料欄位最多可以放 1,500 位元組。如果資料少於 46 位元組，就補上填充，讓訊框從目的位址算到結尾不會短於 64 位元組。'
+      },
+      {
+        en: 'The minimum exists because a sender must still be transmitting when news of a collision arrives; otherwise, it might wrongly believe that the frame was delivered. The maximum of 1,518 bytes keeps any single station from occupying the cable for too long. The frame ends with a four-byte frame check sequence, a CRC-32 value used to detect transmission errors.',
+        zh: '之所以有最小長度，是因為碰撞的消息傳回來時，傳送端必須還在傳送；否則它可能誤以為訊框已經送達。最大 1,518 位元組的限制，則是避免任何一個站台佔用纜線太久。訊框最後是 4 位元組的訊框檢查序列，它是一個 CRC-32 值，用來偵測傳輸錯誤。'
+      }
+    ],
+    items: [
+      {
+        en: 'What is the function of the preamble?',
+        zh: '前導碼的功能是什麼？',
+        options: [
+          { en: 'It carries the destination address.', zh: '它攜帶目的位址。' },
+          { en: 'It detects bit errors.', zh: '它偵測位元錯誤。' },
+          { en: 'It allows the receiver to synchronize with the sender\'s clock.', zh: '它讓接收端和傳送端的時脈同步。' },
+          { en: 'It indicates the length of the data.', zh: '它指出資料的長度。' }
+        ],
+        answer: 2,
+        full: { en: 'The preamble allows the receiver to synchronize with the sender\'s clock.', zh: '前導碼讓接收端和傳送端的時脈同步。' },
+        why: '第一段：lets the receiver lock onto the sender\'s clock。lock onto 就是同步。(B) 是 FCS，(D) 是 Length 欄位。'
+      },
+      {
+        en: 'Why is padding added to some frames?',
+        zh: '為什麼有些訊框要補上填充？',
+        options: [
+          { en: 'To make sure the frame is not shorter than 64 bytes', zh: '確保訊框不短於 64 位元組' },
+          { en: 'To encrypt the data', zh: '為了加密資料' },
+          { en: 'To make the frame longer than 1,518 bytes', zh: '讓訊框超過 1,518 位元組' },
+          { en: 'To mark where the frame starts', zh: '標出訊框從哪裡開始' }
+        ],
+        answer: 0,
+        full: { en: 'Padding is added to make sure the frame is not shorter than 64 bytes.', zh: '補上填充是為了確保訊框不短於 64 位元組。' },
+        why: '第二段最後一句。(D) 是 SFD 的功能。'
+      },
+      {
+        en: 'According to paragraph 3, what could happen if frames were too short?',
+        zh: '根據第三段，如果訊框太短，可能會發生什麼事？',
+        options: [
+          { en: 'The receiver could not read the source address.', zh: '接收端讀不到來源位址。' },
+          { en: 'A sender could finish before learning of a collision and wrongly assume success.', zh: '傳送端可能在得知碰撞前就傳完，誤以為傳送成功。' },
+          { en: 'The CRC check would always fail.', zh: 'CRC 檢查一定會失敗。' },
+          { en: 'The cable would be occupied for too long.', zh: '纜線會被佔用太久。' }
+        ],
+        answer: 1,
+        full: { en: 'If frames were too short, a sender could finish before learning of a collision and wrongly assume success.', zh: '如果訊框太短，傳送端可能在得知碰撞前就傳完，誤以為傳送成功。' },
+        why: '第三段第一句的 otherwise… 就是答案。(D) 是訊框「太長」的問題。'
+      },
+      {
+        en: 'The word "occupying" in paragraph 3 is closest in meaning to ____.',
+        zh: '第三段的 occupying 意思最接近 ____。',
+        options: [
+          { en: 'repairing', zh: '修理' },
+          { en: 'measuring', zh: '測量' },
+          { en: 'leaving', zh: '離開' },
+          { en: 'taking up', zh: '佔用' }
+        ],
+        answer: 3,
+        full: { en: '"Occupying" is closest in meaning to "taking up": no single station should take up the cable for too long.', zh: 'occupying 的意思最接近「佔用」：任何一個站台都不應該佔用纜線太久。' },
+        why: 'occupy 是「佔用」，和單字題的 dominate 呼應，都在說最大訊框長度的理由。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 1・英文練習</div>
+    <h1>IEEE 802.3 CSMA/CD 英文練習</h1>
+    <div class="meta"><span>單字 8 題・克漏字 6 題・閱讀 2 篇 8 題</span><span>範圍：講義 1CSMA_CD.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

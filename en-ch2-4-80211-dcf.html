@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH2-4 英文練習：DCF 存取機制</title>
+<meta name="description" content="第 2-4 章 DCF 存取機制（CSMA/CA）的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近題目中單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'The backoff timer is "frozen" while the medium is busy. "Frozen" here means ____.',
+        zh: '媒介忙碌時，退避計時器會 frozen。這裡的 frozen 是指 ____。',
+        options: [
+          { en: 'reset to zero', zh: '歸零' },
+          { en: 'doubled', zh: '加倍' },
+          { en: 'paused without changing its value', zh: '暫停，值保持不變' },
+          { en: 'deleted', zh: '刪除' }
+        ],
+        answer: 2,
+        full: { en: '"Frozen" means paused without changing its value; the timer resumes counting down after the medium is idle for DIFS.', zh: 'frozen 是暫停、值保持不變；媒介閒置達 DIFS 後，計時器會繼續倒數。' },
+        why: '講義 p.27：The Backoff Timer shall be frozen while the medium is sensed busy。不是歸零，這是 802.11 公平性的關鍵。'
+      },
+      {
+        en: 'The timer "decrements" only when the medium is idle. "Decrement" means ____.',
+        zh: '計時器只有在媒介閒置時才 decrements。decrement 的意思是 ____。',
+        options: [
+          { en: 'to decrease by a step', zh: '一次減少一個單位' },
+          { en: 'to increase by a step', zh: '一次增加一個單位' },
+          { en: 'to stop forever', zh: '永遠停止' },
+          { en: 'to send a frame', zh: '送出一個訊框' }
+        ],
+        answer: 0,
+        full: { en: '"Decrement" means to decrease by a step; the backoff counter goes down by one for each idle slot.', zh: 'decrement 是一次減少一個單位；每個閒置的時槽，退避計數就減一。' },
+        why: '反義詞是 increment（遞增）。'
+      },
+      {
+        en: 'NAV stands for Network "Allocation" Vector. "Allocation" means ____.',
+        zh: 'NAV 是 Network Allocation Vector。allocation 的意思是 ____。',
+        options: [
+          { en: 'location on a map', zh: '地圖上的位置' },
+          { en: 'error checking', zh: '錯誤檢查' },
+          { en: 'signal strength', zh: '訊號強度' },
+          { en: 'setting something aside for a particular use', zh: '把某樣東西保留給特定用途' }
+        ],
+        answer: 3,
+        full: { en: '"Allocation" means setting something aside for a particular use; the NAV records how long the medium is reserved.', zh: 'allocation 是把某樣東西保留給特定用途；NAV 記錄媒介被保留多久。' },
+        why: '講義 p.11、p.25：NAV 依 RTS/CTS 中的 Duration 預測未來流量，是虛擬載波偵測。'
+      },
+      {
+        en: 'The receiver returns a "positive" acknowledgment. A positive acknowledgment ____.',
+        zh: '接收端回傳 positive acknowledgment。正向確認 ____。',
+        options: [
+          { en: 'reports that a frame was lost', zh: '回報訊框遺失' },
+          { en: 'confirms that a frame was received correctly', zh: '確認訊框已正確收到' },
+          { en: 'asks for a higher data rate', zh: '要求更高的資料速率' },
+          { en: 'is sent before the data', zh: '在資料之前送出' }
+        ],
+        answer: 1,
+        full: { en: 'A positive acknowledgment confirms that a frame was received correctly; if no ACK arrives, the sender assumes an error.', zh: '正向確認是確認訊框已正確收到；沒收到 ACK，傳送端就認定出錯。' },
+        why: '講義 p.11：The lack of an ACK frame means that an error has occurred。'
+      },
+      {
+        en: 'RTS/CTS adds "overhead" for short frames. "Overhead" means ____.',
+        zh: 'RTS/CTS 會為短訊框增加 overhead。overhead 的意思是 ____。',
+        options: [
+          { en: 'extra time or data that does not carry user information', zh: '不攜帶使用者資訊的額外時間或資料' },
+          { en: 'the top of the antenna', zh: '天線的頂端' },
+          { en: 'a faster modulation', zh: '更快的調變' },
+          { en: 'a stronger signal', zh: '更強的訊號' }
+        ],
+        answer: 0,
+        full: { en: '"Overhead" means extra time or data that does not carry user information, such as preambles, headers, IFSs, and ACKs.', zh: 'overhead（額外負擔）是不攜帶使用者資訊的額外時間或資料，例如前導碼、標頭、IFS 與 ACK。' },
+        why: '講義 p.22：DCF creates lots of overheads … Preamble, PHY & MAC headers, Backoff, IFSs, and ACK；p.25：To limit overhead for short frames。'
+      },
+      {
+        en: 'A station must "defer" when the medium is busy. "Defer" means ____.',
+        zh: '媒介忙碌時站台必須 defer。defer 的意思是 ____。',
+        options: [
+          { en: 'transmit immediately', zh: '立刻傳送' },
+          { en: 'change channels', zh: '換頻道' },
+          { en: 'wait and transmit later', zh: '等待，稍後再傳' },
+          { en: 'turn off', zh: '關機' }
+        ],
+        answer: 2,
+        full: { en: '"Defer" means wait and transmit later; the station waits until the medium has been idle for DIFS.', zh: 'defer 是等待、稍後再傳；站台會等到媒介閒置達 DIFS。' },
+        why: '講義 p.16：If busy, the STA shall defer until after a DIFS gap is detected。和第 1 章的 Deference 同一個字根。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'SIFS is ____ than DIFS, so an ACK always gets the medium before a new data frame.',
+        zh: 'SIFS 比 DIFS ____，所以 ACK 一定比新的資料訊框先拿到媒介。',
+        options: [
+          { en: 'longer', zh: '長' },
+          { en: 'louder', zh: '大聲' },
+          { en: 'shorter', zh: '短' },
+          { en: 'later', zh: '晚' }
+        ],
+        answer: 2,
+        why: '講義 p.13–14：三種 IFS 提供優先等級，SIFS < PIFS < DIFS。等越短的越優先。'
+      },
+      {
+        en: 'Backoff time = Random() × ____.',
+        zh: '退避時間 ＝ Random() × ____。',
+        options: [
+          { en: 'Slot time', zh: '時槽時間' },
+          { en: 'DIFS', zh: 'DIFS' },
+          { en: 'Frame length', zh: '訊框長度' },
+          { en: 'Data rate', zh: '資料速率' }
+        ],
+        answer: 0,
+        why: '講義 p.16：Backoff time = Random() * Slot time，Random() 從 [0, CW] 均勻取整數。'
+      },
+      {
+        en: 'RTS/CTS is used for unicast frames only; it is ____ used for broadcast frames.',
+        zh: 'RTS/CTS 只用於單播訊框；廣播訊框 ____ 使用。',
+        options: [
+          { en: 'always', zh: '一定' },
+          { en: 'often', zh: '常常' },
+          { en: 'sometimes', zh: '有時' },
+          { en: 'never', zh: '不' }
+        ],
+        answer: 3,
+        why: '講義 p.10：Unicast only, not used in multicast/broadcast。廣播也不回 ACK。'
+      },
+      {
+        en: 'When no CTS arrives before CTS_Timeout, the station sends a new RTS and the CW is ____.',
+        zh: '在 CTS_Timeout 之前沒收到 CTS，站台會送新的 RTS，且 CW ____。',
+        options: [
+          { en: 'halved', zh: '減半' },
+          { en: 'doubled', zh: '加倍' },
+          { en: 'reset', zh: '重設' },
+          { en: 'ignored', zh: '被忽略' }
+        ],
+        answer: 1,
+        why: '講義 p.28：a new RTS shall be generated (the CW shall be doubled)。這是二元指數退避。'
+      },
+      {
+        en: 'All fragments of the same MSDU share the same sequence number but have different fragment ____.',
+        zh: '同一個 MSDU 的所有分段序號相同，但分段 ____ 不同。',
+        options: [
+          { en: 'numbers', zh: '編號' },
+          { en: 'keys', zh: '金鑰' },
+          { en: 'channels', zh: '頻道' },
+          { en: 'owners', zh: '擁有者' }
+        ],
+        answer: 0,
+        why: '講義 p.33：The sequence number shall remain the same … fragments shall be sent in order of lowest fragment number to highest。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：Listening Before Talking',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'A wireless station cannot detect a collision while it is sending, so 802.11 tries to avoid collisions instead. Before transmitting, a station checks the medium. If the medium has been idle for at least DIFS, it may send at once. Otherwise it waits until the medium becomes idle, then waits DIFS again and counts down a random number of slots.',
+        zh: '無線站台在傳送時無法偵測碰撞，所以 802.11 改為設法避免碰撞。傳送之前，站台會先檢查媒介。如果媒介已閒置至少 DIFS，就可以立刻傳送。否則它會等到媒介閒置，再等一個 DIFS，然後倒數隨機個時槽。'
+      },
+      {
+        en: 'If another station starts sending during the countdown, the counter stops and keeps its value. The station that was interrupted therefore has a smaller number left next time, which makes access fairer. When the counter reaches zero, the station sends its frame and waits for an ACK. No ACK means the frame must be sent again after a longer random wait.',
+        zh: '如果倒數期間有別的站台開始傳送，計數器會停住並保留原值。被打斷的站台下次剩下的數字因此比較小，讓存取比較公平。計數器到零時，站台送出訊框並等待 ACK。沒收到 ACK，就表示訊框必須在更長的隨機等待後重送。'
+      }
+    ],
+    items: [
+      {
+        en: 'Why does 802.11 try to avoid collisions instead of detecting them?',
+        zh: '為什麼 802.11 設法避免碰撞，而不是偵測碰撞？',
+        options: [
+          { en: 'Because collisions never happen in wireless networks', zh: '因為無線網路從不碰撞' },
+          { en: 'Because a wireless station cannot detect a collision while it is sending', zh: '因為無線站台在傳送時無法偵測碰撞' },
+          { en: 'Because detection is too expensive for cables', zh: '因為偵測對纜線來說太貴' },
+          { en: 'Because the AP forbids it', zh: '因為 AP 禁止' }
+        ],
+        answer: 1,
+        full: { en: '802.11 avoids collisions because a wireless station cannot detect a collision while it is sending.', zh: '802.11 改為避免碰撞，因為無線站台在傳送時無法偵測碰撞。' },
+        why: '第一段第一句。自己的發射訊號遠強於收到的訊號，所以邊傳邊聽做不到。'
+      },
+      {
+        en: 'What happens to the backoff counter when another station starts sending?',
+        zh: '有別的站台開始傳送時，退避計數器會怎樣？',
+        options: [
+          { en: 'It resets to a new random value.', zh: '重設成新的隨機值。' },
+          { en: 'It reaches zero immediately.', zh: '立刻歸零。' },
+          { en: 'It doubles.', zh: '加倍。' },
+          { en: 'It stops and keeps its value.', zh: '停住並保留原值。' }
+        ],
+        answer: 3,
+        full: { en: 'The counter stops and keeps its value, so the station continues from that number later.', zh: '計數器停住並保留原值，之後站台從這個數字繼續倒數。' },
+        why: '第二段第一句；呼應單字題的 frozen。'
+      },
+      {
+        en: 'According to the passage, why does keeping the value make access fairer?',
+        zh: '根據短文，為什麼保留原值會讓存取比較公平？',
+        options: [
+          { en: 'The interrupted station has a smaller number left next time.', zh: '被打斷的站台下次剩下的數字比較小。' },
+          { en: 'Every station gets the same number.', zh: '每個站台拿到同樣的數字。' },
+          { en: 'The AP chooses who sends next.', zh: '由 AP 決定下一個誰傳。' },
+          { en: 'Frames become shorter.', zh: '訊框變短。' }
+        ],
+        answer: 0,
+        full: { en: 'Access is fairer because the interrupted station has a smaller number left next time, so it is more likely to send soon.', zh: '存取比較公平，是因為被打斷的站台下次剩下的數字比較小，比較可能很快送出。' },
+        why: '第二段第二句；講義 p.27：Tends toward fair access on a FCFS basis。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Reserving the Air',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'Imagine two laptops on opposite sides of an access point. Each can hear the AP but not the other laptop. Before sending a long frame, one laptop sends a short RTS to the AP. The AP replies with a CTS, which both laptops can hear.',
+        zh: '想像兩台筆電分別在存取點的兩側。每台都聽得到 AP，卻聽不到另一台筆電。在送出一個長訊框之前，其中一台筆電先送一個短的 RTS 給 AP。AP 回覆 CTS，兩台筆電都聽得到。'
+      },
+      {
+        en: 'Both RTS and CTS carry a duration value. Any station that hears either frame sets its NAV and stays quiet until the exchange is over, even if it senses no signal on the air. Because RTS and CTS cost time, a station uses them only when the frame is longer than its RTS threshold.',
+        zh: 'RTS 與 CTS 都帶有持續時間的值。任何聽到其中一個訊框的站台都會設定 NAV，並保持安靜直到交換結束，即使它在空中沒偵測到訊號也一樣。因為 RTS 與 CTS 會花時間，站台只在訊框長度超過自己的 RTS 門檻時才使用它們。'
+      }
+    ],
+    items: [
+      {
+        en: 'Why is the CTS important in this example?',
+        zh: '在這個例子中，CTS 為什麼重要？',
+        options: [
+          { en: 'It carries the data.', zh: '它攜帶資料。' },
+          { en: 'It encrypts the frame.', zh: '它加密訊框。' },
+          { en: 'It is heard by both laptops, including the hidden one.', zh: '兩台筆電都聽得到，包括被隱藏的那一台。' },
+          { en: 'It changes the channel.', zh: '它換頻道。' }
+        ],
+        answer: 2,
+        full: { en: 'The CTS is important because both laptops hear it, so the hidden laptop also learns that the medium is reserved.', zh: 'CTS 重要是因為兩台筆電都聽得到，所以被隱藏的那台也知道媒介被保留了。' },
+        why: '第一段最後一句；講義 p.24：Duration is distributed around both Tx and Rx station。'
+      },
+      {
+        en: 'What does a station do after hearing an RTS or CTS?',
+        zh: '站台聽到 RTS 或 CTS 之後會做什麼？',
+        options: [
+          { en: 'It sets its NAV and stays quiet until the exchange ends.', zh: '設定 NAV，保持安靜直到交換結束。' },
+          { en: 'It immediately sends its own RTS.', zh: '立刻送出自己的 RTS。' },
+          { en: 'It disassociates from the AP.', zh: '與 AP 解除關聯。' },
+          { en: 'It ignores the frame.', zh: '忽略這個訊框。' }
+        ],
+        answer: 0,
+        full: { en: 'A station that hears an RTS or CTS sets its NAV and stays quiet until the exchange is over.', zh: '聽到 RTS 或 CTS 的站台會設定 NAV，保持安靜直到交換結束。' },
+        why: '第二段第二句；這就是虛擬載波偵測。'
+      },
+      {
+        en: 'When does a station use RTS/CTS?',
+        zh: '站台什麼時候使用 RTS/CTS？',
+        options: [
+          { en: 'For every frame', zh: '每個訊框都用' },
+          { en: 'Only for broadcast frames', zh: '只用於廣播訊框' },
+          { en: 'Only when the medium is idle longer than DIFS', zh: '只在媒介閒置超過 DIFS 時' },
+          { en: 'When the frame is longer than its RTS threshold', zh: '訊框長度超過 RTS 門檻時' }
+        ],
+        answer: 3,
+        full: { en: 'A station uses RTS/CTS when the frame is longer than its RTS threshold, because the exchange itself costs time.', zh: '訊框長度超過 RTS 門檻時，站台才使用 RTS/CTS，因為交換本身也要花時間。' },
+        why: '第二段最後一句；講義 p.25：Use is controlled by a RTS_Threshold parameter per station。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 2-4・英文練習</div>
+    <h1>DCF 存取機制 英文練習</h1>
+    <div class="meta"><span>單字 6 題・克漏字 5 題・閱讀 2 篇 6 題</span><span>範圍：講義 2-4 CSMA_CA.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

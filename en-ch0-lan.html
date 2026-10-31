@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH0 英文練習：LAN 概論</title>
+<meta name="description" content="第 0 章 LAN 概論的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近題目中單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'A LAN covers a "moderately sized" geographic area. "Moderately" means ____.',
+        zh: '區域網路涵蓋 moderately sized 的地理範圍。moderately 的意思是 ____。',
+        options: [
+          { en: 'extremely', zh: '極度地' },
+          { en: 'to a medium degree', zh: '中等程度地' },
+          { en: 'temporarily', zh: '暫時地' },
+          { en: 'privately', zh: '私下地' }
+        ],
+        answer: 1,
+        full: { en: 'A LAN covers a geographic area of medium size.', zh: '區域網路涵蓋中等大小的地理範圍。' },
+        why: '講義 p.8 的 LAN 定義：within a moderately sized geographic area。比 PAN 大、比 MAN／WAN 小。'
+      },
+      {
+        en: 'One requirement of a LAN is "stability under high load." Here, "load" refers to ____.',
+        zh: '區域網路的一項需求是 stability under high load。這裡的 load 是指 ____。',
+        options: [
+          { en: 'the weight of the cables', zh: '纜線的重量' },
+          { en: 'the price of the equipment', zh: '設備的價格' },
+          { en: 'the amount of traffic the network must carry', zh: '網路必須承載的流量多寡' },
+          { en: 'the number of software updates', zh: '軟體更新的次數' }
+        ],
+        answer: 2,
+        full: { en: '"Load" refers to the amount of traffic the network must carry; the network should stay stable even when traffic is heavy.', zh: 'load 指網路必須承載的流量多寡；即使流量很大，網路也要保持穩定。' },
+        why: '網路領域的 load 指流量負載。高負載下吞吐量不崩潰，就是 stable。'
+      },
+      {
+        en: 'In the OSI model, "encapsulation" is best described as ____.',
+        zh: '在 OSI 模型中，encapsulation 最好的描述是 ____。',
+        options: [
+          { en: 'adding a header (and sometimes a trailer) around data from the layer above', zh: '在上一層交下來的資料外面加上標頭（有時還有標尾）' },
+          { en: 'removing errors from a frame', zh: '移除訊框中的錯誤' },
+          { en: 'choosing the best route between networks', zh: '在網路之間選擇最佳路徑' },
+          { en: 'compressing a file before sending it', zh: '傳送前先壓縮檔案' }
+        ],
+        answer: 0,
+        full: { en: 'Encapsulation means adding a header (and sometimes a trailer) around the data handed down from the layer above.', zh: '封裝是指在上一層交下來的資料外面加上標頭（有時還有標尾）。' },
+        why: '講義 p.24：往下送時訊框包裝（AH、PH、SH、TH、NH 逐層加上去）；往上送時拆裝，就是 decapsulation。'
+      },
+      {
+        en: 'The data link layer provides "error-free" transmission of frames. "Error-free" means ____.',
+        zh: '資料鏈結層提供 error-free 的訊框傳輸。error-free 的意思是 ____。',
+        options: [
+          { en: 'free of charge', zh: '免費的' },
+          { en: 'without any delay', zh: '完全沒有延遲' },
+          { en: 'without encryption', zh: '沒有加密' },
+          { en: 'without errors', zh: '沒有錯誤' }
+        ],
+        answer: 3,
+        full: { en: 'The data link layer provides transmission of frames without errors.', zh: '資料鏈結層提供沒有錯誤的訊框傳輸。' },
+        why: '「名詞-free」表示「沒有……的」，例如 error-free、collision-free、contention-free（無競爭）。free of charge 才是免費。'
+      },
+      {
+        en: 'A "topology" of a network describes ____.',
+        zh: '網路的 topology 描述的是 ____。',
+        options: [
+          { en: 'how fast each device can transmit', zh: '每個裝置能傳多快' },
+          { en: 'how the devices and links are arranged and connected', zh: '裝置與鏈路如何排列與連接' },
+          { en: 'which company made the devices', zh: '裝置是哪家公司做的' },
+          { en: 'how much power each device uses', zh: '每個裝置耗多少電' }
+        ],
+        answer: 1,
+        full: { en: 'A network topology describes how the devices and links are arranged and connected, such as star, bus, ring, or mesh.', zh: '網路拓樸描述裝置與鏈路如何排列與連接，例如星狀、匯流排、環狀或網狀。' },
+        why: '講義 p.13–16 列出 Star、Bus、Tree、Ring、Mesh、Random 等拓樸。'
+      },
+      {
+        en: '"Multiplexing" allows several data streams to ____.',
+        zh: 'multiplexing 讓多個資料串流能 ____。',
+        options: [
+          { en: 'share one channel', zh: '共用一個通道' },
+          { en: 'be deleted at the same time', zh: '同時被刪除' },
+          { en: 'be stored on separate disks', zh: '存在不同的磁碟上' },
+          { en: 'avoid using any channel', zh: '完全不用通道' }
+        ],
+        answer: 0,
+        full: { en: 'Multiplexing allows several data streams to share one channel; demultiplexing separates them again at the receiver.', zh: '多工讓多個資料串流共用一個通道；解多工則在接收端把它們再分開。' },
+        why: '講義 p.23 的協定基本功能之一：Multiplexing/Demultiplexing。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'The physical layer is responsible for transmitting ____ across a physical medium.',
+        zh: '實體層負責在實體媒介上傳送 ____。',
+        options: [
+          { en: 'routing tables', zh: '路由表' },
+          { en: 'user passwords', zh: '使用者密碼' },
+          { en: 'bit streams', zh: '位元串流' },
+          { en: 'web pages', zh: '網頁' }
+        ],
+        answer: 2,
+        why: '講義 p.20：Physical Layer. Responsible for transmission of bit streams across a particular physical transmission medium.'
+      },
+      {
+        en: 'The network layer is concerned with ____ data from one network node to another.',
+        zh: '網路層關注把資料從一個網路節點 ____ 到另一個節點。',
+        options: [
+          { en: 'encrypting', zh: '加密' },
+          { en: 'routing', zh: '繞送' },
+          { en: 'displaying', zh: '顯示' },
+          { en: 'compressing', zh: '壓縮' }
+        ],
+        answer: 1,
+        why: '講義 p.20：Network Layer. Concerned with routing data from one network node to another. 加密與壓縮是表達層的工作。'
+      },
+      {
+        en: 'A good LAN should have minimal ____ on any centralized component.',
+        zh: '好的區域網路應盡量少 ____ 任何集中式元件。',
+        options: [
+          { en: 'dependence', zh: '依賴' },
+          { en: 'dependent', zh: '依賴的（形容詞）' },
+          { en: 'depend', zh: '依賴（動詞）' },
+          { en: 'depending', zh: '依賴（現在分詞）' }
+        ],
+        answer: 0,
+        full: { en: 'A good LAN should have minimal dependence on any centralized component.', zh: '好的區域網路應盡量少依賴任何集中式元件。' },
+        why: '文法題：minimal 是形容詞，後面要接名詞 dependence。講義 p.10：Minimal dependence on any centralized components or control。'
+      },
+      {
+        en: 'All devices should have ____ access to the network in terms of bandwidth and delay.',
+        zh: '就頻寬與延遲而言，所有裝置都應能 ____ 地存取網路。',
+        options: [
+          { en: 'expensive', zh: '昂貴' },
+          { en: 'occasional', zh: '偶爾' },
+          { en: 'hidden', zh: '隱藏' },
+          { en: 'fair', zh: '公平' }
+        ],
+        answer: 3,
+        why: '講義 p.10：Fair access (bandwidth, delay) to the network by all devices。'
+      },
+      {
+        en: 'In a ring topology, each frame travels around the ring in ____ direction.',
+        zh: '在環狀拓樸中，每個訊框沿著環 ____ 方向傳遞。',
+        options: [
+          { en: 'every', zh: '每一個' },
+          { en: 'one', zh: '單一' },
+          { en: 'no', zh: '沒有' },
+          { en: 'random', zh: '隨機' }
+        ],
+        answer: 1,
+        why: '單環（如 IEEE 802.5 Token Ring）中訊框沿單一方向繞行；雙環（FDDI）則有兩個方向互為備援。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：Layers That Talk to Each Other',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'Network designers split communication into layers so that each layer solves only one kind of problem. The physical layer moves raw bits over a cable or through the air. Above it, the data link layer makes sure that frames reach the next node without errors, and the network layer chooses a path across many nodes.',
+        zh: '網路設計者把通訊切成好幾層，讓每一層只解決一種問題。實體層把原始位元透過纜線或空氣傳出去。在它上面，資料鏈結層確保訊框能無錯誤地抵達下一個節點，網路層則在許多節點之間選一條路徑。'
+      },
+      {
+        en: 'When an application sends data, each layer adds its own header before handing the data down. The receiver reverses the process: every layer reads and removes the header added by its peer on the other side. In this way, two layers at the same level seem to talk directly, even though the data actually travels down one stack and up the other.',
+        zh: '應用程式送出資料時，每一層在往下交之前都會加上自己的標頭。接收端把這個過程倒過來：每一層讀取並移除對面同層所加的標頭。這樣一來，同一層的兩端看起來像在直接對話，雖然資料實際上是沿著一邊的堆疊往下走，再沿著另一邊往上走。'
+      }
+    ],
+    items: [
+      {
+        en: 'Why do designers divide communication into layers, according to the passage?',
+        zh: '根據短文，設計者為什麼要把通訊分層？',
+        options: [
+          { en: 'To make cables cheaper', zh: '讓纜線更便宜' },
+          { en: 'To increase the number of headers for security', zh: '增加標頭數量以提高安全性' },
+          { en: 'So that each layer solves only one kind of problem', zh: '讓每一層只解決一種問題' },
+          { en: 'So that data never needs to travel through the air', zh: '讓資料不必經過空氣傳送' }
+        ],
+        answer: 2,
+        full: { en: 'Designers divide communication into layers so that each layer solves only one kind of problem.', zh: '設計者把通訊分層，是為了讓每一層只解決一種問題。' },
+        why: '第一段第一句。'
+      },
+      {
+        en: 'What does the receiver do with each header?',
+        zh: '接收端如何處理每個標頭？',
+        options: [
+          { en: 'It reads and removes the header added by the peer layer.', zh: '讀取並移除對面同層加上的標頭。' },
+          { en: 'It adds a second copy of the header.', zh: '再加上一份相同的標頭。' },
+          { en: 'It sends the header back to the sender.', zh: '把標頭送回傳送端。' },
+          { en: 'It ignores all headers.', zh: '忽略所有標頭。' }
+        ],
+        answer: 0,
+        full: { en: 'The receiver reads and removes the header added by the peer layer on the other side.', zh: '接收端讀取並移除對面同層加上的標頭。' },
+        why: '第二段第二句；這就是解封裝（decapsulation）。'
+      },
+      {
+        en: 'The word "peer" in paragraph 2 refers to ____.',
+        zh: '第二段的 peer 指的是 ____。',
+        options: [
+          { en: 'a layer one level higher', zh: '高一層的那一層' },
+          { en: 'the physical cable', zh: '實體纜線' },
+          { en: 'the application user', zh: '應用程式的使用者' },
+          { en: 'the layer at the same level on the other system', zh: '另一個系統上同一層的那一層' }
+        ],
+        answer: 3,
+        full: { en: '"Peer" refers to the layer at the same level on the other system.', zh: 'peer 指另一個系統上同一層的那一層。' },
+        why: 'peer 是「對等者」。講義 p.22 圖中，系統 A 與系統 B 的同一層之間畫的就是「X 層通訊協定」。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Many 802 Standards',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'The IEEE 802 committee writes standards for local and metropolitan networks. Each working group focuses on one technology: 802.3 covers wired Ethernet, 802.11 covers wireless LANs, and 802.15 covers short-range personal networks such as Bluetooth and Zigbee.',
+        zh: 'IEEE 802 委員會負責制定區域網路與都會網路的標準。每個工作小組專注於一種技術：802.3 涵蓋有線乙太網路，802.11 涵蓋無線區域網路，802.15 則涵蓋藍牙、Zigbee 這類短距離的個人網路。'
+      },
+      {
+        en: 'Most of these standards define only the two lowest layers: the physical layer and the MAC part of the data link layer. They all share the same LLC sublayer on top, which is why an IP packet can move from a wireless network to a wired one without being changed.',
+        zh: '這些標準大多只定義最下面兩層：實體層，以及資料鏈結層中的 MAC 部分。它們上面都共用同一個 LLC 子層，所以 IP 封包可以從無線網路移到有線網路而不必被修改。'
+      }
+    ],
+    items: [
+      {
+        en: 'Which working group deals with Bluetooth?',
+        zh: '哪個工作小組處理藍牙？',
+        options: [
+          { en: '802.3', zh: '802.3' },
+          { en: '802.11', zh: '802.11' },
+          { en: '802.15', zh: '802.15' },
+          { en: '802.2', zh: '802.2' }
+        ],
+        answer: 2,
+        full: { en: 'The 802.15 working group deals with Bluetooth.', zh: '802.15 工作小組處理藍牙。' },
+        why: '第一段：802.15 covers short-range personal networks such as Bluetooth and Zigbee。精確地說是 802.15.1。'
+      },
+      {
+        en: 'According to paragraph 2, which layers do most 802 standards define?',
+        zh: '根據第二段，大多數 802 標準定義哪幾層？',
+        options: [
+          { en: 'The application and presentation layers', zh: '應用層與表達層' },
+          { en: 'The physical layer and the MAC part of the data link layer', zh: '實體層與資料鏈結層中的 MAC 部分' },
+          { en: 'The network and transport layers', zh: '網路層與傳輸層' },
+          { en: 'All seven layers', zh: '全部七層' }
+        ],
+        answer: 1,
+        full: { en: 'Most 802 standards define the physical layer and the MAC part of the data link layer.', zh: '大多數 802 標準定義實體層與資料鏈結層中的 MAC 部分。' },
+        why: '第二段第一句。網頁筆記的「OSI 七層與 IEEE 802 的範圍」圖畫的就是這一點。'
+      },
+      {
+        en: 'Why can an IP packet move from a wireless network to a wired one without being changed?',
+        zh: '為什麼 IP 封包可以從無線網路移到有線網路而不必修改？',
+        options: [
+          { en: 'Because wireless and wired networks use the same cable', zh: '因為無線與有線網路用同一條纜線' },
+          { en: 'Because IP packets are never sent over wireless links', zh: '因為 IP 封包從不經過無線鏈路' },
+          { en: 'Because the MAC layers are identical', zh: '因為 MAC 層完全相同' },
+          { en: 'Because both networks share the same LLC sublayer on top', zh: '因為兩種網路上面共用同一個 LLC 子層' }
+        ],
+        answer: 3,
+        full: { en: 'It can move without being changed because both networks share the same LLC sublayer on top.', zh: '因為兩種網路上面共用同一個 LLC 子層，所以封包不必修改。' },
+        why: '第二段第二句。MAC 層其實不同（802.3 是 CSMA/CD、802.11 是 CSMA/CA），(C) 錯。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 0・英文練習</div>
+    <h1>LAN 概論 英文練習</h1>
+    <div class="meta"><span>單字 6 題・克漏字 5 題・閱讀 2 篇 6 題</span><span>範圍：講義 0Intro_LAN.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

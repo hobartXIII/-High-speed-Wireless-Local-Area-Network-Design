@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH2-5 英文練習：PCF 與 MAC 管理</title>
+<meta name="description" content="第 2-5 章 PCF 與 MAC 管理（同步、省電、掃描、漫遊）的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近題目中單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'In PCF, the AP "polls" each station. To poll means ____.',
+        zh: '在 PCF 中，AP 會 poll 每個站台。poll 的意思是 ____。',
+        options: [
+          { en: 'to ask each one in turn whether it has something to send', zh: '依序詢問每一個有沒有東西要送' },
+          { en: 'to block a station', zh: '封鎖一個站台' },
+          { en: 'to encrypt a frame', zh: '加密一個訊框' },
+          { en: 'to measure signal strength', zh: '測量訊號強度' }
+        ],
+        answer: 0,
+        full: { en: 'To poll means to ask each station in turn whether it has something to send.', zh: '輪詢是依序詢問每個站台有沒有東西要送。' },
+        why: '講義 p.10：The PCF protocol is based on a polling scheme controlled by … the Point Coordinator (PC)。'
+      },
+      {
+        en: 'An ACK can be "piggybacked" on a data frame. "Piggyback" means ____.',
+        zh: 'ACK 可以 piggybacked 在資料訊框上。piggyback 的意思是 ____。',
+        options: [
+          { en: 'to send something twice', zh: '把東西送兩次' },
+          { en: 'to drop a frame', zh: '丟掉一個訊框' },
+          { en: 'to carry extra information on a frame that is being sent anyway', zh: '把額外資訊搭在一個本來就要送的訊框上' },
+          { en: 'to wait for a beacon', zh: '等待信標' }
+        ],
+        answer: 2,
+        full: { en: 'To piggyback means to carry extra information, such as an ACK, on a frame that is being sent anyway.', zh: '捎帶是把額外資訊（例如 ACK）搭在一個本來就要送的訊框上。' },
+        why: '講義 p.4："ACK Previous Frame" bit in Header. (piggyback)，例如 D2+Ack+Poll。'
+      },
+      {
+        en: 'A CFP may be "foreshortened" if the beacon is delayed. "Foreshortened" means ____.',
+        zh: '信標延遲時，CFP 可能被 foreshortened。foreshortened 的意思是 ____。',
+        options: [
+          { en: 'made longer', zh: '被拉長' },
+          { en: 'cancelled', zh: '被取消' },
+          { en: 'repeated', zh: '被重複' },
+          { en: 'made shorter than planned', zh: '比原定的短' }
+        ],
+        answer: 3,
+        full: { en: '"Foreshortened" means made shorter than planned, because the CFP must still end by TBTT plus CF MaxDuration.', zh: 'foreshortened 是比原定的短，因為 CFP 仍必須在 TBTT 加 CF MaxDuration 之前結束。' },
+        why: '講義 p.9：a CFP may be foreshortened by the amount of the delay。'
+      },
+      {
+        en: 'APs "buffer" frames for sleeping stations. To buffer means ____.',
+        zh: 'AP 為睡眠中的站台 buffer 訊框。buffer 的意思是 ____。',
+        options: [
+          { en: 'to delete', zh: '刪除' },
+          { en: 'to store temporarily', zh: '暫時存放' },
+          { en: 'to encrypt', zh: '加密' },
+          { en: 'to broadcast', zh: '廣播' }
+        ],
+        answer: 1,
+        full: { en: 'To buffer means to store temporarily; the AP keeps the frames until the station wakes up and asks for them.', zh: 'buffer 是暫時存放；AP 會保留訊框，直到站台醒來索取。' },
+        why: '講義 p.19：APs buffer packets for sleeping stations。'
+      },
+      {
+        en: '"Passive" scanning means the station ____.',
+        zh: 'passive 掃描是指站台 ____。',
+        options: [
+          { en: 'only listens for beacons', zh: '只收聽信標' },
+          { en: 'sends probe requests on every channel', zh: '在每個頻道送出探測請求' },
+          { en: 'connects to the strongest AP without listening', zh: '不收聽就連到最強的 AP' },
+          { en: 'turns off its radio', zh: '關閉無線電' }
+        ],
+        answer: 0,
+        full: { en: 'In passive scanning, the station only listens for beacons; in active scanning, it sends probe requests.', zh: '被動掃描時站台只收聽信標；主動掃描時才送出探測請求。' },
+        why: '講義 p.26：Passive Scanning – Find networks simply by listening for Beacons。'
+      },
+      {
+        en: 'Stations must stay "synchronized" with the AP. "Synchronized" means ____.',
+        zh: '站台必須和 AP 保持 synchronized。synchronized 的意思是 ____。',
+        options: [
+          { en: 'using the same password', zh: '用同一個密碼' },
+          { en: 'connected by cable', zh: '用纜線連接' },
+          { en: 'having clocks that agree on the same time', zh: '時鐘的時間彼此一致' },
+          { en: 'sending at the same data rate', zh: '以相同資料速率傳送' }
+        ],
+        answer: 2,
+        full: { en: '"Synchronized" means having clocks that agree on the same time; beacons carry a timestamp for this.', zh: 'synchronized 是時鐘的時間彼此一致；信標帶有時間戳記就是為了這個。' },
+        why: '講義 p.16：Timestamp from Beacons used to calibrate local clocks。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'The point coordinator waits only PIFS, which is shorter than DIFS, so it can ____ control of the medium.',
+        zh: '點協調器只等 PIFS，比 DIFS 短，所以能 ____ 媒介的控制權。',
+        options: [
+          { en: 'lose', zh: '失去' },
+          { en: 'seize', zh: '奪取' },
+          { en: 'share', zh: '分享' },
+          { en: 'refuse', zh: '拒絕' }
+        ],
+        answer: 1,
+        why: '講義 2-4 p.8：The priority access of the PIFS allows the point coordinator to seize control of the medium。'
+      },
+      {
+        en: 'At the end of the contention-free period, the AP sends a ____ frame to reset everyone\'s NAV.',
+        zh: '無競爭期間結束時，AP 會送一個 ____ 訊框來重設大家的 NAV。',
+        options: [
+          { en: 'Beacon', zh: 'Beacon' },
+          { en: 'PS-Poll', zh: 'PS-Poll' },
+          { en: 'RTS', zh: 'RTS' },
+          { en: 'CF-End', zh: 'CF-End' }
+        ],
+        answer: 3,
+        why: '講義 p.11：The PCF shall transmit a CF-End or CF-End+ACK frame … to reset the NAV of all stations。'
+      },
+      {
+        en: 'Broadcast frames for sleeping stations are sent only after a ____.',
+        zh: '給睡眠站台的廣播訊框只在 ____ 之後送出。',
+        options: [
+          { en: 'DTIM', zh: 'DTIM' },
+          { en: 'probe request', zh: '探測請求' },
+          { en: 'reassociation', zh: '重新關聯' },
+          { en: 'collision', zh: '碰撞' }
+        ],
+        answer: 0,
+        why: '講義 p.20：broadcasts/multicasts are only sent after DTIM；DTIM interval is a multiple of TIM interval。'
+      },
+      {
+        en: 'If the TIM shows a frame is buffered for it, the station sends a ____ and stays awake.',
+        zh: '如果 TIM 顯示有給它的緩衝訊框，站台會送出 ____ 並保持清醒。',
+        options: [
+          { en: 'Beacon', zh: 'Beacon' },
+          { en: 'ATIM', zh: 'ATIM' },
+          { en: 'PS-Poll', zh: 'PS-Poll' },
+          { en: 'CF-End', zh: 'CF-End' }
+        ],
+        answer: 2,
+        why: '講義 p.22：station sends PS-Poll (with AID) and stays awake to receive data。'
+      },
+      {
+        en: 'When the link to its current AP becomes poor, a station sends a Reassociation ____ to a new AP.',
+        zh: '與目前 AP 的鏈路變差時，站台會向新的 AP 送出重新關聯 ____。',
+        options: [
+          { en: 'Response', zh: '回應' },
+          { en: 'Request', zh: '請求' },
+          { en: 'Beacon', zh: '信標' },
+          { en: 'Notification', zh: '通知' }
+        ],
+        answer: 1,
+        why: '講義 p.32：Station sends Reassociation Request to the new AP；Response 是 AP 回的。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：Sleeping Without Missing Mail',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'A phone that keeps its Wi-Fi radio listening all the time drains its battery quickly. 802.11 lets such a device sleep. Before sleeping, the station tells the AP that it is entering power-save mode, and the AP starts holding any frames addressed to it.',
+        zh: '一直讓 Wi-Fi 無線電保持收聽的手機，電池很快就會耗盡。802.11 讓這類裝置可以睡眠。睡眠之前，站台會告訴 AP 它要進入省電模式，AP 就開始保留所有送給它的訊框。'
+      },
+      {
+        en: 'Because every station keeps the same time as the AP, it can wake up just before a beacon. Each beacon contains a traffic indication map that lists which stations have frames waiting. If its bit is set, the station asks for the data with a PS-Poll; if not, it goes back to sleep until the next beacon it plans to hear.',
+        zh: '因為每個站台都和 AP 保持相同的時間，它可以在信標快來之前剛好醒來。每個信標都含有流量指示圖，列出哪些站台有訊框在等待。如果它的位元被設定，站台就用 PS-Poll 索取資料；如果沒有，它就回去睡，直到下一個它打算收聽的信標。'
+      }
+    ],
+    items: [
+      {
+        en: 'What does the AP do after a station enters power-save mode?',
+        zh: '站台進入省電模式後，AP 會做什麼？',
+        options: [
+          { en: 'It disassociates the station.', zh: '解除這個站台的關聯。' },
+          { en: 'It holds frames addressed to that station.', zh: '保留送給這個站台的訊框。' },
+          { en: 'It drops all frames for that station.', zh: '丟掉所有給這個站台的訊框。' },
+          { en: 'It stops sending beacons.', zh: '停止送信標。' }
+        ],
+        answer: 1,
+        full: { en: 'The AP holds (buffers) frames addressed to that station.', zh: 'AP 會保留（緩衝）送給這個站台的訊框。' },
+        why: '第一段最後一句。'
+      },
+      {
+        en: 'How does a sleeping station know that data is waiting for it?',
+        zh: '睡眠中的站台怎麼知道有資料在等它？',
+        options: [
+          { en: 'By checking its bit in the traffic indication map in the beacon', zh: '檢查信標中流量指示圖裡自己的位元' },
+          { en: 'By receiving an email', zh: '收到電子郵件' },
+          { en: 'By sending a probe request', zh: '送出探測請求' },
+          { en: 'By listening continuously', zh: '持續收聽' }
+        ],
+        answer: 0,
+        full: { en: 'It checks its bit in the traffic indication map (TIM) carried in the beacon.', zh: '它檢查信標所帶的流量指示圖（TIM）中自己的位元。' },
+        why: '第二段第二、三句；講義 p.19：Traffic Indication Map (TIM) sent with every Beacon。'
+      },
+      {
+        en: 'Why is time synchronization necessary for power saving?',
+        zh: '為什麼省電需要時間同步？',
+        options: [
+          { en: 'So the station can choose a faster data rate', zh: '讓站台能選擇更快的資料速率' },
+          { en: 'So the AP can encrypt frames', zh: '讓 AP 能加密訊框' },
+          { en: 'So the station can roam to another AP', zh: '讓站台能漫遊到另一台 AP' },
+          { en: 'So the station can wake up just before a beacon arrives', zh: '讓站台能在信標快來之前剛好醒來' }
+        ],
+        answer: 3,
+        full: { en: 'Synchronization lets the station wake up just before a beacon arrives instead of staying awake all the time.', zh: '同步讓站台能在信標快來之前剛好醒來，而不必一直醒著。' },
+        why: '第二段第一句；講義 p.19：TSF assures AP and Power Saving stations are synchronized。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Finding a Network',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'When you open a laptop in a new building, it must first discover which networks are nearby. It can wait quietly on each channel for beacons, or it can speed things up by sending a probe request and collecting the probe responses that APs send back.',
+        zh: '你在一棟新的建築物打開筆電時，它必須先找出附近有哪些網路。它可以在每個頻道上安靜地等信標，也可以送出探測請求、收集 AP 回傳的探測回應來加快速度。'
+      },
+      {
+        en: 'After scanning, the laptop picks the best AP and sends an association request. Later, if the user walks away and the signal weakens, the laptop scans again, chooses a closer AP, and sends a reassociation request. The distribution system then updates its records so that traffic follows the user.',
+        zh: '掃描之後，筆電挑選最佳的 AP 並送出關聯請求。之後如果使用者走遠、訊號變弱，筆電會再掃描、選一台較近的 AP，並送出重新關聯請求。接著分散式系統更新紀錄，讓流量跟著使用者走。'
+      }
+    ],
+    items: [
+      {
+        en: 'Which method in paragraph 1 is active scanning?',
+        zh: '第一段中，哪一種方法是主動掃描？',
+        options: [
+          { en: 'Waiting quietly for beacons', zh: '安靜地等信標' },
+          { en: 'Turning off the radio', zh: '關閉無線電' },
+          { en: 'Sending a probe request and collecting probe responses', zh: '送出探測請求並收集探測回應' },
+          { en: 'Sending a reassociation request', zh: '送出重新關聯請求' }
+        ],
+        answer: 2,
+        full: { en: 'Active scanning means sending a probe request and collecting the probe responses.', zh: '主動掃描是送出探測請求並收集探測回應。' },
+        why: '講義 p.26–29。等信標是被動掃描。'
+      },
+      {
+        en: 'What does the laptop send after choosing the best AP for the first time?',
+        zh: '筆電第一次選好最佳 AP 後會送什麼？',
+        options: [
+          { en: 'An association request', zh: '關聯請求' },
+          { en: 'A disassociation', zh: '解除關聯' },
+          { en: 'A CF-End frame', zh: 'CF-End 訊框' },
+          { en: 'A beacon', zh: '信標' }
+        ],
+        answer: 0,
+        full: { en: 'After choosing the best AP for the first time, the laptop sends an association request.', zh: '第一次選好最佳 AP 後，筆電會送出關聯請求。' },
+        why: '講義 p.28：Station selects best AP. Station sends Association Request to selected AP。'
+      },
+      {
+        en: 'What is the purpose of updating the distribution system after reassociation?',
+        zh: '重新關聯之後更新分散式系統，目的是什麼？',
+        options: [
+          { en: 'To change the user\'s password', zh: '更改使用者的密碼' },
+          { en: 'To make the beacon interval shorter', zh: '讓信標間隔變短' },
+          { en: 'To turn off the old AP', zh: '關掉舊的 AP' },
+          { en: 'So that traffic follows the user to the new AP', zh: '讓流量跟著使用者到新的 AP' }
+        ],
+        answer: 3,
+        full: { en: 'The distribution system is updated so that traffic follows the user to the new AP.', zh: '更新分散式系統，是為了讓流量跟著使用者到新的 AP。' },
+        why: '第二段最後一句；講義 p.32：Distribution System information is updated。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 2-5・英文練習</div>
+    <h1>PCF 與 MAC 管理 英文練習</h1>
+    <div class="meta"><span>單字 6 題・克漏字 5 題・閱讀 2 篇 6 題</span><span>範圍：講義 2-5 CSMA_CA.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

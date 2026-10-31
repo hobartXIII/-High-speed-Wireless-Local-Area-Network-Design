@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH2-2 英文練習：802.11 MAC 服務</title>
+<meta name="description" content="第 2-2 章 802.11 MAC 架構與服務的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近題目中單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'A station must become "associated" with an AP before sending data through it. "Associated" here means ____.',
+        zh: '站台要先和 AP associated，才能經由它送資料。這裡的 associated 是指 ____。',
+        options: [
+          { en: 'registered with the AP so the network knows which AP serves it', zh: '向 AP 登記，讓網路知道由哪台 AP 服務它' },
+          { en: 'physically plugged into the AP', zh: '實體插在 AP 上' },
+          { en: 'encrypted by the AP', zh: '被 AP 加密' },
+          { en: 'turned off by the AP', zh: '被 AP 關機' }
+        ],
+        answer: 0,
+        full: { en: '"Associated" means registered with the AP, so that the distribution system knows which AP is serving the station.', zh: 'associated 是向 AP 登記，讓分散式系統知道由哪台 AP 服務這個站台。' },
+        why: '講義 p.25：This ensures that the DS can determine which AP is serving a specified STA。'
+      },
+      {
+        en: 'Moving between BSSs should be "transparent" to LLC. "Transparent" means ____.',
+        zh: '在 BSS 之間移動對 LLC 應該是 transparent。transparent 的意思是 ____。',
+        options: [
+          { en: 'easy to see through, like glass', zh: '像玻璃一樣看得透' },
+          { en: 'unnoticed; the upper layer does not need to know about it', zh: '察覺不到；上層不需要知道這件事' },
+          { en: 'publicly announced', zh: '公開宣布' },
+          { en: 'slower than usual', zh: '比平常慢' }
+        ],
+        answer: 1,
+        full: { en: 'In networking, "transparent" means unnoticed: LLC does not need to know that the station moved to another BSS.', zh: '在網路術語中，transparent 是「察覺不到」：LLC 不需要知道站台移到了另一個 BSS。' },
+        why: '講義 p.13：mobile stations may move from one BSS to another … transparently to LLC。注意這是術語用法，不是字面的「透明」。'
+      },
+      {
+        en: 'Disassociation is a "notification," not a request. A notification ____.',
+        zh: '解除關聯是 notification，不是請求。notification ____。',
+        options: [
+          { en: 'must be approved by the other side', zh: '必須經過對方同意' },
+          { en: 'is always encrypted', zh: '一定會加密' },
+          { en: 'simply informs the other side and cannot be refused', zh: '只是告知對方，對方不能拒絕' },
+          { en: 'is sent only by the AP', zh: '只由 AP 送出' }
+        ],
+        answer: 2,
+        full: { en: 'A notification simply informs the other side; disassociation cannot be refused by either party.', zh: '通知只是告知對方；解除關聯任何一方都不能拒絕。' },
+        why: '講義 p.27：Disassociation is a notification (not a request) and can not be refused by either party。也可以由 STA 或 AP 任一方發起，所以 (D) 錯。'
+      },
+      {
+        en: 'A portal is used to "integrate" 802.11 with a wired LAN. "Integrate" means ____.',
+        zh: 'portal 用來把 802.11 和有線區域網路 integrate。integrate 的意思是 ____。',
+        options: [
+          { en: 'separate completely', zh: '完全分開' },
+          { en: 'replace', zh: '取代' },
+          { en: 'measure', zh: '測量' },
+          { en: 'connect so they work as one system', zh: '連接起來，使其像一個系統運作' }
+        ],
+        answer: 3,
+        full: { en: 'To integrate means to connect two networks so they work as one system.', zh: 'integrate 是把兩個網路連接起來，讓它們像一個系統運作。' },
+        why: '講義 p.16：To integrate the 802.11 architecture with a traditional wired LAN, a logical architecture component (Portal) is introduced。'
+      },
+      {
+        en: 'BSSs may be physically "collocated." "Collocated" means ____.',
+        zh: 'BSS 可以在實體上 collocated。collocated 的意思是 ____。',
+        options: [
+          { en: 'located in the same place', zh: '位於同一個地點' },
+          { en: 'far apart', zh: '相距很遠' },
+          { en: 'connected by a cable', zh: '用纜線相連' },
+          { en: 'owned by the same company', zh: '屬於同一家公司' }
+        ],
+        answer: 0,
+        full: { en: '"Collocated" means located in the same place; such BSSs usually use different channels.', zh: 'collocated 是位於同一個地點；這樣的 BSS 通常使用不同的頻道。' },
+        why: 'co-（共同）+ located（位於）。講義 p.14 列出 partially overlap、physically disjoint、physically collocated 三種情況。'
+      },
+      {
+        en: '"Mutually" acceptable authentication means it is acceptable ____.',
+        zh: 'mutually 可接受的認證，是指 ____ 都可接受。',
+        options: [
+          { en: 'to the AP only', zh: '只有 AP' },
+          { en: 'to both sides', zh: '雙方' },
+          { en: 'to nobody', zh: '沒有人' },
+          { en: 'to the user only', zh: '只有使用者' }
+        ],
+        answer: 1,
+        full: { en: '"Mutually acceptable" means acceptable to both sides.', zh: 'mutually acceptable 是雙方都可接受。' },
+        why: '講義 p.29：If a mutually acceptable level of authentication has not been established between two stations, an association shall not be established。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'In 802.11, the destination address does not equal the destination ____.',
+        zh: '在 802.11 中，目的位址不等於目的 ____。',
+        options: [
+          { en: 'password', zh: '密碼' },
+          { en: 'speed', zh: '速度' },
+          { en: 'location', zh: '位置' },
+          { en: 'channel', zh: '頻道' }
+        ],
+        answer: 2,
+        why: '講義 p.2：Destination address does not equal destination location。STA 會移動，位址固定但位置不固定。'
+      },
+      {
+        en: 'At any given time, a mobile STA may be associated with no more ____ one AP.',
+        zh: '在任何時刻，一個行動 STA 最多只能與 ____ 一個 AP 關聯。',
+        options: [
+          { en: 'than', zh: '（比）' },
+          { en: 'then', zh: '（然後）' },
+          { en: 'that', zh: '（那個）' },
+          { en: 'as', zh: '（如同）' }
+        ],
+        answer: 0,
+        full: { en: 'At any given time, a mobile STA may be associated with no more than one AP.', zh: '在任何時刻，一個行動 STA 最多只能與一個 AP 關聯。' },
+        why: '文法題：no more than = 最多、不超過。than 與 then 是常見拼字陷阱。'
+      },
+      {
+        en: 'Association is always ____ by the mobile STA.',
+        zh: '關聯一律由行動 STA ____。',
+        options: [
+          { en: 'refused', zh: '拒絕' },
+          { en: 'deleted', zh: '刪除' },
+          { en: 'encrypted', zh: '加密' },
+          { en: 'initiated', zh: '發起' }
+        ],
+        answer: 3,
+        why: '講義 p.25、p.26：Association／Reassociation is always initiated by the mobile STA。'
+      },
+      {
+        en: 'Before a STA can use the Distribution service, it must first be ____.',
+        zh: 'STA 能使用分配服務之前，必須先 ____。',
+        options: [
+          { en: 'disassociated', zh: '解除關聯' },
+          { en: 'associated', zh: '已關聯' },
+          { en: 'deauthenticated', zh: '解除認證' },
+          { en: 'powered off', zh: '關機' }
+        ],
+        answer: 1,
+        why: '講義 p.24：Before a data message can be handled by the Distribution service, a STA must be "Associated"。'
+      },
+      {
+        en: 'Pre-authentication can ____ up the reassociation process.',
+        zh: '預先認證可以讓重新關聯的過程 ____。',
+        options: [
+          { en: 'speed', zh: '加快' },
+          { en: 'slow', zh: '變慢' },
+          { en: 'give', zh: '放棄' },
+          { en: 'hold', zh: '延誤' }
+        ],
+        answer: 0,
+        full: { en: 'Pre-authentication can speed up the reassociation process.', zh: '預先認證可以加快重新關聯的過程。' },
+        why: '講義 p.32：Thus, pre-authentication can speedup the reassociation process。片語 speed up = 加快。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：From One BSS to Another',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'In an office with several access points, each AP forms its own basic service set, and a distribution system links them into one extended service set. When a laptop first joins, it associates with one AP. From then on, the distribution system knows that frames for this laptop must be delivered through that AP.',
+        zh: '在一間有好幾台存取點的辦公室裡，每台 AP 形成自己的基本服務集，分散式系統再把它們連成一個延伸服務集。筆電第一次加入時，會與一台 AP 建立關聯。從那時起，分散式系統就知道要給這台筆電的訊框必須經由那台 AP 傳送。'
+      },
+      {
+        en: 'If the user walks to another room, the signal from the first AP becomes weak. The laptop then sends a reassociation request to a closer AP. Once the new AP accepts it, the distribution system updates its records, and traffic follows the laptop to its new location without the upper layers noticing anything.',
+        zh: '如果使用者走到另一個房間，第一台 AP 的訊號就會變弱。筆電接著向較近的 AP 送出重新關聯請求。新的 AP 一接受，分散式系統就更新紀錄，流量會跟著筆電到新的位置，上層完全察覺不到。'
+      }
+    ],
+    items: [
+      {
+        en: 'What links several BSSs into one ESS?',
+        zh: '什麼把多個 BSS 連成一個 ESS？',
+        options: [
+          { en: 'The laptop', zh: '筆電' },
+          { en: 'The LLC sublayer', zh: 'LLC 子層' },
+          { en: 'The distribution system', zh: '分散式系統' },
+          { en: 'The reassociation request', zh: '重新關聯請求' }
+        ],
+        answer: 2,
+        full: { en: 'The distribution system links several BSSs into one ESS.', zh: '分散式系統把多個 BSS 連成一個 ESS。' },
+        why: '第一段第一句；講義 p.10：DS is a system used to interconnect a set of BSSs to create an ESS。'
+      },
+      {
+        en: 'What does the laptop send when it moves closer to a new AP?',
+        zh: '筆電移到靠近新 AP 時，會送出什麼？',
+        options: [
+          { en: 'A disassociation notification', zh: '解除關聯通知' },
+          { en: 'A reassociation request', zh: '重新關聯請求' },
+          { en: 'A beacon', zh: '信標' },
+          { en: 'An integration message', zh: '整合訊息' }
+        ],
+        answer: 1,
+        full: { en: 'The laptop sends a reassociation request to the closer AP.', zh: '筆電會向較近的 AP 送出重新關聯請求。' },
+        why: '第二段第二句。這是 BSS-transition 的移動性。'
+      },
+      {
+        en: 'The phrase "without the upper layers noticing anything" means the move is ____ to the upper layers.',
+        zh: '「上層完全察覺不到」表示這次移動對上層是 ____ 的。',
+        options: [
+          { en: 'transparent', zh: '透明（察覺不到）' },
+          { en: 'harmful', zh: '有害' },
+          { en: 'visible', zh: '看得見' },
+          { en: 'impossible', zh: '不可能' }
+        ],
+        answer: 0,
+        full: { en: 'The move is transparent to the upper layers: they do not notice anything.', zh: '這次移動對上層是透明的：它們察覺不到任何事。' },
+        why: '呼應單字題的 transparent。講義 p.13：transparently to LLC。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Proving Who You Are',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'On a wired network, plugging into a wall socket is a kind of permission: if you can reach the cable, you are probably inside the building. Radio waves pass through walls, so a wireless network cannot rely on that assumption.',
+        zh: '在有線網路上，插進牆上的插座本身就是一種許可：如果你接得到網路線，你大概就在建築物裡面。無線電波會穿過牆壁，所以無線網路不能依賴這個假設。'
+      },
+      {
+        en: 'Instead, 802.11 uses authentication. A station first claims an identity, the other side may then challenge that claim, and the station must respond correctly. In an open system the challenge is empty, so anyone succeeds. With a shared key, only a station that knows the secret can give the right answer.',
+        zh: '因此，802.11 改用認證。站台先宣稱一個身分，對方接著可以挑戰這個宣稱，站台必須正確回應。在開放系統中挑戰是空的，所以任何人都會成功。使用共享金鑰時，只有知道秘密的站台才能給出正確答案。'
+      }
+    ],
+    items: [
+      {
+        en: 'Why can a wireless network not treat physical access as permission?',
+        zh: '為什麼無線網路不能把實體接觸當作許可？',
+        options: [
+          { en: 'Because wireless networks have no cables at all', zh: '因為無線網路完全沒有纜線' },
+          { en: 'Because the AP is always outdoors', zh: '因為 AP 一定在戶外' },
+          { en: 'Because users do not have passwords', zh: '因為使用者沒有密碼' },
+          { en: 'Because radio waves pass through walls', zh: '因為無線電波會穿過牆壁' }
+        ],
+        answer: 3,
+        full: { en: 'A wireless network cannot treat physical access as permission because radio waves pass through walls.', zh: '無線網路不能把實體接觸當作許可，因為無線電波會穿過牆壁。' },
+        why: '第一段最後一句；講義 p.28–29 的「有線封閉假設」。'
+      },
+      {
+        en: 'What are the three steps of a challenge/response exchange, in order?',
+        zh: '挑戰／回應交換的三個步驟依序是什麼？',
+        options: [
+          { en: 'Challenge, response, claim', zh: '挑戰、回應、宣稱' },
+          { en: 'Claim of identity, challenge, response', zh: '宣稱身分、挑戰、回應' },
+          { en: 'Response, claim, challenge', zh: '回應、宣稱、挑戰' },
+          { en: 'Encryption, decryption, association', zh: '加密、解密、關聯' }
+        ],
+        answer: 1,
+        full: { en: 'The three steps are: a claim (assertion) of identity, a challenge of that claim, and a response to the challenge.', zh: '三個步驟是：宣稱（宣告）身分、挑戰該宣稱、回應挑戰。' },
+        why: '第二段第二句；講義 p.30：Assertion of identity → Challenge of Assertion → Response to Challenge。'
+      },
+      {
+        en: 'In an open system, who can pass authentication?',
+        zh: '在開放系統中，誰能通過認證？',
+        options: [
+          { en: 'Anyone', zh: '任何人' },
+          { en: 'Only stations with the shared key', zh: '只有擁有共享金鑰的站台' },
+          { en: 'Only the AP', zh: '只有 AP' },
+          { en: 'Nobody', zh: '沒有人' }
+        ],
+        answer: 0,
+        full: { en: 'In an open system, anyone can pass authentication because the challenge is empty.', zh: '在開放系統中，任何人都能通過認證，因為挑戰是空的。' },
+        why: '講義 p.31：An open system example … Challenge: Null. Response: Null. Result: Station becomes Authenticated。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 2-2・英文練習</div>
+    <h1>802.11 MAC 架構與服務 英文練習</h1>
+    <div class="meta"><span>單字 6 題・克漏字 5 題・閱讀 2 篇 6 題</span><span>範圍：講義 2-2 CSMA_CA.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

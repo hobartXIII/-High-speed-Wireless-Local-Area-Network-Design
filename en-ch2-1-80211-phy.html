@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH2-1 英文練習：802.11 架構與 PHY</title>
+<meta name="description" content="第 2-1 章 802.11 架構與實體層的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近題目中單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'Wireless media suffer from "interference." "Interference" means ____.',
+        zh: '無線媒介會受到 interference 的影響。interference 的意思是 ____。',
+        options: [
+          { en: 'unwanted signals that disturb communication', zh: '干擾通訊的多餘訊號' },
+          { en: 'a faster data rate', zh: '更快的資料速率' },
+          { en: 'a type of antenna', zh: '一種天線' },
+          { en: 'a security password', zh: '一種安全密碼' }
+        ],
+        answer: 0,
+        full: { en: '"Interference" means unwanted signals that disturb communication, such as those from microwave ovens or Bluetooth devices.', zh: 'interference（干擾）是干擾通訊的多餘訊號，例如來自微波爐或藍牙裝置的訊號。' },
+        why: '講義 p.7：Difficult media – interference and noise；2.4 GHz 和微波爐、藍牙、Zigbee 共用。'
+      },
+      {
+        en: 'The 2.4 GHz band is "unlicensed." This means ____.',
+        zh: '2.4 GHz 頻段是 unlicensed。這表示 ____。',
+        options: [
+          { en: 'it is illegal to use', zh: '使用它是違法的' },
+          { en: 'only governments may use it', zh: '只有政府可以用' },
+          { en: 'it can only carry voice', zh: '只能傳語音' },
+          { en: 'anyone may use it without buying a license', zh: '任何人不必購買執照就能使用' }
+        ],
+        answer: 3,
+        full: { en: 'An unlicensed band can be used by anyone without buying a license, as long as the equipment follows the power rules.', zh: '免執照頻段任何人不必購買執照就能使用，只要設備符合功率規定。' },
+        why: 'un-（不）+ licensed（有執照的）。也因為誰都能用，干擾才多。'
+      },
+      {
+        en: 'DSSS "spreads" a signal over a wider band. "Spread" here means ____.',
+        zh: 'DSSS 把訊號 spread 到更寬的頻帶。這裡的 spread 是指 ____。',
+        options: [
+          { en: 'to make narrower', zh: '變窄' },
+          { en: 'to distribute over a larger range', zh: '分散到更大的範圍' },
+          { en: 'to delete', zh: '刪除' },
+          { en: 'to copy to a disk', zh: '複製到磁碟' }
+        ],
+        answer: 1,
+        full: { en: 'To spread a signal means to distribute its energy over a larger frequency range, which lowers its power density.', zh: '展開訊號是把它的能量分散到更大的頻率範圍，讓功率密度變低。' },
+        why: '講義 p.56：Wider Bandwidth, Less power density。'
+      },
+      {
+        en: 'The Barker sequence has good "autocorrelation" properties. Autocorrelation compares a sequence with ____.',
+        zh: 'Barker 序列有良好的 autocorrelation 特性。自相關是把一個序列和 ____ 比較。',
+        options: [
+          { en: 'a shifted copy of itself', zh: '自己位移後的副本' },
+          { en: 'a completely different sequence', zh: '完全不同的序列' },
+          { en: 'the noise floor only', zh: '只和雜訊底' },
+          { en: 'the MAC address', zh: 'MAC 位址' }
+        ],
+        answer: 0,
+        full: { en: 'Autocorrelation compares a sequence with a shifted copy of itself; Barker gives ±11 only when perfectly aligned.', zh: '自相關是把序列和自己位移後的副本比較；Barker 碼只有完全對齊時才得到 ±11。' },
+        why: 'auto- 是「自己」。對齊時峰值大、錯開時值很小，接收端才容易找到符元邊界。'
+      },
+      {
+        en: 'A "carrier" in modulation is ____.',
+        zh: '調變中的 carrier 是 ____。',
+        options: [
+          { en: 'the company that sells the router', zh: '賣路由器的公司' },
+          { en: 'a periodic waveform whose properties are changed to carry information', zh: '透過改變其特性來攜帶資訊的週期性波形' },
+          { en: 'the cable that connects the AP', zh: '連接 AP 的纜線' },
+          { en: 'a header added by the MAC', zh: 'MAC 加上的標頭' }
+        ],
+        answer: 1,
+        full: { en: 'A carrier is a periodic waveform whose amplitude, frequency, or phase is changed to carry information.', zh: '載波是一個週期性波形，透過改變它的振幅、頻率或相位來攜帶資訊。' },
+        why: '講義 p.69：varying one or more properties of a periodic waveform, called the carrier signal。'
+      },
+      {
+        en: 'The Long PLCP preamble is "mandatory" in 802.11b. "Mandatory" means ____.',
+        zh: '在 802.11b 中，長 PLCP 前導碼是 mandatory。mandatory 的意思是 ____。',
+        options: [
+          { en: 'optional', zh: '選用的' },
+          { en: 'outdated', zh: '過時的' },
+          { en: 'required', zh: '必要的' },
+          { en: 'encrypted', zh: '加密的' }
+        ],
+        answer: 2,
+        full: { en: '"Mandatory" means required: every 802.11b device must support the Long PLCP format, while the Short format is optional.', zh: 'mandatory 是「必要的」：每台 802.11b 裝置都必須支援長 PLCP 格式，短格式則是選用的。' },
+        why: '講義 p.66：Long … Mandatory in 802.11b；Short … Optional in 802.11b。mandatory 和 optional 是規格書常見的一對反義詞。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'Two stations that cannot hear each other but can both reach the AP are called ____ nodes.',
+        zh: '彼此聽不到、但都連得到 AP 的兩個站台稱為 ____ 節點。',
+        options: [
+          { en: 'exposed', zh: '暴露' },
+          { en: 'hidden', zh: '隱藏' },
+          { en: 'central', zh: '中央' },
+          { en: 'idle', zh: '閒置' }
+        ],
+        answer: 1,
+        why: '講義 p.7：Full connectivity cannot be assumed – Hidden node problem。exposed node 是相反的情況：聽得到別人而不敢送。'
+      },
+      {
+        en: 'If a modem sends 1000 symbols per second and each symbol carries 2 bits, the bit rate is ____ bits per second.',
+        zh: '如果數據機每秒送 1000 個符元、每個符元帶 2 位元，位元速率就是每秒 ____ 位元。',
+        options: [
+          { en: '500', zh: '500' },
+          { en: '1000', zh: '1000' },
+          { en: '4000', zh: '4000' },
+          { en: '2000', zh: '2000' }
+        ],
+        answer: 3,
+        why: '講義 p.73：bit rate = symbol rate × 每符元位元數 = 1000 × 2 = 2000。'
+      },
+      {
+        en: 'QAM changes both the ____ and the phase of the carrier.',
+        zh: 'QAM 同時改變載波的 ____ 與相位。',
+        options: [
+          { en: 'amplitude', zh: '振幅' },
+          { en: 'address', zh: '位址' },
+          { en: 'antenna', zh: '天線' },
+          { en: 'algorithm', zh: '演算法' }
+        ],
+        answer: 0,
+        why: '講義 p.74–75：QAM 使用至少兩個相位與至少兩個振幅，等於 PSK + ASK 的組合。'
+      },
+      {
+        en: 'The PLCP header of a Long PPDU is always sent at 1 Mbps so that ____ stations can still read it.',
+        zh: '長 PPDU 的 PLCP 標頭一律以 1 Mbps 傳送，讓 ____ 站台也讀得懂。',
+        options: [
+          { en: 'newer', zh: '較新的' },
+          { en: 'hidden', zh: '隱藏的' },
+          { en: 'older', zh: '較舊的' },
+          { en: 'encrypted', zh: '加密的' }
+        ],
+        answer: 2,
+        why: '講義 p.66：Compatible with 1 and 2 Mbps。舊的 802.11 站台只懂 1/2 Mbps，用最低速率送標頭大家都能解出 LENGTH，進而做虛擬載波偵測。'
+      },
+      {
+        en: 'An input power of 100 W and an output power of 1 W give a power ratio of ____ dB.',
+        zh: '輸入功率 100 W、輸出功率 1 W，功率比是 ____ dB。',
+        options: [
+          { en: '2', zh: '2' },
+          { en: '20', zh: '20' },
+          { en: '100', zh: '100' },
+          { en: '10', zh: '10' }
+        ],
+        answer: 1,
+        why: '講義 p.60：10 log10(100/1) = 10 × 2 = 20 dB。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：Why Wireless Is Hard',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'A cable gives every connected station roughly the same view of the medium. Radio does not. Signal strength changes with distance, walls, and moving people, and the same frequencies are shared with microwave ovens and Bluetooth headsets.',
+        zh: '纜線讓每個連接的站台看到的媒介大致相同。無線電不是這樣。訊號強度會隨距離、牆壁和走動的人而改變，而且同樣的頻率還與微波爐、藍牙耳機共用。'
+      },
+      {
+        en: 'Because coverage is uneven, two stations may both reach an access point while being unable to hear each other. Each one senses an idle channel and starts sending, and their frames collide at the access point. Mobility adds another challenge: a laptop that moves from room to room must keep its connection while the link quality keeps changing.',
+        zh: '因為涵蓋範圍不均勻，兩個站台可能都連得到存取點，卻彼此聽不到。它們各自偵測到通道閒置就開始傳送，結果訊框在存取點撞在一起。移動性又帶來另一個挑戰：從一個房間移到另一個房間的筆電，必須在鏈路品質不斷變化時保持連線。'
+      }
+    ],
+    items: [
+      {
+        en: 'According to paragraph 1, which of the following does NOT affect radio signal strength?',
+        zh: '根據第一段，下列何者「不會」影響無線電訊號強度？',
+        options: [
+          { en: 'Distance', zh: '距離' },
+          { en: 'Walls', zh: '牆壁' },
+          { en: 'The color of the access point', zh: '存取點的顏色' },
+          { en: 'Moving people', zh: '走動的人' }
+        ],
+        answer: 2,
+        full: { en: 'The color of the access point does not affect signal strength; distance, walls, and moving people do.', zh: '存取點的顏色不會影響訊號強度；距離、牆壁和走動的人才會。' },
+        why: '第一段第三句列出 distance, walls, and moving people。'
+      },
+      {
+        en: 'What problem does paragraph 2 describe?',
+        zh: '第二段描述的是什麼問題？',
+        options: [
+          { en: 'The hidden node problem', zh: '隱藏節點問題' },
+          { en: 'The exposed node problem', zh: '暴露節點問題' },
+          { en: 'A broken cable', zh: '纜線斷掉' },
+          { en: 'A wrong IP address', zh: 'IP 位址錯誤' }
+        ],
+        answer: 0,
+        full: { en: 'Paragraph 2 describes the hidden node problem: two stations cannot hear each other, so their frames collide at the access point.', zh: '第二段描述的是隱藏節點問題：兩個站台彼此聽不到，訊框在存取點撞在一起。' },
+        why: '「都連得到 AP、彼此卻聽不到、在 AP 碰撞」正是 hidden node 的定義。'
+      },
+      {
+        en: 'The word "uneven" in paragraph 2 is closest in meaning to ____.',
+        zh: '第二段的 uneven 意思最接近 ____。',
+        options: [
+          { en: 'perfectly equal', zh: '完全相等' },
+          { en: 'not the same everywhere', zh: '各處不一樣' },
+          { en: 'very fast', zh: '非常快' },
+          { en: 'carefully planned', zh: '經過仔細規劃' }
+        ],
+        answer: 1,
+        full: { en: '"Uneven" means not the same everywhere: coverage is strong in some places and weak in others.', zh: 'uneven 是「各處不一樣」：涵蓋範圍有些地方強、有些地方弱。' },
+        why: 'un- + even（平均的）。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Spreading for Strength',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'In direct sequence spread spectrum, every data bit is multiplied by a short code of chips. The original 802.11 uses an 11-chip Barker code, so one bit becomes eleven chips and the signal occupies a much wider band at a much lower power density.',
+        zh: '在直接序列展頻中，每個資料位元都乘上一段由碼片組成的短碼。原始的 802.11 使用 11 碼片的 Barker 碼，所以一個位元變成十一個碼片，訊號佔用寬得多的頻帶，功率密度則低得多。'
+      },
+      {
+        en: 'At the receiver, the same code is used to collect the energy back into a sharp peak. Narrowband interference, on the other hand, is spread out by this process and becomes weak noise. This gives DSSS a coding gain of about 10 dB, and the receiver can even tell the main peak apart from smaller echoes that arrive later.',
+        zh: '在接收端，用同一段碼把能量收回成一個尖銳的峰值。相反地，窄頻干擾在這個過程中會被打散，變成微弱的雜訊。這讓 DSSS 有大約 10 dB 的編碼增益，接收端甚至能把主峰和較晚抵達的較小回波區分開來。'
+      }
+    ],
+    items: [
+      {
+        en: 'How many chips represent one data bit in the original 802.11 DSSS?',
+        zh: '在原始的 802.11 DSSS 中，一個資料位元用幾個碼片表示？',
+        options: [
+          { en: 'One', zh: '一個' },
+          { en: 'Eight', zh: '八個' },
+          { en: 'Sixteen', zh: '十六個' },
+          { en: 'Eleven', zh: '十一個' }
+        ],
+        answer: 3,
+        full: { en: 'Eleven chips represent one data bit, because the original 802.11 DSSS uses an 11-chip Barker code.', zh: '一個資料位元用十一個碼片表示，因為原始的 802.11 DSSS 使用 11 碼片 Barker 碼。' },
+        why: '第一段第二句；講義 p.59「11 Chip BARKER Sequence」。'
+      },
+      {
+        en: 'What happens to narrowband interference at the receiver?',
+        zh: '在接收端，窄頻干擾會怎樣？',
+        options: [
+          { en: 'It becomes a sharp peak.', zh: '變成尖銳的峰值。' },
+          { en: 'It is spread out and becomes weak noise.', zh: '被打散，變成微弱的雜訊。' },
+          { en: 'It doubles the data rate.', zh: '讓資料速率加倍。' },
+          { en: 'It is converted into an echo.', zh: '被轉換成回波。' }
+        ],
+        answer: 1,
+        full: { en: 'Narrowband interference is spread out by the despreading process and becomes weak noise.', zh: '窄頻干擾在解展頻的過程中被打散，變成微弱的雜訊。' },
+        why: '第二段第二句。訊號被「收回」、干擾被「打散」，這就是編碼增益的來源。'
+      },
+      {
+        en: 'Which benefit of DSSS is mentioned in the last sentence?',
+        zh: '最後一句提到 DSSS 的哪個好處？',
+        options: [
+          { en: 'It can separate the main peak from later echoes.', zh: '能把主峰和較晚的回波分開。' },
+          { en: 'It removes the need for an access point.', zh: '不再需要存取點。' },
+          { en: 'It encrypts every frame.', zh: '會加密每個訊框。' },
+          { en: 'It uses less bandwidth than any other method.', zh: '比其他方法用更少頻寬。' }
+        ],
+        answer: 0,
+        full: { en: 'DSSS can separate the main peak from smaller echoes that arrive later, which makes it robust against delay spread.', zh: 'DSSS 能把主峰和較晚抵達的較小回波分開，所以能抵抗延遲擴散。' },
+        why: '講義 p.61：Robust against time delay spread – Resolution of echoes。(D) 錯，展頻反而佔用更寬的頻寬。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 2-1・英文練習</div>
+    <h1>802.11 架構與 PHY 英文練習</h1>
+    <div class="meta"><span>單字 6 題・克漏字 5 題・閱讀 2 篇 6 題</span><span>範圍：講義 2-1 CSMA_CA.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

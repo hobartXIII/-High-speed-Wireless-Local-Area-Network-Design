@@ -127,6 +127,37 @@
     </a>
   </div>
 
+  <h2 id="english">英文練習</h2>
+  <p>依各章講義出的英文題：單字、克漏字、閱讀測驗。題目只顯示英文，作答後才出現中文與解析，答案附完整的英文與中文句子。</p>
+  <div class="cards">
+    <a class="card" href="en-ch0-lan.html"><span class="num">CH 0</span><h3>LAN 概論</h3><p>17 題：OSI 分層、封裝、拓樸、IEEE 802 標準。</p></a>
+    <a class="card" href="en-ch1-csma-cd.html"><span class="num">CH 1</span><h3>802.3 CSMA/CD</h3><p>22 題：退避、jam、訊框長度限制。</p></a>
+    <a class="card" href="en-ch2-1-80211-phy.html"><span class="num">CH 2-1</span><h3>802.11 架構與 PHY</h3><p>17 題：Hidden node、展頻、調變、PLCP。</p></a>
+    <a class="card" href="en-ch2-2-80211-mac.html"><span class="num">CH 2-2</span><h3>802.11 MAC 服務</h3><p>17 題：DS、Association、漫遊、認證。</p></a>
+    <a class="card" href="en-ch2-3-80211-frame.html"><span class="num">CH 2-3</span><h3>WEP 與訊框格式</h3><p>17 題：WEP、站台狀態、位址欄位。</p></a>
+    <a class="card" href="en-ch2-4-80211-dcf.html"><span class="num">CH 2-4</span><h3>DCF 存取機制</h3><p>17 題：IFS、退避凍結、RTS/CTS 與 NAV。</p></a>
+    <a class="card" href="en-ch2-5-80211-pcf-mgmt.html"><span class="num">CH 2-5</span><h3>PCF 與 MAC 管理</h3><p>17 題：輪詢、省電、掃描、漫遊。</p></a>
+    <a class="card" href="en-ch3-80211e-qos.html"><span class="num">CH 3</span><h3>802.11e QoS</h3><p>17 題：AC、EDCA、TXOP、WMM Power Save。</p></a>
+  </div>
+  <p id="tr-local" hidden></p>
+  <script>
+    // 講義英中對照頁（tr-*.html）只在本機，不 commit；本機預覽時檔案存在才顯示連結
+    (async () => {
+      if (!/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) return;
+      const pages = [['tr-ch0-lan.html', 'CH 0'], ['tr-ch1-csma-cd.html', 'CH 1'], ['tr-ch2-1-80211-phy.html', 'CH 2-1'],
+        ['tr-ch2-2-80211-mac.html', 'CH 2-2'], ['tr-ch2-3-80211-frame.html', 'CH 2-3'], ['tr-ch2-4-80211-dcf.html', 'CH 2-4'],
+        ['tr-ch2-5-80211-pcf-mgmt.html', 'CH 2-5'], ['tr-ch3-80211e-qos.html', 'CH 3']];
+      const found = [];
+      for (const [href, label] of pages) {
+        try { if ((await fetch(href, { method: 'HEAD' })).ok) found.push(`<a href="${href}">${label}</a>`); } catch (e) { /* 離線或不存在 */ }
+      }
+      if (!found.length) return;
+      const p = document.getElementById('tr-local');
+      p.innerHTML = '講義英中對照（本機）：' + found.join('・');
+      p.hidden = false;
+    })();
+  </script>
+
   <h2 id="outline">課程大綱（講義）</h2>
   <div class="figure">
     <div class="fig-title">課程地圖 <span class="tag static">圖解</span></div>

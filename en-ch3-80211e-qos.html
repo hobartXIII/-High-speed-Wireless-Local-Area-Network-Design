@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CH3 英文練習：802.11e QoS</title>
+<meta name="description" content="第 3 章 IEEE 802.11e Enhanced QoS MAC 的英文練習：單字、克漏字、閱讀測驗，答案附完整英文與中文。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<link rel="stylesheet" href="assets/css/en-practice.css?v=4">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<script>
+window.EN_PRACTICE = [
+  {
+    id: 'vocab', title: 'A. 單字 Vocabulary',
+    intro: '選出最接近題目中單字意思的選項。作答後會顯示完整英文、中文與解析。',
+    items: [
+      {
+        en: 'Voice traffic needs bounded "jitter." Jitter is ____.',
+        zh: '語音流量需要有上限的 jitter。jitter 是 ____。',
+        options: [
+          { en: 'the total amount of data sent', zh: '送出的資料總量' },
+          { en: 'the variation in delay between packets', zh: '封包之間延遲的變化' },
+          { en: 'the strength of the signal', zh: '訊號的強度' },
+          { en: 'the number of users', zh: '使用者人數' }
+        ],
+        answer: 1,
+        full: { en: 'Jitter is the variation in delay between packets; a jitter buffer smooths it out before playout.', zh: '抖動是封包之間延遲的變化；抖動緩衝區會在播放前把它抹平。' },
+        why: '講義第 4 張：Bounded Jitter (→ for smooth playout)；Solution in device: Jitter Buffer。'
+      },
+      {
+        en: 'In EDCA, traffic is "prioritized." To prioritize means ____.',
+        zh: '在 EDCA 中，流量會被 prioritized。prioritize 的意思是 ____。',
+        options: [
+          { en: 'to treat all traffic the same', zh: '把所有流量一視同仁' },
+          { en: 'to encrypt the most important traffic', zh: '加密最重要的流量' },
+          { en: 'to delete low-value traffic', zh: '刪除低價值的流量' },
+          { en: 'to give some traffic earlier access than other traffic', zh: '讓某些流量比其他流量更早取得存取' }
+        ],
+        answer: 3,
+        full: { en: 'To prioritize means to give some traffic earlier access than other traffic; voice gets a shorter AIFS and a smaller CW.', zh: '設定優先權是讓某些流量比其他流量更早取得存取；語音的 AIFS 較短、CW 較小。' },
+        why: '講義第 5 張：Prioritized QoS … relative delivery priority (ex. Low, Mid, High)。'
+      },
+      {
+        en: 'A QSTA "negotiates" a TSPEC with the HC. To negotiate means ____.',
+        zh: 'QSTA 與 HC negotiates 一個 TSPEC。negotiate 的意思是 ____。',
+        options: [
+          { en: 'to discuss and agree on terms', zh: '討論並議定條件' },
+          { en: 'to refuse a request', zh: '拒絕請求' },
+          { en: 'to send without asking', zh: '不問就送' },
+          { en: 'to measure the channel', zh: '測量通道' }
+        ],
+        answer: 0,
+        full: { en: 'To negotiate means to discuss and agree on terms; the QSTA and the HC agree on the traffic stream\'s characteristics.', zh: '協商是討論並議定條件；QSTA 與 HC 議定流量串流的特性。' },
+        why: '講義第 16 張：Characteristics of traffic streams created by negotiation between QSTA and HC；用 ADDTS Request／Response。'
+      },
+      {
+        en: 'Block Ack "aggregates" several ACKs into one frame. To aggregate means ____.',
+        zh: 'Block Ack 把數個 ACK aggregates 成一個訊框。aggregate 的意思是 ____。',
+        options: [
+          { en: 'to split', zh: '拆開' },
+          { en: 'to delay', zh: '延遲' },
+          { en: 'to combine into one', zh: '合併成一個' },
+          { en: 'to encrypt', zh: '加密' }
+        ],
+        answer: 2,
+        full: { en: 'To aggregate means to combine into one; a single BlockAck reports the status of many MPDUs.', zh: 'aggregate 是合併成一個；單一個 BlockAck 回報多個 MPDU 的狀態。' },
+        why: '講義第 53 張：By aggregating several ACKs into one frame。'
+      },
+      {
+        en: '"Admission control" decides ____.',
+        zh: 'admission control 決定的是 ____。',
+        options: [
+          { en: 'whether a new traffic stream may be accepted', zh: '新的流量串流能不能被接受' },
+          { en: 'which channel the AP uses', zh: 'AP 用哪個頻道' },
+          { en: 'how strong the encryption is', zh: '加密有多強' },
+          { en: 'when the battery is charged', zh: '電池什麼時候充電' }
+        ],
+        answer: 0,
+        full: { en: 'Admission control decides whether a new traffic stream may be accepted without breaking the QoS of existing ones.', zh: '允入控制決定新的流量串流能不能被接受，而不破壞既有串流的 QoS。' },
+        why: 'admission = 准許進入。講義第 9 張列在 Auxiliary Mechanisms；EDCA 參數組的 ACM 位元是 Admission Control Mandatory。'
+      },
+      {
+        en: 'A "trigger" frame in U-APSD ____.',
+        zh: 'U-APSD 中的 trigger 訊框 ____。',
+        options: [
+          { en: 'ends the association', zh: '結束關聯' },
+          { en: 'reserves the channel for the AP forever', zh: '永遠為 AP 保留通道' },
+          { en: 'changes the beacon interval', zh: '改變信標間隔' },
+          { en: 'starts a service period in which the AP delivers buffered frames', zh: '開始一段服務期間，讓 AP 遞送緩衝的訊框' }
+        ],
+        answer: 3,
+        full: { en: 'A trigger frame starts a service period in which the AP delivers buffered frames to the station.', zh: '觸發訊框開始一段服務期間，讓 AP 把緩衝的訊框遞送給站台。' },
+        why: '講義第 63 張：After receiving "trigger" frame, a service period (SP) is started。trigger 本義是「扳機」。'
+      }
+    ]
+  },
+  {
+    id: 'cloze', title: 'B. 克漏字 Cloze',
+    intro: '選出最適合填入空格的選項。',
+    items: [
+      {
+        en: 'In EDCA, contention happens between access categories, ____ between stations.',
+        zh: '在 EDCA 中，競爭發生在存取類別之間，____ 站台之間。',
+        options: [
+          { en: 'not', zh: '而不是' },
+          { en: 'and', zh: '以及' },
+          { en: 'also', zh: '也' },
+          { en: 'only', zh: '只有' }
+        ],
+        answer: 0,
+        why: '講義第 32 張：Contention between Access Categories (ACs) (Not STAs)。'
+      },
+      {
+        en: 'AIFS[AC] = AIFSN[AC] × aSlotTime + ____.',
+        zh: 'AIFS[AC] ＝ AIFSN[AC] × aSlotTime ＋ ____。',
+        options: [
+          { en: 'DIFS', zh: 'DIFS' },
+          { en: 'aSIFSTime', zh: 'aSIFSTime' },
+          { en: 'CWmin', zh: 'CWmin' },
+          { en: 'TXOP', zh: 'TXOP' }
+        ],
+        answer: 1,
+        why: '講義第 40 張：AIFS[AC] = AIFSN[AC] x aSlotTime + aSIFTime；AIFSN = 2 時等於 DIFS。'
+      },
+      {
+        en: 'Each access category contains ____ user priorities.',
+        zh: '每個存取類別包含 ____ 個使用者優先權。',
+        options: [
+          { en: 'one', zh: '一' },
+          { en: 'four', zh: '四' },
+          { en: 'two', zh: '二' },
+          { en: 'eight', zh: '八' }
+        ],
+        answer: 2,
+        why: '講義第 15 張：One UP belongs to one AC；Each AC contains two UPs。8 個 UP ÷ 4 個 AC = 2。'
+      },
+      {
+        en: 'In HCCA, a QSTA gets a polled TXOP when it receives a QoS (+)CF-____.',
+        zh: '在 HCCA 中，QSTA 收到 QoS (+)CF-____ 時取得輪詢 TXOP。',
+        options: [
+          { en: 'End', zh: 'End' },
+          { en: 'Ack', zh: 'Ack' },
+          { en: 'Beacon', zh: 'Beacon' },
+          { en: 'Poll', zh: 'Poll' }
+        ],
+        answer: 3,
+        why: '講義第 46 張：Receive a QoS (+)CF-poll (→ "polled TXOP")。'
+      },
+      {
+        en: 'Inside one TXOP, frame exchanges are separated by ____.',
+        zh: '在一個 TXOP 裡，訊框交換之間以 ____ 隔開。',
+        options: [
+          { en: 'DIFS', zh: 'DIFS' },
+          { en: 'SIFS', zh: 'SIFS' },
+          { en: 'AIFS', zh: 'AIFS' },
+          { en: 'a new backoff', zh: '新的退避' }
+        ],
+        answer: 1,
+        why: '講義第 47 張：In TXOP, frames exchange sequences are separated by SIFS（11n 可用 RIFS）。不必每個訊框重新競爭，這就是 TXOP 的效率來源。'
+      }
+    ]
+  },
+  {
+    id: 'reading1', title: 'C. 閱讀測驗 1：Not All Traffic Is Equal',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'In the original DCF, a voice packet and a large file download compete for the channel in exactly the same way. That is fine for email, but a phone call becomes choppy if its packets wait too long. 802.11e solves this by sorting traffic into four access categories: voice, video, best effort, and background.',
+        zh: '在原本的 DCF 中，一個語音封包和一個大型檔案下載，以完全相同的方式競爭通道。這對電子郵件沒問題，但如果通話的封包等太久，聲音就會斷斷續續。802.11e 的解法是把流量分成四個存取類別：語音、視訊、盡力而為與背景。'
+      },
+      {
+        en: 'Each category waits a different amount of time before it may count down, and each picks its random backoff from a different range. Voice waits the shortest time and uses the smallest range, so it usually wins the channel. Background traffic waits the longest, so it uses the air mostly when nobody else needs it.',
+        zh: '每個類別在開始倒數之前等待的時間不同，挑選隨機退避的範圍也不同。語音等待時間最短、範圍最小，所以通常能搶到通道。背景流量等待時間最長，所以大多在沒人需要時才使用空中資源。'
+      }
+    ],
+    items: [
+      {
+        en: 'What problem with DCF does paragraph 1 describe?',
+        zh: '第一段描述 DCF 的什麼問題？',
+        options: [
+          { en: 'It cannot send email.', zh: '它不能送電子郵件。' },
+          { en: 'It treats voice and file downloads the same way.', zh: '它把語音和檔案下載一視同仁。' },
+          { en: 'It has too many access categories.', zh: '它的存取類別太多。' },
+          { en: 'It does not use any backoff.', zh: '它完全不用退避。' }
+        ],
+        answer: 1,
+        full: { en: 'DCF treats a voice packet and a file download the same way, so voice may wait too long.', zh: 'DCF 把語音封包和檔案下載一視同仁，所以語音可能等太久。' },
+        why: '第一段第一、二句；講義第 7 張：DCF can not provide QoS trivially。'
+      },
+      {
+        en: 'In 802.11e, which two things differ between access categories?',
+        zh: '在 802.11e 中，存取類別之間哪兩件事不同？',
+        options: [
+          { en: 'The waiting time before countdown and the backoff range', zh: '倒數前的等待時間與退避範圍' },
+          { en: 'The channel and the encryption key', zh: '頻道與加密金鑰' },
+          { en: 'The MAC address and the IP address', zh: 'MAC 位址與 IP 位址' },
+          { en: 'The antenna and the cable', zh: '天線與纜線' }
+        ],
+        answer: 0,
+        full: { en: 'The waiting time before the countdown (AIFS) and the backoff range (CW) differ between access categories.', zh: '各存取類別在倒數前的等待時間（AIFS）與退避範圍（CW）不同。' },
+        why: '第二段第一句；講義第 32 張：the size of CW and IFS depends on AC。'
+      },
+      {
+        en: 'Why does background traffic use the air "mostly when nobody else needs it"?',
+        zh: '為什麼背景流量「大多在沒人需要時才使用空中資源」？',
+        options: [
+          { en: 'Because it is encrypted', zh: '因為它有加密' },
+          { en: 'Because it uses a different frequency band', zh: '因為它用不同的頻段' },
+          { en: 'Because it waits the longest before it may count down', zh: '因為它在可以倒數之前等待最久' },
+          { en: 'Because the AP blocks it', zh: '因為 AP 封鎖它' }
+        ],
+        answer: 2,
+        full: { en: 'Background traffic waits the longest before it may count down, so other categories usually go first.', zh: '背景流量在可以倒數之前等待最久，所以其他類別通常先送。' },
+        why: '講義第 39 張：Background AIFSN 7 slots，Voice／Video 只有 2 slots。'
+      }
+    ]
+  },
+  {
+    id: 'reading2', title: 'D. 閱讀測驗 2：Calls on a Sleeping Phone',
+    intro: '先讀英文短文再作答；需要時可以展開中文翻譯。',
+    passage: [
+      {
+        en: 'With legacy power saving, a sleeping phone learns about waiting frames only from beacons, which usually arrive every 100 ms. A voice call, however, produces a small packet every 20 ms and becomes hard to understand if delay exceeds about 20 ms. Waiting for beacons is simply too slow.',
+        zh: '在舊式省電中，睡眠中的手機只能從信標得知有訊框在等，而信標通常每 100 毫秒才來一次。然而語音通話每 20 毫秒就產生一個小封包，延遲超過大約 20 毫秒就會難以聽懂。等信標實在太慢了。'
+      },
+      {
+        en: 'WMM Power Save changes who starts the delivery. Every 20 ms, the phone wakes up and sends its own voice packet. That uplink packet also acts as a trigger, telling the AP to send back whatever voice frames it has buffered. The phone then sleeps again until the next packet is due.',
+        zh: 'WMM 省電改變了由誰發起遞送。每 20 毫秒，手機醒來送出自己的語音封包。這個上行封包同時也是觸發訊號，告訴 AP 把它緩衝的語音訊框都送回來。接著手機再度睡眠，直到下一個封包該送的時候。'
+      }
+    ],
+    items: [
+      {
+        en: 'Why is legacy power saving unsuitable for voice calls?',
+        zh: '為什麼舊式省電不適合語音通話？',
+        options: [
+          { en: 'Because voice packets are too large', zh: '因為語音封包太大' },
+          { en: 'Because beacons arrive only about every 100 ms, which is too slow', zh: '因為信標大約每 100 毫秒才來一次，太慢了' },
+          { en: 'Because phones cannot sleep', zh: '因為手機不能睡眠' },
+          { en: 'Because beacons are encrypted', zh: '因為信標有加密' }
+        ],
+        answer: 1,
+        full: { en: 'Legacy power saving is unsuitable because beacons arrive only about every 100 ms, while voice needs delay below about 20 ms.', zh: '舊式省電不適合，是因為信標大約每 100 毫秒才來一次，而語音需要低於大約 20 毫秒的延遲。' },
+        why: '第一段；講義第 72–73 張：It will delay 100 ms to 300 ms。'
+      },
+      {
+        en: 'In WMM Power Save, what acts as the trigger?',
+        zh: '在 WMM 省電中，什麼扮演觸發訊號？',
+        options: [
+          { en: 'The beacon from the AP', zh: 'AP 送的信標' },
+          { en: 'A PS-Poll sent every 100 ms', zh: '每 100 毫秒送一次的 PS-Poll' },
+          { en: 'A disassociation frame', zh: '解除關聯訊框' },
+          { en: 'The phone\'s own uplink voice packet', zh: '手機自己的上行語音封包' }
+        ],
+        answer: 3,
+        full: { en: 'The phone\'s own uplink voice packet acts as the trigger.', zh: '手機自己的上行語音封包扮演觸發訊號。' },
+        why: '第二段第三句；講義第 71 張：Trigger frame associated with data frame。'
+      },
+      {
+        en: 'Which phrase best summarizes the change WMM Power Save makes?',
+        zh: '哪一句最能概括 WMM 省電帶來的改變？',
+        options: [
+          { en: 'The station, not the beacon, starts the delivery.', zh: '由站台、而不是信標，來發起遞送。' },
+          { en: 'The AP stops buffering frames.', zh: 'AP 不再緩衝訊框。' },
+          { en: 'The phone never sleeps.', zh: '手機永遠不睡。' },
+          { en: 'Beacons are sent every 20 ms.', zh: '信標改成每 20 毫秒送一次。' }
+        ],
+        answer: 0,
+        full: { en: 'WMM Power Save lets the station, not the beacon, start the delivery.', zh: 'WMM 省電讓站台、而不是信標，來發起遞送。' },
+        why: '第二段第一句：changes who starts the delivery。信標間隔並沒有改變，所以 (D) 錯。'
+      }
+    ]
+  }
+];
+</script>
+<script src="assets/js/en-practice.js?v=2"></script>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">CH 3・英文練習</div>
+    <h1>802.11e QoS 英文練習</h1>
+    <div class="meta"><span>單字 6 題・克漏字 5 題・閱讀 2 篇 6 題</span><span>範圍：講義 11EnhancedQoS.pdf</span></div>
+  </div>
+
+  <div class="callout tip">
+    <p>題目只顯示英文，作答後才出現中文題目、各選項中文、完整的英文與中文答案和解析。需要提示時可以按「顯示全部中文題目」。閱讀測驗的短文是依講義內容另外寫的練習文章，不是講義原文。</p>
+  </div>
+
+  <div id="practice"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+</body>
+</html>

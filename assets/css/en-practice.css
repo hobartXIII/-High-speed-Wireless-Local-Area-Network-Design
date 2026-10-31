@@ -1,0 +1,61 @@
+/* 英文練習區（en-*.html）與本機講義對照（tr-*.html）共用樣式；顏色沿用 style.css 的 token */
+
+/* ---------- 講義對照：每頁一個區塊，左英右中，同一列左右對齊 ---------- */
+.pg { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin: 1.2em 0; overflow: hidden; }
+.pg .r { display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; padding: 2px 16px; }
+.pg .r > p { margin: 0; }
+.pg .r > p + p { border-left: 1px solid var(--border); padding-left: 14px; }
+.pg .hd { background: var(--surface-2); padding-block: 6px; font-size: .82rem; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+.pg .t { font-weight: 700; padding-block: 4px; }
+.pg .g { color: var(--muted); font-size: .85rem; padding-top: 8px; }
+.pg .b > p { padding-left: 1em; text-indent: -1em; }
+.pg .b > p::before { content: "• "; }
+.pg .s > p { padding-left: 2.2em; text-indent: -1em; }
+.pg .s > p::before { content: "– "; }
+.pg .b > p + p, .pg .s > p + p { padding-left: calc(14px + 1em); }
+.pg .s > p + p { padding-left: calc(14px + 2.2em); }
+.pg .r:last-child { padding-bottom: 10px; }
+/* 講義原本就是中文：照原文保留，橫跨兩欄 */
+.pg .r.z, .pg .r.f, .pg .r.n { grid-template-columns: 1fr; }
+.pg .r.ss > p { padding-left: 3.4em; text-indent: -1em; }
+.pg .r.ss > p::before { content: "· "; }
+.pg .r.ss > p + p { padding-left: calc(14px + 3.4em); }
+.pg .r.z.ss > p { padding-left: 3.4em; }
+.pg .r.z > p::after, .zh-tag { font-size: .7em; color: var(--orange); background: var(--orange-soft); border-radius: 4px; padding: 0 .35em; vertical-align: .15em; text-indent: 0; display: inline-block; }
+.pg .r.z > p::after { content: "中文原文"; margin-left: .5em; }
+.pg .r.z.b > p, .pg .r.z.s > p, .pg .r.z.ss > p { border-left: 0; }
+.pg .r.n > p { color: var(--muted); font-size: .85rem; }
+.pg .r.f .figure { margin: .5em 0; }
+@media (max-width: 640px) {
+  .pg .r { grid-template-columns: 1fr; }
+  .pg .r > p + p { border-left: 0; color: var(--accent); }
+}
+
+/* ---------- 練習題 ---------- */
+.quiz-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 1em 0; }
+.quiz-bar .score { font-variant-numeric: tabular-nums; font-weight: 600; margin-right: auto; }
+
+.q { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin: 1em 0; }
+.q .stem { margin: 0 0 .2em; font-weight: 600; }
+.q .stem .no { font-family: var(--mono); color: var(--accent); margin-right: .4em; }
+.q .stem-zh { margin: 0 0 .6em; color: var(--muted); font-size: .92em; }
+.q .opts { list-style: none; margin: .6em 0 0; padding: 0; display: grid; gap: 6px; }
+.q .opt { display: block; width: 100%; text-align: left; border: 1px solid var(--border); background: var(--surface); color: var(--fg); border-radius: 7px; padding: 7px 12px; font: inherit; cursor: pointer; line-height: 1.5; }
+.q .opt:hover:not(:disabled) { border-color: var(--accent); }
+.q .opt:disabled { cursor: default; }
+.q .opt .key { font-family: var(--mono); font-weight: 700; margin-right: .5em; }
+.q .opt .zh { display: block; color: var(--muted); font-size: .9em; }
+.q .opt.right { border-color: var(--green); background: var(--green-soft); }
+.q .opt.wrong { border-color: var(--red); background: var(--red-soft); }
+
+.q .ans { margin-top: 10px; padding: 10px 12px; border-radius: 7px; background: var(--surface-2); }
+.q .ans p { margin: .2em 0; }
+.q .ans .verdict { font-weight: 700; }
+.q .ans .verdict.ok { color: var(--green); }
+.q .ans .verdict.ng { color: var(--red); }
+.q .ans .full-en { font-weight: 600; }
+.q .ans .why { color: var(--muted); font-size: .93em; }
+
+.passage { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: var(--radius); padding: 12px 16px; margin: 1em 0; }
+.passage p { margin: .5em 0; }
+.passage .zh { color: var(--muted); font-size: .93em; }
