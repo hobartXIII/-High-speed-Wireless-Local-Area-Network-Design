@@ -116,6 +116,11 @@
       <p>QoS 需求、UP 與 AC、TSPEC 與 TID、QoS Control、Ack Policy、TXOP、HCF（EDCA、HCCA）、AIFS 與預設參數、DLS、Block Ack、APSD 與 WMM Power Save、802.11ae／aa。</p>
       <div class="anims">▶ QoS Control 解碼器・EDCA 參數尺規・EDCA 競爭模擬・PCF vs. HCF 超級訊框・TXOP 裝箱・Block Ack 動畫・VoIP 省電比較</div>
     </a>
+    <a class="card" href="ch4-random-access.html">
+      <span class="num">CH 4</span><h3>🎲 隨機存取分析</h3>
+      <p>多重存取協定分類、ALOHA 與 Slotted ALOHA 吞吐量推導（Poisson、G 與 S、Vulnerable period）、CSMA 三種 persistence、CSMA/CD、CSMA/CA、流量模型（CBR、On-Off、Poisson、IPP、MMPP）。</p>
+      <div class="anims">▶ ALOHA 模擬器・Poisson 與二項分佈・Vulnerable period・persistence 動畫・S–G 曲線・流量模型產生器</div>
+    </a>
   </div>
 
   <h2 id="homework">作業</h2>
@@ -162,7 +167,7 @@
 
   <h2 id="sources">原始資料</h2>
   <ul>
-    <li>講義 PDF：Google 雲端硬碟「高速無線區域網路設計」資料夾（0Intro_LAN、1CSMA_CD、2-1 CSMA_CA、2-2 CSMA_CA、2-3 CSMA_CA、2-4 CSMA_CA、2-5 CSMA_CA、11EnhancedQoS）</li>
+    <li>講義 PDF：Google 雲端硬碟「高速無線區域網路設計」資料夾（0Intro_LAN、1CSMA_CD、2-1 CSMA_CA、2-2 CSMA_CA、2-3 CSMA_CA、2-4 CSMA_CA、2-5 CSMA_CA、11EnhancedQoS、Random Access Analysis）</li>
     <li>筆記：Notion「📡 高速無線區域網路設計」</li>
     <li>原始碼：<a href="https://github.com/hobartXIII/-High-speed-Wireless-Local-Area-Network-Design">GitHub repo</a></li>
   </ul>
@@ -187,6 +192,7 @@
     { x: 570, y: 214, w: 140, t: '802.15 WPAN', s: 'BT・Zigbee・BAN' },
     { x: 570, y: 258, w: 140, t: '802.16 WiMAX', s: 'WMAN' },
     { x: 370, y: 222, w: 160, t: 'WEP 與訊框格式', s: 'CH 2-3', on: true, href: 'ch2-3-80211-frame.html' },
+    { x: 190, y: 222, w: 140, t: '隨機存取分析', s: 'CH 4', on: true, href: 'ch4-random-access.html' },
   ];
   const H = 48;
   const link = (a, b) => {
@@ -195,7 +201,7 @@
     const mx = (x1 + x2) / 2;
     S('path', { d: `M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2 - 2} ${y2}`, stroke: 'var(--muted)', fill: 'none', 'stroke-width': 1.5, 'marker-end': ar('muted') }, svg);
   };
-  [[0, 1], [1, 2], [1, 3], [1, 10], [2, 4], [2, 6], [2, 7], [3, 4], [3, 5], [3, 8], [3, 9], [10, 6]].forEach(p => link(p[0], p[1]));
+  [[0, 1], [1, 2], [1, 3], [1, 10], [2, 4], [2, 6], [2, 7], [3, 4], [3, 5], [3, 8], [3, 9], [10, 6], [0, 11]].forEach(p => link(p[0], p[1]));
   nodes.forEach((n, i) => {
     const h = n.on ? H : 36;
     const g = S(n.href ? 'a' : 'g', n.href ? { href: n.href } : {}, svg);

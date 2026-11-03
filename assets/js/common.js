@@ -10,6 +10,7 @@
     { href: 'ch2-4-80211-dcf.html', label: '2-4. DCF 存取機制' },
     { href: 'ch2-5-80211-pcf-mgmt.html', label: '2-5. PCF 與 MAC 管理' },
     { href: 'ch3-80211e-qos.html', label: '3. 802.11e QoS' },
+    { href: 'ch4-random-access.html', label: '4. 隨機存取分析' },
     { href: 'hw1-ns3.html', label: 'HW1. ns-3 使用說明' },
     { href: 'index.html#english', label: '英文練習' },
     { href: 'index.html#lecture', label: '講義對照 🔒' },
