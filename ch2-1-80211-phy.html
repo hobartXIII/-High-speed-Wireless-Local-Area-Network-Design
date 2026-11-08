@@ -110,9 +110,9 @@
     </ul>
   </div>
   <ul>
-    <li><b>一個 MAC 對多個 PHY</b><span class="en">（One MAC supporting multiple PHYs）</span>：IR、FHSS、DSSS、OFDM、OFDMA（MIMO）。</li>
-    <li><b>三種配置</b><span class="en">（Three Configurations）</span>：Independent（ad hoc）、Infrastructure（AP）、Mesh（Hybrid）。</li>
-    <li><b>MAC 協定</b>：<b>DCF</b>（Distributed Coordination Function，即 CSMA/CA，基本且必要）＋可選的 <b>PCF</b> 與 <b>HCF</b>。</li>
+    <li><b>一個 MAC 對多個 PHY</b><span class="en">（One MAC supporting multiple PHYs）</span>：IR（紅外線）、FHSS（跳頻展頻）、DSSS（直接序列展頻）、OFDM（正交分頻多工）、OFDMA（正交分頻多重存取）（MIMO，多輸入多輸出）。</li>
+    <li><b>三種配置</b><span class="en">（Three Configurations）</span>：Independent（ad hoc）獨立式／隨意網路、Infrastructure（AP）基礎架構網路／透過無線存取點、Mesh（Hybrid）網狀網路／混合式。</li>
+    <li><b>MAC 協定</b>：<b>DCF</b>（Distributed Coordination Function，競爭式，即 CSMA/CA，基本且必要）＋可選的 <b>PCF</b>（Point Coordination Function，免競爭）與 <b>HCF</b>（Hybrid Coordination Function，混合式：競爭＋免競爭）。</li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>協調功能</th><th>依據標準</th><th>方式</th><th>特性</th></tr>
@@ -125,6 +125,20 @@
     <div class="fig-body" id="fig-ofdma"></div>
     <div class="caption">橫軸是時間、縱軸是頻率（子載波）；顏色代表不同使用者，白色格是沒用到的資源（空白）。TDMA、OFDM 一個時槽只給一個使用者，使用者沒資料或資料少時，整個時槽或部分子載波就空著浪費；OFDMA 把子載波切給不同使用者同時使用（11ax），空白最少。</div>
   </div>
+
+  <h3><span class="sup">補充</span>TDMA → OFDM → OFDMA：進步在哪裡</h3>
+  <ul>
+    <li><b>分配方式：TDMA 與 OFDM 差不多</b>。兩者都是一個時間點只給一個使用者用整個頻道。TDMA 是<b>多重存取方式</b>（決定誰什麼時候用），OFDM 是<b>調變方式</b>（決定一個使用者的資料怎麼放上電波），不是同一類東西；802.11a/g 用了 OFDM，共用頻道仍靠 CSMA/CA 輪流用，等於還是分時。</li>
+    <li><b>OFDM 的進步在速率</b>：講義列的速率，802.11b（DSSS + CCK）最高 <b>11 Mbps</b>，802.11a（OFDM）最高 <b>54 Mbps</b>，其中 48、54 Mbps 用的是 64-QAM。原因：
+      <ul>
+        <li><b>抗多路徑干擾</b>：室內訊號經牆壁反射、從不同路徑先後抵達。單一載波高速傳送時每個符號很短，前後符號容易互相干擾；OFDM 把資料分到很多子載波並行，每個子載波的符號變長，再加上保護區間（cyclic prefix），反射的影響小很多。</li>
+        <li><b>能用高階調變</b>：每個子載波的通道條件單純，可以用 64-QAM 這種一個符號帶很多位元的調變。</li>
+        <li><b>頻寬利用率高</b>：子載波彼此正交，頻譜可以重疊，不必像傳統分頻那樣留保護頻帶。</li>
+      </ul>
+    </li>
+    <li><b>為什麼還要 OFDMA</b>：每次傳送都有固定開銷（競爭退避、IFS、前導碼、ACK）。速率越高，資料本身的時間越短，開銷所佔比例越大；很多使用者都傳小封包時，大部分時間花在開銷上。OFDMA 讓多個使用者在同一次傳送中共用子載波，分攤這些開銷，這才是分配方式上的進步。</li>
+    <li><b>關於上圖的 OFDM 空白</b>：圖中 OFDM 部分子載波空著是示意；實際上小封包在 OFDM 下仍佔滿所有子載波，只是傳送時間變短，真正的浪費是上面的固定開銷。</li>
+  </ul>
 
   <h2 id="entities">5. 802.11 協定實體<span class="en">（802.11 Protocol Entities）</span></h2>
   <div class="figure">
@@ -979,9 +993,9 @@ flowchart LR
     <tr><td>虛擬載波偵測</td><td>Virtual Carrier Sense</td><td>不實際聽通道，而是依訊框中的 Duration 推算通道忙碌多久</td></tr>
     <tr><td>網路配置向量</td><td>NAV</td><td>站台內的計時器，記錄通道預計被佔用到何時（補充）</td></tr>
     <tr><td>正向確認</td><td>Positive ACK</td><td>收到正確訊框才回 ACK，沒收到 ACK 就視為失敗</td></tr>
-    <tr><td>分散式協調功能</td><td>DCF</td><td>基本、必要的競爭式存取，即 CSMA/CA</td></tr>
-    <tr><td>集中式協調功能</td><td>PCF</td><td>可選，由 AP 輪詢分配傳送機會</td></tr>
-    <tr><td>混合式協調功能</td><td>HCF</td><td>802.11e，結合競爭式與控制式，提供 QoS</td></tr>
+    <tr><td>分散式協調功能</td><td>DCF</td><td><b>競爭式</b>：基本、必要，即 CSMA/CA</td></tr>
+    <tr><td>集中式協調功能</td><td>PCF</td><td><b>免競爭</b>：可選，由 AP 輪詢分配傳送機會</td></tr>
+    <tr><td>混合式協調功能</td><td>HCF</td><td><b>混合式</b>：802.11e，結合競爭（EDCA）與免競爭（HCCA），提供 QoS</td></tr>
     <tr><td>輪詢</td><td>Polling</td><td>AP 依序詢問站台是否要傳資料</td></tr>
     <tr><td>有時間限制的服務</td><td>Time Bounded Services</td><td>對延遲有要求的服務，如語音、影像</td></tr>
     <tr><td>無線存取點（講義：擷取點）</td><td>Access Point（AP）</td><td>具 STA 功能並提供 DS 存取的裝置</td></tr>
