@@ -151,8 +151,9 @@
     <tr><td>MAC Entity</td><td>基本存取機制（含 QoS）<span class="en">（basic access mechanism）</span>、分段／重組、聚合／解聚合、加密／解密<span class="en">（fragmentation/defragmentation, aggregation/deaggregation, encryption/decryption）</span></td></tr>
     <tr><td>MAC Layer Management Entity</td><td>同步、電源管理、漫遊、MAC MIB<span class="en">（synchronization, power management, roaming, MAC MIB）</span></td></tr>
     <tr><td>PLCP（Physical Layer Convergence Protocol）</td><td>依 PHY 而異，提供共同的 PHY SAP<span class="en">（PHY-specific, supports common PHY SAP）</span>；提供 <b>CCA（Clear Channel Assessment）</b>，也就是載波偵測</td></tr>
-    <tr><td>PMD（Physical Medium Dependent）</td><td>實際調變與收發（baseband）<br><span class="sup">補充</span>PMD 把調變好的訊號送到天線發射出去。理想的<b>等向性天線</b><span class="en">（isotropic）</span>向四面八方均勻輻射，場型是<b>球形</b>，增益定為 0 dBi，但只是計算用的參考；實際天線都是<b>非球形</b>：偶極天線是水平方向強、正上下方弱的甜甜圈形，指向性天線把能量集中在一個方向。總功率不變，只是重新分配方向，所以有「增益」（見第 17 節天線場型圖）。</td></tr>
-    <tr><td>PHY Layer Management</td><td>MCS、MIMO（beamforming、時空編碼、空間分集<span class="en">（Space-Time Coding, Spatial Diversity）</span>）、頻道編號<span class="en">（Channel Index）</span>、頻寬（11/20/40…MHz）<span class="en">（Channel Bandwidth）</span>、收發天線數、PHY MIB</td></tr>
+    <tr><td>PMD（Physical Medium Dependent）</td><td>調變與編碼方式（MCS）<span class="en">（Modulation and Encoding Scheme）</span>；MIMO：波束成形、空時編碼、空間分集<span class="en">（Beamforming, Space-Time Coding, Spatial Diversity）</span><br><span class="sup">補充</span>PMD 把調變好的訊號送到天線發射出去。理想的<b>等向性天線</b><span class="en">（isotropic）</span>向四面八方均勻輻射，場型是<b>球形</b>，增益定為 0 dBi，但只是計算用的參考；實際天線都是<b>非球形</b>：偶極天線是水平方向強、正上下方弱的甜甜圈形，指向性天線把能量集中在一個方向。總功率不變，只是重新分配方向，所以有「增益」（見第 17 節天線場型圖）。</td></tr>
+    <tr><td>PHY Layer Management</td><td>頻道索引、頻道頻寬（11/20/40/… MHz）、發射／接收天線數、PHY MIB<span class="en">（Channel Index, Channel Bandwidth, No. of Tx/Rx Antennas, PHY MIB）</span></td></tr>
+    <tr><td>Station Management</td><td>與 MAC 管理及 PHY 管理兩者互動<span class="en">（interacts with both MAC Management and PHY Management）</span></td></tr>
   </table></div>
   <h3>資料單元的名稱變化（常考）</h3>
   <div class="figure" id="fig-pdu-wrap">
