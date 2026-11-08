@@ -242,6 +242,52 @@ flowchart LR
     <li><span class="sup">補充</span>實務上都用 48-bit 位址，即 MAC address；前 24 bits 為 IEEE 配發給廠商的 OUI。</li>
   </ul>
 
+  <h3><span class="sup">補充</span>為什麼實務上不用 2 bytes 位址</h3>
+  <ul>
+    <li>講義寫 DA、SA 可以是 2 或 6 bytes；同一個網路裡的 DA 與 SA 長度要一樣。</li>
+    <li>網卡出廠就燒好全球唯一的 48-bit 位址，接上就能用；16-bit 位址要管理者逐台手動分配。</li>
+    <li>省下的 8 bytes 沒有意義：最短訊框本來就要 64 bytes，資料不足還是要補 PAD。</li>
+    <li>後來的 802.3 版本已經拿掉 16-bit 位址，現在的乙太網路只有 48-bit。</li>
+  </ul>
+
+  <h3><span class="sup">補充</span>位址的寫法與線上傳輸順序</h3>
+  <p>平常寫位址是每個 byte 用十六進位、由高位元寫到低位元；但 802.3 傳送時<b>每個 byte 先送最低位元（LSB）</b>。所以 <b>I/G 是第 1 個 byte 的 bit 0，也是線上第一個送出的位元</b>；U/L 是第 1 個 byte 的 bit 1，第二個送出。16-bit 位址則是 I/G 後接 15 位元位址，沒有 U/L。</p>
+  <p>例：<code>00-1A-2B-3C-4D-5E</code></p>
+  <div class="tbl-wrap"><table>
+    <tr><th class="num">Byte</th><th>十六進位</th><th>平常寫法（b7→b0）</th><th>線上順序（b0→b7）</th></tr>
+    <tr><td class="num">1</td><td>00</td><td>0000 0000</td><td><b>0 0</b>00 0000 ← I/G = 0、U/L = 0</td></tr>
+    <tr><td class="num">2</td><td>1A</td><td>0001 1010</td><td>0101 1000</td></tr>
+    <tr><td class="num">3</td><td>2B</td><td>0010 1011</td><td>1101 0100</td></tr>
+    <tr><td class="num">4</td><td>3C</td><td>0011 1100</td><td>0011 1100</td></tr>
+    <tr><td class="num">5</td><td>4D</td><td>0100 1101</td><td>1011 0010</td></tr>
+    <tr><td class="num">6</td><td>5E</td><td>0101 1110</td><td>0111 1010</td></tr>
+  </table></div>
+  <p>判斷 I/G、U/L 只要看第 1 個 byte 的最低兩個位元：</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>位址</th><th>第 1 個 byte</th><th class="num">U/L（b1）</th><th class="num">I/G（b0）</th><th>意義</th></tr>
+    <tr><td><code>FF-FF-FF-FF-FF-FF</code></td><td>1111 1111</td><td class="num">1</td><td class="num">1</td><td>廣播（群體位址的一種）</td></tr>
+    <tr><td><code>01-00-5E-00-00-01</code></td><td>0000 0001</td><td class="num">0</td><td class="num">1</td><td>群播（群體位址）</td></tr>
+    <tr><td><code>02-00-00-00-00-01</code></td><td>0000 0010</td><td class="num">1</td><td class="num">0</td><td>個別、區域自行管理</td></tr>
+    <tr><td><code>00-1A-2B-3C-4D-5E</code></td><td>0000 0000</td><td class="num">0</td><td class="num">0</td><td>個別、全球統一管理（一般網卡）</td></tr>
+  </table></div>
+  <div class="callout tip"><b>快速判斷</b>：第 1 個 byte 是奇數 → 群體位址；第 1 個 byte 的第二位數是 2、6、A、E → 區域管理的個別位址。</div>
+
+  <h3><span class="sup">補充</span>最短訊框逐欄展開</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>欄位</th><th class="num">長度</th><th>線上實際位元</th></tr>
+    <tr><td>Preamble</td><td class="num">7 B</td><td><code>10101010</code> × 7（十六進位寫作 <code>0x55</code>，因為每個 byte 先送 LSB）</td></tr>
+    <tr><td>SFD</td><td class="num">1 B</td><td><code>10101011</code>（<code>0xD5</code>），最後的 <code>11</code> 表示接下來是 DA</td></tr>
+    <tr><td>DA</td><td class="num">6 B</td><td>第 1 個位元就是 I/G，接收端一開始就知道是不是給自己的</td></tr>
+    <tr><td>SA</td><td class="num">6 B</td><td>同上，每個 byte 先送 LSB</td></tr>
+    <tr><td>Length</td><td class="num">2 B</td><td>例如 46 = <code>0x002E</code>：先送高位 byte，每個 byte 內先送 LSB</td></tr>
+    <tr><td>LLC + PAD</td><td class="num">46 B</td><td>資料不滿 46 bytes 就補 PAD</td></tr>
+    <tr><td>FCS</td><td class="num">4 B</td><td>CRC-32；例外：從 CRC 最高次項開始送</td></tr>
+  </table></div>
+  <ul>
+    <li>MAC 訊框（DA 到 FCS）= 6 + 6 + 2 + 46 + 4 = <b>64 bytes = 512 bits</b> = 1 個 slot time（51.2 μs）。</li>
+    <li>線上實際送出 = 512 + 64（Preamble + SFD）= <b>576 bits</b>；10 Mbps 下這些位元再經 Manchester 編碼（第 10 節）。</li>
+  </ul>
+
   <h2 id="flow">7. 傳送與接收流程<span class="en">（Flow Chart）</span></h2>
   <div class="figure">
     <div class="fig-title">傳送端流程 <span class="tag static">圖解</span></div>
@@ -263,6 +309,10 @@ flowchart TD
   W --> C
     </div></div>
   </div>
+  <div class="tbl-wrap"><table>
+    <tr><th>端</th><th>結果</th><th>判斷條件</th><th>常見原因</th><th>處理方式</th></tr>
+    <tr><td>傳送</td><td><b>傳送失敗</b></td><td>同一個訊框的傳送次數 i &gt; 16（也就是第 16 次碰撞）</td><td>網路負載太重、站台太多，一直搶不到通道</td><td>放棄這個訊框並回報上層；MAC 不再重傳，由上層（例如 TCP）決定是否重送</td></tr>
+  </table></div>
   <div class="figure">
     <div class="fig-title">接收端流程 <span class="tag static">圖解</span></div>
     <div class="fig-body"><div class="mermaid-host">
@@ -286,7 +336,6 @@ flowchart TD
   <h3>失敗與錯誤的態樣</h3>
   <div class="tbl-wrap"><table>
     <tr><th>端</th><th>結果</th><th>判斷條件</th><th>常見原因</th><th>處理方式</th></tr>
-    <tr><td>傳送</td><td><b>傳送失敗</b></td><td>同一個訊框的傳送次數 i &gt; 16（也就是第 16 次碰撞）</td><td>網路負載太重、站台太多，一直搶不到通道</td><td>放棄這個訊框並回報上層；MAC 不再重傳，由上層（例如 TCP）決定是否重送</td></tr>
     <tr><td>接收</td><td><b>訊框過短（衝撞）</b></td><td>收到的長度 &lt; 64 bytes</td><td>碰撞後留下的殘片（<span class="sup">補充</span>俗稱 runt）</td><td>視為碰撞，直接丟棄</td></tr>
     <tr><td>接收</td><td><b>位址辨識失敗</b></td><td>DA 不是自己的位址，也不是自己所屬的群體／廣播位址</td><td>訊框是給別人的；匯流排上每個站台都收得到所有訊框</td><td>直接丟棄。這不算錯誤，而是正常的過濾</td></tr>
     <tr><td>接收</td><td><b>長度錯誤</b></td><td>檢查碼（FCS）<b>正確</b>，但 Length 欄位與實際收到的資料長度不符，或超過 1500</td><td>CRC 正確代表傳輸過程沒有出錯，問題出在傳送端組訊框時就填錯 Length</td><td>丟棄</td></tr>
