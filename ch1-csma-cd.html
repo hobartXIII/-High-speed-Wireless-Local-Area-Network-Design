@@ -117,7 +117,7 @@ flowchart LR
           <li><b>忙就等</b>（Deference）：線一空閒就立刻送（1-persistent）。</li>
           <li><b>邊送邊聽</b>（Collision Detection）：傳送中持續比對線上的訊號。</li>
           <li><b>撞了就停</b>：送出 32 bits 的 jam，確保大家都知道撞了。</li>
-          <li><b>隨機等待再試</b>（BEB）：第 n 次碰撞後等 r × 51.2 µs，0 ≤ r ≤ 2<sup>k</sup> − 1、k = min(n, 10)；第 16 次仍失敗就放棄。</li>
+          <li><b>隨機等待再試</b>（BEB）：第 n 次碰撞後等 r × 51.2 µs，0 ≤ r ≤ 2<sup>k</sup> − 1、k = min(n, 10)；第 16 次碰撞就放棄。</li>
         </ol>
       </li>
       <li><b>為什麼能「CD」</b>：在線路上自己送的訊號和別人的訊號強度差不多，疊在一起就量得出來；最小訊框 64 bytes（= 1 個 slot time）保證撞了一定還在送、一定聽得到。</li>
@@ -170,10 +170,10 @@ flowchart LR
     <li><b>Jam signal（collision enforcement）</b>：送出 <b>32 bits</b> 的擾亂訊號，確保所有參與碰撞的站台都偵測得到<span class="en">（To make sure that all stations involved in the collision will detect collision）</span>。</li>
     <li><b>Truncated Binary Exponential Backoff Algorithm（BEBA）</b>：
       <ul>
-        <li>n：目前已經歷的碰撞次數<span class="en">（number of collisions experienced）</span>（n ≤ 16）</li>
+        <li>n：目前已經歷的碰撞次數<span class="en">（number of collisions experienced）</span>（講義標 n ≤ 16；依流程圖，實際會退避的是 n = 1～15）</li>
         <li>k = min(n, 10)：超過 10 次後不再加大（這就是 truncation）</li>
         <li>r：隨機延遲時間<span class="en">（Random delay time）</span>，0 ≤ r &lt; 2<sup>k</sup>（單位：slot time = 51.2 μs）</li>
-        <li>第 16 次仍失敗 → 放棄並回報上層傳送失敗</li>
+        <li>第 16 次碰撞（流程圖的 i 變成 17 &gt; 16）→ 放棄並回報上層傳送失敗；同一個訊框最多傳 16 次</li>
       </ul>
     </li>
   </ul>
@@ -192,11 +192,11 @@ flowchart LR
     </div>
   </div>
   <div class="tbl-wrap"><table>
-    <tr><th class="num">碰撞次數 n</th><th class="num">k</th><th>r 的範圍（slot）</th><th>最長等待（10 Mbps）</th></tr>
-    <tr><td class="num">1</td><td class="num">1</td><td>0–1</td><td>51.2 μs</td></tr>
-    <tr><td class="num">2</td><td class="num">2</td><td>0–3</td><td>153.6 μs</td></tr>
-    <tr><td class="num">3</td><td class="num">3</td><td>0–7</td><td>358.4 μs</td></tr>
-    <tr><td class="num">10–15</td><td class="num">10</td><td>0–1023</td><td>約 52.4 ms</td></tr>
+    <tr><th class="num">碰撞次數 n</th><th class="num">k</th><th>r 的範圍（slot）</th><th>最長等待（10 Mbps）= (2<sup>k</sup> − 1) × 51.2 μs</th></tr>
+    <tr><td class="num">1</td><td class="num">1</td><td>0–1</td><td>1 × 51.2 = 51.2 μs</td></tr>
+    <tr><td class="num">2</td><td class="num">2</td><td>0–3</td><td>3 × 51.2 = 153.6 μs</td></tr>
+    <tr><td class="num">3</td><td class="num">3</td><td>0–7</td><td>7 × 51.2 = 358.4 μs</td></tr>
+    <tr><td class="num">10–15</td><td class="num">10</td><td>0–1023</td><td>1023 × 51.2 ≈ 52.4 ms</td></tr>
     <tr><td class="num">16</td><td class="num">—</td><td>—</td><td>放棄，傳送失敗</td></tr>
   </table></div>
   <div class="callout warn"><b>BEBA 的缺點：Last-in First-out 效應。</b>碰撞次數少的站台隨機範圍小，比較早重傳；已經等很久、碰撞很多次的站台隨機範圍大，反而更難搶到通道 → 不公平。<span class="en">（Stations with no or few collisions will have a better chance to transmit before stations that have waited longer）</span>在模擬器勾選「加入新站台 C」就能看到。</div>
@@ -286,7 +286,7 @@ flowchart TD
   <h3>失敗與錯誤的態樣</h3>
   <div class="tbl-wrap"><table>
     <tr><th>端</th><th>結果</th><th>判斷條件</th><th>常見原因</th><th>處理方式</th></tr>
-    <tr><td>傳送</td><td><b>傳送失敗</b></td><td>同一個訊框碰撞次數 i &gt; 16</td><td>網路負載太重、站台太多，一直搶不到通道</td><td>放棄這個訊框並回報上層；MAC 不再重傳，由上層（例如 TCP）決定是否重送</td></tr>
+    <tr><td>傳送</td><td><b>傳送失敗</b></td><td>同一個訊框的傳送次數 i &gt; 16（也就是第 16 次碰撞）</td><td>網路負載太重、站台太多，一直搶不到通道</td><td>放棄這個訊框並回報上層；MAC 不再重傳，由上層（例如 TCP）決定是否重送</td></tr>
     <tr><td>接收</td><td><b>訊框過短（衝撞）</b></td><td>收到的長度 &lt; 64 bytes</td><td>碰撞後留下的殘片（<span class="sup">補充</span>俗稱 runt）</td><td>視為碰撞，直接丟棄</td></tr>
     <tr><td>接收</td><td><b>位址辨識失敗</b></td><td>DA 不是自己的位址，也不是自己所屬的群體／廣播位址</td><td>訊框是給別人的；匯流排上每個站台都收得到所有訊框</td><td>直接丟棄。這不算錯誤，而是正常的過濾</td></tr>
     <tr><td>接收</td><td><b>長度錯誤</b></td><td>檢查碼（FCS）<b>正確</b>，但 Length 欄位與實際收到的資料長度不符，或超過 1500</td><td>CRC 正確代表傳輸過程沒有出錯，問題出在傳送端組訊框時就填錯 Length</td><td>丟棄</td></tr>
@@ -545,14 +545,14 @@ flowchart LR
   <p><b>意義</b>：訊框越長（a 越小），浪費在碰撞上的時間比例越低，效率越高。</p>
 
   <h3>⑦ BEBA 隨機延遲（講義第 5 節）</h3>
-  <div class="callout tip"><b>k = min(n, 10)</b>　　<b>0 ≤ r ≤ 2<sup>k</sup> − 1</b>　　<b>等待時間 = r × T<sub>slot</sub></b>　　n &gt; 16 放棄</div>
+  <div class="callout tip"><b>k = min(n, 10)</b>　　<b>0 ≤ r ≤ 2<sup>k</sup> − 1</b>　　<b>等待時間 = r × T<sub>slot</sub></b>　　n = 16（流程圖 i &gt; 16）放棄</div>
   <p>符號：n＝這個訊框已撞幾次；k＝實際用的指數（最多 10）；r＝從範圍內均勻抽出的整數。</p>
   <ol>
     <li>第 3 次碰撞（n = 3）：k = min(3, 10) = 3；r 範圍 0 到 2<sup>3</sup> − 1 = 7。</li>
     <li>假設抽到 r = 5：等待 5 × 51.2 = <b>256 μs</b>；最長 7 × 51.2 = <b>358.4 μs</b>。</li>
     <li>第 12 次碰撞（n = 12）：k = min(12, 10) = <b>10</b>（被截斷）；r 範圍 0 到 1023。</li>
     <li>最長等待 1023 × 51.2 = 52377.6 μs ≈ <b>52.4 ms</b>。</li>
-    <li>n = 17（第 16 次重傳仍失敗）：放棄，回報上層。</li>
+    <li>n = 16（第 16 次碰撞，流程圖的 i 變成 17 &gt; 16）：放棄，回報上層。</li>
   </ol>
 
   <h3>⑧ <span class="sup">補充</span>BEBA 平均等待與再撞機率</h3>
@@ -642,7 +642,7 @@ flowchart LR
     <li><details><summary>能說出 repeater、bridge、router 連接網路的差別，以及它們在現代變成什麼</summary><div class="inner">Repeater（第 1 層）：放大轉送訊號，接起來仍是同一個碰撞網域，受 5-4-3 限制；現代被 switch 取代。Bridge（第 2 層）：依 MAC 位址過濾，隔開碰撞網域（802.1D；遠端版 802.1G）；現代就是 switch。Router（第 3 層）：連接不同 IP 網路與 WAN；現在還在，家用的與 switch、AP 合成一台。終端器與收發器則縮進網卡與 switch 埠的 PHY 晶片。</div></details></li>
     <li><details><summary>說明 slot time 51.2 μs 的意義，以及它與最小訊框 64 bytes 的關係</summary><div class="inner">Slot time 是碰撞視窗（來回傳播延遲＋載波偵測時間），也是 BEBA 的時間單位。64 bytes = 512 bits，在 10 Mbps 下傳完剛好 51.2 μs，保證送完之前一定能偵測到碰撞。</div></details></li>
     <li><details><summary>解釋為何碰撞偵測視窗是 2a</summary><div class="inner">最壞情況是最遠端 B 在 A 的訊號抵達前一瞬間開始送；碰撞發生在 B 附近，碰撞訊號要再花 a 才回到 A，所以 A 在 t<sub>0</sub> + 2a − ε 才知道。</div></details></li>
-    <li><details><summary>能寫出 BEBA 的 n、k、r 公式，並算出第 n 次碰撞的隨機範圍</summary><div class="inner">k = min(n, 10)，0 ≤ r &lt; 2<sup>k</sup>（單位 slot time）。例如 n = 4：k = 4，r ∈ 0–15；n = 12：k = 10，r ∈ 0–1023；n &gt; 16 放棄。</div></details></li>
+    <li><details><summary>能寫出 BEBA 的 n、k、r 公式，並算出第 n 次碰撞的隨機範圍</summary><div class="inner">k = min(n, 10)，0 ≤ r &lt; 2<sup>k</sup>（單位 slot time）。例如 n = 4：k = 4，r ∈ 0–15；n = 12：k = 10，r ∈ 0–1023；第 16 次碰撞（流程圖 i &gt; 16）放棄。</div></details></li>
     <li><details><summary>說明 BEBA 的 LIFO 缺點</summary><div class="inner">碰撞多次的站台退避範圍大、等得久；新來的站台範圍小、很快重傳，反而先搶到通道，不公平。</div></details></li>
     <li><details><summary>說明碰撞是怎麼被偵測出來的</summary><div class="inner">量測媒介上的能量：同軸電纜上兩個訊號疊加，平均直流電壓超過門檻就判定碰撞；10BASE-T 是送出時接收線對也收到訊號。無線因為自己發射的能量太強，只能在傳送前偵測。</div></details></li>
     <li><details><summary>用 L<sub>min</sub> = 2dR／v 算最小訊框</summary><div class="inner">例：1 Gbps、200 m、v = 2×10<sup>8</sup> m/s → τ = 1 μs，2τ = 2 μs，L<sub>min</sub> = 2000 bits = 250 bytes。</div></details></li>

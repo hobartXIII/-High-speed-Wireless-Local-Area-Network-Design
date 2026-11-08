@@ -194,10 +194,10 @@
       if (st.done) return;
       st.n++;
       if (cBox.checked) { if (st.nC > 0) st.nC++; else if (st.n >= 3) st.nC = 1; }
-      if (st.n > 16) {
+      if (st.n >= 16) {
         st.done = true; st.picks = null; btnStep.disabled = true;
-        msg.className = 'status bad'; msg.textContent = '第 16 次之後仍失敗：放棄，回報上層「傳送失敗」。';
-        log.textContent += `n=${st.n}：超過 16 次，放棄\n`; draw(); return;
+        msg.className = 'status bad'; msg.textContent = '第 16 次碰撞（流程圖 i = 17 > 16）：放棄，回報上層「傳送失敗」。';
+        log.textContent += `n=${st.n}：第 16 次碰撞，放棄\n`; draw(); return;
       }
       const picks = { A: rnd(Math.min(st.n, 10)), B: rnd(Math.min(st.n, 10)) };
       if (st.nC > 0) picks.C = rnd(Math.min(st.nC, 10));
