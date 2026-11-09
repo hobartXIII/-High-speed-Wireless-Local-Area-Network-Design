@@ -301,7 +301,7 @@
   (function configs() {
     const svg = svgRoot(document.getElementById('fig-configs'), 720, 270, '三種 802.11 配置');
     const wl = (x1, y1, x2, y2) => S('line', { x1, y1, x2, y2, stroke: 'var(--accent)', 'stroke-width': 1.8, 'stroke-dasharray': '5 4' }, svg);
-    const wire = (x1, y1, x2, y2) => S('line', { x1, y1, x2, y2, stroke: 'var(--fg)', 'stroke-width': 3 }, svg);
+    const wire = (x1, y1, x2, y2) => S('line', { x1, y1, x2, y2, stroke: 'var(--red)', 'stroke-width': 3 }, svg);
     const small = (x, y, l) => { S('circle', { cx: x, cy: y, r: 13, fill: 'var(--surface)', stroke: 'var(--accent)', 'stroke-width': 2 }, svg); S('text', { x, y: y + 4, 'text-anchor': 'middle', 'font-size': 10, 'font-weight': 700, text: l }, svg); };
     const title = (x, t, s) => { S('text', { x, y: 22, 'text-anchor': 'middle', 'font-size': 14, 'font-weight': 700, text: t }, svg); S('text', { x, y: 258, 'text-anchor': 'middle', 'font-size': 11, cls: 't-muted', text: s }, svg); };
     // IBSS
