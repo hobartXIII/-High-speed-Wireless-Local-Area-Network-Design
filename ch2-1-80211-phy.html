@@ -383,7 +383,27 @@
         <li>HT：77 種速率，6–600 Mbps；VHT：278 種速率，6–6933.3 Mbps</li>
       </ul>
     </li>
-    <li><b>CCA</b>：載波偵測、偵測 SFD<span class="en">（Carrier sense, Detect start frame delimiter）</span>。</li>
+    <li><b>CCA</b>：載波偵測、偵測 SFD<span class="en">（Carrier sense, Detect start frame delimiter）</span>。
+      <div class="callout">
+        <p><span class="sup">補充</span><b>SINR（訊號對干擾加雜訊比）</b><span class="en">（Signal to Interference plus Noise Ratio）</span></p>
+        <p style="text-align:center;font-size:1.15em"><b>SINR = S / (I + N)</b></p>
+        <ul>
+          <li><b>S</b>：想收的訊號功率；<b>I</b>：其他傳送者（例如同頻道的 OBSS）造成的干擾功率；<b>N</b>：背景雜訊功率。</li>
+          <li>換成 dB：SINR(dB) = 10·log<sub>10</sub>(S / (I + N))。</li>
+          <li>沒有干擾時（I = 0），SINR 就是 SNR。</li>
+        </ul>
+        <div class="tbl-wrap"><table>
+          <tr><th></th><th>SINR = 10 dB</th><th>SINR = 30 dB</th></tr>
+          <tr><td>線性比值</td><td>S 是 (I + N) 的 <b>10 倍</b></td><td>S 是 (I + N) 的 <b>1000 倍</b></td></tr>
+          <tr><td>Shannon 上限 log<sub>2</sub>(1 + SINR)</td><td>≈ 3.46 bit/s/Hz</td><td>≈ 9.97 bit/s/Hz</td></tr>
+          <tr><td>能用的調變</td><td>只能用低階調變（較穩、速率低）</td><td>星座點密的高階 QAM 才用得上（速率高）</td></tr>
+        </table></div>
+        <ul>
+          <li>差 20 dB 是 100 倍，不是 3 倍；dB 是對數刻度。</li>
+          <li>和下方 Data Rate vs. Range 呼應：距離越遠或干擾越大 → SINR 越低 → 只能用低速率。</li>
+        </ul>
+      </div>
+    </li>
     <li><b>PHY 管理</b>：頻寬、MCS、收發天線數。</li>
   </ul>
   <div class="figure">
