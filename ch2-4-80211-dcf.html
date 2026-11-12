@@ -202,7 +202,15 @@ flowchart LR
   <ul>
     <li>新增的 IFS：<b>11e 的 AIFS</b>（Arbitrated IFS）、<b>11n 的 RIFS</b>（Reduced IFS）、<b>802.11-2016 的 SBIFS／BRPIFS／MBIFS／LBIFS</b>（講義：check DIY）。</li>
     <li><b>時間關係</b>（p.14 圖）：<b>PIFS = SIFS + 1 slot</b>、<b>DIFS = SIFS + 2 slots</b>，DIFS 之後才是第一個退避時槽（First backoff slot）。</li>
-    <li>p.14 圖中的元件：D1 = aRxRFDelay + aRxPLCPDelay；D2 = D1 + 空中傳播時間；Rx/Tx = aRxTxTurnaroundTime；M1 = M2 = aMACPrcDelay；CCAdel = aCCATime − D1。</li>
+    <li>p.14 圖中的元件
+      <ul>
+        <li><b>D1</b> ＝ aRxRFDelay（接收端 RF 延遲）＋ aRxPLCPDelay（接收端 PLCP 延遲），從媒介上訊框最後一個符號結束時起算。</li>
+        <li><b>D2</b> ＝ D1 ＋ 空中傳播時間。</li>
+        <li><b>Rx/Tx</b> ＝ aRXTXTurnaroundTime（從接收切換到傳送所需的時間），從 PHYTXSTART.request 開始。</li>
+        <li><b>M1</b> ＝ <b>M2</b> ＝ aMACPrcDelay（MAC 處理延遲）。</li>
+        <li><b>CCAdel</b> ＝ aCCATime（CCA 判斷通道是否忙碌所需的時間）－ D1。</li>
+      </ul>
+    </li>
     <li><b>EIFS</b>（p.15）
       <ul>
         <li>從 PHY 指出「收到<b>錯誤訊框</b>後媒介已空閒」開始計時，<b>不管虛擬載波感測</b>。</li>
