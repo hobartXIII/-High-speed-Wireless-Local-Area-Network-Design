@@ -3,3 +3,6 @@ CLAUDE.md
 # 講義逐句對照翻譯：只放本機，不上 GitHub Pages
 tr-*.html
 tr-src/
+
+# HW2：另有獨立的 git repo
+hw2/
