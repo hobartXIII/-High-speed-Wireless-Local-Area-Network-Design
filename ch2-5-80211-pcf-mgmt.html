@@ -21,13 +21,13 @@
   <div class="callout note">PDF 共 32 頁，對應投影片第 1–32 頁。本章接續 2-4「DCF 存取機制」：2-4 講大家<b>怎麼搶</b>媒介（DCF），這一章前半講 AP <b>怎麼點名</b>（PCF），後半講站台怎麼<b>對時、睡覺、找網路、換 AP</b>（MAC 管理層）。</div>
 
   <div class="callout key">
-    <p><b>PCF 是 AP 當「點名老師」的選用存取方式：在超級訊框開頭的無競爭期（CFP）裡，AP 用 PIFS 搶到媒介、一個一個輪詢站台；MAC 管理層則靠 Beacon 裡的時間戳記讓全 BSS 對時，站台才能放心睡覺、準時醒來收 TIM，並透過掃描、Association、Reassociation 加入網路與漫遊。</b></p>
+    <p><b>PCF 是 AP 當「點名老師」的選用存取方式：在超級訊框開頭的無競爭期（CFP）裡，AP 用 PIFS 搶到媒介、一個一個輪詢站台；MAC 管理層則靠 Beacon 裡的時間戳記讓全 BSS 對時，站台才能放心睡覺、準時醒來收 TIM，並透過掃描、Association、Reassociation 加入網路與漫遊。</b>（PCF：點協調功能；CFP：無競爭期；PIFS：PCF 訊框間隔；Beacon：AP 定期廣播的訊框；TIM：流量指示表；Association／Reassociation：與 AP 建立連線／換到新 AP）</p>
     <ul>
-      <li><b>PCF</b>：Point Coordinator 在 AP；CFP 開頭等 PIFS（比 DIFS 短）就送 Beacon，之後每個訊框只隔 SIFS，DCF 站台插不進來；用 CF-Poll 點名、CF-Ack 捎帶確認、CF-End 結束並重設 NAV。</li>
-      <li><b>CFP 時序</b>：CFP 每隔「若干個 DTIM 間隔」出現一次；Beacon 被延後時 CFP 會縮短（foreshortened），但最晚在 TBTT + CFPMaxDuration 結束。</li>
-      <li><b>同步（TSF）</b>：AP 的 Beacon 帶時間戳記，大家照著校正；Beacon 永遠排在 TBTT，不是「上一次 Beacon 之後再算」。</li>
-      <li><b>省電</b>：AP 替睡著的站台緩衝資料，Beacon 的 TIM 告訴它「你有信」，站台醒來送 PS-Poll 取件；廣播／群播只在 DTIM 之後送。IBSS 改用 ATIM window 互相通知。</li>
-      <li><b>掃描與漫遊</b>：被動掃描聽 Beacon、主動掃描送 Probe Request；選好 AP 後 Association；訊號變差就用 Reassociation 換到新 AP。</li>
+      <li><b>PCF</b>：Point Coordinator 在 AP；CFP 開頭等 PIFS（比 DIFS 短）就送 Beacon，之後每個訊框只隔 SIFS，DCF 站台插不進來；用 CF-Poll 點名、CF-Ack 捎帶確認、CF-End 結束並重設 NAV。（Point Coordinator：點協調器；DIFS／SIFS：DCF／最短訊框間隔；CF-Poll／CF-Ack／CF-End：點名／確認／結束無競爭期；NAV：網路配置向量）</li>
+      <li><b>CFP 時序</b>：CFP 每隔「若干個 DTIM 間隔」出現一次；Beacon 被延後時 CFP 會縮短（foreshortened），但最晚在 TBTT + CFPMaxDuration 結束。（DTIM：遞送流量指示訊息，緩衝的廣播在它之後送；TBTT：目標 Beacon 傳送時間）</li>
+      <li><b>同步（TSF）</b>：AP 的 Beacon 帶時間戳記，大家照著校正；Beacon 永遠排在 TBTT，不是「上一次 Beacon 之後再算」。（TSF：計時同步功能）</li>
+      <li><b>省電</b>：AP 替睡著的站台緩衝資料，Beacon 的 TIM 告訴它「你有信」，站台醒來送 PS-Poll 取件；廣播／群播只在 DTIM 之後送。IBSS 改用 ATIM window 互相通知。（PS-Poll：省電站台取資料；ATIM：IBSS 的流量通知訊息）</li>
+      <li><b>掃描與漫遊</b>：被動掃描聽 Beacon、主動掃描送 Probe Request；選好 AP 後 Association；訊號變差就用 Reassociation 換到新 AP。（Probe Request：主動詢問附近的 AP）</li>
     </ul>
   </div>
 
@@ -40,6 +40,14 @@
     <tr><td>802.11ad</td><td><span class="sup">補充</span>2012</td><td>p.2 架構圖右半的 DMG（Directional Multi-Gigabit，60 GHz）與 PBSS／PCP</td></tr>
     <tr><td>802.11-2012／2016</td><td>2012／2016</td><td><span class="sup">補充</span>p.2 的圖就是合併版標準的 MAC 架構圖（講義標題寫 802.11ac）</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>HCF（HCCA、EDCA）</b>：802.11e 的混合協調功能：AP 輪詢分配時間＋分優先權競爭</li>
+      <li><b>MCF（MCCA）</b>：802.11s Mesh 的協調功能，Mesh 站台事先預約時段</li>
+      <li><b>DMG</b>：60 GHz 的定向多 Gbps 實體層</li>
+      <li><b>PBSS／PCP</b>：11ad 沒有 AP 的個人 BSS／在 PBSS 中擔任協調者的站台</li>
+      <li><b>VHT</b>：802.11ac 的極高吞吐量 PHY</li>
+    </ul></li></ul>
 
   <h2 id="pcf">2. PCF 概觀（p.1–3）<span class="en">（Point Coordination Function）</span></h2>
   <div class="figure">
@@ -64,7 +72,7 @@ flowchart TB
       <ul>
         <li>PCF 能提供<b>較低的傳送延遲變化</b>（lower transfer delay variations），用來支援<b>有時間限制的服務</b>（Time Bounded Services），例如語音。</li>
         <li>可以只傳非同步資料、只傳語音，或兩者混合。</li>
-        <li><b>Point Coordinator 位在 AP</b>（resides in AP），所以 PCF 只能用在 infrastructure BSS。</li>
+        <li><b>Point Coordinator 位在 AP</b>（resides in AP），所以 PCF 只能用在 infrastructure BSS。<span class="sup">補充</span>infrastructure BSS：有 AP 的 BSS。</li>
       </ul>
     </li>
     <li><b>共存</b>：競爭式與選用的無競爭式同時存在，<b>不會增加實作負擔</b>（does not burden the implementation）。</li>
@@ -118,18 +126,18 @@ flowchart TB
 
   <h2 id="burst">3. PCF Burst（p.4）<span class="en">（Contention Free Burst）</span></h2>
   <ul>
-    <li><b>CF-Burst 由 CF-Down 訊框中的 Polling bit 啟動</b>：AP（PC）送下行訊框時把 CF-Poll 位元設起來，就是在點名。</li>
+    <li><b>CF-Burst 由 CF-Down 訊框中的 Polling bit 啟動</b>：AP（PC）送下行訊框時把 CF-Poll 位元設起來，就是在點名。<span class="sup">補充</span>CF-Down：無競爭期中 AP 往下送的訊框；Polling bit：點名位元。</li>
     <li>站台收到 CF_Poll 要<b>立即回應</b>（Immediate response）。</li>
     <li>其他站台要<b>維持 NAV</b>，保護 CF 流量不被打斷。</li>
     <li>回應的長度<b>可以不固定</b>（variable length）。</li>
     <li>AP 送出最後的 <b>CF_End</b> 訊框來<b>重設 NAV</b>（Reset NAV）。</li>
     <li>標頭裡的「<b>ACK Previous Frame</b>」位元：確認上一個訊框，搭便車（<b>piggyback</b>）送出，不必另外送 ACK。</li>
-    <li>講義的圖：CFP repetition interval 開頭，媒介忙完等 <b>PIFS</b>，AP 送 D1，STA 隔 <b>SIFS</b> 回 U1；接著 D2／U2、D3（<b>No Up</b>：這個站台沒回）、D4／U4，最後 CF_End 重設 NAV，後面是 Contention Period（至少要留 <b>Min Contention Period</b>）。Dx = AP 送的訊框、Ux = 站台送的訊框。</li>
+    <li>講義的圖：CFP repetition interval 開頭，媒介忙完等 <b>PIFS</b>，AP 送 D1，STA 隔 <b>SIFS</b> 回 U1；接著 D2／U2、D3（<b>No Up</b>：這個站台沒回）、D4／U4，最後 CF_End 重設 NAV，後面是 Contention Period（至少要留 <b>Min Contention Period</b>）。Dx = AP 送的訊框、Ux = 站台送的訊框。<span class="sup">補充</span>CFP repetition interval：兩次 CFP 開始之間的間隔；Min Contention Period：每個超級訊框至少要留給競爭期的時間。</li>
   </ul>
 
   <h2 id="type">4. Type／Subtype 組合（p.5–6）<span class="en">（Valid Type/Subtype combinations）</span></h2>
   <ul>
-    <li>Frame Control 欄位（2 octets）：Protocol Version（2 bits）、<b>Type（2）</b>、<b>Subtype（4）</b>、To DS、From DS、More Frag、Retry、Pwr Mgt、More Data、WEP、Order（各 1 bit）。</li>
+    <li>Frame Control 欄位（2 octets）：Protocol Version（2 bits）、<b>Type（2）</b>、<b>Subtype（4）</b>、To DS、From DS、More Frag、Retry、Pwr Mgt、More Data、WEP、Order（各 1 bit）。<span class="sup">補充</span>More Frag：後面還有分段；Retry：重傳的訊框；Pwr Mgt：要進入省電；More Data：AP 還有資料；WEP：本文有加密；Order：要依序處理。</li>
     <li>表中 Type 寫成 b3 b2、Subtype 寫成 b7 b6 b5 b4：Frame Control 第一個 octet 由低到高是 version（b1 b0）、type（b3 b2）、subtype（b7–b4）。</li>
     <li>和本章相關的：<b>Beacon、ATIM、Probe、(Re)Association</b>（管理訊框），<b>PS-Poll、CF-End、CF-End + CF-Ack</b>（控制訊框），以及 <b>Data + CF-Ack／CF-Poll</b> 的各種組合（資料訊框）。</li>
   </ul>
@@ -152,6 +160,13 @@ flowchart TB
     <tr><td></td><td></td><td></td><td>10</td><td style="font-family:var(--mono)">0111</td><td>CF-Ack + CF-Poll（no data）</td></tr>
     <tr><td>11</td><td style="font-family:var(--mono)">0000–1111</td><td>Reserved</td><td>10</td><td style="font-family:var(--mono)">1000–1111</td><td>Reserved</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>Probe request／response</b>：站台詢問附近的 AP／AP 的回覆</li>
+      <li><b>Disassociation／Authentication／Deauthentication</b>：解除連線／認證／解除認證</li>
+      <li><b>ATIM</b>：IBSS 省電時通知對方有資料（第 11 節）</li>
+      <li><b>Null function（no data）</b>：不帶資料的資料訊框</li>
+    </ul></li></ul>
   <div class="figure" id="fig-type-wrap">
     <div class="fig-title">Frame Control 第一個 octet 解碼器 <span class="tag">互動</span></div>
     <div class="fig-body">
@@ -161,7 +176,7 @@ flowchart TB
       <div id="fig-type"></div>
       <div class="readout" id="ty-out"></div>
     </div>
-    <div class="caption">依講義第 5、6 頁表格。<span class="sup">補充</span>擷取封包（例如 Wireshark）時看到的第一個 byte 就是這個值：Beacon = 0x80、ACK = 0xD4、PS-Poll = 0xA4。</div>
+    <div class="caption">依講義第 5、6 頁表格。<span class="sup">補充</span>擷取封包（例如 Wireshark）時看到的第一個 byte 就是這個值：Beacon = 0x80、ACK = 0xD4、PS-Poll = 0xA4。<span class="sup">補充</span>Wireshark：擷取與分析封包的軟體。</div>
   </div>
   <ul>
     <li><b>Data 的 Subtype 四個 bit 可以拆開看</b> <span class="sup">補充</span>：b4 = CF-Ack、b5 = CF-Poll、b6 = 沒有資料（no data）。所以 0011 = Data + CF-Ack + CF-Poll、0101 = CF-Ack（no data）、0110 = CF-Poll（no data）。一個訊框就能同時「送資料＋確認上一個＋點名下一個」，這就是 PCF 的捎帶（piggyback）。</li>
@@ -169,7 +184,7 @@ flowchart TB
 
   <h2 id="cfp">5. CFP 結構與時序、Beacon 產生（p.7–9）<span class="en">（CFP structure and timing）</span></h2>
   <ul>
-    <li><b>CFP 的頻率</b>（p.7）：PC 依 <b>CFPRate</b>（contention-free repetition rate）產生 CFP，CFPRate 以「<b>幾個 DTIM 間隔</b>」來定義。
+    <li><b>CFP 的頻率</b>（p.7）：PC 依 <b>CFPRate</b>（contention-free repetition rate）產生 CFP，CFPRate 以「<b>幾個 DTIM 間隔</b>」來定義。<span class="sup">補充</span>DTIM：帶有「之後送出緩衝廣播」訊息的 Beacon（第 10 節）。
       <ul>
         <li>講義的圖：每 3 個 Beacon 有一個 DTIM，CFP repetition interval 橫跨 2 個 DTIM 間隔；每個 CFP 都從一個 DTIM Beacon 開始。</li>
         <li>CFP 的長度可變（Variable Length），結束時 PCF 送 CF-End「<b>Reset NAV</b>」。</li>
@@ -187,7 +202,7 @@ flowchart TB
     </li>
     <li><b>CFP 的長度</b>（p.9）
       <ul>
-        <li>由 PC 控制，最長不超過 PC 設定的 <b>CFPMaxDuration</b>（放在 CF Parameter Set，由 Beacon 與 Probe Response 廣播）。</li>
+        <li>由 PC 控制，最長不超過 PC 設定的 <b>CFPMaxDuration</b>（放在 CF Parameter Set，由 Beacon 與 Probe Response 廣播）。<span class="sup">補充</span>CF Parameter Set：Beacon 中描述 CFP 參數的資訊元素。</li>
         <li>因為 Beacon 可能因媒介忙而延後，<b>CFP 會被縮短延後的那段時間</b>。</li>
         <li>Beacon 裡的 <b>CFPDurRemaining</b> 必須讓 CFP 的結束時間<b>不晚於 TBTT + CFPMaxDuration</b>。</li>
         <li>講義的圖：TBTT 時剛好有 DCF 流量在進行，最壞情況要等一整筆 <b>RTS + CTS + MPDU + ACK</b>（Max）結束，Beacon 才送得出去；後面的 CFP 只剩 CF MaxDuration 減掉這段。</li>
@@ -240,7 +255,7 @@ flowchart TB
       <ul>
         <li>站台收到 CF-Poll 時，若佇列裡有訊框，要<b>隔 SIFS 立即</b>送出。</li>
         <li>這樣就形成一段<b>無競爭流量的突發</b>（CF-Burst）。</li>
-        <li>需要 MAC 層確認的服務，ACK <b>最好</b>透過回應的 CF-Up 訊框 Subtype 裡的 <b>CF-Ack</b> 位元來做（捎帶）。</li>
+        <li>需要 MAC 層確認的服務，ACK <b>最好</b>透過回應的 CF-Up 訊框 Subtype 裡的 <b>CF-Ack</b> 位元來做（捎帶）。<span class="sup">補充</span>CF-Up：無競爭期中站台往上送的訊框。</li>
       </ul>
     </li>
   </ul>
@@ -271,6 +286,12 @@ flowchart TB
     <tr><td><b>Association 與 Reassociation</b></td><td>加入網路、漫遊（從一台 AP 換到另一台）</td><td>掃描（Scanning）</td><td>第 13、14 節</td></tr>
     <tr><td><b>管理資訊庫</b>（Management Information Base, MIB）</td><td>存放上述各功能的參數</td><td><span class="sup">補充</span>例如 dot11BeaconPeriod、dot11DTIMPeriod</td><td>—</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>TSF Timer</b>：每個站台的 64 位元計時器，靠 Beacon 的時間戳記同步（第 8 節）</li>
+      <li><b>TIM</b>：Beacon 裡標示 AP 替哪些省電站台緩衝資料的表</li>
+      <li><b>MIB</b>：管理用的參數資料庫</li>
+    </ul></li></ul>
   <ul>
     <li>p.14 是<b>資訊元素</b>（Information Element）表，和 2-4 第 2 節相同：Element ID（1）＋ Length（1）＋ Information。本章會用到 <b>CF Parameter Set（4）</b>、<b>TIM（5）</b>、<b>IBSS Parameter Set（6）</b>。詳見 <a href="ch2-4-80211-dcf.html#ie">2-4 的資訊元素瀏覽器</a>。</li>
     <li><span class="sup">補充</span>三個元素的內容：CF Parameter Set = CFP Count、CFP Period、CFP MaxDuration、CFP DurRemaining；TIM = DTIM Count、DTIM Period、Bitmap Control、Partial Virtual Bitmap；IBSS Parameter Set = ATIM Window。</li>
@@ -282,7 +303,7 @@ flowchart TB
       <ol>
         <li><b>省電管理</b>：Beacon 在大家都知道的時間間隔送出，BSS 內所有站台的計時器同步，站台才知道什麼時候該醒來。</li>
         <li><b>Point Coordination 的時序</b>：用 TSF Timer 預測無競爭突發（CF burst）什麼時候開始。</li>
-        <li><b>FH PHY 的跳頻時序</b>：用 TSF Timer 計算駐留時間（Dwell Interval）；所有站台同步，才能在同一時間一起跳頻。</li>
+        <li><b>FH PHY 的跳頻時序</b>：用 TSF Timer 計算駐留時間（Dwell Interval）；所有站台同步，才能在同一時間一起跳頻。<span class="sup">補充</span>FH PHY：跳頻實體層；駐留時間：每次跳到一個頻道後停留的時間。</li>
       </ol>
     </li>
     <li><b>同步的做法</b>（p.16）
@@ -304,11 +325,16 @@ flowchart TB
     <tr><td>誰送 Beacon</td><td>AP</td><td><b>所有成員都參與</b>，每次由一個站台送出</td></tr>
     <tr><td>媒介忙時</td><td>可能因為用 CSMA/CA 送別人的資料而延後</td><td>每個站台隨機延遲，先數完的送</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>aBeaconPeriod</b>：Beacon 的間隔</li>
+      <li><b>IBSS initiator</b>：建立 IBSS 的那個站台</li>
+    </ul></li></ul>
   <ul>
     <li><b>IBSS 在每個 TBTT 的步驟</b>（p.17）：
       <ol>
         <li><b>暫停</b>非 Beacon、非 ATIM 傳送的退避計時器（suspend）。</li>
-        <li>在 <b>[0, 2 × CW<sub>min</sub> × Slot_time]</b> 之間算一個隨機延遲。</li>
+        <li>在 <b>[0, 2 × CW<sub>min</sub> × Slot_time]</b> 之間算一個隨機延遲。<span class="sup">補充</span>CWmin：競爭視窗的最小值；Slot_time：時槽長度。</li>
         <li>照這個隨機延遲退避。</li>
         <li>如果期間<b>聽到別人的 Beacon</b>：放棄送 Beacon，也停止遞減這個延遲。</li>
         <li>否則：送出 Beacon。</li>
@@ -347,7 +373,7 @@ flowchart TB
         <li><b>廣播訊框也在 AP 緩衝</b>：所有廣播／群播都先緩衝，<b>只在 DTIM 之後送出</b>（DTIM：Delivery Traffic Indication Message）。</li>
         <li><b>DTIM 間隔是 TIM 間隔的整數倍</b>（講義圖：每 3 個 TIM 一個 DTIM）。</li>
         <li>站台在<b>預期的 (D)TIM 之前醒來</b>。</li>
-        <li>如果 TIM 顯示有自己的緩衝訊框：站台送 <b>PS-Poll（帶 AID）</b>，並<b>保持清醒</b>收資料；否則<b>再回去睡</b>。</li>
+        <li>如果 TIM 顯示有自己的緩衝訊框：站台送 <b>PS-Poll（帶 AID）</b>，並<b>保持清醒</b>收資料；否則<b>再回去睡</b>。<span class="sup">補充</span>AID：Association 時 AP 分配給站台的編號（下方補充）。</li>
       </ul>
     </li>
     <li><span class="sup">補充</span>站台用 Frame Control 的 <b>Pwr Mgt 位元</b>告訴 AP「我要進入省電模式」；AID（Association ID）是 Association 時 AP 分配的編號，TIM 的 Partial Virtual Bitmap 每個 bit 對應一個 AID。PS-Poll 的 Duration/ID 欄位放的就是 AID。</li>
@@ -402,6 +428,12 @@ flowchart TB
     <tr><td>每個頻道聽多久</td><td>不超過 <b>ChannelTime</b> 參數定的上限</td><td>Min_Probe_Response_Time ～ Max_Probe_Response_Time</td></tr>
     <tr><td><span class="sup">補充</span>優缺點</td><td>不發射、省電、不佔頻寬；但每個頻道至少要等一個 Beacon Interval，慢</td><td>快；但要發射，且某些頻道（例如雷達頻段）規定不能主動送</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>SSID／廣播 SSID</b>：網路名稱／長度為 0、代表「任何網路」的 SSID</li>
+      <li><b>ChannelTime</b>：被動掃描在每個頻道停留的上限</li>
+      <li><b>Min／Max_Probe_Response_Time</b>：主動掃描時等待 Probe Response 的最短／最長時間</li>
+    </ul></li></ul>
   <ul>
     <li><b>頻道掃描規則</b>（p.27）：站台要用被動或主動其中一種模式。
       <ul>
@@ -421,8 +453,8 @@ flowchart TB
     </li>
     <li><b>主動掃描的時序</b>（p.29），對每個要掃描的頻道：
       <ol>
-        <li>送一個 Probe Request，目的位址為廣播、帶 SSID 與<b>廣播 BSSID</b>。</li>
-        <li>啟動 <b>ProbeTimer</b>。</li>
+        <li>送一個 Probe Request，目的位址為廣播、帶 SSID 與<b>廣播 BSSID</b>。<span class="sup">補充</span>BSSID：BSS 的識別碼；廣播 BSSID：全部 bit 為 1，代表任何 BSS。</li>
+        <li>啟動 <b>ProbeTimer</b>。<span class="sup">補充</span>ProbeTimer：主動掃描用的計時器。</li>
         <li>如果在 <b>Min_Probe_Response_Time</b> 之前都沒收到回應：清除 NAV，掃描下一個頻道。</li>
         <li>否則，等 ProbeTimer 到 <b>Max_Probe_Response_Time</b>，處理所有收到的 Probe Response，再掃描下一個頻道。</li>
       </ol>

@@ -21,13 +21,13 @@
   <div class="callout note">PDF 共 42 頁，沒有封面頁，p.1 直接是多重存取協定的分類圖。p.9–10、p.35 是中文講義，其餘是英文。本章把 CH 1 的 CSMA/CD、CH 2-4 的 CSMA/CA 放回「隨機存取」這條演進線上，並用 Poisson 模型算出各協定的<b>最大吞吐量</b>。</div>
 
   <div class="callout key">
-    <p><b>隨機存取 = 有資料就送、撞了就隨機等一段時間再送。用 Poisson 流量模型可以算出吞吐量 S 與提供負載 G 的關係 S = G·P<sub>0</sub>：Pure ALOHA 的易受干擾期是 2 個訊框時間，S = Ge<sup>−2G</sup>，最大 18.4%（G = 0.5）；Slotted ALOHA 把它減半，S = Ge<sup>−G</sup>，最大 36.8%（G = 1）。CSMA 先聽再送、CSMA/CD 撞了立刻停、CSMA/CA 用隨機等待避開碰撞，一步步把吞吐量往上推。</b></p>
+    <p><b>隨機存取 = 有資料就送、撞了就隨機等一段時間再送。用 Poisson 流量模型可以算出吞吐量 S 與提供負載 G 的關係 S = G·P<sub>0</sub>：Pure ALOHA 的易受干擾期是 2 個訊框時間，S = Ge<sup>−2G</sup>，最大 18.4%（G = 0.5）；Slotted ALOHA 把它減半，S = Ge<sup>−G</sup>，最大 36.8%（G = 1）。CSMA 先聽再送、CSMA/CD 撞了立刻停、CSMA/CA 用隨機等待避開碰撞，一步步把吞吐量往上推。</b>（ALOHA：有資料就送的最早隨機存取協定；CSMA：載波感測多重存取；CSMA/CD：加上碰撞偵測；CSMA/CA：加上碰撞避免；Poisson：描述隨機事件次數的機率模型）</p>
     <ul>
-      <li><b>分類</b>：Random access（ALOHA、CSMA、CSMA/CD、CSMA/CA）、Controlled access（Reservation、Polling、Token passing）、Channelization（FDMA、TDMA、CDMA）。</li>
+      <li><b>分類</b>：Random access（ALOHA、CSMA、CSMA/CD、CSMA/CA）、Controlled access（Reservation、Polling、Token passing）、Channelization（FDMA、TDMA、CDMA）。（Random access：隨機存取；Controlled access：受控存取，Reservation 預約、Polling 輪詢、Token passing 權杖傳遞；Channelization：切頻道，FDMA 分頻、TDMA 分時、CDMA 分碼多重存取）</li>
       <li><b>吞吐量 S</b>：每個封包傳輸時間內<b>成功</b>送出的封包數，0 &lt; S &lt; 1。<b>G</b>：每個封包時間內<b>嘗試</b>的次數（新 + 重送），G ≥ S。</li>
       <li><b>Poisson</b>：Pr[k] = G<sup>k</sup>e<sup>−G</sup> ⁄ k!；沒有其他封包的機率 P<sub>0</sub> = e<sup>−(期間長度 × G)</sup>。</li>
-      <li><b>CSMA 三種 persistence</b>：1-persistent（一直聽，閒了立刻送）、Nonpersistent（忙就隨機等再聽）、p-persistent（閒了以機率 p 送）。</li>
-      <li><b>流量模型</b>：CBR（傳統語音）、On-Off（封包語音）、Poisson（傳統資料）、IPP（突發資料）、MMPP（多媒體）。</li>
+      <li><b>CSMA 三種 persistence</b>：1-persistent（一直聽，閒了立刻送）、Nonpersistent（忙就隨機等再聽）、p-persistent（閒了以機率 p 送）。（persistence：通道忙時要不要持續聽）</li>
+      <li><b>流量模型</b>：CBR（傳統語音）、On-Off（封包語音）、Poisson（傳統資料）、IPP（突發資料）、MMPP（多媒體）。（CBR：固定位元率；On-Off：有講話才送；IPP：中斷式 Poisson 過程；MMPP：馬可夫調變 Poisson 過程）</li>
     </ul>
   </div>
 
@@ -40,6 +40,13 @@
     <tr><td>CSMA/CA</td><td>IEEE 802.11（WiFi，見 <a href="ch2-4-80211-dcf.html">CH 2-4</a>）</td><td>IFS、Contention window、流程圖（p.29–30）</td></tr>
     <tr><td>流量模型</td><td>機率模型（Poisson、Markov）</td><td>CBR、On-Off、Poisson、IPP、MMPP（p.34–42）</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>Markov</b>：馬可夫模型：下一個狀態只和目前的狀態有關</li>
+      <li><b>IFS</b>：訊框間隔，通道閒置後要先等的時間</li>
+      <li><b>Contention window</b>：隨機退避值的抽取範圍</li>
+      <li><b>吞吐量</b>：單位時間成功送出的資料量</li>
+    </ul></li></ul>
 
   <h2 id="class">2. 多重存取協定的分類（p.1、p.31–33）<span class="en">（Multiple-access Protocols）</span></h2>
   <div class="figure">
@@ -66,10 +73,10 @@ flowchart TB
         <li><b>Contention-based</b>（會競爭）：
           <ul>
             <li>Random access：ALOHA、CSMA、BTMA、ISMA 等。</li>
-            <li>Collision resolution：TREE、WINDOW 等。</li>
+            <li>Collision resolution：TREE、WINDOW 等。<span class="sup">補充</span>Collision resolution：碰撞後依規則（例如樹狀分組）安排各站台輪流重送。</li>
           </ul>
         </li>
-        <li><b>Conflict-free</b>（不會衝突）：FDMA、TDMA、CDMA、Token Bus、DQDB 等。</li>
+        <li><b>Conflict-free</b>（不會衝突）：FDMA、TDMA、CDMA、Token Bus、DQDB 等。<span class="sup">補充</span>Token Bus：持有權杖的站台才能送；DQDB：都會網路用的雙匯流排協定。</li>
         <li>縮寫：BTMA = Busy Tone Multiple Access；DQDB = Distributed Queue Dual Bus；講義寫 ISMA = Internet Streaming Media Alliance。</li>
       </ul>
     </li>
@@ -88,6 +95,12 @@ flowchart TB
     <tr><td>CSMA/CA with ACK</td><td>收方回 ACK 確認（見 CH 2-4）</td></tr>
     <tr><td>CSMA/CA with RTS/CTS</td><td>先用短訊框預約通道，解決 Hidden node（見 CH 2-4）</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>ACK</b>：收方回傳的確認</li>
+      <li><b>RTS/CTS</b>：傳資料前先交換「要求傳送／允許傳送」兩個短訊框來預約通道</li>
+      <li><b>Hidden node</b>：兩個站台彼此聽不到，卻同時送給同一個接收端而碰撞</li>
+    </ul></li></ul>
 
   <h2 id="aloha">3. ALOHA 協定（p.2–6）<span class="en">（ALOHA Protocol）</span></h2>
   <ul>
@@ -133,7 +146,7 @@ flowchart TB
     <li><b>假設</b>（p.8）
       <ul>
         <li>使用者數量<b>無限多</b>（Infinite population of users）。</li>
-        <li>新訊框依 <b>Poisson 分佈</b>產生，平均每個封包時間 <b>S</b> 個（相當於 λ）。</li>
+        <li>新訊框依 <b>Poisson 分佈</b>產生，平均每個封包時間 <b>S</b> 個（相當於 λ）。<span class="sup">補充</span>λ：平均到達速率。</li>
         <li>一個封包時間內產生 k 個封包的機率：<b>Pr[k] = S<sup>k</sup>e<sup>−S</sup> ⁄ k!</b>（一般寫法 P(X = k) = e<sup>−λ</sup>λ<sup>k</sup> ⁄ k!）。</li>
       </ul>
     </li>
@@ -159,7 +172,7 @@ flowchart TB
     <li><b>推導</b>（p.10）：P(k, T) 表示長度 T 的時間區間內發生 k 次事件的機率（T 是區間長度，不是絕對時間）。
       <ol>
         <li>由 (1)(2)：P(1, Δt) = λΔt，P(k, Δt) = 0（k ≥ 2）。</li>
-        <li>把 T 切成 N 個短區間（T = NΔt），由 (3) 各區間獨立，所以是<b>二項分佈</b>：P(k, T) ≈ C<sup>N</sup><sub>k</sub>(λΔt)<sup>k</sup>(1 − λΔt)<sup>N−k</sup>。</li>
+        <li>把 T 切成 N 個短區間（T = NΔt），由 (3) 各區間獨立，所以是<b>二項分佈</b>：P(k, T) ≈ C<sup>N</sup><sub>k</sub>(λΔt)<sup>k</sup>(1 − λΔt)<sup>N−k</sup>。<span class="sup">補充</span>二項分佈：N 次獨立嘗試中成功 k 次的機率分佈。</li>
         <li>代入 Δt = T ⁄ N 整理：= [(λT)<sup>k</sup> ⁄ k!] × [N(N−1)…(N−k+1) ⁄ N<sup>k</sup>] × [(1 − λT⁄N)<sup>N</sup> ⁄ (1 − λT⁄N)<sup>k</sup>]。</li>
         <li>固定 k，令 N → ∞：中間那項 → 1（N − k ≈ N）、分母 (1 − λT⁄N)<sup>k</sup> → 1、分子用 (1 + α⁄N)<sup>N</sup> → e<sup>α</sup>（α = −λT）。</li>
         <li>得到 <b>P(k, T) = (λT)<sup>k</sup>e<sup>−λT</sup> ⁄ k!</b>。</li>
@@ -291,7 +304,7 @@ flowchart TB
   <ul>
     <li>兩個站台同時傳送時，雙方幾乎<b>立刻</b>就能偵測到碰撞（p.25）。</li>
     <li>與其把封包送完，不如在<b>偵測到碰撞時立刻停止傳送</b>。</li>
-    <li>這個協定叫 <b>CSMA with Collision Detection（CSMA/CD）</b>，用在 <b>Ethernet</b>。細節（2a、BEBA、jam、訊框格式）見 <a href="ch1-csma-cd.html">CH 1</a>。</li>
+    <li>這個協定叫 <b>CSMA with Collision Detection（CSMA/CD）</b>，用在 <b>Ethernet</b>。細節（2a、BEBA、jam、訊框格式）見 <a href="ch1-csma-cd.html">CH 1</a>。<span class="sup">補充</span>2a：最壞情況下偵測到碰撞所需的時間；BEBA：二元指數退避；jam：碰撞後送出的擾亂訊號。</li>
     <li><b>三種狀態</b>（p.27）：CSMA/CD 處在 <b>contention</b>（競爭）、<b>transmission</b>（傳送）、<b>idle</b>（閒置）其中之一。</li>
     <li><b>能量位準</b>（p.28）：傳送訊框時能量位準是一般值；閒置時為 0；碰撞時兩個訊號疊加，能量明顯變高，站台就是靠這個偵測碰撞。</li>
   </ul>
@@ -325,8 +338,8 @@ flowchart TB
   <h2 id="ca">11. CSMA/CA（p.29–30）<span class="en">（CSMA with Collision Avoidance）</span></h2>
   <ul>
     <li>用在 <b>WiFi</b>（p.29）。無線站台邊送邊收不容易偵測碰撞，所以改成<b>避免</b>碰撞。</li>
-    <li><b>時序</b>：持續感測通道（Busy）→ 發現閒置（Found idle）→ 等 <b>IFS</b> → <b>Contention window</b>（大小以 <b>binary exponential</b> 成長）→ Send frame → Time-out（等 ACK）。</li>
-    <li>細節（SIFS／DIFS、退避凍結、RTS/CTS、NAV）見 <a href="ch2-4-80211-dcf.html">CH 2-4</a>。</li>
+    <li><b>時序</b>：持續感測通道（Busy）→ 發現閒置（Found idle）→ 等 <b>IFS</b> → <b>Contention window</b>（大小以 <b>binary exponential</b> 成長）→ Send frame → Time-out（等 ACK）。<span class="sup">補充</span>binary exponential：每失敗一次範圍加倍。</li>
+    <li>細節（SIFS／DIFS、退避凍結、RTS/CTS、NAV）見 <a href="ch2-4-80211-dcf.html">CH 2-4</a>。<span class="sup">補充</span>SIFS／DIFS：最短／DCF 訊框間隔；NAV：站台記錄通道被預約到何時的計時器。</li>
   </ul>
   <div class="figure">
     <div class="fig-title">CSMA/CA 的傳送流程（講義 p.30） <span class="tag static">圖解</span></div>
@@ -361,6 +374,14 @@ flowchart TB
     <tr><td><b>Interrupted Poisson Process（IPP）</b></td><td>突發（bursty）資料</td><td>ON 時是速率 λ 的 Poisson、OFF 時不送（p.41）</td></tr>
     <tr><td><b>Markov Modulated Poisson Process（MMPP）</b></td><td>多媒體流量</td><td>多個狀態，狀態 i 是速率 λ<sub>i</sub> 的 Poisson；狀態間依機率 p<sub>ij</sub> 轉移（p.42）</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>位元率</b>：每秒產生的位元數</li>
+      <li><b>電路交換</b>：通話期間一直佔用一條固定線路，像傳統電話</li>
+      <li><b>封包化語音</b>：把語音切成封包送，例如 VoIP</li>
+      <li><b>突發（bursty）</b>：一陣一陣地大量產生，中間有空檔</li>
+      <li><b>指數分佈</b>：描述「等到下一個事件要多久」的機率分佈（下方說明）</li>
+    </ul></li></ul>
   <h3>指數分佈（p.35）<span class="en">（Exponential Distribution）</span></h3>
   <ul>
     <li>令 W 表示 Poisson 過程中，從開始到<b>第一次</b>事件發生的時間（隨機變數）。<b>W 也代表兩次事件的間隔</b>。</li>
@@ -374,7 +395,7 @@ flowchart TB
     <li>ON 狀態：以<b>固定位元率 R</b> 送；停留時間是<b>平均 1 ⁄ β</b> 的指數分佈，以速率 β 轉到 OFF。</li>
     <li>OFF 狀態：不送；停留時間是<b>平均 1 ⁄ α</b> 的指數分佈，以速率 α 轉回 ON。</li>
     <li><b>平均位元率</b>：<b>R<sub>m</sub> = R·(1⁄β) ⁄ (1⁄α + 1⁄β) = αR ⁄ (α + β)</b>（ON 時間佔的比例 × R）。</li>
-    <li>On-Off source 通常用 3 個參數描述：<b>R、R<sub>m</sub>、1 ⁄ β</b>（平均 burst 長度）。</li>
+    <li>On-Off source 通常用 3 個參數描述：<b>R、R<sub>m</sub>、1 ⁄ β</b>（平均 burst 長度）。<span class="sup">補充</span>burst：一次連續送出的一段資料。</li>
   </ul>
   <h3>Poisson、IPP、MMPP（p.40–42）</h3>
   <ul>

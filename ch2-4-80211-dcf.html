@@ -21,12 +21,12 @@
   <div class="callout note">PDF 共 33 頁，對應投影片第 1–35 頁；<b>第 12、18 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-3「WEP 與 MAC 訊框格式」：2-3 講訊框<b>長什麼樣子</b>，這一章講站台<b>什麼時候可以送</b>。</div>
 
   <div class="callout key">
-    <p><b>DCF（分散式協調功能）就是 802.11 的 CSMA/CA：沒有裁判，每個站台自己「先聽媒介 → 閒置 DIFS → 隨機退避倒數 → 送出 → 等 ACK」，靠同一套規則輪流用同一個頻道。</b></p>
+    <p><b>DCF（分散式協調功能）就是 802.11 的 CSMA/CA：沒有裁判，每個站台自己「先聽媒介 → 閒置 DIFS → 隨機退避倒數 → 送出 → 等 ACK」，靠同一套規則輪流用同一個頻道。</b>（DIFS：DCF 訊框間隔；ACK：確認）</p>
     <ul>
-      <li><b>DCF</b>：802.11 最基本的存取方法，所有站台都必須實作；PCF 是蓋在 DCF 上面的選用輪詢機制。</li>
-      <li><b>IFS 決定優先權</b>：SIFS ＜ PIFS ＜ DIFS ＜ EIFS，等得越短越優先（ACK／CTS 用 SIFS，PCF 用 PIFS，一般資料用 DIFS）。</li>
-      <li><b>退避</b>：Backoff = Random(0..CW) × Slot time；媒介忙時計時器凍結，失敗一次 CW 加倍（15 → 31 → … → 1023）。</li>
-      <li><b>RTS/CTS＋NAV</b>：用 Duration 預約媒介，解決 hidden node；超過 RTS_Threshold 才用，廣播／群播不用、也不回 ACK。</li>
+      <li><b>DCF</b>：802.11 最基本的存取方法，所有站台都必須實作；PCF 是蓋在 DCF 上面的選用輪詢機制。（PCF：點協調功能，由 AP 輪詢）</li>
+      <li><b>IFS 決定優先權</b>：SIFS ＜ PIFS ＜ DIFS ＜ EIFS，等得越短越優先（ACK／CTS 用 SIFS，PCF 用 PIFS，一般資料用 DIFS）。（IFS：訊框間隔；SIFS／PIFS／EIFS：最短／PCF／延長訊框間隔）</li>
+      <li><b>退避</b>：Backoff = Random(0..CW) × Slot time；媒介忙時計時器凍結，失敗一次 CW 加倍（15 → 31 → … → 1023）。（CW：競爭視窗，退避值的抽取範圍；Slot time：時槽，退避倒數的時間單位）</li>
+      <li><b>RTS/CTS＋NAV</b>：用 Duration 預約媒介，解決 hidden node；超過 RTS_Threshold 才用，廣播／群播不用、也不回 ACK。（RTS／CTS：要求傳送／允許傳送；NAV：網路配置向量；Duration：預約時間欄位；hidden node：隱藏節點；RTS_Threshold：使用 RTS/CTS 的長度門檻）</li>
     </ul>
   </div>
 
@@ -40,10 +40,18 @@
     <tr><td>802.11n</td><td><span class="sup">補充</span>2009</td><td>RIFS（p.13）、CW 15–1023（p.17）</td></tr>
     <tr><td>802.11-2016</td><td>2016</td><td>SBIFS／BRPIFS／MBIFS／LBIFS（p.13，講義寫 check DIY；<span class="sup">補充</span>來自 802.11ad 60 GHz）</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>FHSS／IR／DSSS／OFDM</b>：跳頻展頻／紅外線／直接序列展頻／正交分頻多工，不同的 PHY</li>
+      <li><b>ERP</b>：802.11g 的 PHY，在 2.4 GHz 使用 OFDM</li>
+      <li><b>PLCP Preamble</b>：實體層加在訊框前、讓接收端同步的前導碼</li>
+      <li><b>AIFS／RIFS</b>：802.11e 依流量類別而定的訊框間隔／802.11n 比 SIFS 更短的間隔</li>
+      <li><b>SBIFS／BRPIFS／MBIFS／LBIFS</b>：802.11ad（60 GHz）新增的幾種訊框間隔</li>
+    </ul></li></ul>
 
   <h2 id="ie">2. 資訊元素（p.1–4）<span class="en">（Information Element）</span></h2>
   <ul>
-    <li><b>定義</b>：管理訊框（Beacon、Probe、Association…）Frame Body 裡的可變長度欄位，一律是「Element ID（1）＋ Length（1）＋ Information（Length 個 octets）」。</li>
+    <li><b>定義</b>：管理訊框（Beacon、Probe、Association…）Frame Body 裡的可變長度欄位，一律是「Element ID（1）＋ Length（1）＋ Information（Length 個 octets）」。<span class="sup">補充</span>Frame Body：訊框本文；octet：8 bits。</li>
     <li><b>白話</b>：像「標籤＋長度＋內容」的貼紙，收方看 Element ID 就知道在講什麼，看不懂的 ID 用 Length 直接跳過。</li>
   </ul>
   <div class="tbl-wrap"><table>
@@ -55,6 +63,16 @@
     <tr><td>CF Parameter Set</td><td class="num">4</td><td>Challenge Text</td><td class="num">16</td></tr>
     <tr><td>TIM</td><td class="num">5</td><td>Reserved（challenge text 延伸 17–31）</td><td class="num">17–255</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>SSID</b>：網路名稱</li>
+      <li><b>Supported rates</b>：支援的傳輸速率</li>
+      <li><b>FH／DS／CF／IBSS Parameter Set</b>：跳頻／DSSS 頻道／無競爭期／IBSS 的參數</li>
+      <li><b>TIM</b>：Beacon 中標示 AP 替哪些省電站台暫存資料的表</li>
+      <li><b>Country</b>：所在國家與當地允許的頻道、功率</li>
+      <li><b>Challenge Text</b>：Shared Key 認證時 AP 出的題目</li>
+      <li><b>IBSS</b>：沒有 AP 的獨立 BSS</li>
+    </ul></li></ul>
   <div class="figure" id="fig-ie-wrap">
     <div class="fig-title">資訊元素瀏覽器 <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-ie"></div><div class="status info" id="ie-msg"></div></div>
@@ -67,7 +85,7 @@
       <ul>
         <li>802.11（a、b）只有 Supported Rates（1–8 octets）；802.11g 另加 <b>Extended Supported Rates</b>（1–255 octets）。</li>
         <li>a/b/g 合計支援的速率有 <b>14 種</b><span class="en">（The number of supported rates is 14 (a/b/g)）</span>。</li>
-        <li>屬於 <b>BSSBasicRateSet</b> 的速率，<b>msb（bit 7）設 1</b>；不屬於的設 0。例：1 Mbps（基本）= X'82'（1000 0010）；2 Mbps（非基本）= X'04'（0000 0100）。</li>
+        <li>屬於 <b>BSSBasicRateSet</b> 的速率，<b>msb（bit 7）設 1</b>；不屬於的設 0。例：1 Mbps（基本）= X'82'（1000 0010）；2 Mbps（非基本）= X'04'（0000 0100）。<span class="sup">補充</span>BSSBasicRateSet：BSS 內所有站台都必須支援的基本速率；msb：最高位元。</li>
       </ul>
     </li>
     <li><span class="sup">補充</span>最終的 802.11g 標準把 ERP Information 定為 Element ID <b>42</b>、Extended Supported Rates 定為 <b>50</b>；講義的「Legacy Indication = 8」應是草案時期的編號，考試以講義為準。</li>
@@ -94,6 +112,11 @@
     <tr><td>b0</td><td>NonERP_Present</td><td>BSS 內沒有 Non-ERP 站台</td><td>BSS 內有 Non-ERP 站台</td></tr>
     <tr><td>b1</td><td>Use_Protection</td><td>ERP 站台用 ERP-OFDM 速率送 MPDU 時<b>不應</b>使用保護機制</td><td>ERP 站台用 ERP-OFDM 速率送 MPDU 時<b>必須</b>使用保護機制</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>ERP-OFDM</b>：802.11g 在 2.4 GHz 使用的 OFDM 速率</li>
+      <li><b>MPDU</b>：MAC 層實際送出的訊框</li>
+    </ul></li></ul>
   <ul>
     <li><b>Non-ERP 就是 802.11b 裝置</b>，聽不懂 OFDM。</li>
     <li><b>保護機制</b>：在送出「接收端不一定聽得懂」的訊框之前，先用 <b>CTS 訊框</b>更新所有接收站台的 NAV；更新後的 NAV 要 ≥ 送資料加上所有回應訊框的總時間<span class="en">（Use CTS frame to update the NAV of all receiving STAs prior to the transmission of a frame that may or may not be understood by receivers）</span>。</li>
@@ -124,10 +147,10 @@ flowchart TB
         <li><b>另一種</b>存取方法，必須建在 DCF 之上。</li>
         <li>由<b>點協調器（Point Coordinator，輪詢主控 polling master）</b>決定目前誰有權傳送。</li>
         <li>透過「存取優先權」從 DCF 建構出來：不同流量用<b>不同長度的 IFS</b> 區分，<b>PIFS ＜ DIFS</b>。</li>
-        <li>點協調的流量優先權較高，可提供<b>無競爭（contention-free）</b>存取；PIFS 較短，讓 PC 能從其他站台手上搶到媒介。</li>
+        <li>點協調的流量優先權較高，可提供<b>無競爭（contention-free）</b>存取；PIFS 較短，讓 PC 能從其他站台手上搶到媒介。<span class="sup">補充</span>PC：點協調器，AP 上負責輪詢的角色。</li>
       </ul>
     </li>
-    <li><b>共存</b>：DCF 與 PCF 必須互不干擾；整合在一個<b>超級訊框（superframe）</b>中，開頭是無競爭期（contention-free burst），接著是競爭期（contention period）。</li>
+    <li><b>共存</b>：DCF 與 PCF 必須互不干擾；整合在一個<b>超級訊框（superframe）</b>中，開頭是無競爭期（contention-free burst），接著是競爭期（contention period）。<span class="sup">補充</span>超級訊框：一個無競爭期加一個競爭期，週期性重複。</li>
   </ul>
   <div class="figure">
     <div class="fig-title">Superframe <span class="tag static">圖解</span></div>
@@ -148,11 +171,11 @@ flowchart LR
       <li><b>名字拆開看</b>：<b>Distributed</b>＝沒有 AP 當裁判，每個站台自己判斷；<b>Coordination</b>＝大家遵守同一套等待規則，所以不必溝通也能錯開；<b>Function</b>＝它是 MAC 層的一個功能（PCF 才由 AP 這個 Point Coordinator 輪詢）。</li>
       <li><b>送一個訊框的五步</b>：
         <ol>
-          <li><b>先聽</b>：實體載波感測（CCA）與虛擬載波感測（NAV）都說閒置，媒介才算閒置。</li>
+          <li><b>先聽</b>：實體載波感測（CCA）與虛擬載波感測（NAV）都說閒置，媒介才算閒置。<span class="sup">補充</span>CCA：PHY 判斷通道是否閒置；NAV：MAC 記錄通道被預約到何時的計時器（下方詳述）。</li>
           <li><b>等 DIFS</b>：媒介持續閒置 DIFS；若封包到達時媒介已閒置超過 DIFS，可直接送。</li>
           <li><b>隨機退避</b>：從 [0, CW] 抽一個數 × Slot time 倒數；媒介一忙就<b>凍結</b>，閒置 DIFS 後接著數。</li>
           <li><b>送出</b>：數到 0 就送（長訊框可先 RTS/CTS 預約）。</li>
-          <li><b>等 ACK</b>：接收端隔 SIFS 回 ACK 才算成功；沒收到 ACK → CW 加倍、重來，超過重試上限就丟棄。</li>
+          <li><b>等 ACK</b>：接收端隔 SIFS 回 ACK 才算成功；沒收到 ACK → CW 加倍、重來，超過重試上限就丟棄。<span class="sup">補充</span>重試上限：最多重傳幾次。</li>
         </ol>
       </li>
       <li><b>為什麼要這樣</b>：無線站台送的時候聽不到碰撞（不能 CD），只能事先<b>避免</b>（CA）、事後靠 <b>ACK</b> 確認。</li>
@@ -160,27 +183,27 @@ flowchart LR
     </ul>
   </div>
   <ul>
-    <li><b>七項功能</b><span class="en">（Features）</span>：IFS、隨機退避、正向 ACK、實體載波感測、虛擬載波感測（在多速率環境仍有效）、選用 RTS/CTS（由 RTS_Threshold 控制）、選用分段（由 Fragmentation_Threshold 控制）。</li>
+    <li><b>七項功能</b><span class="en">（Features）</span>：IFS、隨機退避、正向 ACK、實體載波感測、虛擬載波感測（在多速率環境仍有效）、選用 RTS/CTS（由 RTS_Threshold 控制）、選用分段（由 Fragmentation_Threshold 控制）。<span class="sup">補充</span>RTS_Threshold／Fragmentation_Threshold：超過這個長度才用 RTS/CTS／才分段。</li>
     <li><b>自動共享媒介</b>：相同或不同的 PHY 都能透過 CSMA/CA 加上「媒介忙碌之後的隨機退避」共用媒介。</li>
-    <li><b>正向 ACK</b>：所有<b>單播（directed）</b>流量都要立即回 ACK；沒收到 ACK，由<b>傳送端</b>安排重傳。</li>
+    <li><b>正向 ACK</b>：所有<b>單播（directed）</b>流量都要立即回 ACK；沒收到 ACK，由<b>傳送端</b>安排重傳。<span class="sup">補充</span>單播（directed）：送給單一站台。</li>
     <li><b>虛擬載波感測</b>：在真正的資料訊框前交換小的 RTS、CTS 訊框（帶 Duration 欄位），把「媒介會忙多久」散播出去。
       <ul>
         <li><b>只用於單播</b><span class="en">（Unicast only, not used in multicast/broadcast）</span>。</li>
         <li>由 <b>RTS_Threshold</b> 控制：payload 長度低於門檻就不加 RTS/CTS。</li>
       </ul>
     </li>
-    <li><b>多速率</b>：所有站台都必須能<b>接收</b>基本速率組內任一速率的訊框，並至少能用其中一種速率<b>傳送</b>，所以虛擬載波感測在多速率環境仍然有效。<span class="sup">補充</span>控制訊框用基本速率送，大家都解得出 Duration。</li>
+    <li><b>多速率</b>：所有站台都必須能<b>接收</b>基本速率組內任一速率的訊框，並至少能用其中一種速率<b>傳送</b>，所以虛擬載波感測在多速率環境仍然有效。<span class="sup">補充</span>控制訊框用基本速率送，大家都解得出 Duration。<span class="sup">補充</span>基本速率組：BSS 內所有站台都必須支援的速率。</li>
     <li><b>兩種載波感測</b>（p.11）：
       <ul>
         <li><b>實體</b>：由 PHY 提供，也就是空閒頻道評估（Clear Channel Assessment, CCA）。</li>
         <li><b>虛擬</b>：由 MAC 提供，叫做<b>網路配置向量（Network Allocation Vector, NAV）</b>，依 RTS/CTS 宣告的 Duration 預測未來的流量。</li>
       </ul>
     </li>
-    <li><b>MAC 層確認</b>：成功收到訊框後<b>立即</b>回 ACK，<b>間隔是 SIFS</b>；要回 ACK 的訊框類型：Data、Poll、Request、Response。<b>沒收到 ACK 就表示出錯</b><span class="en">（The lack of an ACK frame means that an error has occurred）</span>。</li>
+    <li><b>MAC 層確認</b>：成功收到訊框後<b>立即</b>回 ACK，<b>間隔是 SIFS</b>；要回 ACK 的訊框類型：Data、Poll、Request、Response。<b>沒收到 ACK 就表示出錯</b><span class="en">（The lack of an ACK frame means that an error has occurred）</span>。<span class="sup">補充</span>Poll：輪詢訊框；Request／Response：管理用的請求與回應訊框。</li>
   </ul>
   <div class="callout tip">
     <p><b>💡 講義提問（p.11）：為什麼 Ethernet 不用 ACK 訊框？</b></p>
-    <p>有線網路可以「邊送邊聽」，碰撞會被 CSMA/CD 偵測到並立刻重送，而且銅線／光纖的位元錯誤率很低，交給上層（TCP）處理就夠了。無線則不行：自己的發射訊號比收到的訊號強太多，送的時候聽不到碰撞（無法 CD）；hidden node 讓傳送端根本感測不到干擾；加上無線錯誤率高，所以必須由接收端用 ACK 明確告訴傳送端「收到了」。</p>
+    <p>有線網路可以「邊送邊聽」，碰撞會被 CSMA/CD 偵測到並立刻重送，而且銅線／光纖的位元錯誤率很低，交給上層（TCP）處理就夠了。無線則不行：自己的發射訊號比收到的訊號強太多，送的時候聽不到碰撞（無法 CD）；hidden node 讓傳送端根本感測不到干擾；加上無線錯誤率高，所以必須由接收端用 ACK 明確告訴傳送端「收到了」。<span class="sup">補充</span>TCP：傳輸層的可靠傳輸協定，會自己重送。</p>
   </div>
   <div class="callout warn">
     <p><b>⚠️ 講義勘誤（p.11、p.25）</b></p>
@@ -199,14 +222,20 @@ flowchart LR
     <tr><td><b>DIFS</b>（DCF IFS）</td><td>DCF 送非同步 MPDU</td><td>偵測到媒介空閒 DIFS，且不在退避期間，就能送</td></tr>
     <tr><td><b>EIFS</b>（Extended IFS）</td><td>上一個收到的訊框有錯時</td><td>最長，見下方</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>CFP</b>：無競爭期，AP 點名才能送</li>
+      <li><b>CF-Burst</b>：無競爭期內 PC 連續送出的訊框</li>
+      <li><b>非同步 MPDU</b>：一般的資料訊框，沒有時間保證</li>
+    </ul></li></ul>
   <ul>
-    <li>新增的 IFS：<b>11e 的 AIFS</b>（Arbitrated IFS）、<b>11n 的 RIFS</b>（Reduced IFS）、<b>802.11-2016 的 SBIFS／BRPIFS／MBIFS／LBIFS</b>（講義：check DIY）。</li>
+    <li>新增的 IFS：<b>11e 的 AIFS</b>（Arbitrated IFS）、<b>11n 的 RIFS</b>（Reduced IFS）、<b>802.11-2016 的 SBIFS／BRPIFS／MBIFS／LBIFS</b>（講義：check DIY）。<span class="sup">補充</span>AIFS：依流量類別而定的訊框間隔；RIFS：比 SIFS 更短的間隔。</li>
     <li><b>時間關係</b>（p.14 圖）：<b>PIFS = SIFS + 1 slot</b>、<b>DIFS = SIFS + 2 slots</b>，DIFS 之後才是第一個退避時槽（First backoff slot）。</li>
     <li>p.14 圖中的元件
       <ul>
         <li><b>D1</b> ＝ aRxRFDelay（接收端 RF 延遲）＋ aRxPLCPDelay（接收端 PLCP 延遲），從媒介上訊框最後一個符號結束時起算。</li>
         <li><b>D2</b> ＝ D1 ＋ 空中傳播時間。</li>
-        <li><b>Rx/Tx</b> ＝ aRXTXTurnaroundTime（從接收切換到傳送所需的時間），從 PHYTXSTART.request 開始。</li>
+        <li><b>Rx/Tx</b> ＝ aRXTXTurnaroundTime（從接收切換到傳送所需的時間），從 PHYTXSTART.request 開始。<span class="sup">補充</span>PHYTXSTART.request：MAC 要求 PHY 開始傳送的指令。</li>
         <li><b>M1</b> ＝ <b>M2</b> ＝ aMACPrcDelay（MAC 處理延遲）。</li>
         <li><b>CCAdel</b> ＝ aCCATime（CCA 判斷通道是否忙碌所需的時間）－ D1。</li>
       </ul>
@@ -215,7 +244,7 @@ flowchart LR
       <ul>
         <li>從 PHY 指出「收到<b>錯誤訊框</b>後媒介已空閒」開始計時，<b>不管虛擬載波感測</b>。</li>
         <li>目的：給別的站台足夠時間，對「這個站台收錯的那個訊框」回 ACK，再讓這個站台開始傳送。</li>
-        <li><b>EIFS = aSIFSTime + (8 × ACKsize) + aPreambleLength + PLCPHeaderLength + DIFS</b>，ACKsize 以 <b>1 Mbps</b> 計算。</li>
+        <li><b>EIFS = aSIFSTime + (8 × ACKsize) + aPreambleLength + PLCPHeaderLength + DIFS</b>，ACKsize 以 <b>1 Mbps</b> 計算。<span class="sup">補充</span>aPreambleLength／PLCPHeaderLength：前導碼／PLCP 標頭的長度。</li>
       </ul>
     </li>
   </ul>
@@ -348,7 +377,7 @@ flowchart LR
         <li>用 DCF 有效率地共享媒介，<b>不受重疊限制</b>；以 CSMA/CA 為基礎，載波感測來自 PHY 的 <b>CCA</b>。</li>
         <li><b>對干擾強健</b>：單播用 <b>CSMA/CA＋ACK</b>，MAC 層就能重傳；廣播用 CSMA/CA（沒有 ACK）。</li>
         <li>參數化使用 RTS/CTS，提供<b>虛擬載波感測</b>，對抗 <b>hidden node</b>；Duration 由傳送端與接收端分別透過 RTS、CTS 散播。</li>
-        <li>有<b>分段</b>，因應不同 PHY 的特性；訊框格式支援 Infrastructure、Ad-Hoc 與 WDS。</li>
+        <li>有<b>分段</b>，因應不同 PHY 的特性；訊框格式支援 Infrastructure、Ad-Hoc 與 WDS。<span class="sup">補充</span>WDS：AP 之間用無線連成的分散式系統。</li>
       </ul>
     </li>
     <li><b>CSMA/CA 解說</b>（p.20）
@@ -414,6 +443,13 @@ flowchart LR
     <tr><td><span class="sup">補充</span><b>訊框聚合</b>（802.11n）：A-MSDU 把多個 MSDU 包成一個 MPDU；A-MPDU 把多個 MPDU 包成一次 PHY 傳送</td><td>多筆資料只付一次 Preamble＋PHY 標頭＋DIFS＋退避</td><td>A-MSDU 任一處錯就整個重傳；A-MPDU 每個子訊框有自己的 FCS，可只重傳錯的</td></tr>
     <tr><td><span class="sup">補充</span><b>Block ACK</b>（802.11e 引入，11n 起和 A-MPDU 搭配）</td><td>多個訊框只回一個 ACK（用 bitmap 標出收到哪些）</td><td>要先建立 Block ACK 協議（ADDBA）</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>TXOP</b>：傳送機會，搶到後可以連續傳送的一段時間</li>
+      <li><b>ADDBA</b>：建立 Block ACK 協議的管理訊框</li>
+      <li><b>bitmap</b>：每個 bit 對應一個訊框，用 0／1 表示有沒有收到</li>
+      <li><b>BSS 裡有舊站台</b>：有不支援這項功能的 802.11b 站台</li>
+    </ul></li></ul>
   <p>可以用上面的計算器驗證「送大訊框」和「RTS/CTS 只給長訊框」：把 payload 從 1500 拉到 100 bytes，效率會大幅下降；打開 RTS/CTS 時，短訊框掉得比長訊框多。</p>
 
   <h2 id="hidden">10. Hidden Node 與 RTS/CTS（p.24–26）<span class="en">（Hidden Node Problem／Provisions）</span></h2>
@@ -444,12 +480,12 @@ flowchart LR
     <li><b>為什麼 802.11 的 RTS/CTS 解決不了</b>
       <ul>
         <li>C 聽得到 B 的 RTS，會設 NAV(RTS)，照樣延後。</li>
-        <li>就算讓 C 照 MACA 的規則「聽到 RTS、沒聽到 CTS 就可以送」：802.11 的單播需要對方回 CTS 與 ACK。D 回給 C 的 CTS／ACK 會在 C 被 B 的 Data 蓋掉；C 送的 Data 也會在 B 蓋掉 A 回給 B 的 ACK。<b>雙向交換讓兩邊互相干擾</b>，所以 802.11 保守地延後。</li>
+        <li>就算讓 C 照 MACA 的規則「聽到 RTS、沒聽到 CTS 就可以送」：802.11 的單播需要對方回 CTS 與 ACK。D 回給 C 的 CTS／ACK 會在 C 被 B 的 Data 蓋掉；C 送的 Data 也會在 B 蓋掉 A 回給 B 的 ACK。<b>雙向交換讓兩邊互相干擾</b>，所以 802.11 保守地延後。<span class="sup">補充</span>MACA：早期以 RTS/CTS 為基礎的無線存取協定。</li>
       </ul>
     </li>
     <li><b>解決或減輕的方法</b>
       <ul>
-        <li><span class="sup">補充</span><b>調整載波感測門檻與傳送功率</b>：降低功率、提高 CCA 門檻，讓 C 不把遠處 B 的弱訊號當成忙碌。802.11ax 的 <b>BSS Coloring</b> 加 <b>OBSS_PD 空間重複使用</b>就是這個方向：聽到別的 BSS（顏色不同）的弱訊號時可以忽略並照常傳送，同時降低自己的傳送功率。代價是門檻放太寬會把 hidden node 碰撞帶回來。</li>
+        <li><span class="sup">補充</span><b>調整載波感測門檻與傳送功率</b>：降低功率、提高 CCA 門檻，讓 C 不把遠處 B 的弱訊號當成忙碌。802.11ax 的 <b>BSS Coloring</b> 加 <b>OBSS_PD 空間重複使用</b>就是這個方向：聽到別的 BSS（顏色不同）的弱訊號時可以忽略並照常傳送，同時降低自己的傳送功率。代價是門檻放太寬會把 hidden node 碰撞帶回來。<span class="sup">補充</span>BSS Coloring：在 PHY header 標記所屬 BSS；OBSS_PD：聽到其他 BSS 的訊號時可忽略的門檻。</li>
         <li><span class="sup">補充</span><b>雙忙音</b><span class="en">（Dual Busy Tone Multiple Access, DBTMA）</span>：另開窄頻通道，接收端送「接收忙音」、傳送端送「傳送忙音」。只有聽到接收忙音的站台才延後，所以 exposed 的 C（只聽到傳送忙音）可以送，hidden 的站台聽到接收忙音則會延後。代價是多一個通道和硬體，802.11 沒有採用。</li>
         <li><span class="sup">補充</span><b>網路規劃</b>：相鄰的 BSS 用不重疊的通道（2.4 GHz 的 1、6、11），或用指向性／分區天線，讓 B 和 C 根本不互相干擾。</li>
       </ul>
@@ -482,7 +518,7 @@ flowchart LR
       <ul>
         <li>送出 RTS 後，若在 <b>CTS_Timeout（T1）</b>內沒收到 CTS，就產生新的 RTS（<b>CW 加倍</b>），直到 RTS_Re-Transmit_Counter 到達 <b>RTS_Re-Transmit_Limit</b>。</li>
         <li>單播 DATA 送出後，若在 <b>ACK_Window（T3）</b>內沒收到 ACK，用同樣的退避機制重傳，直到 ACK_Re-Transmit_Counter 到達 <b>ACK_Re-Transmit_Limit</b>。</li>
-        <li>每個 MSDU／MMPDU 有兩個計數器：<b>短重傳計數（short retry count）</b>給長度 ≤ RTS_Threshold 的訊框，<b>長重傳計數（long retry count）</b>給 ＞ RTS_Threshold 的訊框；兩者獨立遞增、獨立歸零。</li>
+        <li>每個 MSDU／MMPDU 有兩個計數器：<b>短重傳計數（short retry count）</b>給長度 ≤ RTS_Threshold 的訊框，<b>長重傳計數（long retry count）</b>給 ＞ RTS_Threshold 的訊框；兩者獨立遞增、獨立歸零。<span class="sup">補充</span>MMPDU：管理訊框的資料單位。</li>
         <li><span class="sup">補充</span>標準預設 dot11ShortRetryLimit = 7、dot11LongRetryLimit = 4。</li>
       </ul>
     </li>
@@ -533,7 +569,7 @@ flowchart TD
     <li><b>Fragmentation (2/2)</b>（p.33）
       <ul>
         <li>除最後一段可以較短，其他分段的長度<b>都一樣</b>。</li>
-        <li>分段長度<b>不可超過 aFragmentationThreshold</b>，除非該 MPDU 有用 WEP（因為會多出 IV 與 ICV）。</li>
+        <li>分段長度<b>不可超過 aFragmentationThreshold</b>，除非該 MPDU 有用 WEP（因為會多出 IV 與 ICV）。<span class="sup">補充</span>IV／ICV：WEP 加在資料前的初始向量／資料後的完整性檢查碼。</li>
         <li>同一個 MSDU／MMPDU 的所有分段 <b>Sequence Number 相同</b>；依 Fragment Number <b>由小到大</b>依序送（從 0 開始，每次加 1）。</li>
         <li><b>More Fragments 位元</b>標示最後（或唯一）一段。</li>
       </ul>

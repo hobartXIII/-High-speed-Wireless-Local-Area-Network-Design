@@ -21,12 +21,12 @@
   <div class="callout note">PDF 共 32 頁，對應投影片第 1–33 頁；<b>第 22 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-2「IEEE 802.11 MAC 架構與服務」：2-2 講 Authentication、Association、Privacy 這些<b>服務</b>，這一章講它們實際用到的<b>訊框</b>長什麼樣子。</div>
 
   <div class="callout key">
-    <p><b>802.11 MAC 訊框就是無線站台之間實際送出的資料單位：Header（誰送給誰、怎麼處理）＋Frame Body（內容）＋FCS（檢查碼）；WEP 是 802.11 最早用來加密 Frame Body 的方法。</b></p>
+    <p><b>802.11 MAC 訊框就是無線站台之間實際送出的資料單位：Header（誰送給誰、怎麼處理）＋Frame Body（內容）＋FCS（檢查碼）；WEP 是 802.11 最早用來加密 Frame Body 的方法。</b>（WEP：有線等效隱私）</p>
     <ul>
-      <li><b>WEP</b>：802.11 原始的選用加密，用 RC4＋24-bit IV，只加密資料訊框的 payload、只保護無線這一段。<span class="sup">補充</span>已被破解，由 802.11i（WPA2）取代。</li>
+      <li><b>WEP</b>：802.11 原始的選用加密，用 RC4＋24-bit IV，只加密資料訊框的 payload、只保護無線這一段。<span class="sup">補充</span>已被破解，由 802.11i（WPA2）取代。（RC4：一種串流加密演算法；IV：初始向量；payload：訊框裡的資料內容）</li>
       <li><b>站台狀態</b>：State 1／2／3 決定能送 Class 1／2／3 訊框；Deauthentication 退回 State 1，Disassociation 退回 State 2。</li>
-      <li><b>MAC 訊框</b>＝Header＋Frame Body（0–2312 bytes）＋FCS；To DS／From DS 決定 4 個位址欄位怎麼填。</li>
-      <li><b>三類訊框</b>：控制（RTS、CTS、ACK、PS-Poll）、資料、管理（Beacon、Probe、Authentication、Association）。</li>
+      <li><b>MAC 訊框</b>＝Header＋Frame Body（0–2312 bytes）＋FCS；To DS／From DS 決定 4 個位址欄位怎麼填。（To DS／From DS：標示訊框是送往還是來自分散式系統的兩個位元）</li>
+      <li><b>三類訊框</b>：控制（RTS、CTS、ACK、PS-Poll）、資料、管理（Beacon、Probe、Authentication、Association）。（RTS／CTS：要求傳送／允許傳送；ACK：確認；PS-Poll：省電站台取資料；Beacon：AP 定期廣播的訊框；Probe：探詢附近的 AP）</li>
     </ul>
   </div>
 
@@ -41,15 +41,29 @@
     <tr><td>802.11ax</td><td><span class="sup">補充</span>2021</td><td>p.23 資料訊框圖的標題「Data Frames (IEEE 802.11 ax)」</td></tr>
     <tr><td><span class="sup">補充</span>802.11i</td><td>2004</td><td>取代 WEP（TKIP、CCMP）；Frame Control 的 WEP 位元改名 Protected Frame</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>Short Preamble</b>：較短的前導碼，縮短 PHY 標頭的時間</li>
+      <li><b>PBCC</b>：802.11b 可選的編碼方式</li>
+      <li><b>Channel Agility</b>：選用的跳頻功能（第 16 節）</li>
+      <li><b>HR/DSSS</b>：802.11b 的高速 DSSS 實體層</li>
+      <li><b>ERP Information Element</b>：802.11g Beacon 中說明是否有舊 11b 站台、要不要保護的欄位</li>
+      <li><b>Extended Supported Rates</b>：支援速率太多、放不下時的延伸欄位</li>
+      <li><b>Short Slot Time</b>：9 µs 的短時槽</li>
+      <li><b>DSSS-OFDM</b>：802.11g 可選的混合調變</li>
+      <li><b>CTS-to-self</b>：先送一個給自己的 CTS，讓舊站台設 NAV 不要搶（第 13 節）</li>
+      <li><b>QoS Control／HT Control</b>：802.11e 的服務品質欄位／802.11n 的高吞吐量控制欄位</li>
+      <li><b>TKIP／CCMP</b>：取代 WEP 的兩種加密方式，CCMP 以 AES 為基礎</li>
+    </ul></li></ul>
 
   <h2 id="wep">2. 隱私與存取控制：WEP（p.1–2）<span class="en">（Privacy and Access Control）</span></h2>
   <div class="callout key">
-    <p><b>WEP 就是 802.11 最早的加密方式：用一把共享的秘密金鑰加上 24-bit IV 餵給 RC4 產生金鑰串流，和資料做 XOR，讓旁人收到電波也看不懂。</b></p>
+    <p><b>WEP 就是 802.11 最早的加密方式：用一把共享的秘密金鑰加上 24-bit IV 餵給 RC4 產生金鑰串流，和資料做 XOR，讓旁人收到電波也看不懂。</b><span class="sup">補充</span>金鑰串流：RC4 依金鑰產生的一串虛擬隨機位元；XOR：互斥或，相同為 0、不同為 1。</p>
     <ul>
       <li><b>名字的意思</b>：Wired Equivalent Privacy，目標只是「和有線網路一樣安全」，不是端對端加密。</li>
       <li><b>保護範圍</b>：只加密<b>資料訊框的 payload</b>，只保護<b>站台到 AP 這一段無線</b>；標頭仍是明文。</li>
-      <li><b>完整性</b>：附 ICV（CRC-32）檢查資料有沒有被改。</li>
-      <li><span class="sup">補充</span><b>現況</b>：IV 太短會重複、ICV 是線性的，WEP 幾分鐘就能被破解；已由 802.11i（WPA2）取代，只在考試與歷史脈絡中出現。</li>
+      <li><b>完整性</b>：附 ICV（CRC-32）檢查資料有沒有被改。<span class="sup">補充</span>CRC-32：32 位元的循環冗餘檢查碼。</li>
+      <li><span class="sup">補充</span><b>現況</b>：IV 太短會重複、ICV 是線性的，WEP 幾分鐘就能被破解；已由 802.11i（WPA2）取代，只在考試與歷史脈絡中出現。<span class="sup">補充</span>線性：密文改哪些位元，就能算出 ICV 要改哪些位元。</li>
     </ul>
   </div>
   <ul>
@@ -57,11 +71,11 @@
     <li>802.11 提供 <b>Authentication</b> 機制協助存取控制<span class="en">（To aid in access control）</span>，可用 Open System、Shared Key 或廠商自訂延伸<span class="en">（proprietary authentication extensions）</span>。</li>
     <li>WEP 是 802.11 定義的<b>選用</b>隱私機制<span class="en">（Optional (WEP) Privacy mechanism）</span>：
       <ul>
-        <li>只保護<b>站台對站台</b>的流量，<b>不是 end to end</b><span class="en">（Limited for Station-to-Station traffic, so not "end to end"）</span>；嵌在 MAC 實體內<span class="en">（Embedded in the MAC entity）</span>。</li>
+        <li>只保護<b>站台對站台</b>的流量，<b>不是 end to end</b><span class="en">（Limited for Station-to-Station traffic, so not "end to end"）</span>；嵌在 MAC 實體內<span class="en">（Embedded in the MAC entity）</span>。<span class="sup">補充</span>end to end：從通訊的一端到另一端；MAC 實體：MAC 層的功能模組。</li>
         <li><b>只實作機密性</b><span class="en">（Only implements Confidentiality function）</span>。</li>
-        <li>使用 <b>RC4 PRNG</b>：seed = <b>40-bit 秘密金鑰</b>（標準沒規定金鑰怎麼發放，靠外部金鑰管理服務）＋ <b>24-bit IV</b>（隨資料送出）＝ <b>64 bits</b>（新版 128、152 bits）。</li>
+        <li>使用 <b>RC4 PRNG</b>：seed = <b>40-bit 秘密金鑰</b>（標準沒規定金鑰怎麼發放，靠外部金鑰管理服務）＋ <b>24-bit IV</b>（隨資料送出）＝ <b>64 bits</b>（新版 128、152 bits）。<span class="sup">補充</span>PRNG：虛擬隨機數產生器；seed：產生器的起始值。</li>
         <li>附 <b>ICV</b> 做完整性檢查<span class="en">（includes an ICV to allow integrity check）</span>。</li>
-        <li><b>只加密資料訊框的 payload</b><span class="en">（Only payload of Data frames are encrypted）</span>，以每個 MPDU 為單位<span class="en">（Encryption on per MPDU basis）</span>。</li>
+        <li><b>只加密資料訊框的 payload</b><span class="en">（Only payload of Data frames are encrypted）</span>，以每個 MPDU 為單位<span class="en">（Encryption on per MPDU basis）</span>。<span class="sup">補充</span>MPDU：MAC 層實際送出的訊框。</li>
       </ul>
     </li>
   </ul>
@@ -121,14 +135,14 @@ flowchart LR
       <button class="btn" type="button" data-act="ok">接收端：原封不動收下</button>
       <button class="btn" type="button" data-act="reuse">同一個 IV 再加密「Attack at 9」</button>
     </div>
-    <div class="caption">這是真的 RC4 與 CRC-32 計算（每個字元 8 bits）。<span class="sup">補充</span>「同一個 IV」按鈕示範 IV 重用的風險：兩份密文 XOR 後，金鑰序列抵銷，剩下兩份明文的 XOR。</div>
+    <div class="caption">這是真的 RC4 與 CRC-32 計算（每個字元 8 bits）。<span class="sup">補充</span>「同一個 IV」按鈕示範 IV 重用的風險：兩份密文 XOR 後，金鑰序列抵銷，剩下兩份明文的 XOR。<span class="sup">補充</span>Key ID：標示用了哪一把預設金鑰（最多 4 把）。</div>
   </div>
 
   <h2 id="privacy">3. 隱私服務（p.3–4）<span class="en">（Privacy Service）</span></h2>
   <ul>
     <li><b>定義</b>：防止訊息內容被預期接收者以外的人讀取的服務。</li>
     <li>有線 LAN 只有實體接上線的站台才聽得到流量<span class="en">（only those stations physically connected to the wire can hear LAN traffic）</span>；802.11 不是這樣，所以提供加密訊息內容的能力。</li>
-    <li>提供 <b>MIB</b> 功能，可查詢站台支援哪些加密演算法<span class="en">（A MIB function is provided to inquire the encryption algorithms supported by a station）</span>。</li>
+    <li>提供 <b>MIB</b> 功能，可查詢站台支援哪些加密演算法<span class="en">（A MIB function is provided to inquire the encryption algorithms supported by a station）</span>。<span class="sup">補充</span>MIB：管理用的參數資料庫。</li>
     <li><b>建立 Association 之前，雙方必須先談好都能接受的隱私演算法</b><span class="en">（A mutually acceptable privacy algorithm must be agreed upon before an Association can be established）</span>。</li>
     <li><b>預設是明文</b><span class="en">（The default privacy algorithm for all 802.11 stations is in the clear）</span>：沒啟動隱私服務時全部不加密；一旦設定，之後的傳輸都會使用。</li>
     <li>即使 Association 成功，之後的 Reassociation 仍可能被拒絕<span class="en">（Even if an Association is successful, a later Reassociation may be refused）</span>。</li>
@@ -173,6 +187,15 @@ stateDiagram-v2
     <tr><td><b>Class 2</b></td><td>—</td><td>Association Req/Resp、Reassociation Req/Resp、Disassociation</td><td>非同步資料，只限直接資料訊框（To DS = From DS = 0）</td></tr>
     <tr><td><b>Class 3</b></td><td>PS-Poll</td><td>Deauthentication</td><td>非同步資料，允許經 DS 的間接資料訊框<span class="en">（Indirect data frames allowed）</span></td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>CF-End／CF-End+ACK</b>：AP 宣告無競爭期結束／同時確認收到資料</li>
+      <li><b>Probe Request/Response</b>：站台主動詢問附近的 AP／AP 的回覆</li>
+      <li><b>ATIM</b>：IBSS 省電時通知對方「我有資料給你」（下方補充）</li>
+      <li><b>非同步資料</b>：一般的資料傳送，沒有時間保證</li>
+      <li><b>直接／間接資料訊框</b>：站台之間直接送（不經 DS）／經過 AP 與 DS 轉送</li>
+      <li><b>IBSS／DS</b>：沒有 AP 的獨立 BSS／把多個 BSS 串起來的分散式系統</li>
+    </ul></li></ul>
   <ul>
     <li>認證成功 → 可用 Class 2；認證失敗 → 留在 State 1。Deauthentication → 回 State 1。</li>
     <li>關聯（或重新關聯）成功 → 可用 Class 3；失敗 → 留在 State 2。Disassociation → 回 State 2。</li>
@@ -212,8 +235,8 @@ sequenceDiagram
   <div class="callout key">
     <p><b>MAC 訊框就是 802.11 MAC 層實際送上空中的一個封包（MPDU），由 MAC Header、Frame Body、FCS 三段組成。</b></p>
     <ul>
-      <li><b>Header 說「怎麼處理」</b>：Frame Control 標明類型與旗標、Duration 讓別人設 NAV、最多 4 個位址說明誰送給誰、Sequence Control 用來過濾重複與重組分段。</li>
-      <li><b>Frame Body 是「內容」</b>：資料訊框放上層封包（0–2312 bytes），管理訊框放資訊元素，控制訊框通常沒有 body。</li>
+      <li><b>Header 說「怎麼處理」</b>：Frame Control 標明類型與旗標、Duration 讓別人設 NAV、最多 4 個位址說明誰送給誰、Sequence Control 用來過濾重複與重組分段。<span class="sup">補充</span>NAV：站台記錄「通道被預約到什麼時候」的計時器。</li>
+      <li><b>Frame Body 是「內容」</b>：資料訊框放上層封包（0–2312 bytes），管理訊框放資訊元素，控制訊框通常沒有 body。<span class="sup">補充</span>資訊元素：管理訊框中「編號＋長度＋內容」格式的欄位。</li>
       <li><b>FCS 是「檢查碼」</b>：32-bit CRC，錯了就丟、不回 ACK。</li>
       <li><b>三種訊框</b>：控制（RTS、CTS、ACK）管媒介，管理（Beacon、Authentication、Association）管連線，資料訊框送使用者資料。</li>
     </ul>
@@ -228,7 +251,7 @@ sequenceDiagram
     </li>
     <li>MAC Header 依類型而異：<b>控制訊框</b>省略部分欄位（1 或 2 個位址）、<b>管理訊框</b> 3 個位址、<b>資料訊框</b> 4 個位址。</li>
     <li>Sequence Control 用來過濾 ACK 機制（ACK 遺失後重傳）造成的重複訊框<span class="en">（filtering of duplicate caused by ACK mechanism）</span>。</li>
-    <li><span class="sup">補充</span>資料訊框只有 To DS = From DS = 1 時才真的帶 Addr 4；其他情況標頭為 24 bytes。</li>
+    <li><span class="sup">補充</span>資料訊框只有 To DS = From DS = 1 時才真的帶 Addr 4；其他情況標頭為 24 bytes。<span class="sup">補充</span>WDS：AP 之間用無線連成的分散式系統，需要 4 個位址。</li>
   </ul>
   <div class="figure" id="fig-fx-wrap">
     <div class="fig-title">訊框欄位瀏覽器 <span class="tag">互動</span></div>
@@ -265,6 +288,13 @@ sequenceDiagram
     <tr><td>WEP</td><td class="num">1</td><td>Frame Body 經 WEP 處理時設 1（<span class="sup">補充</span>802.11i 後改名 Protected Frame）</td></tr>
     <tr><td>Order</td><td class="num">1</td><td>以「嚴格排序（Strictly Ordered）」服務類別傳送的資料訊框設 1</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>MMSDU</b>：管理訊框的資料單位</li>
+      <li><b>LLC</b>：鏈結層上半部，MAC 的上層</li>
+      <li><b>CF-Poll</b>：無競爭期中 AP 點名的訊框</li>
+      <li><b>省電模式</b>：站台大部分時間休眠，AP 替它暫存資料</li>
+    </ul></li></ul>
   <div class="callout warn">
     <p><b>⚠️ 講義勘誤（p.14）</b></p>
     <p>原文：「From DS: is set to 1 in data type frames <b>existing</b> the DS.」　正確：「…frames <b>exiting</b> the DS.」</p>
@@ -283,8 +313,8 @@ sequenceDiagram
   <h2 id="duration">8. Duration/ID 欄位（p.15–16）<span class="en">（Duration/ID Field）</span></h2>
   <ul>
     <li>放一個以 <b>µs</b> 為單位的值，讓收到的站台更新<b>網路配置向量（NAV）</b><span class="en">（Used to distribute a value (us) that shall update the Network Allocation Vector in stations receiving the frame）</span>。</li>
-    <li>例外：<b>PS-Poll</b> 控制訊框放的是 <b>AID</b>，最高兩個 bit 設 1，AID 範圍 1–2007<span class="en">（carries association ID (AID) with the 2 MSB set as 1）</span>。</li>
-    <li>無競爭期間（CFP）送出的訊框，Duration 固定為 <b>32768</b>。</li>
+    <li>例外：<b>PS-Poll</b> 控制訊框放的是 <b>AID</b>，最高兩個 bit 設 1，AID 範圍 1–2007<span class="en">（carries association ID (AID) with the 2 MSB set as 1）</span>。<span class="sup">補充</span>AID：AP 在 Association 時分配給站台的編號；MSB：最高位元。</li>
+    <li>無競爭期間（CFP）送出的訊框，Duration 固定為 <b>32768</b>。<span class="sup">補充</span>CFP：無競爭期，AP 點名才能送。</li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>Bit 15</th><th>Bit 14</th><th>Bits 13–0</th><th>用途</th></tr>
@@ -337,7 +367,7 @@ sequenceDiagram
 
   <h2 id="frag">10. Sequence Control 與分段（p.17）<span class="en">（Sequence Control）</span></h2>
   <ul>
-    <li><b>Sequence Number（12 bits）</b>：遞增值；<b>同一個 MSDU 的所有分段用同一個序號</b><span class="en">（The same value shall be used for all fragments of the same MSDU）</span>。</li>
+    <li><b>Sequence Number（12 bits）</b>：遞增值；<b>同一個 MSDU 的所有分段用同一個序號</b><span class="en">（The same value shall be used for all fragments of the same MSDU）</span>。<span class="sup">補充</span>MSDU：上層交給 MAC 的一筆資料。</li>
     <li><b>Fragment Number（4 bits）</b>：每個分段的編號。</li>
     <li><b>Frame Body</b>：0–2312 bytes；<b>CRC</b>：4 octets。</li>
   </ul>
@@ -360,7 +390,7 @@ sequenceDiagram
   </div>
 
   <h2 id="control">11. 控制訊框格式（p.18–20）<span class="en">（Format of Individual Frame Types: Control Frames）</span></h2>
-  <p>「緊接在前的訊框」<span class="en">（Immediately previous frame）</span>指的是：在前一個 SIFS 時間內才收完的那個訊框。</p>
+  <p>「緊接在前的訊框」<span class="en">（Immediately previous frame）</span>指的是：在前一個 SIFS 時間內才收完的那個訊框。<span class="sup">補充</span>SIFS：最短的訊框間隔。</p>
   <div class="tbl-wrap"><table>
     <tr><th>訊框</th><th>Subtype（b7–b4）</th><th>欄位</th><th class="num">長度</th><th>位址怎麼填</th></tr>
     <tr><td>RTS</td><td>1011</td><td>FC、Duration、RA、TA、FCS</td><td class="num">20 B</td><td>Infrastructure：DA 是所關聯的 AP；Ad hoc：後續資料或管理訊框的目的地</td></tr>
@@ -370,6 +400,11 @@ sequenceDiagram
     <tr><td>CF-End</td><td>1110</td><td>FC、Duration、RA、BSSID、FCS</td><td class="num">20 B</td><td>RA 為廣播群組位址；BSSID 是 AP 的位址；Duration 設 0</td></tr>
     <tr><td>CF-End+CF-Ack</td><td>1111</td><td>FC、Duration、RA、BSSID、FCS</td><td class="num">20 B</td><td>同 CF-End</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>FC</b>：Frame Control 欄位</li>
+      <li><b>廣播群組位址</b>：送給所有站台的位址（全部 bit 為 1）</li>
+    </ul></li></ul>
   <ul>
     <li>長度欄是依各欄位相加（見第 17 節），講義沒有直接列出。</li>
     <li><span class="sup">補充</span>CTS 和 ACK 沒有 TA 欄位，因為接收端本來就知道是在回誰，省下 6 bytes。</li>
@@ -380,7 +415,7 @@ sequenceDiagram
     <li>位址欄位內容依 To DS／From DS 而定；站台用 <b>Address 1</b> 做收件判斷<span class="en">（address matching for receive decisions）</span>。</li>
     <li>DA 是 MSDU 的最終目的地；RA 是無線 DS 中下一個直接接收的 AP；TA 是無線 DS 中正在傳送的 AP。</li>
     <li>BSSID：站台是 AP 或關聯到 AP 時 = AP 位址；ad hoc 成員時 = ad hoc LAN 的 BSS ID。</li>
-    <li>Null function、CF-Ack、CF-Poll、CF-Ack+CF-Poll 這幾種「no data」子類型，Frame Body 長度為 0。</li>
+    <li>Null function、CF-Ack、CF-Poll、CF-Ack+CF-Poll 這幾種「no data」子類型，Frame Body 長度為 0。<span class="sup">補充</span>Null function：不帶資料的資料訊框，常用來告訴 AP 自己要進入或離開省電。</li>
     <li>p.23「Data Frames (IEEE 802.11 ax)」圖多了 <b>QoS</b>（0 或 2 bytes）與 <b>HT</b>（0 或 4 bytes，High Throughput）欄位，可在第 6 節的瀏覽器選「資料訊框（p.23）」查看。</li>
     <li><span class="sup">補充</span>QoS Control 由 802.11e 加入，只有 QoS 資料訊框才有；HT Control 由 802.11n 加入，11ac／ax 沿用並延伸成 VHT／HE 變體。講義標題寫 11ax，指到 11ax 為止的格式。</li>
     <li><span class="sup">補充</span>圖上 Sequence Number 與 Fragment Number 分兩格，實際上都在 2 bytes 的 Sequence Control 內（12 ＋ 4 bits）。</li>
@@ -418,6 +453,18 @@ sequenceDiagram
     <tr><td>Probe Response</td><td>Timestamp、Beacon interval、Capability information、Supported rates、參數組；<b>省略 TIM</b>；11g 同樣新增 ERP 與 Extended Supported Rates</td></tr>
     <tr><td>Authentication</td><td>Authentication algorithm number（0：Open System；1：Shared Key）、Transaction sequence number、Status code、Challenge text</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>Timestamp</b>：AP 的時鐘值，讓站台同步時間</li>
+      <li><b>Beacon interval</b>：兩個 Beacon 之間的時間</li>
+      <li><b>SSID</b>：網路名稱</li>
+      <li><b>Supported rates</b>：支援的傳輸速率</li>
+      <li><b>FH／DS／CF／IBSS Parameter Set</b>：跳頻／DSSS 頻道／無競爭期／IBSS 的參數</li>
+      <li><b>Reason code／Status code</b>：解除連線的原因／請求的結果（成功或失敗原因）</li>
+      <li><b>Listen Interval</b>：省電站台每隔幾個 Beacon 醒來一次</li>
+      <li><b>Current AP address</b>：目前關聯的 AP 位址</li>
+      <li><b>Transaction sequence number</b>：認證過程的第幾步</li>
+    </ul></li></ul>
   <div class="tbl-wrap"><table>
     <tr><th>認證演算法</th><th class="num">交易序號</th><th>Status code</th><th>Challenge text</th></tr>
     <tr><td>Open System</td><td class="num">1</td><td>Reserved</td><td>Not present</td></tr>
@@ -448,6 +495,11 @@ sequenceDiagram
     <tr><td>1</td><td>0</td><td>可被輪詢，要求放入輪詢名單</td><td>PC 做遞送與輪詢（下行＋上行）</td></tr>
     <tr><td>1</td><td>1</td><td>可被輪詢，要求永遠不要被輪詢</td><td>保留</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>PC（點協調器）</b>：AP 上負責輪詢的角色</li>
+      <li><b>輪詢名單</b>：PC 依序點名的站台清單</li>
+    </ul></li></ul>
   <div class="figure" id="fig-cap-wrap">
     <div class="fig-title">Capability Information 解讀器 <span class="tag">互動</span></div>
     <div class="fig-body"><div id="fig-cap"></div><div class="readout" id="cap-out"></div></div>
@@ -467,6 +519,12 @@ sequenceDiagram
     <li><b>目標</b>：不增加成本<span class="en">（without added cost）</span>；與 802.11 FHSS 1／2 Mbps 互通，使用相同的跳頻樣式<span class="en">（Use same frequency hopping patterns）</span>。</li>
     <li>兩組跳頻頻道組，<b>每次跳頻 224 µs</b>（講義數字）<span class="pill">待確認</span> 講義沒說明 224 µs 是駐留時間還是切換時間。</li>
   </ul>
+  <ul><li><span class="sup">補充</span>名詞解釋
+    <ul>
+      <li><b>FHSS</b>：跳頻展頻</li>
+      <li><b>跳頻樣式</b>：跳頻時切換頻道的順序</li>
+      <li><b>駐留時間</b>：每次跳到一個頻道後停留的時間</li>
+    </ul></li></ul>
   <div class="tbl-wrap"><table>
     <tr><th>地區</th><th>組別</th><th class="num">頻道數</th><th>HR/DSSS 頻道</th><th>間距</th></tr>
     <tr><td>北美</td><td>Set 1</td><td class="num">3</td><td>1, 6, 11</td><td>25 MHz（Non-overlapping）</td></tr>
