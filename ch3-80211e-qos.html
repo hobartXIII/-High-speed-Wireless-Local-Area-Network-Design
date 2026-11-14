@@ -415,7 +415,20 @@ flowchart TB
     <li><b>EDCF：AC 之間競爭</b>（p.41–42）
       <ul>
         <li>每個 AC 等自己的 AIFS[AC]，再在<b>自己的 CW</b> 內退避（CW 是每個 AC 一個，不是每個 UP）。</li>
-        <li><b>AIFS[UP] ＞ SIFS</b>，保護 ACK 的傳送。</li>
+        <li><b>AIFS[UP] ＞ SIFS</b>，保護 ACK 的傳送。
+          <ul>
+            <li><span class="sup">補充</span><b>如果 AIFS[UP] ＜ SIFS 會怎樣？</b>（p.42 課堂提問）別人會在 SIFS 空檔插隊，<b>打斷正在進行的訊框交換</b>。被打斷的是整組交換，不是正在送的那個訊框：訊框送出時通道是忙的，載波感測聽得到，不會被從中間切開。
+              <ul>
+                <li><b>撞掉回應訊框</b>：收方收完資料只等 SIFS 就回 ACK（CTS、BlockAck 也一樣）。AIFS 比 SIFS 短的 AC 會在 ACK 送出前判斷通道閒置並開始傳送，把 ACK 撞掉，送方以為失敗而重傳。</li>
+                <li><b>拆散連續的交換</b>：RTS → CTS → Data → ACK，以及 TXOP 內連送的訊框，彼此都只隔 SIFS，會被從中間插隊切開。</li>
+                <li><b>IFS 優先順序被打亂</b>：802.11 靠 SIFS ＜ PIFS ＜ DIFS／AIFS 分先後（回應訊框最優先、AP 其次、一般資料最後）。AIFS 比 SIFS 短，一般資料就排到 ACK 前面。</li>
+                <li><b>NAV 擋不住所有站台</b>：聽到資料訊框 Duration 的站台會設 NAV 避開 ACK，但沒正確收到那個訊框的站台沒有 NAV，只能靠 IFS 長短避開，所以 AIFS 一定要比 SIFS 長。</li>
+                <li><b>剛好等於 SIFS 也不行</b>：會和 ACK 同時送出而碰撞，所以條件是嚴格大於。</li>
+                <li><b>公式本身就保證了這件事</b>：AIFS[AC] = AIFSN[AC] × slot + SIFS，只要 AIFSN ≥ 1，AIFS 至少比 SIFS 多一個 slot。</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
         <li><b>AIFS 與 CWmin 由 AP 在 Beacon 中宣告</b>。<span class="sup">補充</span>CWmin／CWmax：CW 的初始值／上限，傳送失敗時 CW 會變大，但不超過 CWmax；AIFSN：決定 AIFS 長度的數字，越小等得越短。</li>
         <li>p.42（WME 預設、CWmin = 15；<span class="sup">補充</span>WME 是 WMM 的舊名）：Voice AIFSN 2、退避 0～3；Video AIFSN 2、0～7；Best Effort AIFSN 3、0～15；Background AIFSN 7、0～15。</li>
       </ul>
