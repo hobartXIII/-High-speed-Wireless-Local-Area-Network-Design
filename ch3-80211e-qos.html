@@ -289,7 +289,7 @@ flowchart TB
     <tr><td>0</td><td>0</td><td><b>Normal Ack</b></td><td>收方隔 SIFS 回 ACK 或 QoS (+)CF-Ack；QoS Null 只能用這個值</td></tr>
     <tr><td>1</td><td>0</td><td><b>No Ack</b></td><td>收方不回應；QoS CF-Ack 只能用這個值；廣播與群播也用這個值</td></tr>
     <tr><td>0</td><td>1</td><td><b>No Explicit Ack</b></td><td>可能有回應訊框，但不是 ACK，也不是 +CF-Ack 的資料訊框（例：QoS CF-Poll、QoS CF-Ack+CF-Poll）</td></tr>
-    <tr><td>1</td><td>1</td><td><b>Block Ack</b></td><td>收方先只記錄狀態，之後收到 BlockAckReq 再一次回應（第 13 節）</td></tr>
+    <tr><td>1</td><td>1</td><td><b>Block Ack</b></td><td>收方先只記錄狀態，之後收到 BlockAckReq 再一次回應（第 12 節）</td></tr>
   </table></div>
   <ul><li><span class="sup">補充</span>表中名詞：<b>ACK</b>：收方回的確認；<b>SIFS</b>：最短的訊框間隔，用在回應訊框；<b>廣播／群播</b>：送給所有站台／送給一群站台；<b>BlockAckReq</b>：要求收方回報接收狀態的訊框。</li></ul>
 
@@ -387,7 +387,7 @@ flowchart TB
       </ul>
     </li>
     <li><b>參考實作</b>（p.37）：(MSDU, UP) → TCLAS 對應到 AC → <b>每個 AC 一個傳送佇列</b> → 每個佇列各跑一個 EDCA 功能，<b>內部碰撞</b>由站台自己解決（優先權高的 AC 得到 TXOP）。</li>
-    <li><b>QoS 演進</b>（p.38）：802.11 DCF（一個佇列）→ 802.11e EDCA（四個 AC 佇列）→ 802.11aa-2012 IACP（AC_VO、AC_VI 再各分兩個佇列，第 15 節）。</li>
+    <li><b>QoS 演進</b>（p.38）：802.11 DCF（一個佇列）→ 802.11e EDCA（四個 AC 佇列）→ 802.11aa-2012 IACP（AC_VO、AC_VI 再各分兩個佇列，第 14 節）。</li>
     <li><b>DCF：站台之間競爭</b>（p.39–40）：SIFS ＜ PIFS ＜ DIFS；忙碌後等 DIFS 再退避。<span class="sup">補充</span>PIFS：PC 搶通道用的間隔；退避：隨機多等幾個 slot（時槽，倒數的時間單位），數到 0 才送，通道忙時暫停倒數。講義例子：Station 1 退避 9、Station 2 退避 5、Station 4 退避 7；Station 2 先數完送出，Station 1 剩 9 − 5 = 4、Station 4 剩 7 − 5 = 2；下一輪 Station 4 先送，Station 1 剩 4 − 2 = 2。</li>
     <li><b>EDCF：AC 之間競爭</b>（p.41–42）
       <ul>
