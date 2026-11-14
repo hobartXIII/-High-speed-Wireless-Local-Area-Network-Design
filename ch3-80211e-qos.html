@@ -97,10 +97,10 @@ flowchart TB
     direction TB
     subgraph HCF["Hybrid Coordination Function（HCF）"]
       direction LR
-      EDCA["HCF Contention Access<br>（EDCA）<br>優先順序 QoS"]
-      HCCA["HCF Controlled Access<br>（HCCA）<br>參數化 QoS"]
+      EDCA["HCF Contention Access<br>（EDCA）<br>競爭，優先順序 QoS"]
+      HCCA["HCF Controlled Access<br>（HCCA）<br>輪詢，參數化 QoS"]
     end
-    PCF["Point Coordination Function（PCF）<br>非 QoS 站台的無競爭服務"]
+    PCF["Point Coordination Function（PCF）<br>輪詢，非 QoS 站台的無競爭服務"]
     DCF["Distributed Coordination Function（DCF）<br>競爭服務，也是 PCF 與 HCF 的基礎"]
     PCF --> DCF
     HCF --> DCF
@@ -108,8 +108,22 @@ flowchart TB
   PHY["Physical"]
   DCF --> PHY
     </div></div>
-    <div class="caption">依講義第 6、34 頁重繪。左邊的 802.11 只有 PCF（選用）蓋在 DCF（CSMA/CA）上；802.11e 由 IEEE 802.11 Task Group E（TGe）加上 HCF，為即時應用提供 QoS。<span class="sup">補充</span>CSMA/CA：先聽通道是否閒置，閒置才送，並用隨機退避避免大家同時送；Physical（PHY）：實體層，負責把位元變成無線訊號送出去。</div>
+    <div class="caption">依講義第 6、34 頁重繪。左邊的 802.11 只有 PCF（選用）蓋在 DCF（CSMA/CA）上；802.11e 由 IEEE 802.11 Task Group E（TGe）加上 HCF，為即時應用提供 QoS。<span class="sup">補充</span>CSMA/CA：先聽通道是否閒置，閒置才送，並用隨機退避避免大家同時送；Physical（PHY）：實體層，負責把位元變成無線訊號送出去。<span class="sup">補充</span>圖中的「競爭」「輪詢」是補上的字樣，講義圖上沒有。</div>
   </div>
+  <ul>
+    <li><span class="sup">補充</span><b>為什麼 PCF 與 HCF（EDCA、HCCA）都算建在 DCF 上</b>
+      <ul>
+        <li><b>EDCA</b>：本身就是 DCF 的強化版，一樣是 CSMA/CA 加隨機退避，只是每個 AC 改用自己的 AIFS、CW（第 9 節）。</li>
+        <li><b>HCCA</b>：做法類似 PCF，HC 先用 PIFS 搶到通道，再輪詢配發 TXOP，沿用 DCF 的載波偵測、NAV 與 IFS 規則（第 10 節）。</li>
+        <li><b>PCF</b>：一樣靠 PIFS 搶到通道，最後用 CF-End 重設 NAV，把通道交還給 DCF。</li>
+        <li>名詞：<b>PIFS</b>：比 DIFS 短的訊框間隔，讓 AP 能先搶到通道；<b>TXOP</b>：一段可以連續傳送的時間；<b>HC</b>：QAP 上負責輪詢的角色；<b>NAV</b>：站台記錄通道被預約到何時的計時器；<b>CF-End</b>：宣告無競爭期結束的訊框。</li>
+      </ul></li>
+    <li><span class="sup">補充</span><b>要注意的兩點</b>
+      <ol>
+        <li><b>EDCA 和 HCCA 是 HCF 的兩半</b>，和 PCF 不在同一層；畫架構圖時，HCF 框起 EDCA、HCCA，旁邊才是 PCF。</li>
+        <li><b>PCF 和 HCCA 用途分開</b>：PCF 給非 QoS 站台做無競爭服務；QoS 站台的輪詢由 HCCA 負責。HCCA 可以在 CFP 與 CP 都輪詢，給的是一段 TXOP，不是一個訊框。</li>
+      </ol></li>
+  </ul>
   <ul>
     <li><b>802.11 夠不夠？</b>（p.7–8）
       <ul>
