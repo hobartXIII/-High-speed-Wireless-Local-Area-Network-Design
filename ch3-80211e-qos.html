@@ -18,16 +18,16 @@
     <h1>🎚️ IEEE 802.11e Enhanced QoS MAC</h1>
     <div class="meta"><span>來源：11EnhancedQoS | iLearning 3.pdf（投影片標題「IEEE 802.11e Enhanced QoS MAC Layer Specification」，p.1–92）</span><span>動畫與互動 7 個・圖解 3 張</span></div>
   </div>
-  <div class="callout note">PDF 共 92 頁（p.92 是 Q &amp; A）。本章接續 2-4、2-5：2-4 的 DCF 讓大家<b>平等地搶</b>，2-5 的 PCF 讓 AP <b>點名</b>；這一章在兩者之上加入 <b>QoS</b>，讓語音、影像能比背景流量先送、送得穩。</div>
+  <div class="callout note">PDF 共 92 頁（p.92 是 Q &amp; A）。本章接續 2-4、2-5：2-4 的 DCF（分散式協調功能）讓大家<b>平等地搶</b>，2-5 的 PCF（點協調功能）讓 AP <b>點名</b>；這一章在兩者之上加入 <b>QoS</b>（服務品質），讓語音、影像能比背景流量先送、送得穩。</div>
 
   <div class="callout key">
-    <p><b>802.11e 在 MAC 層加上 QoS：先把資料分類（UP → AC，或用 TSPEC 註冊的 TS），再用新的混合協調功能 HCF 存取媒介。EDCA 讓四個 AC 用不同的 AIFS 與 CW 競爭，優先權高的等得短、退避得少；HCCA 由 QAP 上的 HC 依 TSPEC 輪詢、配發 TXOP。另外用 Block Ack、DLS、APSD 提高效率與省電。</b></p>
+    <p><b>802.11e 在 MAC 層加上 QoS：先把資料分類（UP（使用者優先權）→ AC（存取類別），或用 TSPEC（流量規格）註冊的 TS（流量串流）），再用新的混合協調功能 HCF 存取媒介。EDCA（強化分散式通道存取）讓四個 AC 用不同的 AIFS（仲裁訊框間隔）與 CW（競爭視窗）競爭，優先權高的等得短、退避得少；HCCA（HCF 控制式通道存取）由 QAP（支援 QoS 的 AP）上的 HC（混合協調器）依 TSPEC 輪詢、配發 TXOP（傳送機會）。另外用 Block Ack（區塊確認）、DLS（直接連線設定）、APSD（自動省電遞送）提高效率與省電。</b></p>
     <ul>
-      <li><b>為什麼需要</b>：語音、影像要的是有上限的延遲與抖動；DCF 不分優先權，PCF 每次點名只能送 1 個訊框、PC 也不知道流量的 QoS 需求。</li>
-      <li><b>流量區分</b>：8 個 UP（同 802.1D）對應 4 個 AC（BK、BE、VI、VO）；TID 0–7 是 UP（EDCA），8–15 是 TSPEC 註冊的 TS（HCCA）。</li>
-      <li><b>EDCA</b>：AC 之間競爭（不是站台之間）；AIFS[AC] = AIFSN[AC] × slot + SIFS；VO、VI 的 AIFSN 2、CW 小；搶到的是 TXOP，可在 TXOP limit 內隔 SIFS 連送。</li>
-      <li><b>HCCA</b>：類似 PCF，但 HC 在 CFP 與 CP 都能用 QoS CF-Poll 配發 polled TXOP，輪詢排程依 TSPEC 計算。</li>
-      <li><b>Block Ack／DLS／APSD</b>：一次確認多個 MPDU；站台之間直接傳；QAP 依 AC 自動遞送緩衝資料給省電站台（S-APSD 排程、U-APSD 由 trigger 觸發，即 WMM Power Save）。</li>
+      <li><b>為什麼需要</b>：語音、影像要的是有上限的延遲與抖動；DCF 不分優先權，PCF 每次點名只能送 1 個訊框、PC（點協調器）也不知道流量的 QoS 需求。</li>
+      <li><b>流量區分</b>：8 個 UP（同 802.1D）對應 4 個 AC（BK 背景、BE 盡力而為、VI 視訊、VO 語音）；TID（流量識別碼）0–7 是 UP（EDCA），8–15 是 TSPEC 註冊的 TS（HCCA）。</li>
+      <li><b>EDCA</b>：AC 之間競爭（不是站台之間）；AIFS[AC] = AIFSN[AC] × slot（時槽）+ SIFS（最短訊框間隔）；VO、VI 的 AIFSN 2、CW 小；搶到的是 TXOP，可在 TXOP limit（TXOP 長度上限）內隔 SIFS 連送。</li>
+      <li><b>HCCA</b>：類似 PCF，但 HC 在 CFP（無競爭期）與 CP（競爭期）都能用 QoS CF-Poll（點名訊框）配發 polled TXOP（被點名得到的 TXOP），輪詢排程依 TSPEC 計算。</li>
+      <li><b>Block Ack／DLS／APSD</b>：一次確認多個 MPDU（MAC 訊框）；站台之間直接傳；QAP 依 AC 自動遞送緩衝資料給省電站台（S-APSD 排程式、U-APSD 非排程式由 trigger（觸發訊框）觸發，即 WMM Power Save（Wi-Fi 多媒體省電））。</li>
     </ul>
   </div>
 
@@ -36,7 +36,7 @@
     <tr><th>標準</th><th>年份</th><th>本章用到的部分</th></tr>
     <tr><td>IEEE 802.11e（Task Group E）</td><td><span class="sup">補充</span>2005</td><td>HCF（EDCA、HCCA）、UP／AC、TSPEC、TXOP、Block Ack、DLS、APSD</td></tr>
     <tr><td>IEEE 802.1D／802.1p</td><td><span class="sup">補充</span>1998／2004</td><td>8 個 User Priority 的定義（p.14–15）</td></tr>
-    <tr><td>WMM（Wi-Fi Alliance）</td><td><span class="sup">補充</span>2004</td><td>EDCA 的認證子集、WMM Power Save（U-APSD）（p.72–80）</td></tr>
+    <tr><td>WMM（Wi-Fi Multimedia，Wi-Fi Alliance 的認證規範）</td><td><span class="sup">補充</span>2004</td><td>EDCA 的認證子集、WMM Power Save（U-APSD）（p.72–80）</td></tr>
     <tr><td>IEEE 802.11ae</td><td>2012</td><td>QMF（QoS Management Frame）（p.82）</td></tr>
     <tr><td>IEEE 802.11aa</td><td>2012</td><td>IACP、SCS、GCR、DMS（p.83–91）</td></tr>
     <tr><td>IEEE 802.11n</td><td><span class="sup">補充</span>2009</td><td>RIFS（p.51 只提到名稱）</td></tr>
@@ -44,13 +44,34 @@
 
   <h2 id="why">2. 為什麼需要 QoS（p.3–8）<span class="en">（QoS Requirement）</span></h2>
   <ul>
-    <li><b>媒體串流的處理流程</b>（p.3）：類比語音 → <b>Sampling</b> → PCM Stream（<b>64 kbps</b>）→ <b>Encoding</b> → G.729 Frames（<b>8 kbps</b>）→ <b>Packing</b> 成 RTP，<b>每 20 ms 一個封包</b> → Internet → Unpacking → Decoding → Playout。網路在中間造成 <b>Delay</b> 與 <b>Jitter</b>。</li>
+    <li><b>媒體串流的處理流程</b>（p.3）：類比語音 → <b>Sampling</b> → PCM Stream（<b>64 kbps</b>）→ <b>Encoding</b> → G.729 Frames（<b>8 kbps</b>）→ <b>Packing</b> 成 RTP，<b>每 20 ms 一個封包</b> → Internet → Unpacking → Decoding → Playout。網路在中間造成 <b>Delay</b> 與 <b>Jitter</b>。
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>Sampling</b>：把連續的類比聲音按固定時間取樣，變成數字</li>
+          <li><b>PCM Stream</b>：取樣後還沒壓縮的數位聲音</li>
+          <li><b>Encoding／G.729</b>：把聲音壓縮編碼；G.729 是一種語音編碼格式</li>
+          <li><b>Packing／RTP</b>：把編碼後的聲音裝進封包；RTP 是專門傳送即時語音、影像的封包格式</li>
+          <li><b>Unpacking／Decoding／Playout</b>：接收端拆開封包、解碼還原聲音、播出來</li>
+          <li><b>Delay（延遲）</b>：封包從送出到被收到所花的時間</li>
+          <li><b>Jitter（抖動）</b>：每個封包的延遲不一樣，延遲的變化就是抖動；送端每 20 ms 送一包，到達的間隔卻忽長忽短</li>
+        </ul></li></ul>
+    </li>
     <li><b>QoS 需求</b>（p.4）
       <ul>
         <li>流量的 QoS 參數：控制傳輸速率（Peak rate、Average rate）、控制服務間隔（Minimum／Maximum Service Interval, SI）、Peak rate 下的 Burst size 等。</li>
         <li>需求：<b>Bounded Delay</b>（即時、流暢互動）、<b>Bounded Jitter</b>（平順播放）。</li>
         <li>解法：裝置端用 <b>Jitter Buffer</b>；網路端用 <b>Prioritized Transmission</b>。</li>
       </ul>
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>Peak rate／Average rate</b>：最高／平均傳輸速率</li>
+          <li><b>Service Interval（SI）</b>：兩次傳送機會之間隔多久；Minimum／Maximum 是可接受的最短／最長間隔</li>
+          <li><b>Burst size</b>：以 Peak rate 一口氣連續送出的最大資料量</li>
+          <li><b>Bounded Delay</b>：延遲不能超過某個上限；超過的話對話會有明顯的停頓，沒辦法即時互動</li>
+          <li><b>Bounded Jitter</b>：抖動不能超過某個上限；超過的話播放端沒辦法照固定節奏播放，聲音會斷斷續續</li>
+          <li><b>Jitter Buffer</b>：接收端先把封包存一小段時間，再照固定間隔播放，用來消除抖動；代價是延遲多一點</li>
+          <li><b>Prioritized Transmission</b>：網路讓即時流量優先傳送</li>
+        </ul></li></ul>
     </li>
   </ul>
   <div class="tbl-wrap"><table>
@@ -59,6 +80,15 @@
     <tr><td>怎麼表達</td><td>定量：資料速率、延遲上限等（例：頻寬 10 Mbps、延遲上限 10 ms）</td><td>相對的遞送優先順序（例：Low、Mid、High）</td></tr>
     <tr><td>802.11e 對應</td><td>TSPEC、TS、HCCA</td><td>UP、AC、EDCA</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>表中名詞（第 4–10 節詳細說明）
+    <ul>
+      <li><b>TSPEC</b>（Traffic Specification，流量規格）：站台向 AP 登記的流量需求（速率、延遲上限等）</li>
+      <li><b>TS</b>（Traffic Stream，流量串流）：用 TSPEC 登記的一條流量</li>
+      <li><b>HCCA</b>（HCF Controlled Channel Access）：由 AP 輪詢、分配傳送時間</li>
+      <li><b>UP</b>（User Priority，使用者優先權）：每筆資料的優先等級</li>
+      <li><b>AC</b>（Access Category，存取類別）：把 UP 分成 4 類，每類用不同的競爭參數</li>
+      <li><b>EDCA</b>（Enhanced Distributed Channel Access）：依 AC 分別搶通道，優先權高的比較容易搶到</li>
+    </ul></li></ul>
   <div class="figure">
     <div class="fig-title">802.11 與 802.11e 的 MAC 架構（講義 p.6、p.34） <span class="tag static">圖解</span></div>
     <div class="fig-body"><div class="mermaid-host">
@@ -78,7 +108,7 @@ flowchart TB
   PHY["Physical"]
   DCF --> PHY
     </div></div>
-    <div class="caption">依講義第 6、34 頁重繪。左邊的 802.11 只有 PCF（選用）蓋在 DCF（CSMA/CA）上；802.11e 由 IEEE 802.11 Task Group E（TGe）加上 HCF，為即時應用提供 QoS。</div>
+    <div class="caption">依講義第 6、34 頁重繪。左邊的 802.11 只有 PCF（選用）蓋在 DCF（CSMA/CA）上；802.11e 由 IEEE 802.11 Task Group E（TGe）加上 HCF，為即時應用提供 QoS。<span class="sup">補充</span>CSMA/CA：先聽通道是否閒置，閒置才送，並用隨機退避避免大家同時送；Physical（PHY）：實體層，負責把位元變成無線訊號送出去。</div>
   </div>
   <ul>
     <li><b>802.11 夠不夠？</b>（p.7–8）
@@ -87,6 +117,16 @@ flowchart TB
         <li><b>PCF 不夠</b>：每次輪詢<b>只能送 1 個訊框</b>；PC <b>不知道流量的 QoS 需求</b>；<b>無法保證</b>頻寬、延遲與抖動的上限。</li>
         <li>p.8 是 2-5 的 PCF 時序圖（D1+Poll、U1+Ack……CF-End+Ack、Reset NAV）。</li>
       </ul>
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>DIFS</b>：DCF 送資料前，通道要先閒置的固定時間</li>
+          <li><b>CW（Contention Window）</b>：隨機退避值的抽取範圍</li>
+          <li><b>PC（Point Coordinator）</b>：AP 上負責點名的角色</li>
+          <li><b>輪詢（Poll）</b>：AP 依序點名，被點到的站台才能送</li>
+          <li><b>D1+Poll／U1+Ack</b>：AP 送下行資料，同時點名；站台送上行資料，同時確認收到 AP 的資料</li>
+          <li><b>CF-End</b>：AP 宣告無競爭期結束</li>
+          <li><b>NAV</b>：站台記錄「通道被預約到什麼時候」的計時器，期間不搶送；Reset NAV 是把它歸零</li>
+        </ul></li></ul>
     </li>
   </ul>
 
@@ -100,8 +140,35 @@ flowchart TB
         <li>提高吞吐量的新機制：<b>Block Ack</b>、<b>DLS</b>（Direct Link Setup）、<b>APSD</b>（Automatic Power-Save Delivery）。</li>
         <li>輔助機制：<b>Admission Control</b>、<b>Traffic Specification</b>、<b>Traffic Classification</b>。</li>
       </ul>
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>latency</b>：延遲</li>
+          <li><b>吞吐量（throughput）</b>：單位時間成功送達的資料量</li>
+          <li><b>Ad-hoc／Infrastructure</b>：站台之間直接互連／所有傳送都經過 AP</li>
+          <li><b>Traffic Differentiation</b>：依流量種類給不同待遇</li>
+          <li><b>TXOP</b>：搶到或被分配後，可以連續傳送的一段時間</li>
+          <li><b>EDCA</b>：競爭式存取：每類流量用不同的等待時間與退避範圍搶通道</li>
+          <li><b>HCCA</b>：無競爭存取：由 AP 輪詢，分配一段段傳送時間</li>
+          <li><b>Block Ack</b>：一次確認多個訊框，不必每個都回 ACK</li>
+          <li><b>DLS</b>：同一個 BSS 裡的兩個站台直接傳送，不經 AP 轉送</li>
+          <li><b>APSD</b>：AP 自動把緩衝的資料送給省電中的站台</li>
+          <li><b>Admission Control</b>：AP 決定要不要接受新的流量</li>
+          <li><b>Traffic Specification／Traffic Classification</b>：描述一條流量的需求／判斷封包屬於哪條流量的規則</li>
+        </ul></li></ul>
     </li>
-    <li><b>名詞</b>（p.11）：QoS Facility（11e 定義的 QoS 機制）、<b>QAP</b>（支援 QoS 的 AP）、<b>QSTA</b>（支援 QoS 的站台）、<b>QBSS</b>、<b>HC</b>（Hybrid Coordinator）、<b>AC</b>（Access Category）、<b>UP</b>（User Priority）、<b>TC</b>（Traffic Category）、<b>TSPEC</b>（Traffic Specification）、<b>TS</b>（Traffic Stream）、<b>TID</b>（Traffic Identifier）。</li>
+    <li><b>名詞</b>（p.11）：QoS Facility（11e 定義的 QoS 機制）、<b>QAP</b>（支援 QoS 的 AP）、<b>QSTA</b>（支援 QoS 的站台）、<b>QBSS</b>、<b>HC</b>（Hybrid Coordinator）、<b>AC</b>（Access Category）、<b>UP</b>（User Priority）、<b>TC</b>（Traffic Category）、<b>TSPEC</b>（Traffic Specification）、<b>TS</b>（Traffic Stream）、<b>TID</b>（Traffic Identifier）。
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>QBSS</b>：支援 QoS 的 BSS（BSS 是一個 AP 和連上它的站台組成的網路）</li>
+          <li><b>HC</b>：在 QAP 上負責輪詢、分配 TXOP 的角色</li>
+          <li><b>AC</b>：存取類別：把流量分成 4 類，每類用不同的競爭參數</li>
+          <li><b>UP</b>：使用者優先權：每筆資料的優先等級，0–7</li>
+          <li><b>TC</b>：流量類別：用 UP 區分的流量</li>
+          <li><b>TSPEC</b>：流量規格：站台向 HC 登記的流量需求，例如速率、延遲上限</li>
+          <li><b>TS</b>：流量串流：用 TSPEC 登記的一條流量</li>
+          <li><b>TID</b>：流量識別碼：訊框標頭裡標示這筆資料屬於哪個 TC 或 TS 的編號</li>
+        </ul></li></ul>
+    </li>
   </ul>
 
   <h2 id="diff">4. 流量區分：UP 與 AC（p.12–17）<span class="en">（Traffic Differentiation）</span></h2>
@@ -112,7 +179,14 @@ flowchart TB
         <li>依 <b>TSPEC</b>（動態註冊）→ 用於參數化 QoS。</li>
       </ul>
     </li>
-    <li><b>8 個 User Priority</b>（p.14）：和 IEEE 802.1D 的 priority tag 相同。</li>
+    <li><b>8 個 User Priority</b>（p.14）：和 IEEE 802.1D 的 priority tag 相同。
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>MSDU</b>：上層交給 MAC 層要送出去的一筆資料</li>
+          <li><b>QoS Data</b>：802.11e 新增的資料訊框，標頭多了 QoS Control 欄位</li>
+          <li><b>802.1D priority tag</b>：有線區域網路用來標記封包優先權的欄位</li>
+        </ul></li></ul>
+    </li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>優先順序</th><th>UP</th><th>802.1D 名稱</th><th>AC</th><th>說明（Informative）</th></tr>
@@ -128,11 +202,11 @@ flowchart TB
   <ul>
     <li>注意：<b>UP 0（BE）比 UP 1、2（BK）優先</b>，數字大小不等於優先順序。</li>
     <li><span class="sup">補充</span>802.1D 名稱：BK = Background、BE = Best Effort、EE = Excellent Effort、CL = Controlled Load、VI = Video、VO = Voice、NC = Network Control。</li>
-    <li><b>MSDU 的優先權怎麼決定</b>（p.16）：直接由 MAC SAP 提供；或間接由 TSPEC 定義。</li>
+    <li><b>MSDU 的優先權怎麼決定</b>（p.16）：直接由 MAC SAP 提供；或間接由 TSPEC 定義。<span class="sup">補充</span>MAC SAP：上層把資料交給 MAC 層的介面。</li>
     <li><b>Access Category</b>（p.17）：四個 AC：<b>AC_BK、AC_BE、AC_VI、AC_VO</b>。規則：
       <ul>
         <li>一個 UP 屬於一個 AC；<b>每個 AC 有兩個 UP</b>；同一個 AC 內，UP 高的先送。</li>
-        <li>EDCA 中，媒介存取依 MSDU 的 AC；<b>CW 與 IFS 的大小依 AC 而定</b>。</li>
+        <li>EDCA 中，媒介存取依 MSDU 的 AC；<b>CW 與 IFS 的大小依 AC 而定</b>。<span class="sup">補充</span>IFS：兩個訊框之間要空出的時間；媒介：無線通道。</li>
       </ul>
     </li>
   </ul>
@@ -145,8 +219,25 @@ flowchart TB
   <ul>
     <li><b>TSPEC</b>（p.18）：QSTA 與 <b>HC 協商</b>產生的流量特性；HC 依此在 CFP 排輪詢與 TS 的資料傳送；<b>最多註冊 8 個 TSPEC</b>，以 TID 識別。
       <ul><li>建立與刪除用新的管理訊框 subtype <b>Action</b>：<b>ADDTS Request／Response</b> 建立、<b>DELTS</b> 刪除。</li></ul>
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>CFP（Contention-Free Period）</b>：無競爭期，站台要被點名才能送</li>
+          <li><b>管理訊框 subtype Action</b>：管理訊框的一種，用來執行特定功能（例如建立、刪除 TS）</li>
+          <li><b>ADDTS／DELTS</b>：Add／Delete Traffic Stream，新增／刪除一條 TS</li>
+        </ul></li></ul>
     </li>
-    <li><b>QoS Data 的 MAC 訊框格式</b>（p.19）：Frame Control 2、Duration/ID 2、Address 1–3 各 6、Sequence Control 2、Address 4 6、<b>QoS Control 2</b>、Frame Body n、FCS 4（octets）。</li>
+    <li><b>QoS Data 的 MAC 訊框格式</b>（p.19）：Frame Control 2、Duration/ID 2、Address 1–3 各 6、Sequence Control 2、Address 4 6、<b>QoS Control 2</b>、Frame Body n、FCS 4（octets）。
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>Frame Control</b>：訊框的種類、子種類與各種旗標</li>
+          <li><b>Duration/ID</b>：這次傳送要佔用通道多久，其他站台據此設定 NAV</li>
+          <li><b>Address 1–4</b>：接收端、傳送端等位址</li>
+          <li><b>Sequence Control</b>：序號與分段編號，用來偵測重複與重組</li>
+          <li><b>Frame Body</b>：訊框本文（資料）</li>
+          <li><b>FCS</b>：錯誤檢查碼，收方用來判斷訊框有沒有出錯</li>
+          <li><b>octet</b>：8 bits</li>
+        </ul></li></ul>
+    </li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>適用訊框</th><th>Bits 0–3</th><th>Bit 4</th><th>Bits 5–6</th><th>Bit 7</th><th>Bits 8–15</th></tr>
@@ -156,8 +247,18 @@ flowchart TB
     <tr><td>非 AP QSTA 送的 QoS Data（UL）</td><td>TID</td><td>1</td><td>Ack Policy</td><td>Reserved</td><td><b>Queue size</b></td></tr>
   </table></div>
   <ul>
-    <li><b>EOSP</b>：HC 用來表示<b>目前的 Service Period（SP）結束</b>。</li>
-    <li><b>TID</b>（p.20）：區分不同流量的 MSDU，範圍 <b>0–15</b>：EDCA（UP）用 <b>0–7</b>；HCCA（TSPEC）用 <b>8–15</b>（對應 TSID）。</li>
+    <li><span class="sup">補充</span>表中名詞
+      <ul>
+        <li><b>QoS (+)CF-Poll</b>：HC 點名用的訊框；「(+)」表示也可以和資料、確認合在一起送</li>
+        <li><b>QoS Null</b>：不帶資料的 QoS 訊框</li>
+        <li><b>CF-Ack</b>：無競爭期裡夾帶在訊框中的確認</li>
+        <li><b>DL／UL</b>：下行（AP → 站台）／上行（站台 → AP）</li>
+        <li><b>TXOP limit</b>：一個 TXOP 最長能多久</li>
+        <li><b>Queue size</b>：站台佇列裡還有多少資料等著送</li>
+        <li><b>Reserved</b>：保留，目前沒有用途</li>
+      </ul></li>
+    <li><b>EOSP</b>：HC 用來表示<b>目前的 Service Period（SP）結束</b>。<span class="sup">補充</span>SP：HC 送資料給某個 QSTA 的一段服務時間。</li>
+    <li><b>TID</b>（p.20）：區分不同流量的 MSDU，範圍 <b>0–15</b>：EDCA（UP）用 <b>0–7</b>；HCCA（TSPEC）用 <b>8–15</b>（對應 TSID）。<span class="sup">補充</span>TSID：TS 的編號；Access Policy：這條流量用哪種存取方式。</li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>Access Policy</th><th>用途</th><th>TID 欄位允許值</th></tr>
@@ -190,6 +291,7 @@ flowchart TB
     <tr><td>0</td><td>1</td><td><b>No Explicit Ack</b></td><td>可能有回應訊框，但不是 ACK，也不是 +CF-Ack 的資料訊框（例：QoS CF-Poll、QoS CF-Ack+CF-Poll）</td></tr>
     <tr><td>1</td><td>1</td><td><b>Block Ack</b></td><td>收方先只記錄狀態，之後收到 BlockAckReq 再一次回應（第 13 節）</td></tr>
   </table></div>
+  <ul><li><span class="sup">補充</span>表中名詞：<b>ACK</b>：收方回的確認；<b>SIFS</b>：最短的訊框間隔，用在回應訊框；<b>廣播／群播</b>：送給所有站台／送給一群站台；<b>BlockAckReq</b>：要求收方回報接收狀態的訊框。</li></ul>
 
   <h2 id="txop">7. TXOP 與 QoS Control 的 8 bits（p.23–25）<span class="en">（Transmission Opportunity）</span></h2>
   <ul>
@@ -198,8 +300,13 @@ flowchart TB
         <li><b>EDCF TXOP</b>：依 EDCF 規則判斷媒介可用時開始；長度在 <b>Beacon</b> 裡規定。</li>
         <li><b>Polled TXOP</b>：QSTA 收到 HC 的 <b>QoS (+)CF-Poll</b> 時開始；長度在 QoS (+)CF-Poll 裡規定。</li>
       </ul>
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>EDCF</b>：EDCA 在草案時期的名稱，兩者是同一件事</li>
+          <li><b>Beacon</b>：AP 定期廣播的訊框，帶有網路參數</li>
+        </ul></li></ul>
     </li>
-    <li><b>TXOP duration requested</b>（p.24）：8 bits，單位 <b>32 µs</b>，站台希望下一個 TXOP 多長；範圍 <b>32～8160 µs</b>；數值<b>不累加</b>；<b>包含 PHY overhead</b>。</li>
+    <li><b>TXOP duration requested</b>（p.24）：8 bits，單位 <b>32 µs</b>，站台希望下一個 TXOP 多長；範圍 <b>32～8160 µs</b>；數值<b>不累加</b>；<b>包含 PHY overhead</b>。<span class="sup">補充</span>PHY overhead：前導碼與 PHY 標頭佔掉的時間。</li>
     <li><b>QAP PS Buffer State</b>（p.25）：8 bits，QAP 替某個 QSTA 緩衝的省電資料狀態：
       <ul>
         <li><b>Highest-Priority Buffered AC</b>（2 bits）：還在 QAP 緩衝中、優先權最高的 AC。</li>
@@ -222,8 +329,21 @@ flowchart TB
     <tr><td>之後</td><td>—</td><td>TCLAS（optional）、TCLAS Processing（optional）、<b>Schedule</b></td></tr>
   </table></div>
   <ul>
-    <li>Dialog Token = 交易編號（配對 Request 與 Response）；TCLAS = 流量分類規則。</li>
-    <li><b>TSPEC 元素</b>（p.27）：Element ID（13）、Length（55）、<b>TS Info</b>（3）、Nominal MSDU Size（2）、Maximum MSDU Size（2）、Minimum／Maximum Service Interval（各 4，兩個連續 SP 開始之間的時間）、Inactivity Interval（4，用於刪除 TS）、Suspension Interval（4，用於停止 CF-Poll）、Service Start Time（4）、Minimum／Mean／Peak Data Rate（各 4）、Maximum Burst Size（4）、Delay Bound（4）、Minimum PHY Rate（4）、Surplus Bandwidth Allowance（2）、Medium Time（2）。</li>
+    <li>Dialog Token = 交易編號（配對 Request 與 Response）；TCLAS = 流量分類規則。<span class="sup">補充</span>Category／Action：這是哪一類、哪一種 Action 訊框；Status Code：結果（接受或拒絕）；TS Delay：被拒絕後要等多久才能再申請。</li>
+    <li><b>TSPEC 元素</b>（p.27）：Element ID（13）、Length（55）、<b>TS Info</b>（3）、Nominal MSDU Size（2）、Maximum MSDU Size（2）、Minimum／Maximum Service Interval（各 4，兩個連續 SP 開始之間的時間）、Inactivity Interval（4，用於刪除 TS）、Suspension Interval（4，用於停止 CF-Poll）、Service Start Time（4）、Minimum／Mean／Peak Data Rate（各 4）、Maximum Burst Size（4）、Delay Bound（4）、Minimum PHY Rate（4）、Surplus Bandwidth Allowance（2）、Medium Time（2）。
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>Element ID／Length</b>：元素的種類編號／長度</li>
+          <li><b>Nominal／Maximum MSDU Size</b>：這條流量一般／最大的 MSDU 大小</li>
+          <li><b>Service Start Time</b>：開始服務的時間</li>
+          <li><b>Minimum／Mean／Peak Data Rate</b>：最低／平均／最高資料速率</li>
+          <li><b>Maximum Burst Size</b>：以 Peak Data Rate 一口氣連送的最大資料量</li>
+          <li><b>Delay Bound</b>：一筆 MSDU 從送進 MAC 到送達，允許的最長時間</li>
+          <li><b>Minimum PHY Rate</b>：計算所需時間時假設的最低實體層速率</li>
+          <li><b>Surplus Bandwidth Allowance</b>：為重送多預留的頻寬比例</li>
+          <li><b>Medium Time</b>：AP 允許這條流量使用的通道時間</li>
+        </ul></li></ul>
+    </li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>TS Info 位元（p.27–28）</th><th>欄位</th><th>說明</th></tr>
@@ -231,7 +351,7 @@ flowchart TB
     <tr><td>B1–B4</td><td>TSID</td><td>0–15（EDCA 0–7；HCCA 8–15）</td></tr>
     <tr><td>B5–B6</td><td>Direction</td><td>Uplink／Downlink／Direct Link／Bi-directional</td></tr>
     <tr><td>B7–B8</td><td>Access Policy</td><td>EDCA／HCCA／HEMM</td></tr>
-    <tr><td>B9</td><td>Aggregation</td><td>資料訊框的排程彙整（APSD 時為預設）</td></tr>
+    <tr><td>B9</td><td>Aggregation</td><td>資料訊框的排程彙整（APSD 時為預設）；<span class="sup">補充</span>多條 TS 的服務排在一起，一次處理</td></tr>
     <tr><td>B10</td><td>APSD</td><td>Automatic Power Save Delivery</td></tr>
     <tr><td>B11–B13</td><td>User Priority</td><td>這個 TS 的 UP</td></tr>
     <tr><td>B14–B15</td><td>TSInfo Ack Policy</td><td>Immediate Ack／No Ack／Block Ack</td></tr>
@@ -239,7 +359,7 @@ flowchart TB
     <tr><td>B17–B23</td><td>Reserved</td><td>—</td></tr>
   </table></div>
   <ul>
-    <li><b>TCLAS 元素</b>（p.29–30）：用來判斷進來的 MSDU 屬於哪個 TS；分類器有 Type 0（Ethernet 參數）、Type 1（IPv4、IPv6 的 TCP/UDP 參數）、Type 2（802.1Q VLAN 參數）。</li>
+    <li><b>TCLAS 元素</b>（p.29–30）：用來判斷進來的 MSDU 屬於哪個 TS；分類器有 Type 0（Ethernet 參數）、Type 1（IPv4、IPv6 的 TCP/UDP 參數）、Type 2（802.1Q VLAN 參數）。<span class="sup">補充</span>Ethernet 參數：來源／目的 MAC 位址與類型；TCP/UDP 參數：IP 位址與埠號；VLAN：在同一個實體網路上切出的虛擬區域網路。</li>
     <li><b>Schedule 元素</b>（p.31）：ADDTS Request 的 TS Info.Schedule = 1 時，HC 在 ADDTS Response 放 Schedule 元素；Access Policy 含輪詢時，它表示這個 TS 在 HCF 的<b>輪詢排程</b>；TS Info.APSD = 1 時，它表示<b>醒來接收的排程</b>。</li>
   </ul>
   <div class="callout warn">
@@ -268,18 +388,19 @@ flowchart TB
     </li>
     <li><b>參考實作</b>（p.37）：(MSDU, UP) → TCLAS 對應到 AC → <b>每個 AC 一個傳送佇列</b> → 每個佇列各跑一個 EDCA 功能，<b>內部碰撞</b>由站台自己解決（優先權高的 AC 得到 TXOP）。</li>
     <li><b>QoS 演進</b>（p.38）：802.11 DCF（一個佇列）→ 802.11e EDCA（四個 AC 佇列）→ 802.11aa-2012 IACP（AC_VO、AC_VI 再各分兩個佇列，第 15 節）。</li>
-    <li><b>DCF：站台之間競爭</b>（p.39–40）：SIFS ＜ PIFS ＜ DIFS；忙碌後等 DIFS 再退避。講義例子：Station 1 退避 9、Station 2 退避 5、Station 4 退避 7；Station 2 先數完送出，Station 1 剩 9 − 5 = 4、Station 4 剩 7 − 5 = 2；下一輪 Station 4 先送，Station 1 剩 4 − 2 = 2。</li>
+    <li><b>DCF：站台之間競爭</b>（p.39–40）：SIFS ＜ PIFS ＜ DIFS；忙碌後等 DIFS 再退避。<span class="sup">補充</span>PIFS：PC 搶通道用的間隔；退避：隨機多等幾個 slot（時槽，倒數的時間單位），數到 0 才送，通道忙時暫停倒數。講義例子：Station 1 退避 9、Station 2 退避 5、Station 4 退避 7；Station 2 先數完送出，Station 1 剩 9 − 5 = 4、Station 4 剩 7 − 5 = 2；下一輪 Station 4 先送，Station 1 剩 4 − 2 = 2。</li>
     <li><b>EDCF：AC 之間競爭</b>（p.41–42）
       <ul>
         <li>每個 AC 等自己的 AIFS[AC]，再在<b>自己的 CW</b> 內退避（CW 是每個 AC 一個，不是每個 UP）。</li>
         <li><b>AIFS[UP] ＞ SIFS</b>，保護 ACK 的傳送。</li>
-        <li><b>AIFS 與 CWmin 由 AP 在 Beacon 中宣告</b>。</li>
-        <li>p.42（WME 預設、CWmin = 15）：Voice AIFSN 2、退避 0～3；Video AIFSN 2、0～7；Best Effort AIFSN 3、0～15；Background AIFSN 7、0～15。</li>
+        <li><b>AIFS 與 CWmin 由 AP 在 Beacon 中宣告</b>。<span class="sup">補充</span>CWmin／CWmax：CW 的初始值／上限，傳送失敗時 CW 會變大，但不超過 CWmax；AIFSN：決定 AIFS 長度的數字，越小等得越短。</li>
+        <li>p.42（WME 預設、CWmin = 15；<span class="sup">補充</span>WME 是 WMM 的舊名）：Voice AIFSN 2、退避 0～3；Video AIFSN 2、0～7；Best Effort AIFSN 3、0～15；Background AIFSN 7、0～15。</li>
       </ul>
     </li>
     <li><b>AIFS</b>（p.43）：QSTA 用 AIFS 延後每個 AC 的競爭或傳送；AIFSN 由 Beacon 的 <b>EDCA Parameter Set</b> 元素廣播。</li>
   </ul>
   <div class="callout tip"><b>AIFS[AC] = AIFSN[AC] × aSlotTime + aSIFSTime</b>　（對照：DIFS = 2 × aSlotTime + aSIFSTime）</div>
+  <ul><li><span class="sup">補充</span>名詞解釋：<b>aSlotTime／aSIFSTime</b>：PHY 規定的 slot 與 SIFS 長度；<b>aCWmin／aCWmax</b>：PHY 規定的 CW 最小／最大值；<b>DS-CCK</b>：802.11b 用的 PHY；<b>OFDM</b>：802.11a／g 用的 PHY。</li></ul>
   <div class="tbl-wrap"><table>
     <tr><th>預設 EDCA 參數（QSTA，p.44）</th><th>CWmin</th><th>CWmax</th><th>AIFSN</th><th>TXOP limit（DS-CCK）</th><th>TXOP limit（OFDM）</th></tr>
     <tr><td>AC_BK</td><td>aCWmin</td><td>aCWmax</td><td>7</td><td>0</td><td>0</td></tr>
@@ -311,8 +432,8 @@ flowchart TB
   <ul>
     <li><b>EDCA Parameter Set 元素</b>（p.45）：Element ID（12）、Length（18）、QoS Info（1）、Reserved（1），再接 AC_BE、AC_BK、AC_VI、AC_VO 四個 Parameters Record（各 4 octets）。每個 Record：
       <ul>
-        <li><b>ACI/AIFSN</b>（1 octet）：AIFSN 4 bits（B0–B3）、ACM 1 bit（B4）、ACI 2 bits（B5–B6）、Reserved 1 bit（B7）。ACI = AC Index；ACM = Admission Control Mandatory。</li>
-        <li><b>ECWmin/ECWmax</b>（1 octet）：ECWmin 4 bits（B0–B3）、ECWmax 4 bits（B4–B7）。</li>
+        <li><b>ACI/AIFSN</b>（1 octet）：AIFSN 4 bits（B0–B3）、ACM 1 bit（B4）、ACI 2 bits（B5–B6）、Reserved 1 bit（B7）。ACI = AC Index；ACM = Admission Control Mandatory。<span class="sup">補充</span>ACI：這筆紀錄是哪個 AC；ACM = 1：這個 AC 要先經過 Admission Control 才能用。</li>
+        <li><b>ECWmin/ECWmax</b>（1 octet）：ECWmin 4 bits（B0–B3）、ECWmax 4 bits（B4–B7）。<span class="sup">補充</span>用指數表示 CWmin、CWmax，換算公式在下方。</li>
         <li><b>TXOP Limit</b>（2 octets）。</li>
       </ul>
     </li>
@@ -324,11 +445,11 @@ flowchart TB
     <li>程序<b>類似 PCF</b>（p.46）。<b>Hybrid Coordinator（HC）</b>：
       <ul>
         <li>在 <b>QAP</b> 上運作。</li>
-        <li>控制 CFP 與 CP 的交替：用 Beacon、CF-End 與 NAV 機制（和 PCF 相同）。</li>
+        <li>控制 CFP 與 CP 的交替：用 Beacon、CF-End 與 NAV 機制（和 PCF 相同）。<span class="sup">補充</span>CP（Contention Period）：競爭期，大家用 DCF／EDCA 搶；CF-End：宣告 CFP 結束；NAV：站台記錄通道被預約到何時的計時器。</li>
         <li>用<b>輪詢</b>配發 TXOP 給 QSTA：送 <b>QoS (+)CF-Poll</b>；HC 的<b>輪詢排程依 TSPEC 計算</b>。</li>
       </ul>
     </li>
-    <li>p.47–48 是 2-5 的 PCF 超級訊框圖；圖中 Station 3 對 PC 是 hidden，沒有設 NAV，繼續用 DCF。</li>
+    <li>p.47–48 是 2-5 的 PCF 超級訊框圖；圖中 Station 3 對 PC 是 hidden，沒有設 NAV，繼續用 DCF。<span class="sup">補充</span>超級訊框：一個 CFP 加一個 CP，週期性重複；hidden：收不到 PC 訊號的站台，所以不知道 CFP 開始了。</li>
   </ul>
   <div class="tbl-wrap"><table>
     <tr><th>比較（p.49）</th><th>802.11（PCF）</th><th>802.11e（HCF）</th></tr>
@@ -347,7 +468,7 @@ flowchart TB
         <li>收到 <b>QoS (+)CF-Poll</b>（Polled TXOP）：隔 SIFS 開始，長度依 CF-Poll 給的 TXOP limit；CF-Poll 同時讓其他站台設 NAV。</li>
       </ol>
     </li>
-    <li>TXOP 內的訊框交換<b>以 SIFS 隔開</b>（p.51，11n 可以用 RIFS）。圖：AIFS[AC] + Backoff → QoS Data → SIFS → ACK → SIFS → QoS Data → SIFS → ACK → AIFS[AC] + Post Backoff；整段不超過 EDCF TXOP Limit（結尾到 limit 的時間差 ≥ 0）。</li>
+    <li>TXOP 內的訊框交換<b>以 SIFS 隔開</b>（p.51，11n 可以用 RIFS；<span class="sup">補充</span>RIFS 是比 SIFS 更短的間隔）。圖：AIFS[AC] + Backoff → QoS Data → SIFS → ACK → SIFS → QoS Data → SIFS → ACK → AIFS[AC] + Post Backoff（<span class="sup">補充</span>傳完後先退避一次，再搶下一筆）；整段不超過 EDCF TXOP Limit（結尾到 limit 的時間差 ≥ 0）。</li>
     <li><b>TXOP limit 從哪裡來</b>（p.52）：EDCA 在 <b>Beacon</b> 的 EDCA Parameter Set 元素；HCCA 在 <b>QoS (+)CF-Poll</b> 的 MAC 標頭 QoS Control 欄位。</li>
   </ul>
   <div class="figure" id="fig-txop-wrap">
@@ -360,11 +481,11 @@ flowchart TB
   <h2 id="dls">11. Direct Link Setup（p.53–55）</h2>
   <ul>
     <li><b>Direct Link</b>：QBSS 內一個 QSTA 直接把訊框送給另一個 QSTA（不經 AP 轉送）。</li>
-    <li><b>為什麼要經過 QAP 設定</b>：透過 QAP 叫醒在省電模式的接收端；交換傳送端與接收端的資訊。</li>
+    <li><b>為什麼要經過 QAP 設定</b>：透過 QAP 叫醒在省電模式的接收端；交換傳送端與接收端的資訊。<span class="sup">補充</span>省電模式：站台大部分時間關掉收發器休眠，只在特定時間醒來，AP 先替它緩衝資料。</li>
     <li><b>規則</b>（p.55）：
       <ol>
         <li>DLS Request 與 DLS Response 都是 <b>Action 管理訊框</b>。</li>
-        <li><b>DLPTimeoutValue</b> 期間都沒有交換訊框，direct link 變成 inactive。</li>
+        <li><b>DLPTimeoutValue</b> 期間都沒有交換訊框，direct link 變成 inactive（<span class="sup">補充</span>不再使用）。</li>
         <li>這段期間接收端<b>不能進入省電</b>。</li>
         <li>逾時後，訊框再改回經過 AP 傳送。</li>
       </ol>
@@ -408,10 +529,18 @@ sequenceDiagram
         <li><b>Tear down</b>：<b>DELBA</b> → ACK。</li>
       </ol>
       ADDBA、DELBA 是 Action 管理訊框；BAR、BA 是控制訊框。
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>Originator／Recipient</b>：送資料的一方／收資料的一方</li>
+          <li><b>ADDBA／DELBA</b>：Add／Delete Block Ack，建立／結束 Block Ack 協定</li>
+          <li><b>MPDU</b>：MAC 層實際送出的訊框；一筆 MSDU 可能切成多個 MPDU</li>
+          <li><b>BlockAckReq（BAR）／BlockAck（BA）</b>：要求收方回報接收狀態／收方一次回報多個訊框有沒有收到</li>
+          <li><b>控制訊框</b>：協助存取通道的短訊框，例如 RTS、CTS、ACK</li>
+        </ul></li></ul>
     </li>
-    <li><b>參數</b>（p.60）：ADDBA Request 帶 TID、Block Ack Policy（Immediate 或 Delayed）、Transmit Buffer Size、Timeout Value；ADDBA Response 帶 Status Code、Policy（1 = Immediate、0 = Delayed）、TID、Re-ordering Buffer Size、Timeout Value；DELBA 帶 Initiator、TID。</li>
-    <li><b>BlockAckReq 格式</b>（p.61）：Frame Control 2、Duration/ID 2、RA 6、TA 6、<b>BAR Control</b> 2（Reserved 12 bits、TID 4 bits）、<b>Block Ack Starting Sequence Control</b> 2（Fragment Number 4 bits = 0、Starting Sequence Number 12 bits）、FCS 4。</li>
-    <li><b>BlockAck 格式</b>（p.62）：同上，再加 <b>Block Ack Bitmap 128 octets</b>：最多表示 <b>64 個 MSDU</b>（128 × 8 ÷ 16）的接收狀態；bit n = 1 表示第 n 個 MSDU 收到。</li>
+    <li><b>參數</b>（p.60）：ADDBA Request 帶 TID、Block Ack Policy（Immediate 或 Delayed）、Transmit Buffer Size、Timeout Value；ADDBA Response 帶 Status Code、Policy（1 = Immediate、0 = Delayed）、TID、Re-ordering Buffer Size、Timeout Value；DELBA 帶 Initiator、TID。<span class="sup">補充</span>Transmit／Re-ordering Buffer Size：傳送端／接收端可以暫存多少訊框（接收端要把亂序收到的訊框排回順序）；Timeout Value：多久沒使用就結束協定；Initiator：DELBA 是由 Originator 還是 Recipient 發出。</li>
+    <li><b>BlockAckReq 格式</b>（p.61）：Frame Control 2、Duration/ID 2、RA 6、TA 6、<b>BAR Control</b> 2（Reserved 12 bits、TID 4 bits）、<b>Block Ack Starting Sequence Control</b> 2（Fragment Number 4 bits = 0、Starting Sequence Number 12 bits）、FCS 4。<span class="sup">補充</span>RA／TA：接收端／傳送端位址；Starting Sequence Number：這次要確認的第一筆 MSDU 的序號；Fragment Number：分段編號。</li>
+    <li><b>BlockAck 格式</b>（p.62）：同上，再加 <b>Block Ack Bitmap 128 octets</b>：最多表示 <b>64 個 MSDU</b>（128 × 8 ÷ 16）的接收狀態；bit n = 1 表示第 n 個 MSDU 收到。<span class="sup">補充</span>Bitmap：每個 bit 對應一筆資料，用 0／1 表示有沒有收到。</li>
     <li><b>時序</b>（p.63–64）：Immediate：先做一次 frame exchange 設 NAV → Data Block（Ack Policy = Block Ack）→ BlockAckReq → <b>立刻</b>回 BlockAck。Delayed：BlockAckReq 後先回 <b>ACK</b>，之後 Recipient 自己再送 <b>BlockAck</b>，Originator 回 ACK。</li>
   </ul>
   <div class="figure" id="fig-ba-wrap">
@@ -454,21 +583,36 @@ sequenceDiagram
             <li>SP 長度不超過 QSTA 在 Association 時給的 <b>Max SP Length</b>。</li>
             <li>不屬於 delivery-enabled AC 的訊框，照原本的 PS-Poll 機制遞送。</li>
           </ol>
+          <ul><li><span class="sup">補充</span>名詞解釋
+            <ul>
+              <li><b>trigger-enabled AC</b>：這個 AC 的上行訊框可以當作 trigger，叫 QAP 開始送資料</li>
+              <li><b>delivery-enabled AC</b>：這個 AC 的緩衝資料會在 SP 內自動送出</li>
+              <li><b>Association</b>：站台加入 AP 的程序</li>
+              <li><b>Max SP Length</b>：一個 SP 最多送幾個訊框</li>
+              <li><b>PS-Poll</b>：省電站台醒來後，送給 AP 要求取一筆緩衝資料的訊框</li>
+            </ul></li></ul>
         </li>
       </ul>
     </li>
     <li><b>怎麼指定 trigger／delivery-enabled AC</b>
       <ul>
-        <li><b>Association</b>（p.69）：Association 訊框帶 <b>QoS Capability</b> 元素（Element ID 46、Length 1、QoS Info 1 octet）。QoS Info：B0 AC_VO U-APSD Flag、B1 AC_VI、B2 AC_BK、B3 AC_BE、B4 Q-Ack、B5–B6 <b>Max SP Length</b>（all、2、4、6 個訊框）、B7 More Data Ack。某個 AC 的旗標 = 1 → 這個 AC <b>同時是</b> trigger-enabled 與 delivery-enabled。</li>
+        <li><b>Association</b>（p.69）：Association 訊框帶 <b>QoS Capability</b> 元素（Element ID 46、Length 1、QoS Info 1 octet）。QoS Info：B0 AC_VO U-APSD Flag、B1 AC_VI、B2 AC_BK、B3 AC_BE、B4 Q-Ack、B5–B6 <b>Max SP Length</b>（all、2、4、6 個訊框）、B7 More Data Ack。某個 AC 的旗標 = 1 → 這個 AC <b>同時是</b> trigger-enabled 與 delivery-enabled。<span class="sup">補充</span>Q-Ack：站台能不能解讀 AP 送給別的站台的訊框裡夾帶的 CF-Ack；More Data Ack：AP 回 ACK 時，可以用 More Data 位元告訴站台還有緩衝資料。</li>
         <li><b>ADDTS（TSPEC）</b>（p.70）：TS Info 的 APSD = 1、Schedule = 0 時，Direction = <b>uplink</b> → 對應的 AC（由 User Priority 決定）是 <b>trigger-enabled</b>；Direction = <b>downlink</b> → <b>delivery-enabled</b>。</li>
       </ul>
     </li>
     <li><b>802.11e 的兩種省電</b>（p.74）：<b>U-APSD</b>（WMM）以 <b>EDCA</b> 為基礎；<b>S-APSD</b> 以 <b>HCCA</b> 為基礎。</li>
-    <li><b>WMM Access Categories</b>（p.73）：Voice（最高）、Video、Best effort（含舊站台流量）、Background（最低）。</li>
-    <li><b>和舊省電比較</b>（p.75）：AP 送帶 TIM 的 Beacon → Client 送 PS-Poll → AP 回 ACK → 之後送 DATA（more = 1）→ Client 回 ACK → 再 PS-Poll……每個訊框都要一次 PS-Poll，且每次都要經過 <b>DCF 存取延遲</b>（所有流量相同）。</li>
+    <li><b>WMM Access Categories</b>（p.73）：Voice（最高）、Video、Best effort（含舊站台流量）、Background（最低）。<span class="sup">補充</span>舊站台（legacy）：不支援 QoS／WMM 的站台。</li>
+    <li><b>和舊省電比較</b>（p.75）：AP 送帶 TIM 的 Beacon → Client 送 PS-Poll → AP 回 ACK → 之後送 DATA（more = 1）→ Client 回 ACK → 再 PS-Poll……每個訊框都要一次 PS-Poll，且每次都要經過 <b>DCF 存取延遲</b>（所有流量相同）。<span class="sup">補充</span>TIM：Beacon 裡的一張表，標示 AP 替哪些省電站台緩衝了資料；more = 1：訊框的 More Data 位元，表示 AP 還有資料要給這個站台。</li>
     <li><b>Hybrid mode</b>（p.76）：同一個 Client 的 Voice 用 WMM Power Save，Video、Best Effort、Background 用舊的 TIM 省電；各 AC 的佇列先在站台內部解決碰撞，再送給 Client。</li>
-    <li><b>WMM Power Save</b>（p.77）：<b>Trigger 訊框可以夾帶資料</b>；AP 回 ACK 後，用一個 <b>EDCA TXOP burst</b> 連送 DATA（more = 1……最後 more = 0），Client 每個回 ACK，然後去睡。</li>
+    <li><b>WMM Power Save</b>（p.77）：<b>Trigger 訊框可以夾帶資料</b>；AP 回 ACK 後，用一個 <b>EDCA TXOP burst</b> 連送 DATA（more = 1……最後 more = 0），Client 每個回 ACK，然後去睡。<span class="sup">補充</span>TXOP burst：在一個 TXOP 裡一口氣連送多個訊框。</li>
     <li><b>案例：VoIP</b>（p.78–80）：語音要求延遲<b>小於 20 ms</b>，超過就難以聽懂；Beacon Interval 假設 100 ms → <b>舊省電無法用於 VoIP</b>。
+      <ul><li><span class="sup">補充</span>名詞解釋
+        <ul>
+          <li><b>VoIP</b>：網路電話，把語音放在 IP 封包裡傳送</li>
+          <li><b>Beacon Interval</b>：兩個 Beacon 之間的時間</li>
+          <li><b>Doze</b>：休眠狀態，收發器關閉</li>
+          <li><b>Listen Interval（下方互動圖）</b>：省電站台每隔幾個 Beacon 醒來聽一次</li>
+        </ul></li></ul>
       <ul>
         <li>舊做法：Client 要等 Beacon 才開始下行傳送，延遲 <b>100～300 ms</b>。</li>
         <li>WMM Power Save：<b>每 20 ms</b> Client 送一個 trigger（夾帶上行語音），AP 把緩衝的語音訊框送出；Client 其他時間都在 Doze。</li>
@@ -500,10 +644,10 @@ sequenceDiagram
     <li><b>802.11aa</b>（p.83–91）：MAC Enhancements for Robust Audio Video Streaming。
       <ul>
         <li><b>IACP</b>（Intra-AC Prioritization）：AC_VO、AC_VI 各用兩個佇列，共 <b>6 個優先佇列</b>（p.84 圖：A_VO、VO、A_VI、VI、BE、BK，再交給 VO、VI、BE、BK 四個 EDCA 功能）。</li>
-        <li>802.1Q credit-based 排程；<b>SCS</b>（Stream Classification Service）。</li>
-        <li>Graceful degradation：每個封包的 <b>DEI</b>（Drop Eligibility Indicator），在傳送端丟棄。</li>
-        <li><b>GCR</b>（Groupcast with Retry）；OBSS（重疊的 BSS）。</li>
-        <li>群播的解法（p.86）：No-Ack／No-Retry（舊做法）；<b>DMS</b>（Directed Multicast Service，轉成多個單播）；<b>GCR Unsolicited Retry</b>（每個封包送幾份）；<b>GCR Block Ack</b>（輪詢 Block Ack、Ack leader 選舉、Immediate／Delayed Block Ack）。</li>
+        <li>802.1Q credit-based 排程；<b>SCS</b>（Stream Classification Service）。<span class="sup">補充</span>credit-based 排程：每條流量依設定的速率累積額度，額度夠才能送，用來限制每條流量的頻寬；SCS：站台告訴 AP 某條影音串流要怎麼分類、放進哪個佇列。</li>
+        <li>Graceful degradation：每個封包的 <b>DEI</b>（Drop Eligibility Indicator），在傳送端丟棄。<span class="sup">補充</span>Graceful degradation：頻寬不夠時先丟比較不重要的封包，讓影音品質逐步下降而不是整個中斷；DEI：標示這個封包可以優先被丟棄。</li>
+        <li><b>GCR</b>（Groupcast with Retry）；OBSS（重疊的 BSS）。<span class="sup">補充</span>GCR：讓群播也能重送，提高可靠度；OBSS：附近使用相同通道、範圍重疊的其他 BSS。</li>
+        <li>群播的解法（p.86）：No-Ack／No-Retry（舊做法）；<b>DMS</b>（Directed Multicast Service，轉成多個單播；<span class="sup">補充</span>單播：送給單一站台）；<b>GCR Unsolicited Retry</b>（每個封包送幾份）；<b>GCR Block Ack</b>（輪詢 Block Ack、Ack leader 選舉、Immediate／Delayed Block Ack；<span class="sup">補充</span>Ack leader：被選出來代表大家回報接收狀態的接收者）。</li>
         <li><b>GCR Unsolicited Retry</b>（p.88）：群播傳送端把資料訊框主動重送一次以上（在生命期限內），提高收到的機率；延遲、效率、可靠度中等，但<b>擴充性高</b>，適合大量接收者。</li>
         <li><b>GCR Block Ack</b>（p.89）：送一串群播資料，再和全部或部分接收者交換 BlockAckReq／BlockAck，確認接收狀態。由群播傳送端決定用哪一種重送政策（p.87）。</li>
       </ul>
