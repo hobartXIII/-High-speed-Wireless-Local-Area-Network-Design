@@ -577,7 +577,19 @@ sequenceDiagram
     <li><b>參數</b>（p.60）：ADDBA Request 帶 TID、Block Ack Policy（Immediate 或 Delayed）、Transmit Buffer Size、Timeout Value；ADDBA Response 帶 Status Code、Policy（1 = Immediate、0 = Delayed）、TID、Re-ordering Buffer Size、Timeout Value；DELBA 帶 Initiator、TID。<span class="sup">補充</span>Transmit／Re-ordering Buffer Size：傳送端／接收端可以暫存多少訊框（接收端要把亂序收到的訊框排回順序）；Timeout Value：多久沒使用就結束協定；Initiator：DELBA 是由 Originator 還是 Recipient 發出。</li>
     <li><b>BlockAckReq 格式</b>（p.61）：Frame Control 2、Duration/ID 2、RA 6、TA 6、<b>BAR Control</b> 2（Reserved 12 bits、TID 4 bits）、<b>Block Ack Starting Sequence Control</b> 2（Fragment Number 4 bits = 0、Starting Sequence Number 12 bits）、FCS 4。<span class="sup">補充</span>RA／TA：接收端／傳送端位址；Starting Sequence Number：這次要確認的第一筆 MSDU 的序號；Fragment Number：分段編號。</li>
     <li><b>BlockAck 格式</b>（p.62）：同上，再加 <b>Block Ack Bitmap 128 octets</b>：最多表示 <b>64 個 MSDU</b>（128 × 8 ÷ 16）的接收狀態；bit n = 1 表示第 n 個 MSDU 收到。<span class="sup">補充</span>Bitmap：每個 bit 對應一筆資料，用 0／1 表示有沒有收到。</li>
-    <li><b>時序</b>（p.63–64）：Immediate：先做一次 frame exchange 設 NAV → Data Block（Ack Policy = Block Ack）→ BlockAckReq → <b>立刻</b>回 BlockAck。Delayed：BlockAckReq 後先回 <b>ACK</b>，之後 Recipient 自己再送 <b>BlockAck</b>，Originator 回 ACK。</li>
+    <li><b>時序</b>（p.63–64）：Immediate：先做一次 frame exchange 設 NAV → Data Block（Ack Policy = Block Ack）→ BlockAckReq → <b>立刻</b>回 BlockAck。Delayed：BlockAckReq 後先回 <b>ACK</b>，之後 Recipient 自己再送 <b>BlockAck</b>，Originator 回 ACK。
+      <ul>
+        <li><span class="sup">補充</span><b>Delayed 為什麼可以先回 ACK？</b>這個 ACK 確認的是「BlockAckReq 這個訊框收到了」，不是確認資料收到了；資料收到哪些，要等之後的 BlockAck（Bitmap）才知道。
+          <ul>
+            <li><b>Originator 需要知道請求有沒有送到</b>：BlockAckReq 本身也可能遺失。什麼都不回的話，Originator 分不出是請求掉了還是對方還在準備。先回 ACK 就把兩件事分開：請求已送達，結果之後補。</li>
+            <li><b>通道可以先放掉</b>：回完 ACK 這次交換就結束，通道可以給別人用，不必卡著等 BlockAck。</li>
+            <li><b>用途：給接收端 MAC 時間準備 BlockAck</b>：Immediate 要在 SIFS 內算好 Bitmap 並送出，對接收端處理速度要求高；Delayed 讓接收端慢慢整理收到哪些、缺哪些，準備好再搶通道送，對硬體要求較低（例如部分功能用軟體做的接收端）。</li>
+            <li><b>代價是延遲</b>：BlockAck 晚到，Originator 也較晚知道哪些要重傳，所以講義 p.57 說 Delayed 適合可容忍中等延遲的應用。</li>
+            <li><b>等的是 MAC 層，不是上層</b>：BlockAck 只回報哪些 MPDU 在無線鏈路上完整收到（FCS 檢查通過），MAC 層自己就判斷得出來，不會等上層處理。後端或應用程式需要時間彙整資料是另一層的事，要靠上層自己的確認機制（例如 TCP 或應用程式的回應）。</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
   </ul>
   <div class="figure" id="fig-ba-wrap">
     <div class="fig-title">Immediate vs. Delayed Block Ack <span class="tag">動畫</span></div>
