@@ -213,3 +213,10 @@ svg .hit:hover rect, svg .hit.sel rect { stroke: var(--accent); stroke-width: 2;
 /* 螢光筆（highlighter.css）沿用的 tokens：本站叫 --fg、--muted、--red */
 :root { --text: var(--fg); --text-2: var(--muted); --neg: var(--red); }
 .site-header .hl-menu-btn { width: auto; padding: 0 10px; }
+
+/* 名詞浮動解釋（assets/js/terms.js） */
+.term { text-decoration: underline dotted var(--muted); text-underline-offset: .2em; text-decoration-thickness: 1px; cursor: help; }
+.term:hover, .term:focus { text-decoration-color: var(--accent); outline: none; }
+.term-tip { position: absolute; z-index: 1000; max-width: min(320px, calc(100vw - 16px)); padding: .5em .7em; font-size: .88rem; line-height: 1.6; color: var(--fg); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.15); pointer-events: none; }
+.term-tip b { color: var(--accent); }
+@media print { .term { text-decoration: none; } .term-tip { display: none; } }

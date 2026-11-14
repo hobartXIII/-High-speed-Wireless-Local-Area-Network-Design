@@ -221,6 +221,15 @@ flowchart TB
       <ul>
         <li>一個 UP 屬於一個 AC；<b>每個 AC 有兩個 UP</b>；同一個 AC 內，UP 高的先送。</li>
         <li>EDCA 中，媒介存取依 MSDU 的 AC；<b>CW 與 IFS 的大小依 AC 而定</b>。<span class="sup">補充</span>IFS：兩個訊框之間要空出的時間；媒介：無線通道。</li>
+        <li><span class="sup">補充</span><b>優先權高 → 等得短 → 搶到通道的機率高（平均而言）</b>：優先權高的 AC 有兩個優勢。第一，AIFS 短，通道閒置後比較早開始倒數；第二，CW 小，抽到的退避值平均比較小。實際數字見第 9 節（p.42：VO、VI 的 AIFSN 是 2，BE 是 3，BK 是 7；退避範圍 VO 0～3、VI 0～7、BE 0～15）。但這只是機率比較高，不保證一定贏：
+          <ul>
+            <li><b>退避值是隨機抽的</b>：例如 BE 抽到 0，共等 3 + 0 = 3 個 slot；VO 抽到 3，共等 2 + 3 = 5 個 slot，這一輪由 BE 先送。</li>
+            <li><b>VO 和 VI 的 AIFSN 都是 2</b>，兩者只靠 CW 大小區分。</li>
+            <li><b>CW 小也有代價</b>：同一個 AC 有多個站台時，抽到相同值的機會比較大，比較容易碰撞。</li>
+            <li><b>只有內部碰撞有確定規則</b>：同一站台內兩個 AC 同時數完，優先權高的贏。不同站台同時數完就是真正的碰撞。</li>
+            <li><b>TXOP limit</b> 決定搶到之後能連續送多久，和搶到的機率無關。</li>
+          </ul>
+        </li>
       </ul>
     </li>
   </ul>
@@ -751,7 +760,17 @@ sequenceDiagram
     <tr><td>Trigger-enabled vs. Delivery-enabled AC</td><td>這個 AC 的上行訊框可以當 trigger</td><td>這個 AC 的下行訊框在 SP 內自動送</td><td>ADDTS：uplink vs. downlink</td></tr>
     <tr><td>Legacy PS vs. WMM Power Save</td><td>等 Beacon 的 TIM，每個訊框一次 PS-Poll</td><td>Client 自己 trigger，一次 TXOP burst 取完</td><td>誰決定醒來的時間</td></tr>
     <tr><td>DMS vs. GCR</td><td>群播轉成多個單播</td><td>保留群播，加上重送或 Block Ack</td><td>還是不是群播</td></tr>
+    <tr><td><span class="sup">補充</span>TXOP vs. Beacon：時間會不會往後移</td><td>TXOP：長度（TXOP limit）固定，起點浮動；開始後時間到就得停，不能延長</td><td>Beacon：TBTT 固定；媒介忙時這一次 Beacon 會延後送出，但下一個 TBTT 不跟著移</td><td>固定的是「長度」還是「時刻」</td></tr>
   </table></div>
+  <ul>
+    <li><span class="sup">補充</span><b>TXOP 到時間不會往後移，Beacon 會？</b>兩者「移」的對象不一樣：
+      <ul>
+        <li><b>TXOP</b>：沒有固定的時鐘時刻。起點要看 EDCA 什麼時候搶到通道，或 HCCA 什麼時候被 HC 點名，所以會浮動。一旦開始，只能在 TXOP limit 內用 SIFS 連送，時間到就得停，不能延長。沒送完的資料要重新搶（EDCA）或等下次被點名（HCCA）。</li>
+        <li><b>Beacon</b>：預定時刻 TBTT（目標 Beacon 傳送時間）照 Beacon Interval 排好。TBTT 到時如果媒介正忙，Beacon 也不能插隊，要等那次傳送結束才送得出去（講義 2-5 p.8 的最壞情況是等完一整筆 RTS + CTS + MPDU + ACK）。所以<b>這一次</b> Beacon 會延後，但<b>下一個 TBTT 不跟著往後移</b>，延遲不會累積；延後的結果是那次 CFP 被縮短（CH 2-5 第 5 節）。</li>
+        <li>結論：只有「這一次 Beacon 的實際送出時間」會往後移，排程本身不會；TXOP 則是開始時間會浮動，長度上限不會變。</li>
+      </ul>
+    </li>
+  </ul>
 
   <h2 id="review">17. 複習問題</h2>
   <h3>觀念題</h3>
@@ -843,5 +862,7 @@ sequenceDiagram
 <aside class="toc"></aside>
 </div>
 <script src="assets/js/ch3.js"></script>
+<script src="assets/js/terms-ch3.js"></script>
+<script src="assets/js/terms.js"></script>
 </body>
 </html>
