@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>期中考練習題</title>
+<meta name="description" content="依 114-1 期中考古題的出題風格（觀念、跨章比較、假設推演、設計題）出的英文練習題，範圍 0Intro_LAN ～ 11EnhancedQoS，含計算題；附英文參考答案、中文說明與講義出處。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<style>
+  .mq { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; margin: 16px 0; }
+  .mq-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 8px; }
+  .mq-id { font-weight: 700; font-size: 1.05rem; }
+  .mq-pts { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
+  .chip { font-size: .78rem; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap; }
+  .chip.x { background: var(--purple-soft); color: var(--purple); border-color: transparent; }
+  .chip.calc { background: var(--orange-soft); color: var(--orange); border-color: transparent; }
+  .chip.past { background: var(--green-soft); color: var(--green); border-color: transparent; }
+  .q-en { font-size: 1.02rem; }
+  .q-en ol, .q-zh ol { padding-left: 1.4em; margin: .3em 0; }
+  .q-zh { color: var(--muted); border-left: 3px solid var(--border); padding-left: 12px; margin-top: 10px; font-size: .95rem; }
+  .mq details { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 8px; }
+  .mq summary { cursor: pointer; color: var(--accent); font-weight: 600; user-select: none; }
+  .ans-en { background: var(--accent-soft); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  .ans-zh { padding: 2px 2px; }
+  .ans-label { font-size: .78rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; margin: 10px 0 2px; }
+  .src { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+  .mq table { border-collapse: collapse; margin: 8px 0; font-size: .92rem; }
+  .mq th, .mq td { border: 1px solid var(--border); padding: 4px 8px; text-align: left; vertical-align: top; }
+  .mq th { background: var(--surface-2); }
+  .mq .tbl-scroll { overflow-x: auto; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .style-tbl td:first-child { white-space: nowrap; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">MIDTERM</div>
+    <h1>📝 期中考練習題</h1>
+    <div class="meta"><span>範圍：0Intro_LAN ～ 11EnhancedQoS（不含 Random Access Analysis）</span><span>依 114-1 Midterm 考古題的出題風格出題</span></div>
+  </div>
+
+  <div class="callout note">這些是<b>練習用的自編題</b>，不是老師的題目。題目照考試的形式用英文出，下面附中文翻譯；參考答案收在每題的「參考答案」裡，內容有英文作答範例、中文說明和講義出處。講義上沒有、依標準或推理補充的內容標成 <span class="sup">補充</span>。</div>
+
+  <h2 id="style">考古題的出題風格</h2>
+  <div class="tbl-wrap"><table class="style-tbl">
+    <tr><td>重觀念與「為什麼」</td><td>不考字面定義；第 3 題「Explanation」問的也是機制怎麼運作。</td></tr>
+    <tr><td>跨章比較</td><td>第 1、9 題把 802.3（ch1）和 802.11（ch2）對照：無線哪裡不一樣，所以設計要改。</td></tr>
+    <tr><td>假設／反事實</td><td>「兩者互換存取方式會怎樣」、「不用 RTS/CTS 怎麼解決」：要從原理推出後果或替代方案。</td></tr>
+    <tr><td>用問題代替機制名稱</td><td>第 2 題不說 TIM／PS-Poll，第 5 題不說 IFS，要自己判斷該答哪個機制。</td></tr>
+    <tr><td>評價題</td><td>優缺點（PCF）、差異（active／passive scan）。</td></tr>
+    <tr><td>講義上的問句</td><td>第 9 題「Why does not Ethernet use ACK frame?」就是 2-4 講義 p.11 的原句。</td></tr>
+    <tr><td>不考規格細節</td><td>即使題目問到欄位（第 3、4 題），問的也是「為什麼要這樣設計」，不考位元編碼、欄位長度或公式各項。</td></tr>
+    <tr><td>配分</td><td>大題 10%，兩段式題目每段 5～10%，約 9 題。考古題沒有 802.11e 與計算題，這裡都補上。</td></tr>
+  </table></div>
+  <p>題目標籤：<span class="chip x">跨章</span> 跨兩章以上的比較，<span class="chip past">考古變形</span> 由考古題改編，<span class="chip calc">計算</span> 計算題。</p>
+
+  <div class="toolbar">
+    <button class="btn" type="button" id="open-all">展開全部答案</button>
+    <button class="btn" type="button" id="close-all">收合全部答案</button>
+  </div>
+
+  <h2 id="part-a">A. 跨章觀念與比較</h2>
+  <div id="qa"></div>
+
+  <h2 id="part-b">B. 機制與設計</h2>
+  <div id="qb"></div>
+
+  <h2 id="part-c">C. 計算題</h2>
+  <div class="callout tip">計算題常用參數（題目沒給時用這組）：802.11b DSSS：SIFS 10 µs、slot 20 µs、DIFS 50 µs、PIFS 30 µs、long PLCP preamble＋header 192 µs（1 Mbps）、CWmin 31、CWmax 1023。802.11a OFDM：SIFS 16 µs、slot 9 µs、DIFS 34 µs。802.3：slot time 51.2 µs（10 Mbps）。</div>
+  <div id="qc"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+
+<script>
+const SRC = s => `<div class="src">📖 出處：${s}</div>`;
+const Q = {
+qa: [
+{
+  id: 'A1', pts: '15%', chips: [['x','ch1 × ch2-4'],['past','考古 Q1 變形']],
+  en: `Both IEEE 802.3 and IEEE 802.11 use a binary exponential backoff.
+  <ol type="a"><li>Compare the two backoff procedures in detail: when backoff is invoked, how the backoff range grows, and what a station does with its backoff counter while the medium is busy. (10%)</li>
+  <li>The lecture points out that the 802.3 BEBA has a "First-in-Last-out effect". Does 802.11 DCF suffer from the same problem? Explain which DCF rules reduce it. (5%)</li></ol>`,
+  zh: `IEEE 802.3 與 IEEE 802.11 都使用二元指數退避。
+  <ol type="a"><li>詳細比較兩者的退避程序：什麼時候啟動退避、退避範圍怎麼變大、媒介忙碌時站台怎麼處理退避計數器。（10%）</li>
+  <li>講義指出 802.3 的 BEBA 有「先到後送（First-in-Last-out）」的效應。802.11 DCF 也有同樣的問題嗎？說明 DCF 的哪些規則減輕了它。（5%）</li></ol>`,
+  ae: `<p><b>(a)</b> <b>802.3:</b> backoff is used <i>only after a collision</i>. After the n-th collision the station waits r slot times (51.2 µs), r uniform in [0, 2<sup>k</sup>), k = min(n, 10). It gives up after 16 attempts. The delay is a plain wait: when it expires, the station senses and transmits; nothing is "frozen".</p>
+  <p><b>802.11:</b> backoff is used <i>to avoid</i> collisions: whenever the medium was busy, the station defers until the medium is idle for DIFS and then draws Backoff = Random[0, CW] × slot time. CW starts at CWmin and doubles after each failed transmission (no ACK/CTS) up to CWmax (e.g., 31 → 63 → … → 1023 for DSSS), with short/long retry limits. The backoff timer decrements only while the medium is idle and is <b>frozen</b> while busy; it resumes after the next DIFS with the remaining value. A station that has just transmitted and has another frame queued must also back off.</p>
+  <p><b>(b)</b> It is largely reduced. Because the remaining backoff is kept, stations that have waited longer have smaller residual counters and win earlier, so access "tends toward fair access on a FCFS basis". The mandatory backoff after one's own successful transmission prevents a winner from capturing the channel. Some unfairness remains: a station that failed has a doubled CW and is more likely to lose to newcomers.</p>`,
+  az: `<p>關鍵差異：802.3 是「碰撞<b>之後</b>才退避」，退避只是單純等待；802.11 是「為了<b>避免</b>碰撞而退避」，媒介只要忙過就要 DIFS＋退避，而且計數器在忙碌時<b>凍結</b>、閒置再繼續，所以等越久的站剩下的越少，接近先到先服務。再加上「剛送完、還有下一筆也要退避」的公平規則。(b) 要點出「不能完全消除」：失敗過的站 CW 已經加倍，仍可能輸給新來的站。</p>`,
+  src: `1CSMA_CD p.7「CSMA/CD Collision Handling」；2-4 p.16「Random Backoff Time」、p.17、p.27「DCF Access Procedure」、p.28（retry count）`
+},
+{
+  id: 'A2', pts: '10%', chips: [['x','ch0/ch1 × ch2-2']],
+  en: `The 802.11 standard states that "destination address does not equal destination location." Why is this not a problem in a wired LAN? What problem does it create for 802.11, and which architectural components and services does 802.11 define to solve it while still appearing to LLC as an ordinary 802 LAN?`,
+  zh: `802.11 標準說「目的地位址不等於目的地位置」。為什麼這在有線 LAN 不是問題？它對 802.11 造成什麼問題？802.11 定義了哪些架構元件與服務來解決，同時讓 LLC 看起來仍是一般的 802 LAN？`,
+  ae: `<p>In a wired LAN an address is effectively a physical attachment point: a station stays on the same cable/port, so bridges can learn where an address is. In 802.11 the addressable unit is a STA, which is a message destination but not a fixed location; it moves, and the PHY has limited range, so the network must track <i>which AP currently serves the STA</i>. Mobility has to be handled inside the MAC, transparently to LLC.</p>
+  <p>Solution: APs interconnected by a <b>Distribution System (DS)</b> form an <b>ESS</b>, which appears to LLC as a single BSS. The DS keeps the STA↔AP mapping through the distribution system services: <b>Association</b> (creates the mapping; a STA is associated with at most one AP), <b>Reassociation</b> (moves it when the STA performs a BSS-transition), <b>Disassociation</b> (removes it), and <b>Distribution</b> (uses the mapping to deliver MSDUs to the output AP). If the destination is on a wired LAN, the output point is a <b>Portal</b> and the <b>Integration</b> service performs any address/media translation.</p>`,
+  az: `<p>這題把 ch0「LAN 的位址」和 ch2-2 的架構串起來。答題主軸：有線「位址≈位置」→ 無線不成立 → 需要一個知道「STA 目前在哪個 AP」的機制 → DS＋Association/Reassociation/Disassociation 維護對應表，Distribution 依對應表送，Portal＋Integration 接到有線網路。「一個 STA 同時只能和一個 AP associate」正是為了讓 DS 能唯一決定輸出 AP。</p>`,
+  src: `2-2 p.2–3「Wireless LAN Architecture」、p.13（ESS）、p.16（Portal）、p.22–27（Distribution、Integration、Association、Reassociation、Disassociation）`
+},
+{
+  id: 'A3', pts: '15%', chips: [['x','ch2-5 × ch3'],['past','考古 Q6 延伸']],
+  en: `The lecture states that "PCF is not enough" for QoS.
+  <ol type="a"><li>Give three reasons why the 802.11 PCF cannot guarantee QoS. (6%)</li>
+  <li>Explain how HCCA in 802.11e overcomes each of the reasons you gave. (6%)</li>
+  <li>In PCF, polling happens only in the CFP. Is this also true for HCCA? Explain. (3%)</li></ol>`,
+  zh: `講義說 PCF「不足以」提供 QoS。
+  <ol type="a"><li>舉出 802.11 PCF 無法保證 QoS 的三個原因。（6%）</li>
+  <li>說明 802.11e 的 HCCA 怎麼分別克服你提出的原因。（6%）</li>
+  <li>PCF 只在 CFP 輪詢。HCCA 也是這樣嗎？請說明。（3%）</li></ol>`,
+  ae: `<p><b>(a)</b> (1) Only one frame can be sent per poll. (2) The Point Coordinator does not know the QoS requirements of each traffic stream. (3) Therefore it cannot guarantee bandwidth, delay or jitter bounds; in addition, a beacon delayed by a busy medium foreshortens the CFP, so the service time is not predictable.</p>
+  <p><b>(b)</b> (1) A QoS CF-Poll grants a <b>TXOP</b> with a TXOP limit (in the QoS Control field): the QSTA may send several frames, separated by SIFS, within a bounded duration. (2) A QSTA describes its traffic with a <b>TSPEC</b> (rate, service interval, delay bound…) negotiated with the HC via ADDTS Request/Response; the TS is identified by TID 8–15. (3) The HC calculates its polling schedule from the TSPECs (with admission control), so each admitted stream is served at its required interval and the TXOP length bounds the delay.</p>
+  <p><b>(c)</b> No. The HC operates at the QAP and can also poll during the CP: it gains the medium after PIFS, which is shorter than any AIFS used by EDCA stations, and issues a QoS CF-Poll, giving a polled TXOP inside the CP.</p>`,
+  az: `<p>(a) 前兩點直接引講義第 7 張「Is IEEE 802.11 enough for QoS?」。(b) 要一對一回應：一次一個訊框 → TXOP；不知道需求 → TSPEC／ADDTS；不能保證 → 依 TSPEC 排程＋TXOP 上限。(c) 講義第 45 張「Comparison」的 802.11e 超級訊框裡，CP 中也有 QoS CF-Poll 與 Polled TXOP；HC 靠 PIFS 比 AIFS 短來搶到媒介 <span class="sup">補充</span>。</p>`,
+  src: `11EnhancedQoS「Is IEEE 802.11 enough for QoS?」「Traffic Specification」「HCF Controlled Channel Access (HCCA)」「Comparison」「Transmission Opportunity (TXOP)」；2-5 p.9「CFP structure and timing」`
+},
+{
+  id: 'A4', pts: '15%', chips: [['x','ch2-4 × ch3'],['past','考古 Q5 延伸']],
+  en: `Both 802.11 DCF and 802.11e EDCA use "time" to create priorities.
+  <ol type="a"><li>In legacy 802.11, between <i>which</i> entities (or frame types) does the IFS create priorities? In EDCA, between which entities? (5%)</li>
+  <li>Why must AIFS[AC] always be larger than SIFS? What would happen if an AC used AIFS = SIFS? (5%)</li>
+  <li>Besides AIFS, list two other time-related parameters that EDCA sets per AC and explain how each one affects the service an AC receives. (5%)</li></ol>`,
+  zh: `802.11 DCF 與 802.11e EDCA 都用「時間」來產生優先權。
+  <ol type="a"><li>在傳統 802.11 中，IFS 在<i>哪些</i>對象（或訊框類型）之間產生優先權？EDCA 又是在哪些對象之間？（5%）</li>
+  <li>為什麼 AIFS[AC] 一定要大於 SIFS？如果某個 AC 用 AIFS = SIFS 會發生什麼事？（5%）</li>
+  <li>除了 AIFS 之外，舉出 EDCA 依 AC 設定的另外兩個與時間有關的參數，並說明各自怎麼影響該 AC 得到的服務。（5%）</li></ol>`,
+  ae: `<p><b>(a)</b> In legacy 802.11 the IFS separates <b>frame types / functions</b>: SIFS for ACK, CTS, responses to polls and fragments of a burst; PIFS for the PCF; DIFS for ordinary DCF data; EIFS after an erroneous frame. All data of all stations has the same DIFS, so stations compete equally. In EDCA the contention is <b>between Access Categories</b> (AC_VO, AC_VI, AC_BE, AC_BK), not between stations: each AC has its own AIFS[AC] = AIFSN[AC] × aSlotTime + aSIFSTime.</p>
+  <p><b>(b)</b> SIFS protects an ongoing frame exchange (Data–ACK, RTS–CTS, fragment bursts). If an AC could start after SIFS, it would transmit at the same moment as the expected ACK/CTS and break the exchange, causing collisions and retransmissions. Hence AIFS[UP] &gt; SIFS; the lecture's default parameters give a QSTA a minimum AIFS equal to DIFS (AIFSN = 2), so EDCA traffic also does not pre-empt the PCF/HC, which uses PIFS.</p>
+  <p><b>(c)</b> <b>CWmin/CWmax[AC]</b>: a smaller window gives a shorter random wait (e.g., voice 0–3 slots vs. best effort 0–15 slots), so the AC wins contention more often. <b>TXOP limit[AC]</b>: how long an AC may keep the medium once it wins, sending several frames separated by SIFS; a larger limit gives more throughput per access. All three are announced by the AP in the EDCA Parameter Set element of the beacon.</p>`,
+  az: `<p>(a) 的重點：DCF 的 IFS 是區分<b>訊框種類</b>，所有站台的資料都用同一個 DIFS；EDCA 才是區分<b>流量類別</b>。(b) 要說出「打斷正在進行的訊框交換」。(c) CW 管「搶到的機率」，TXOP limit 管「搶到後能用多久」。</p>`,
+  src: `2-4 p.13「Inter-Frame Space (IFS)」、p.20；11EnhancedQoS「EDCA」「IFS in EDCF: Contention between ACs」「Arbitration Interframe Space (AIFS)」「Default EDCA Parameter Set」「Transmission Opportunity (TXOP)」`
+},
+{
+  id: 'A5', pts: '10%', chips: [['x','ch2-1 × ch3']],
+  en: `"In an Infrastructure BSS, all mobile stations communicate with the AP."
+  <ol type="a"><li>List the advantages and disadvantages of forcing all traffic through the AP. (6%)</li>
+  <li>Which 802.11e mechanism removes the main disadvantage? Why does it still need the QAP at the beginning? (4%)</li></ol>`,
+  zh: `「在 Infrastructure BSS 中，所有行動站台都透過 AP 通訊。」
+  <ol type="a"><li>列出所有流量都經過 AP 的優點與缺點。（6%）</li>
+  <li>802.11e 的哪個機制去除了主要的缺點？為什麼一開始仍然需要 QAP？（4%）</li></ol>`,
+  ae: `<p><b>(a)</b> Disadvantages: STA-to-STA traffic consumes the bandwidth twice (STA→AP, AP→STA), and the doubled number of transmissions causes more contention and more collisions. Advantages: it easily solves the hidden terminal problem (every STA hears the AP), it allows power saving (the AP buffers frames for sleeping STAs), it fits the AAA architecture (authentication, authorization, accounting), and it allows per-flow bandwidth control and QoS guarantees (802.11e).</p>
+  <p><b>(b)</b> <b>Direct Link Setup (DLS)</b>: two QSTAs in the same QBSS exchange frames directly. The setup goes through the QAP (DLS Request/Response action frames) because the recipient may be in power-save mode and must be woken up via the QAP, and the sender and recipient must exchange capability information. The recipient shall not enter power save during the DLP timeout; if no frames are exchanged for DLPTimeoutValue, the direct link becomes inactive and frames go through the AP again.</p>`,
+  az: `<p>(a) 直接取自 2-1 p.34 的優缺點清單。(b) 要說出 DLS 經過 QAP 交握的兩個動機：叫醒省電中的接收端、交換雙方資訊；以及逾時後回到經過 AP 的路徑。</p>`,
+  src: `2-1 p.34「Access Points」；11EnhancedQoS「Direct Link Setup (DLS)」「Handshake Procedure」`
+},
+{
+  id: 'A6', pts: '15%', chips: [['x','ch2-5 × ch3'],['past','考古 Q2 延伸']],
+  en: `Power saving in 802.11 and 802.11e.
+  <ol type="a"><li>Describe how a station in an infrastructure BSS sleeps without losing unicast and broadcast frames. Mention the related frame-header bits. (6%)</li>
+  <li>The lecture says "VoIP does not work in legacy power management mode." Explain why. (4%)</li>
+  <li>Explain U-APSD and S-APSD. Which channel access method is each based on? (5%)</li></ol>`,
+  zh: `802.11 與 802.11e 的省電。
+  <ol type="a"><li>說明 infrastructure BSS 中的站台怎麼睡眠而不遺失單播與廣播訊框，並提到相關的訊框標頭位元。（6%）</li>
+  <li>講義說「VoIP 在傳統省電模式下無法運作」。請解釋原因。（4%）</li>
+  <li>說明 U-APSD 與 S-APSD。兩者各自以哪一種通道存取方式為基礎？（5%）</li></ol>`,
+  ae: `<p><b>(a)</b> The STA tells the AP it is entering power-save mode by setting the <b>Power Management</b> bit to 1. The AP buffers frames for it. All stations are synchronized by the TSF, so a sleeping STA wakes up before the expected beacon and reads the <b>TIM</b>, which indicates (by AID) which stations have buffered frames. If its bit is set, the STA sends a <b>PS-Poll</b> carrying its AID and stays awake to receive the data; the <b>More Data</b> bit tells it that more frames are still buffered, so it keeps polling. Otherwise it sleeps again. Broadcast/multicast frames are also buffered and are sent only after a <b>DTIM</b> beacon (DTIM interval = a multiple of the TIM interval), when every PS station wakes up.</p>
+  <p><b>(b)</b> Downlink frames can only be delivered after the STA hears a beacon. With a 100 ms beacon interval the delay is 100–300 ms (if the STA listens every few beacons), while voice needs less than 20 ms delay; more than 20 ms makes speech hard to understand. Every buffered frame also needs its own PS-Poll.</p>
+  <p><b>(c)</b> <b>U-APSD</b> (WMM Power Save, based on <b>EDCA</b>): the STA wakes up and sends a trigger frame (normally its own uplink data) of a trigger-enabled AC; this starts a service period in which the QAP delivers buffered frames of delivery-enabled ACs, up to the Max SP Length; EOSP marks the end. Voice uplink every 20 ms therefore pulls down the downlink voice every 20 ms. <b>S-APSD</b> (based on <b>HCCA</b>): the QSTA negotiates an APSD schedule with the QAP via ADDTS; the QAP transmits at the Service Start Time and every following service interval, and the QSTA wakes up on that schedule.</p>`,
+  az: `<p>(a) 就是考古題第 2 題的完整答案：Power Mgt 位元 → AP 緩存 → TSF 同步醒來看 TIM → PS-Poll（帶 AID）→ More Data → 廣播等 DTIM。(b) 用講義的 VoIP 案例數字（beacon 100 ms、延遲 100–300 ms、需求 &lt; 20 ms）。(c) U-APSD 以 EDCA 為基礎、S-APSD 以 HCCA 為基礎，講義第 68 張明列。</p>`,
+  src: `2-3 p.14–15（Power Management、More Data 位元）；2-5 p.18–22「Power Management」；11EnhancedQoS「Brief of APSD」「Scheduled APSD」「Unscheduled APSD」「Power Management」「Study Case: VoIP」「Comparisons」`
+},
+{
+  id: 'A7', pts: '10%', chips: [['x','ch0 × ch1 × ch2-4 × ch3'],['past','考古 Q9 延伸']],
+  en: `Acknowledgement design differs across the standards in this course: Ethernet has no MAC-level ACK, 802.11 acknowledges every directed frame, and 802.11e adds several ACK policies.
+  <ol type="a"><li>Explain why each standard made its choice. Where is reliability provided for Ethernet? (6%)</li>
+  <li>Give one situation in which a QSTA should choose the "No ACK" policy and one in which it should choose "Block ACK". (4%)</li></ol>`,
+  zh: `本課程的各標準對確認（ACK）的設計不同：Ethernet 沒有 MAC 層 ACK，802.11 每個指定位址的訊框都要確認，802.11e 又加了數種 ACK 政策。
+  <ol type="a"><li>說明各標準為什麼這樣選擇。Ethernet 的可靠性由哪裡提供？（6%）</li>
+  <li>各舉一個 QSTA 應該選「No ACK」政策與應該選「Block ACK」的情況。（4%）</li></ol>`,
+  ae: `<p><b>(a)</b> <b>Ethernet:</b> the sender listens while transmitting and detects collisions itself (the minimum frame of 64 bytes guarantees the collision is seen before transmission ends), and the wired medium has a very low error rate, so a MAC ACK would only add overhead. Reliability, when needed, is provided above the MAC, e.g. by IEEE 802.2 LLC (sequence numbers and ACK) or by TCP. <b>802.11:</b> a radio cannot detect collisions while transmitting, collisions happen at the receiver (hidden nodes), and the medium is noisy, so the sender cannot know whether a frame arrived; a positive ACK after SIFS is the only evidence, and missing ACK triggers retransmission. <b>802.11e:</b> different traffic needs different reliability/efficiency trade-offs, so the ACK policy is selected per frame in the QoS Control field: Normal ACK, No ACK, No Explicit ACK, Block ACK.</p>
+  <p><b>(b)</b> No ACK: real-time voice/video where a late retransmission is useless (or multicast), saving SIFS + ACK time. Block ACK: a burst of many frames within one TXOP (e.g. high-rate video or a large file transfer), where one BlockAck replaces many individual ACKs and improves channel efficiency.</p>`,
+  az: `<p>這題把 ch0 的 802.2 LLC（Reliability → Sequence number and ACK）、ch1 的碰撞偵測與最短訊框、ch2-4 的 positive ACK、ch3 的 ACK Policy 串起來。(b) 的情境是推理，No ACK 用於語音是常見設計 <span class="sup">補充</span>。</p>`,
+  src: `0Intro_LAN p.26（IEEE 802.2 LLC）；1CSMA_CD p.6–8；2-4 p.11（MAC-Level Acknowledgments、Why does not Ethernet use ACK frame?）；11EnhancedQoS「ACK Policy」「Brief of Block ACK」`
+},
+{
+  id: 'A8', pts: '10%', chips: [['x','ch0 × ch2-1']],
+  en: `Relate the 802.11 protocol architecture to the OSI model.
+  <ol type="a"><li>Explain the relationship among MSDU, MPDU, PSDU and PPDU. (4%)</li>
+  <li>802.11 requires "a single MAC to support multiple PHYs." Explain why the PHY is split into the PLCP and PMD sublayers and how this split supports that requirement. (6%)</li></ol>`,
+  zh: `把 802.11 的協定架構和 OSI 模型對應起來。
+  <ol type="a"><li>說明 MSDU、MPDU、PSDU、PPDU 之間的關係。（4%）</li>
+  <li>802.11 要求「一個 MAC 支援多種 PHY」。說明為什麼 PHY 要分成 PLCP 與 PMD 兩個子層，以及這樣的切分怎麼支援這個要求。（6%）</li></ol>`,
+  ae: `<p><b>(a)</b> The MSDU is the data unit passed down from LLC (the MAC SDU). The MAC adds the 802.11 MAC header and FCS, giving the MPDU. The MPDU passed to the PLCP sublayer is called the PSDU (same bits, seen from the PHY). The PLCP adds the PLCP preamble and header, giving the PPDU, which the PMD sends on the medium. This is the encapsulation of the OSI model: each layer's PDU is the SDU of the layer below.</p>
+  <p><b>(b)</b> The <b>PMD</b> is medium-dependent: modulation and coding (MCS), spreading, MIMO. The <b>PLCP</b> is PHY-specific but offers a <b>common PHY SAP</b> to the MAC and provides Clear Channel Assessment (carrier sense). Every PHY (FHSS, DSSS, IR, OFDM…) therefore looks the same to the MAC: the MAC asks to send a PSDU at a given rate and receives a CCA busy/idle indication, regardless of how the bits are modulated. New PHYs (11a/b/g/n…) can be added under the same MAC.</p>`,
+  az: `<p>ch0 的「SDU and PDU」、「Encapsulation」概念套到 802.11。重點句：PLCP「supports common PHY SAP」與「provides CCA」。</p>`,
+  src: `0Intro_LAN p.23–25（Encapsulation、SDU and PDU）；2-1 p.11「Requirements」、p.15–19「802.11 Protocol Entities／Architecture」、p.67`
+},
+],
+qb: [
+{
+  id: 'B1', pts: '10%', chips: [['past','考古 Q4 變形']],
+  en: `An Ethernet frame carries only two addresses (DA and SA), but an 802.11 data frame may carry up to four.
+  <ol type="a"><li>Why does an 802.11 frame need more than two addresses even inside a single infrastructure BSS? (5%)</li>
+  <li>In what situation is the fourth address needed? Use this case to explain: STA1 (associated with AP1) sends to STA4 (associated with AP2), and AP1 and AP2 are connected by a <i>wireless</i> distribution system. (5%)</li></ol>`,
+  zh: `Ethernet 訊框只有兩個位址（DA 與 SA），802.11 資料訊框卻最多有四個。
+  <ol type="a"><li>為什麼即使在單一個 infrastructure BSS 內，802.11 訊框也需要兩個以上的位址？（5%）</li>
+  <li>什麼情況需要第四個位址？用這個例子說明：STA1（和 AP1 associate）傳給 STA4（和 AP2 associate），AP1 與 AP2 之間以<i>無線</i>分散式系統連接。（5%）</li></ol>`,
+  ae: `<p><b>(a)</b> On Ethernet the station that puts the frame on the cable is the original source and the destination reads it directly (bridges are transparent), so DA and SA are enough. In an infrastructure BSS a frame from STA1 to STA4 goes over the air to the AP first, so the <i>wireless hop</i> has its own receiver and transmitter that differ from the end points. 802.11 needs: the immediate receiver (Address 1, on which every station filters), the immediate transmitter (Address 2, to which the ACK is returned), and the end point that is not part of this hop (the final DA when sending to the AP, or the original SA when the AP forwards). The BSSID also lets a station ignore frames of other BSSs on the same channel. Hence three addresses.</p>
+  <p><b>(b)</b> When the hop itself is between two APs, i.e. a <b>wireless distribution system / wireless bridge</b> (To DS = From DS = 1). On the AP1 → AP2 hop the receiver (AP2), the transmitter (AP1), the final destination (STA4) and the original source (STA1) are four different stations, so all four addresses are needed; Address 4 identifies the original source of the WDS frame. On the STA1 → AP1 and AP2 → STA4 hops the AP is one end of the hop, so three are enough.</p>`,
+  az: `<p>考古題第 4 題問「為什麼要四個位址」，答題主軸：有線只有「原始兩端」；無線多了「這一段的兩端」（接收端給過濾、傳送端給 ACK 回送）。只有 AP 對 AP 的無線橋接時，這一段的兩端和原始兩端四個都不同，才需要第四個。</p>`,
+  src: `2-3 p.12–13「Frame Formats」「Address Field Description」、p.18（ACK 的 DA 取自前一個訊框的 Address 2）、p.21`
+},
+{
+  id: 'B2', pts: '20%', chips: [['past','考古 Q3 變形']],
+  en: `Explanation (5% each). Explain how each item works and what problem it solves.
+  <ol type="A"><li>EIFS</li><li>TXOP</li><li>Portal and the Integration service</li><li>Traffic Identifier (TID)</li></ol>`,
+  zh: `解釋（各 5%）。說明每一項怎麼運作、解決什麼問題。
+  <ol type="A"><li>EIFS</li><li>TXOP</li><li>Portal 與 Integration 服務</li><li>Traffic Identifier（TID）</li></ol>`,
+  ae: `<p><b>A. EIFS</b>: used instead of DIFS when a STA has received a frame with an error. It starts when the PHY indicates the medium is idle after the erroneous frame, regardless of the NAV, and gives enough time for another STA to send the ACK of that frame (which this STA could not decode) before this STA transmits. EIFS = SIFS + ACK time at 1 Mbps (8 × ACKsize) + preamble + PLCP header + DIFS.</p>
+  <p><b>B. TXOP</b>: an interval with a starting time and a maximum duration (TXOP limit) during which a QSTA may transmit; frame exchanges inside it are separated by SIFS. It is obtained by winning EDCA contention (limit given per AC in the beacon) or by receiving a QoS (+)CF-Poll from the HC (limit given in the QoS Control field). It allows bursts and bounds channel occupancy, so delay can be controlled.</p>
+  <p><b>C. Portal / Integration</b>: all data from a non-802.11 LAN enters the 802.11 architecture through a portal. When the Distribution service finds that the destination belongs to an integrated wired LAN, the output point is the portal instead of an AP, and the Integration service performs any media and address translation needed to deliver the MSDU from the DSM to the wired LAN.</p>
+  <p><b>D. TID</b>: a 4-bit identifier (0–15) in the QoS Control field telling which traffic an MSDU belongs to. 0–7 are User Priorities (802.1D, used by EDCA; mapped to the four ACs); 8–15 identify Traffic Streams registered by TSPEC (used by HCCA). It lets the MAC queue and schedule frames per traffic class/stream.</p>`,
+  az: `<p>考古題第 3 題的形式：名詞來自不同章，但要答「運作＋目的」。EIFS 的目的是保護「自己沒解出來的那個訊框」的 ACK。</p>`,
+  src: `2-4 p.15「EIFS」；11EnhancedQoS「TXOP」「Transmission Opportunity (TXOP)」「Traffic Identified (TID)」「User Priority」；2-2 p.16、p.23`
+},
+{
+  id: 'B3', pts: '15%', chips: [['x','ch2-1 × ch2-4 × ch2-5'],['past','考古 Q8 變形']],
+  en: `Consider four nodes in a line, A – B – C – D, where each node hears only its neighbors. B sends to A while C wants to send to D.
+  <ol type="a"><li>Is C a hidden node or an exposed node? Explain why, even with RTS/CTS, 802.11 does not let C use the medium during B's transmission. (7%)</li>
+  <li>Without using RTS/CTS, list three mechanisms or designs covered in this course that reduce the damage of hidden nodes, and explain each briefly. (8%)</li></ol>`,
+  zh: `考慮一直線上的四個節點 A – B – C – D，每個節點只聽得到相鄰的節點。B 傳給 A，同時 C 想傳給 D。
+  <ol type="a"><li>C 是 hidden node 還是 exposed node？說明為什麼即使有 RTS/CTS，802.11 也不讓 C 在 B 傳送期間使用媒介。（7%）</li>
+  <li>不使用 RTS/CTS 的情況下，列出本課程講過、能降低 hidden node 損害的三種機制或設計，並各自簡單說明。（8%）</li></ol>`,
+  ae: `<p><b>(a)</b> C is an <b>exposed node</b>: it hears B (so carrier sense says busy), but its transmission to D would not disturb A. 802.11, however, uses a two-way exchange: C's DATA must be answered by D's ACK (and RTS by CTS). While B is transmitting, B's signal reaches C, so C could not correctly receive D's ACK/CTS. Also C hears B's RTS and sets its NAV. Because every directed frame needs an acknowledgement, the exposed node cannot be exploited simply; RTS/CTS only addresses hidden nodes.</p>
+  <p><b>(b)</b> Examples: (1) <b>Infrastructure mode</b>: every STA hears the AP, which "easily solves the hidden terminal problem"; downlink is scheduled by one transmitter. (2) <b>PCF/HCCA polling</b>: in the CFP the AP polls stations one at a time, so there is no contention at all. (3) <b>Fragmentation</b>: a long frame is split into short fragments; a collision destroys only one fragment, and the Duration of each fragment/ACK sets the NAV for the next one (acting as a virtual RTS/CTS). (4) <b>EIFS</b>: a station that received an erroneous frame waits long enough not to collide with the ACK it could not decode. (5) <b>Power control / carrier-sense range</b> adjustment so stations sense each other <span class="sup">補充</span>.</p>`,
+  az: `<p>(a) 的觀念：exposed node 問題的根源是 802.11「每個訊框都要回 ACK」的雙向交換，C 收不到 D 的 ACK，所以就算讓它送也沒用。(b) 考古題第 8 題禁止用 RTS/CTS，答題可以從 2-1（AP 優點）、2-4（分段、EIFS）、2-5（PCF）找方法。</p>`,
+  src: `2-1 p.7、p.34；2-4 p.15、p.24–25「Hidden Node Problem」、p.29–33「Fragment」；2-5 p.10–12「PCF Access Procedure」`
+},
+{
+  id: 'B4', pts: '10%', chips: [['x','ch2-3 × ch2-5']],
+  en: `The Duration/ID field of the MAC header is used differently in different frames.
+  <ol type="a"><li>In ordinary frames it carries a duration. Explain how this implements virtual carrier sense, and why both the RTS and the CTS carry it. (5%)</li>
+  <li>During the CFP the field is not used to set the NAV, and in a PS-Poll it carries an ID instead. Explain why a duration is not needed in each case and what the PS-Poll uses the field for. (5%)</li></ol>`,
+  zh: `MAC 標頭的 Duration/ID 欄位在不同訊框中有不同用法。
+  <ol type="a"><li>一般訊框中它帶的是時間長度。說明這怎麼實現虛擬載波偵測，以及為什麼 RTS 和 CTS 都要帶它。（5%）</li>
+  <li>CFP 期間這個欄位不用來設定 NAV，PS-Poll 中它帶的則是 ID。分別說明為什麼這兩種情況不需要時間長度，以及 PS-Poll 用這個欄位做什麼。（5%）</li></ol>`,
+  ae: `<p><b>(a)</b> The duration announces how long the medium will still be needed to finish the current exchange. Every station that receives the frame stores it in its NAV and treats the medium as busy until the NAV expires, even if its physical carrier sense says idle — a medium reservation without listening. The RTS reaches stations around the sender and the CTS reaches stations around the receiver; stations hidden from the sender hear only the CTS, so both must carry it to protect the whole exchange. Fragments and ACKs also carry durations, chaining the reservation.</p>
+  <p><b>(b)</b> <b>CFP:</b> at the start of every superframe each station has already set its NAV to the maximum CFP length from the beacon, and the CF-End resets it, so frames in the CFP do not need to reserve the medium again; they carry a fixed value. <b>PS-Poll:</b> a waking station asks the AP for its buffered frames. The AP needs to know <i>which</i> station is asking to find its buffer (the TIM also identifies stations by AID), so the field carries the AID assigned at association.</p>`,
+  az: `<p>不用記位元編碼，重點是用途：一般訊框 → 預約時間（NAV）；CFP → 已經由 beacon 預先設定好 NAV；PS-Poll → 告訴 AP「我是誰」。RTS、CTS 都帶 Duration，是為了分別保護傳送端與接收端周圍的站台。</p>`,
+  src: `2-3 p.15–16「Duration/ID Field」、p.18–19（PS-Poll）；2-5 p.22`
+},
+{
+  id: 'B5', pts: '15%', chips: [['x','ch2-5 × ch3'],['calc','含計算']],
+  en: `PCF superframe.
+  <ol type="a"><li>How do DCF stations know not to contend during the CFP, and how is this protection removed? (5%)</li>
+  <li>A station that is hidden from the Point Coordinator does not set its NAV. What problem can it cause, and what keeps the CF traffic going? (4%)</li>
+  <li>The beacon interval is 100 ms, the DTIM period is 3 beacons, CFPRate = 2, and CFP MaxDuration = 40 ms. A beacon is delayed by 3 ms because the medium is busy. How often does a CFP start, and how long is the delayed CFP? (6%)</li></ol>`,
+  zh: `PCF 超級訊框。
+  <ol type="a"><li>DCF 站台怎麼知道不要在 CFP 期間競爭？這個保護怎麼解除？（5%）</li>
+  <li>被 Point Coordinator 隱藏的站台不會設定 NAV。它可能造成什麼問題？什麼機制讓 CF 流量能持續？（4%）</li>
+  <li>Beacon interval 100 ms，DTIM period 3 個 beacon，CFPRate = 2，CFP MaxDuration = 40 ms。某個 beacon 因媒介忙碌延遲了 3 ms。CFP 多久開始一次？延遲的那次 CFP 有多長？（6%）</li></ol>`,
+  ae: `<p><b>(a)</b> At the beginning of every superframe each station (except the PC) presets its NAV to the maximum CFP length, using the CF Parameter Set (CFP MaxDuration / CFPDurRemaining) in the beacon, so it will not start DCF access. The PC ends the CFP with a CF-End or CF-End+CF-Ack frame, which resets the NAV of all stations.</p>
+  <p><b>(b)</b> It keeps operating under DCF and may start a transmission during the CFP, colliding with polled traffic. CF traffic is protected by timing: the PC transmits after PIFS and polled stations respond after SIFS, both shorter than DIFS, so in a continuous CF burst a DCF station never sees an idle gap long enough to transmit; only if the burst stops (e.g. no response for longer than DIFS) can it interfere.</p>
+  <p><b>(c)</b> CFP repetition interval = CFPRate × DTIM interval = 2 × (3 × 100 ms) = <b>600 ms</b>. The CFP must end no later than TBTT + CFP MaxDuration, so a beacon delayed by 3 ms foreshortens it: 40 − 3 = <b>37 ms</b>.</p>`,
+  az: `<p>(c) 兩個規則：CFPRate 以 DTIM interval 為單位；CFP 結束時間不晚於 TBTT＋CFP MaxDuration，所以 beacon 晚幾 ms，CFP 就短幾 ms（foreshortened CFP）。(b) 參考 11EnhancedQoS 第 44 張「Station 3 is hidden to the PC, it does not set the NAV」。</p>`,
+  src: `2-5 p.4、p.7–11「CFP structure and timing」「PCF Access Procedure」；11EnhancedQoS「Iteration of CFP and CP」`
+},
+{
+  id: 'B6', pts: '10%', chips: [['x','ch2-2 × ch2-3']],
+  en: `A wired LAN lets any attached station send data immediately, but an 802.11 station must first be authenticated and then associated.
+  <ol type="a"><li>Why does 802.11 need these two steps, and why must they be in this order? Why must some frames (e.g. Probe Request, Beacon, Authentication) still be allowed before a station has joined? (6%)</li>
+  <li>Why is Disassociation a notification rather than a request? (4%)</li></ol>`,
+  zh: `有線 LAN 中，接上線的站台可以馬上送資料；802.11 站台卻必須先認證、再 associate。
+  <ol type="a"><li>為什麼 802.11 需要這兩個步驟？為什麼順序必須是這樣？為什麼在站台加入之前，仍必須允許某些訊框（例如 Probe Request、Beacon、Authentication）？（6%）</li>
+  <li>為什麼 Disassociation 是通知而不是請求？（4%）</li></ol>`,
+  ae: `<p><b>(a)</b> In a wired LAN, physical access to the cable conveys authority to use the LAN, and the attachment point is the location. The wireless medium is open and shared, so neither holds. <b>Authentication</b> replaces the physical connection: it establishes the identity of the station before it may use the network. <b>Association</b> tells the DS which AP serves the station, which is required before data can be delivered through the DS. An association shall not be established without authentication, so the order is fixed; a station's state (unauthenticated → authenticated → associated) determines which frames it may send. Frames needed to <i>find</i> a network and to <i>authenticate</i> (Probe, Beacon, Authentication, and the control frames RTS/CTS/ACK) must be allowed in the initial state, otherwise no station could ever join. If a STA receives data from a station that is not authenticated, it replies with a Deauthentication.</p>
+  <p><b>(b)</b> Either party (the STA or the AP) may need to end the association — e.g. an AP being removed from service, or a STA leaving the network — and the other side cannot usefully keep it, so it is announced, not negotiated, and cannot be refused.</p>`,
+  az: `<p>不用背每一類有哪些訊框。邏輯鏈：無線沒有「接上線＝有權限、有位置」→ 用認證取代實體連線、用 association 告訴 DS 位置 → 加入前仍要能找網路、做認證，否則永遠進不來。</p>`,
+  src: `2-3 p.5–10「Relationship Between Services」「Frame Types」；2-2 p.27「Disassociation」`
+},
+{
+  id: 'B7', pts: '10%', chips: [['x','ch2-2 × ch2-5'],['past','考古 Q7 延伸']],
+  en: `A STA moving between APs of the same ESS.
+  <ol type="a"><li>Describe the roaming procedure, including what the DS does. (5%)</li>
+  <li>Which scanning mode would you use while roaming with a VoIP call in progress, and why? How can pre-authentication shorten the handoff? (5%)</li></ol>`,
+  zh: `STA 在同一個 ESS 的 AP 之間移動。
+  <ol type="a"><li>說明漫遊程序，包括 DS 做了什麼。（5%）</li>
+  <li>通話中（VoIP）漫遊時你會用哪一種掃描方式？為什麼？預先認證怎麼縮短換手時間？（5%）</li></ol>`,
+  ae: `<p><b>(a)</b> The STA decides that the link to its current AP is poor, scans for another AP (or uses previous scan results), and sends a Reassociation Request to the new AP. If the response is successful, the STA has roamed; otherwise it scans for another AP. The new AP indicates the reassociation to the DS, the DS updates its STA↔AP mapping, and normally the old AP is notified through the DS.</p>
+  <p><b>(b)</b> Active scanning: the STA sends a Probe Request on each channel and only waits between Min_Probe_Response_Time and Max_Probe_Response_Time, instead of waiting up to a full beacon interval per channel in passive scanning; this shortens the interruption, which matters for voice (at the cost of extra probe traffic and power). Authentication can be done independently of association: the STA pre-authenticates with candidate APs while still associated with the current AP, so at handoff only reassociation is needed.</p>`,
+  az: `<p>考古題第 7 題問差異，這裡改成「在情境中選擇並說理由」。被動掃描每個頻道最多等 ChannelTime（通常要涵蓋一個 beacon interval），主動掃描在 Min/Max_Probe_Response_Time 內就能結束。</p>`,
+  src: `2-2 p.26、p.32（Pre-authentication）；2-5 p.26–32「Scanning」「Active Scanning」「Roaming Approach」`
+},
+{
+  id: 'B8', pts: '10%', chips: [['x','ch2-1 × ch2-4']],
+  en: `802.11 supports multiple data rates in the same BSS ("Question: how to decide the proper data rate?").
+  <ol type="a"><li>Why are the DSSS PLCP preamble and header always sent at 1 Mbps DBPSK? How does the PLCP Length field keep virtual carrier sense working for stations that cannot decode the higher-rate payload? (5%)</li>
+  <li>The rate-switching algorithm is beyond the scope of the standard. Propose a reasonable method, and explain the trade-off it must handle. (5%)</li></ol>`,
+  zh: `802.11 在同一個 BSS 支援多種資料速率（講義問：「要怎麼決定適當的資料速率？」）。
+  <ol type="a"><li>為什麼 DSSS 的 PLCP preamble 與 header 永遠用 1 Mbps DBPSK 送？PLCP 的 Length 欄位怎麼讓無法解出高速率 payload 的站台，虛擬載波偵測仍能運作？（5%）</li>
+  <li>速率切換演算法不在標準範圍內。請提出一個合理的方法，並說明它要處理的取捨。（5%）</li></ol>`,
+  ae: `<p><b>(a)</b> The lowest rate is the most robust and is understood by every station, so all stations can synchronize, detect the SFD, and read the SIGNAL (rate) and LENGTH fields, whatever rate the PSDU uses. LENGTH gives the number of microseconds the PSDU will take, so a station that cannot demodulate the payload still knows when the frame ends and treats the medium as busy until then (end-of-frame detection and virtual carrier sense for lower-rate stations).</p>
+  <p><b>(b)</b> Example: start at a high rate and step down after consecutive missing ACKs; step up after a number of consecutive successes (ACK-based), or choose the rate from the measured SNR of received frames. Trade-off: higher rates shorten airtime but need higher SNR, so range shrinks (data rate vs. range); a rate too high causes losses and retransmissions, too low wastes airtime and lowers the throughput of the whole BSS. The algorithm must also tell collisions from bad channel, since a missing ACK can mean either <span class="sup">補充</span>.</p>`,
+  az: `<p>(a) 對應 2-1 的 PLCP 與 Length 欄位、2-4 p.10「Virtual Carrier Sense mechanism still works on multiple rates environments」。(b) 是開放題，講義只問問題；示範答案中的 ACK 計數法是常見做法，屬補充。</p>`,
+  src: `2-1 p.40「PHY Layer Services」、p.42「Data Rate vs. Range」、p.66–68、p.80–82「Signal／Length Field」；2-4 p.10`
+},
+],
+qc: [
+{
+  id: 'C1', pts: '10%', chips: [['calc','計算'],['x','ch1 × ch2-4']],
+  en: `IEEE 802.3 at 10 Mbps uses a slot time of 51.2 µs.
+  <ol type="a"><li>Show that the minimum MAC frame is 64 bytes, and compute the PAD length when the LLC frame is 20 bytes. (4%)</li>
+  <li>Ignoring repeater and transceiver delays and assuming a propagation speed of 2 × 10<sup>8</sup> m/s, what is the maximum distance between two stations? What happens to this distance at 100 Mbps if the minimum frame is still 64 bytes? (4%)</li>
+  <li>Why does 802.11 not need a minimum frame length for the same purpose? (2%)</li></ol>`,
+  zh: `10 Mbps 的 IEEE 802.3 使用 51.2 µs 的 slot time。
+  <ol type="a"><li>證明最短 MAC 訊框是 64 bytes，並計算 LLC 訊框為 20 bytes 時的 PAD 長度。（4%）</li>
+  <li>忽略中繼器與收發器延遲，傳播速度 2 × 10<sup>8</sup> m/s，兩站之間的最大距離是多少？若最短訊框仍是 64 bytes，在 100 Mbps 時這個距離會變成多少？（4%）</li>
+  <li>為什麼 802.11 不需要為了同樣的目的設定最短訊框長度？（2%）</li></ol>`,
+  ae: `<p><b>(a)</b> A sender must still be transmitting when the collision comes back, i.e. transmission time ≥ round-trip delay (slot time). 51.2 µs × 10 Mbps = 512 bits = <b>64 bytes</b> (DA to FCS). Header and FCS: DA 6 + SA 6 + Length 2 + FCS 4 = 18 bytes, so data must be ≥ 46 bytes. LLC = 20 bytes → PAD = 46 − 20 = <b>26 bytes</b>.</p>
+  <p><b>(b)</b> Round trip ≤ 51.2 µs → one way ≤ 25.6 µs → 25.6 × 10<sup>−6</sup> × 2 × 10<sup>8</sup> = <b>5120 m</b> (the real 802.3 limit is 2500 m because repeaters, cables and jam time are included). At 100 Mbps, 512 bits take 5.12 µs, so the distance shrinks 10 times to <b>512 m</b>.</p>
+  <p><b>(c)</b> 802.11 does not detect collisions while transmitting; it learns about a failure from the missing ACK. The frame does not have to last a round-trip time, so no minimum length is needed for collision detection.</p>`,
+  az: `<p>核心觀念：最短訊框＝「傳送時間 ≥ 來回傳播延遲」，所以速率×10，距離就要÷10。(c) 是跨章：碰撞偵測（CD）才需要最短訊框，CA＋ACK 不需要。</p>`,
+  src: `1CSMA_CD p.6「CSMA/CD Protocol」、p.8「Frame Format」、p.10「Collision Detection Window」、p.14；2-4 p.11`
+},
+{
+  id: 'C2', pts: '10%', chips: [['calc','計算'],['x','ch1 × ch2-4']],
+  en: `Truncated binary exponential backoff.
+  <ol type="a"><li>In 802.3, two stations collide for the first time. What is the probability that they collide again on the next attempt? After their 3rd collision? Give the range of r and the maximum waiting time after the 3rd and the 12th collision. (6%)</li>
+  <li>In 802.11b (CWmin 31, CWmax 1023, slot 20 µs), what is the CW and the maximum backoff time at the 3rd retransmission? Why is 802.11's initial window much larger than 802.3's? (4%)</li></ol>`,
+  zh: `截斷二元指數退避。
+  <ol type="a"><li>802.3 中兩個站台第一次碰撞。它們在下一次嘗試再次碰撞的機率是多少？第 3 次碰撞之後呢？寫出第 3 次與第 12 次碰撞後 r 的範圍與最長等待時間。（6%）</li>
+  <li>802.11b（CWmin 31、CWmax 1023、slot 20 µs）第 3 次重傳時的 CW 和最長退避時間是多少？為什麼 802.11 的初始視窗比 802.3 大很多？（4%）</li></ol>`,
+  ae: `<p><b>(a)</b> After the n-th collision r ∈ [0, 2<sup>k</sup> − 1], k = min(n, 10). Two stations collide again if they pick the same r: after the 1st collision r ∈ {0, 1} → P = <b>1/2</b>; after the 3rd collision r ∈ [0, 7] → P = <b>1/8</b>. Max wait after the 3rd collision = 7 × 51.2 = <b>358.4 µs</b>; after the 12th collision k = 10, r ∈ [0, 1023], max = 1023 × 51.2 = <b>52,377.6 µs ≈ 52.4 ms</b>. After 16 attempts the frame is discarded.</p>
+  <p><b>(b)</b> CW: 31 → 63 → 127 → <b>255</b>; max backoff = 255 × 20 = <b>5100 µs</b>. 802.3 backs off only after a collision, which it detects quickly and cheaply. 802.11 backs off <i>before</i> transmitting to avoid collisions, and a collision is expensive (the whole frame is lost and only noticed by the missing ACK), so it starts with a wider window to make collisions unlikely in the first place.</p>`,
+  az: `<p>(a) 兩站同時從 2<sup>k</sup> 個值中選，選到一樣的機率是 1/2<sup>k</sup>。(b) 的「為什麼」是觀念：CD 碰撞代價小、CA 碰撞代價大（整個訊框都浪費）。</p>`,
+  src: `1CSMA_CD p.7；2-4 p.16–17「Binary Exponential Backoff Window」、p.28`
+},
+{
+  id: 'C3', pts: '15%', chips: [['calc','計算'],['x','ch2-1 × ch2-3 × ch2-4']],
+  en: `An 802.11b station sends a 1500-byte MSDU at 11 Mbps with the long PLCP (192 µs). MAC header = 24 bytes, FCS = 4 bytes. ACK (14 bytes), RTS (20 bytes) and CTS (14 bytes) are sent at 1 Mbps. SIFS = 10 µs, slot = 20 µs, DIFS = 50 µs. The station draws a backoff of 7 slots.
+  <ol type="a"><li>Compute the time from the start of DIFS to the end of the ACK, and the resulting throughput, without RTS/CTS. (6%)</li>
+  <li>Repeat with RTS/CTS. (4%)</li>
+  <li>What value does the station put in the Duration field of the RTS? Explain what the other stations do with it. (5%)</li></ol>`,
+  zh: `一個 802.11b 站台用 11 Mbps、long PLCP（192 µs）送 1500 bytes 的 MSDU。MAC header = 24 bytes，FCS = 4 bytes。ACK（14 bytes）、RTS（20 bytes）、CTS（14 bytes）用 1 Mbps 送。SIFS = 10 µs、slot = 20 µs、DIFS = 50 µs。站台抽到的退避是 7 個 slot。
+  <ol type="a"><li>不用 RTS/CTS 時，計算從 DIFS 開始到 ACK 結束的時間，以及得到的吞吐量。（6%）</li>
+  <li>改用 RTS/CTS 再算一次。（4%）</li>
+  <li>站台在 RTS 的 Duration 欄位填什麼值？說明其他站台怎麼使用它。（5%）</li></ol>`,
+  ae: `<p>DATA = 192 + (1500 + 24 + 4) × 8 / 11 = 192 + 1111.3 = <b>1303.3 µs</b>; ACK = 192 + 14 × 8 / 1 = <b>304 µs</b>; RTS = 192 + 160 = <b>352 µs</b>; CTS = 192 + 112 = <b>304 µs</b>.</p>
+  <p><b>(a)</b> DIFS 50 + backoff 7 × 20 = 140 + DATA 1303.3 + SIFS 10 + ACK 304 = <b>1807.3 µs</b>. Throughput = 1500 × 8 / 1807.3 µs ≈ <b>6.64 Mbps</b> (about 60% of 11 Mbps).</p>
+  <p><b>(b)</b> Add RTS 352 + SIFS 10 + CTS 304 + SIFS 10 = 676 µs → <b>2483.3 µs</b>, throughput ≈ <b>4.83 Mbps</b>.</p>
+  <p><b>(c)</b> Duration(RTS) = 3 × SIFS + CTS + DATA + ACK = 30 + 304 + 1303.3 + 304 = 1941.3 → <b>1942 µs</b> (rounded up). Every station that hears the RTS sets its NAV to this value and defers even if it senses the medium idle (virtual carrier sense). The CTS carries Duration(RTS) − SIFS − CTS = 1628 µs (rounded up), so stations near the receiver that are hidden from the sender are also protected.</p>`,
+  az: `<p>這題同時用到 2-1（PLCP 192 µs）、2-3（訊框長度、Duration）、2-4（DIFS、退避、NAV）。觀念重點：PHY overhead 是固定時間，不會因速率提高而變短，所以速率越高、效率越低；RTS/CTS 的額外成本在 11 Mbps 下佔了約 27%，所以只對長訊框（超過 RTS_Threshold）才用。</p>`,
+  src: `2-1 p.66–68（Long PLCP 192 µs）；2-3 p.12、p.19（RTS/CTS/ACK 格式）；2-4 p.16、p.21–22「Drawback of DCF」、p.25`
+},
+{
+  id: 'C4', pts: '10%', chips: [['calc','計算']],
+  en: `Three 802.11b stations A, B and C are deferring. When the medium becomes idle at t = 0, their backoff counters are A = 5, B = 2, C = 7. Each frame exchange (DATA + SIFS + ACK) occupies the medium for 1000 µs. After its first frame, B has another frame queued and draws a new backoff of 4. DIFS = 50 µs, slot = 20 µs.
+  <ol type="a"><li>Give the transmission order and the start time of each transmission, with the remaining backoff of every station after each transmission. (7%)</li>
+  <li>Which DCF rules does this example illustrate? (3%)</li></ol>`,
+  zh: `三個 802.11b 站台 A、B、C 都在等待。媒介在 t = 0 變成閒置時，它們的退避計數器分別是 A = 5、B = 2、C = 7。每次訊框交換（DATA + SIFS + ACK）佔用媒介 1000 µs。B 送完第一個訊框後還有下一個訊框，抽到新的退避值 4。DIFS = 50 µs、slot = 20 µs。
+  <ol type="a"><li>寫出傳送順序、每次傳送的開始時間，以及每次傳送後各站剩下的退避值。（7%）</li>
+  <li>這個例子說明了 DCF 的哪些規則？（3%）</li></ol>`,
+  ae: `<div class="tbl-scroll"><table>
+  <tr><th>Event</th><th>Time</th><th>A</th><th>B</th><th>C</th></tr>
+  <tr><td>Idle, DIFS ends</td><td>50</td><td>5</td><td>2</td><td>7</td></tr>
+  <tr><td>B transmits (after 2 slots)</td><td>90 → 1090</td><td>3</td><td>new 4</td><td>5</td></tr>
+  <tr><td>DIFS ends</td><td>1140</td><td>3</td><td>4</td><td>5</td></tr>
+  <tr><td>A transmits (after 3 slots)</td><td>1200 → 2200</td><td>—</td><td>1</td><td>2</td></tr>
+  <tr><td>B transmits (after 1 slot)</td><td>2250 + 20 = 2270 → 3270</td><td>—</td><td>—</td><td>1</td></tr>
+  <tr><td>C transmits (after 1 slot)</td><td>3320 + 20 = 3340</td><td>—</td><td>—</td><td>—</td></tr>
+  </table></div>
+  <p><b>(b)</b> (1) Backoff counts down only while the medium is idle and is frozen while busy; it resumes after the next DIFS with the remaining value. (2) A station that has just transmitted and has another frame queued must perform a new backoff, so B cannot send back-to-back. (3) The counters of waiting stations keep shrinking, so access tends toward FCFS.</p>`,
+  az: `<p>做法：每次媒介忙完都要先等 DIFS，之後每經過一個閒置 slot，所有站的計數器減 1，先減到 0 的先送。注意 B 的新退避值 4 是從 A 傳送前的 DIFS 之後才開始倒數。和 11EnhancedQoS 第 37 張「DCF Example」同類型。</p>`,
+  src: `2-4 p.16、p.20、p.27「DCF Access Procedure」；11EnhancedQoS「DCF Example」`
+},
+{
+  id: 'C5', pts: '10%', chips: [['calc','計算'],['x','ch2-4 × ch3']],
+  en: `EDCA in 802.11a (SIFS = 16 µs, slot = 9 µs). Use the lecture's WME defaults: AIFSN = 2, 2, 3, 7 and random backoff 0–3, 0–7, 0–15, 0–15 slots for AC_VO, AC_VI, AC_BE, AC_BK.
+  <ol type="a"><li>Compute AIFS[AC] and the minimum and maximum initial waiting time of each AC. Compare AIFS with DIFS. (6%)</li>
+  <li>If an administrator configures all four ACs with the same AIFSN and the same CW, what happens to the service differentiation? (2%)</li>
+  <li>Since the waiting ranges overlap, does EDCA guarantee that voice always goes first? (2%)</li></ol>`,
+  zh: `802.11a 的 EDCA（SIFS = 16 µs、slot = 9 µs）。使用講義的 WME 預設值：AC_VO、AC_VI、AC_BE、AC_BK 的 AIFSN = 2、2、3、7，隨機退避為 0–3、0–7、0–15、0–15 個 slot。
+  <ol type="a"><li>計算各 AC 的 AIFS[AC]，以及初次等待時間的最小值與最大值，並和 DIFS 比較。（6%）</li>
+  <li>如果管理者把四個 AC 都設成相同的 AIFSN 與 CW，服務區分會變成怎樣？（2%）</li>
+  <li>既然等待時間的範圍互相重疊，EDCA 能保證語音一定先送嗎？（2%）</li></ol>`,
+  ae: `<p><b>(a)</b> AIFS[AC] = AIFSN × 9 + 16.</p>
+  <div class="tbl-scroll"><table>
+  <tr><th>AC</th><th>AIFS</th><th>Min wait</th><th>Max wait</th></tr>
+  <tr><td>AC_VO</td><td>2×9+16 = 34 µs</td><td>34</td><td>34 + 3×9 = 61 µs</td></tr>
+  <tr><td>AC_VI</td><td>34 µs</td><td>34</td><td>34 + 7×9 = 97 µs</td></tr>
+  <tr><td>AC_BE</td><td>3×9+16 = 43 µs</td><td>43</td><td>43 + 15×9 = 178 µs</td></tr>
+  <tr><td>AC_BK</td><td>7×9+16 = 79 µs</td><td>79</td><td>79 + 15×9 = 214 µs</td></tr>
+  </table></div>
+  <p>DIFS = 2 × 9 + 16 = 34 µs, so AIFS of VO/VI equals DIFS (the minimum for a QSTA); BE and BK wait longer than a legacy station's DIFS.</p>
+  <p><b>(b)</b> The ACs then contend exactly like DCF stations: equal waiting distributions, so no AC gets earlier access and voice suffers the same delay as background traffic. Only the TXOP limit (how long a winner keeps the medium) could still differ.</p>
+  <p><b>(c)</b> No. The ranges overlap (e.g. VO can draw 61 µs while BE draws 43 µs), so EDCA gives <i>statistical</i> priority — prioritized QoS, a relative priority — not a strict guarantee. Strict guarantees need parameterized QoS (TSPEC + HCCA).</p>`,
+  az: `<p>(c) 連到講義第 5 張的 Parameterized QoS vs. Prioritized QoS：EDCA 是相對優先（機率上較快），HCCA＋TSPEC 才是量化保證。</p>`,
+  src: `11EnhancedQoS「Two Kinds of QoS Control」「EDCA」「IFS in EDCF: Contention between ACs」「Arbitration Interframe Space (AIFS)」；2-4 p.13`
+},
+{
+  id: 'C6', pts: '10%', chips: [['calc','計算']],
+  en: `TXOP.
+  <ol type="a"><li>The TXOP limit of an AC is announced as 94 (units of 32 µs). How long is the TXOP? Each exchange is QoS DATA (260 µs) + SIFS (16 µs) + ACK (44 µs), and consecutive exchanges are separated by SIFS. How many exchanges fit in one TXOP? (6%)</li>
+  <li>The default TXOP limit of AC_VI (3.008 ms) is twice that of AC_VO (1.504 ms). Explain the trade-off of a long TXOP limit and why voice is given the shorter one. (4%)</li></ol>`,
+  zh: `TXOP。
+  <ol type="a"><li>某個 AC 公告的 TXOP limit 是 94（單位 32 µs）。TXOP 有多長？每次交換是 QoS DATA（260 µs）+ SIFS（16 µs）+ ACK（44 µs），相鄰的交換之間隔一個 SIFS。一個 TXOP 內能放幾次交換？（6%）</li>
+  <li>AC_VI 的預設 TXOP limit（3.008 ms）是 AC_VO（1.504 ms）的兩倍。說明 TXOP limit 設得長的取捨，以及為什麼語音分到較短的。（4%）</li></ol>`,
+  ae: `<p><b>(a)</b> 94 × 32 = <b>3008 µs</b>. One exchange = 260 + 16 + 44 = 320 µs; n exchanges take 320n + 16(n − 1) = 336n − 16 ≤ 3008 → n ≤ 9 → <b>9 exchanges</b> (exactly 3008 µs). One contention (AIFS + backoff) is paid for nine frames instead of one.</p>
+  <p><b>(b)</b> A long TXOP spreads the contention overhead over many frames, raising throughput, but while one AC holds the medium all others must wait, so their delay grows by up to one TXOP limit. Video produces large bursts of frames and benefits from a long TXOP. Voice packets are small and periodic (one every 20 ms), so they need frequent, short accesses rather than long ones; a short limit for voice also keeps the delay it causes others small.</p>`,
+  az: `<p>注意 n 次交換之間只有 n − 1 個 SIFS。(b) 是觀念：TXOP 長 → 競爭成本攤提、吞吐量高；但別人要等更久。語音封包小又週期性，不需要長 TXOP。</p>`,
+  src: `11EnhancedQoS「TXOP」「Transmission Opportunity (TXOP) (cont.)」「Default EDCA Parameter Set」「Processing of Media Streams」`
+},
+{
+  id: 'C7', pts: '10%', chips: [['calc','計算']],
+  en: `A QSTA sends 16 QoS DATA frames of 200 µs each within one TXOP. Given: ACK = 44 µs, BlockAckReq = 56 µs, BlockAck = 228 µs, SIFS = 16 µs.
+  <ol type="a"><li>Compute the total time with Normal ACK and with Immediate Block Ack. (6%)</li>
+  <li>Under what conditions does Block Ack save more? Why does 802.11e also define a Delayed Block Ack? (4%)</li></ol>`,
+  zh: `一個 QSTA 在一個 TXOP 內送 16 個 QoS DATA 訊框，每個 200 µs。已知：ACK = 44 µs、BlockAckReq = 56 µs、BlockAck = 228 µs、SIFS = 16 µs。
+  <ol type="a"><li>分別計算使用 Normal ACK 與 Immediate Block Ack 的總時間。（6%）</li>
+  <li>在什麼條件下 Block Ack 省得更多？為什麼 802.11e 還要定義 Delayed Block Ack？（4%）</li></ol>`,
+  ae: `<p><b>(a)</b> Normal ACK: 16 × (200 + 16 + 44) + 15 × 16 = 4160 + 240 = <b>4400 µs</b>. Block Ack: 16 × 200 + 15 × 16 = 3440, then SIFS + BAR + SIFS + BA = 16 + 56 + 16 + 228 = 316 → <b>3756 µs</b>. Saving 644 µs ≈ <b>14.6%</b>.</p>
+  <p><b>(b)</b> The saving grows when more frames share one BlockAck, when the data frames are short (ACK overhead is a larger fraction), and when per-frame overhead (PHY preamble, SIFS) is large compared with the data — i.e. at high data rates. With few frames the long BlockAck can cost more than it saves. Immediate Block Ack suits high-bandwidth, low-latency traffic; Delayed Block Ack suits applications that tolerate moderate latency: the recipient first answers the BlockAckReq with a normal ACK and sends the BlockAck later, giving it time to prepare the response.</p>`,
+  az: `<p>這題的時間是題目給定的假設，不是講義數據。觀念：Block Ack 把多個 ACK 合併，但 BlockAck 本身很長，訊框數少時效益有限。Immediate／Delayed 的適用情境取自講義「Brief of Block ACK」。</p>`,
+  src: `11EnhancedQoS「Brief of Block ACK」「Procedure of Block Ack」「BlockAck Frame Format」`
+},
+{
+  id: 'C8', pts: '10%', chips: [['calc','計算'],['x','ch2-5 × ch3']],
+  en: `A G.729 VoIP call produces 8 kbps of voice and one RTP packet every 20 ms. The beacon interval is 100 ms.
+  <ol type="a"><li>How many bytes of voice payload are in each packet? (2%)</li>
+  <li>With legacy power save, how many downlink voice packets are buffered at the AP per beacon interval, and how many PS-Polls are needed to fetch them? If the station listens only every 3 beacons, what is the worst-case delay? (5%)</li>
+  <li>With U-APSD, what is the delay and how many extra polling frames are needed? (3%)</li></ol>`,
+  zh: `G.729 VoIP 通話產生 8 kbps 的語音，每 20 ms 一個 RTP 封包。Beacon interval 是 100 ms。
+  <ol type="a"><li>每個封包有多少 bytes 的語音內容？（2%）</li>
+  <li>使用傳統省電時，每個 beacon interval AP 會緩存幾個下行語音封包？要幾個 PS-Poll 才能取回？如果站台每 3 個 beacon 才聽一次，最差延遲是多少？（5%）</li>
+  <li>使用 U-APSD 時，延遲是多少？需要多少額外的輪詢訊框？（3%）</li></ol>`,
+  ae: `<p><b>(a)</b> 8000 bit/s × 0.02 s = 160 bits = <b>20 bytes</b>.</p>
+  <p><b>(b)</b> 100 / 20 = <b>5 packets</b> per beacon interval, needing <b>5 PS-Polls</b> (one per buffered frame, with More Data telling the STA to continue). Listening every 3 beacons: up to <b>300 ms</b> delay and 15 buffered packets — far above the 20 ms requirement.</p>
+  <p><b>(c)</b> The STA's own uplink voice frame every 20 ms is the trigger frame, so each service period delivers the one buffered downlink packet: delay ≤ <b>20 ms</b>, and <b>no extra</b> polling frames (the trigger is associated with a data frame).</p>`,
+  az: `<p>把講義第 3 張（G.729 8 kbps、20 ms 一包）和第 72–73 張（beacon 100 ms、延遲 100–300 ms、需求 &lt; 20 ms）的數字串起來。U-APSD 的優勢：上行資料本身就是 trigger，不用額外的 PS-Poll。</p>`,
+  src: `11EnhancedQoS「Processing of Media Streams」「Unscheduled APSD」「WMM Power Save」「Study Case: VoIP」「Comparisons」；2-5 p.22`
+},
+{
+  id: 'C9', pts: '10%', chips: [['calc','計算'],['past','考古 Q3-A 延伸']],
+  en: `Modulation and spreading.
+  <ol type="a"><li>802.11 DSSS uses an 11-chip Barker sequence at 11 Mchip/s. What is the symbol rate, and how do DBPSK and DQPSK give 1 and 2 Mbps? Compute the processing gain in dB. (4%)</li>
+  <li>Explain QAM. Given 48 data subcarriers and a 4 µs OFDM symbol, show how 802.11a obtains 54 Mbps with 64-QAM and rate-3/4 coding, and 24 Mbps with 16-QAM and rate-1/2 coding. (6%)</li></ol>`,
+  zh: `調變與展頻。
+  <ol type="a"><li>802.11 DSSS 使用 11 chip 的 Barker 序列，chip rate 11 Mchip/s。符元速率是多少？DBPSK 與 DQPSK 怎麼得到 1 與 2 Mbps？以 dB 計算處理增益。（4%）</li>
+  <li>解釋 QAM。已知有 48 個資料子載波、OFDM 符元長 4 µs，說明 802.11a 怎麼用 64-QAM＋3/4 編碼得到 54 Mbps，以及用 16-QAM＋1/2 編碼得到 24 Mbps。（6%）</li></ol>`,
+  ae: `<p><b>(a)</b> 11 Mchip/s ÷ 11 chips = <b>1 Msymbol/s</b>. DBPSK carries 1 bit/symbol → 1 Mbps; DQPSK carries 2 bits/symbol (phase changes 0, π/2, π, 3π/2) → 2 Mbps. Processing gain = 10 log<sub>10</sub>(11) ≈ <b>10.4 dB</b>, which makes the signal robust against narrowband interference and noise.</p>
+  <p><b>(b)</b> QAM amplitude-modulates an in-phase (cosine) and a quadrature (sine) carrier, i.e. a two-channel ASK system, equivalent to combining PSK and ASK; M-QAM carries log<sub>2</sub>M bits per symbol per subcarrier. 54 Mbps: 48 × 6 bits × 3/4 = 216 bits per symbol ÷ 4 µs = <b>54 Mbps</b>. 24 Mbps: 48 × 4 × 1/2 = 96 bits ÷ 4 µs = <b>24 Mbps</b>.</p>`,
+  az: `<p>考古題第 3 題 A 只問 QAM 是什麼，這裡加上計算。48 個資料子載波與 4 µs 符元長度是題目給的條件。</p>`,
+  src: `2-1 p.43–44「Four PHYs」、p.59–60（Barker、dB）、p.74–77（QAM、DBPSK、DQPSK）`
+},
+{
+  id: 'C10', pts: '5%', chips: [['calc','計算']],
+  en: `An 802.11b station receives a frame with a CRC error, so it must wait EIFS = SIFS + (time to transmit an ACK at the lowest rate) + DIFS before contending. Given SIFS = 10 µs, DIFS = 50 µs, and an ACK at 1 Mbps takes 304 µs including the PLCP.
+  <ol type="a"><li>Compute EIFS and explain why it is so much longer than DIFS. (3%)</li>
+  <li>EIFS starts "without regard to the virtual carrier-sense mechanism". Why can the station not rely on its NAV in this case? (2%)</li></ol>`,
+  zh: `一個 802.11b 站台收到 CRC 錯誤的訊框，因此在競爭前要等 EIFS = SIFS +（用最低速率送一個 ACK 的時間）+ DIFS。已知 SIFS = 10 µs、DIFS = 50 µs，1 Mbps 的 ACK 含 PLCP 需要 304 µs。
+  <ol type="a"><li>計算 EIFS，並說明它為什麼比 DIFS 長這麼多。（3%）</li>
+  <li>EIFS 的開始「不考慮虛擬載波偵測」。為什麼這種情況下站台不能依賴自己的 NAV？（2%）</li></ol>`,
+  ae: `<p><b>(a)</b> EIFS = 10 + 304 + 50 = <b>364 µs</b>. The extra SIFS + ACK time is exactly what the intended receiver of the corrupted frame needs to return its ACK. This station could not decode the frame, but the real receiver may have, so it must not start transmitting and collide with that ACK.</p>
+  <p><b>(b)</b> The Duration field is inside the corrupted frame, so the station never obtained a valid duration and its NAV was not updated. EIFS is a conservative substitute that covers the ACK the station cannot predict.</p>`,
+  az: `<p>不用背公式各項（題目已給），重點是「為什麼」：收壞的訊框 → 讀不到 Duration → NAV 沒更新 → 用 EIFS 保守地讓對方回完 ACK。</p>`,
+  src: `2-4 p.15「EIFS」；2-1 p.66–68`
+},
+]};
+
+function chip([k, t]) { return `<span class="chip ${k}">${t}</span>`; }
+function render(list) {
+  return list.map(q => `
+  <section class="mq" id="${q.id}">
+    <div class="mq-head"><span class="mq-id">${q.id}</span><span class="mq-pts">(${q.pts})</span>${q.chips.map(chip).join('')}</div>
+    <div class="q-en" lang="en">${q.en}</div>
+    <div class="q-zh">${q.zh}</div>
+    <details>
+      <summary>參考答案</summary>
+      <div class="ans-label">Model answer</div>
+      <div class="ans-en" lang="en">${q.ae}</div>
+      <div class="ans-label">中文說明</div>
+      <div class="ans-zh">${q.az}</div>
+      ${SRC(q.src)}
+    </details>
+  </section>`).join('');
+}
+for (const k of ['qa', 'qb', 'qc']) document.getElementById(k).innerHTML = render(Q[k]);
+document.getElementById('open-all').addEventListener('click', () => document.querySelectorAll('.mq details').forEach(d => d.open = true));
+document.getElementById('close-all').addEventListener('click', () => document.querySelectorAll('.mq details').forEach(d => d.open = false));
+</script>
+</body>
+</html>

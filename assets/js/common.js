@@ -12,6 +12,7 @@
     { href: 'ch3-80211e-qos.html', label: '3. 802.11e QoS' },
     { href: 'ch4-random-access.html', label: '4. 隨機存取分析' },
     { href: 'hw1-ns3.html', label: 'HW1. ns-3 使用說明' },
+    { href: 'midterm-practice.html', label: '期中練習' },
     { href: 'index.html#english', label: '英文練習' },
     { href: 'index.html#lecture', label: '講義對照 🔒' },
   ];
