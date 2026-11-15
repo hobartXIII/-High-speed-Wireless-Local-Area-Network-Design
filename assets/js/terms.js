@@ -6,7 +6,18 @@
 (function () {
   'use strict';
   const TERMS = window.TERMS || {};
+  // 「Hidden Node Problem／隱藏節點問題」也要配到「Hidden node／隱藏節點」
+  Object.keys(TERMS).forEach((k) => {
+    const s = k.replace(/\s+problem$/i, '').replace(/問題$/, '');
+    if (s !== k && s.length >= 2 && !(s in TERMS)) TERMS[s] = TERMS[k];
+  });
   const keys = Object.keys(TERMS).sort((a, b) => b.length - a.length);
+  // 含小寫英文、長度 ≥ 4 的名詞不分大小寫（hidden node = Hidden Node）；全大寫縮寫（AC、CW、TA）仍精確比對
+  // 單位（Mbps vs MB/s、dBi）大小寫有意義，維持精確比對
+  const ci = (k) => k.length >= 4 && /[a-z]/.test(k) && !/(bps|[bB]\/s)$|^dB/.test(k);
+  const CANON = {};
+  keys.forEach((k) => { if (ci(k) && !(k.toLowerCase() in CANON)) CANON[k.toLowerCase()] = k; });
+  const canon = (t) => (t in TERMS ? t : CANON[t.toLowerCase()] || t);
   if (!keys.length) return;
 
   // 不處理的區塊：互動圖、Mermaid、操作區、標題、程式碼、連結、按鈕
@@ -14,7 +25,8 @@
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const W = /[A-Za-z0-9_]/;
   // 英數開頭／結尾的名詞要對齊字界，避免 TS 配到 TSPEC、AC 配到 AC_BK
-  const pat = keys.map((k) => (W.test(k[0]) ? '(?<![A-Za-z0-9_])' : '') + esc(k) + (W.test(k[k.length - 1]) ? '(?![A-Za-z0-9_])' : '')).join('|');
+  const body = (k) => (ci(k) ? esc(k).replace(/[A-Za-z]/g, (c) => '[' + c.toLowerCase() + c.toUpperCase() + ']') : esc(k));
+  const pat = keys.map((k) => (W.test(k[0]) ? '(?<![A-Za-z0-9_])' : '') + body(k) + (W.test(k[k.length - 1]) ? '(?![A-Za-z0-9_])' : '')).join('|');
   const RE = new RegExp(pat, 'g');
 
   function wrapAll() {
@@ -37,7 +49,7 @@
         const s = document.createElement('span');
         s.className = 'term';
         s.tabIndex = 0;
-        s.dataset.term = m[0];
+        s.dataset.term = canon(m[0]);
         s.textContent = m[0];
         frag.appendChild(s);
         last = m.index + m[0].length;
