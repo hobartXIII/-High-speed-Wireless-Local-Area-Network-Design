@@ -46,9 +46,11 @@
       '<circle cx="16" cy="22" r="3" style="fill:var(--accent)"/>' +
       '<path d="M9 16a10 10 0 0 1 14 0M5 12a15.5 15.5 0 0 1 22 0" style="stroke:var(--accent);fill:none" stroke-width="2.6" stroke-linecap="round"/></svg>' +
       '<span class="full">高速無線區域網路設計</span></a>' +
+      '<button class="nav-arrow l" type="button" aria-label="導覽列往左">‹</button>' +
       '<nav class="chapters" aria-label="章節">' +
       CHAPTERS.map(c => `<a href="${c.href}"${c.href === here ? ' aria-current="page"' : ''}>${c.label}</a>`).join('') +
       '</nav>' +
+      '<button class="nav-arrow r" type="button" aria-label="導覽列往右">›</button>' +
       '<button class="theme-btn" type="button" aria-label="切換深淺色">◐</button></div>';
     document.body.prepend(header);
     if (window.Highlighter) header.querySelector('.theme-btn').before(window.Highlighter.menu());
@@ -65,7 +67,30 @@
       const max = nav.scrollWidth - nav.clientWidth;
       nav.classList.toggle('fade-l', nav.scrollLeft > 2);
       nav.classList.toggle('fade-r', nav.scrollLeft < max - 2);
+      header.querySelector('.nav-arrow.l').disabled = nav.scrollLeft <= 2;
+      header.querySelector('.nav-arrow.r').disabled = nav.scrollLeft >= max - 2;
     };
+    header.querySelectorAll('.nav-arrow').forEach(b => b.addEventListener('click', () =>
+      nav.scrollBy({ left: (b.classList.contains('l') ? -1 : 1) * nav.clientWidth * 0.7, behavior: 'smooth' })));
+    // 滑鼠按住拖曳捲動；拖超過 5px 就不觸發連結
+    let drag = null;
+    nav.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      drag = { x: e.clientX, left: nav.scrollLeft, moved: false };
+    });
+    nav.addEventListener('pointermove', e => {
+      if (!drag) return;
+      const dx = e.clientX - drag.x;
+      if (!drag.moved && Math.abs(dx) > 5) { drag.moved = true; nav.setPointerCapture(e.pointerId); nav.classList.add('dragging'); }
+      if (drag.moved) nav.scrollLeft = drag.left - dx;
+    });
+    const endDrag = () => {
+      if (drag && drag.moved) nav.addEventListener('click', ev => { ev.preventDefault(); ev.stopPropagation(); }, { capture: true, once: true });
+      drag = null; nav.classList.remove('dragging');
+    };
+    nav.addEventListener('pointerup', endDrag);
+    nav.addEventListener('pointercancel', () => { drag = null; nav.classList.remove('dragging'); });
+    nav.addEventListener('dragstart', e => e.preventDefault());
     nav.addEventListener('scroll', fade, { passive: true });
     window.addEventListener('resize', fade);
     nav.addEventListener('wheel', e => {
