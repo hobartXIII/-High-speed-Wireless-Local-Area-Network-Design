@@ -1,5 +1,5 @@
-// 產生考古題與練習題的 PDF（只有英文題目、中文翻譯、作答重點、中文詳答、講義出處；不放英文 Model answer）
-// 用法：node tools/build-exam-pdf.js   → pdf/past-exam.pdf、pdf/midterm-practice.pdf
+// 產生考古題與練習題的 PDF（只有英文題目、中文翻譯、作答重點、中文詳答、講義出處；不放英文 Model answer），以及小抄導讀的 PDF
+// 用法：node tools/build-exam-pdf.js   → pdf/past-exam.pdf、pdf/midterm-practice.pdf、pdf/cheatsheet-guide.pdf
 // 題目資料直接從 past-exam.html 的 P、midterm-practice.html 的 Q 讀，改了題目就重跑。
 // 需要本機的 Chrome（預設路徑見 CHROME，或設環境變數 CHROME）。
 const fs = require('fs'), path = require('path'), os = require('os'), { execFileSync } = require('child_process');
@@ -80,6 +80,14 @@ for (const [name, html] of Object.entries(docs)) {
   if (process.env.KEEP_HTML) fs.copyFileSync(src, path.join(process.env.KEEP_HTML, name + '.html')); // 除錯用：保留中間 HTML
   execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', `--user-data-dir=${path.join(tmp, 'chr')}`,
     `--print-to-pdf=${dst}`, 'file:///' + src.replace(/\\/g, '/')], { stdio: 'ignore' });
+  console.log(path.relative(ROOT, dst), fs.statSync(dst).size, 'bytes');
+}
+// 小抄導讀：直接印網頁（頁面自己的 @media print 會藏掉導覽列與目錄）
+{
+  const dst = path.join(OUT, 'cheatsheet-guide.pdf');
+  execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--no-pdf-header-footer', '--allow-file-access-from-files',
+    `--user-data-dir=${path.join(tmp, 'chr')}`, '--virtual-time-budget=5000',
+    `--print-to-pdf=${dst}`, 'file:///' + path.join(ROOT, 'cheatsheet-guide.html').replace(/\\/g, '/')], { stdio: 'ignore' });
   console.log(path.relative(ROOT, dst), fs.statSync(dst).size, 'bytes');
 }
 fs.rmSync(tmp, { recursive: true, force: true });

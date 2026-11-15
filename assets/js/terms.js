@@ -21,7 +21,7 @@
   if (!keys.length) return;
 
   // 不處理的區塊：互動圖、Mermaid、操作區、標題、程式碼、連結、按鈕
-  const SKIP = '.fig-body, .controls, .readout, .status, .log, .mermaid-host, svg, .pager, h1, h2, a, button, code, pre, script, style, .term, .sup, .hl-tool';
+  const SKIP = '.fig-body, .controls, .readout, .status, .log, .mermaid-host, svg, .pager, h1, h2, a, button, code, pre, script, style, .term, .sup, .hl-tool, .no-terms';
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const W = /[A-Za-z0-9_]/;
   // 英數開頭／結尾的名詞要對齊字界，避免 TS 配到 TSPEC、AC 配到 AC_BK

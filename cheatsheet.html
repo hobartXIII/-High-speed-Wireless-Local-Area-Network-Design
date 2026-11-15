@@ -38,7 +38,7 @@
   .f.p { color: var(--green); } .f.m { color: var(--red); } .f.c { color: var(--purple); }
   .print-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
   @media print {
-    :root, :root[data-theme="dark"] {
+    :root, :root:not([data-theme="light"]), :root[data-theme] {
       --bg: #fff; --surface: #fff; --surface-2: #eceeea; --fg: #000; --muted: #444; --border: #999;
       --accent: #1d4ed8; --accent-soft: #dbe6fd; --purple: #5b21b6; --purple-soft: #e6dcfb; --orange: #9a3f00; --orange-soft: #fbe3cc;
       --green: #0b6b38; --green-soft: #d8f2e3; --red: #b91c1c; color-scheme: light;
@@ -68,6 +68,7 @@
   <div class="screen-only">
     <div class="callout note">用法：看到題目 → 在 ① 用題目的英文字眼找到機制與卡片編號（K1–K27）→ 用 ④ 的骨架決定答題結構 → 到背面的機制卡取「目的／運作／優缺點／比較」→ 「為什麼」從 ③ 推。內容取自講義，講義上沒有、依標準或推理補充的標 <span class="sup">補充</span>。</div>
     <div class="print-bar"><button class="btn" type="button" onclick="window.print()">🖨 列印／另存 PDF</button>
+      <a class="btn" href="cheatsheet-guide.html" style="text-decoration:none">📖 小抄導讀（詳細版）</a>
       <span style="color:var(--muted);font-size:.9rem">列印設定：紙張 A4、縮放 100%、勾選「背景圖形」、雙面選「長邊翻頁」。</span></div>
   </div>
 

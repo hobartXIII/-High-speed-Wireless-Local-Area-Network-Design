@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小抄導讀</title>
+<meta name="description" content="期中小抄的詳細版：照小抄順序（① 索引 → ② OSI → ③ 推導 → ④ 骨架 → ⑤ 比較 → K1–K27 機制卡 → ⑥ 公式）把每一行展開成完整說明，附名詞表。考前閱讀用，考場帶的是 A4 小抄。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<style>
+  .use { border-left: 3px solid var(--accent); padding: 4px 12px; margin: .6em 0 1em; background: var(--accent-soft); border-radius: 0 8px 8px 0; }
+  .use b:first-child { color: var(--accent); }
+  .card { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 16px; margin: 0 0 1.1em; background: var(--surface); break-inside: avoid-page; }
+  .card h3 { margin: .2em 0 .5em; }
+  .card h3 .n { font-family: var(--mono); color: var(--accent); margin-right: .4em; }
+  .row { margin: .45em 0; }
+  .lab { display: inline-block; min-width: 3.2em; font-weight: 700; color: var(--accent); }
+  .lab.p { color: var(--green); } .lab.m { color: var(--red); } .lab.c { color: var(--purple); }
+  .terms { font-size: .9em; color: var(--muted); border-top: 1px dashed var(--border); margin-top: .6em; padding-top: .4em; }
+  .terms b { color: var(--fg); }
+  .why { color: var(--purple); font-weight: 700; }
+  .ex { font-size: .92em; background: var(--surface-2); border-radius: 6px; padding: 4px 10px; margin: .3em 0; }
+  table.gl td:first-child { white-space: nowrap; font-weight: 600; }
+  @media print {
+    /* 選擇器要比深色模式的 :root:not([data-theme="light"]) 更強，系統是深色時列印才不會沿用深色 */
+    :root, :root:not([data-theme="light"]), :root[data-theme] { --bg: #fff; --surface: #fff; --surface-2: #f1f2f4; --fg: #111; --muted: #444; --border: #bbb;
+      --accent: #1d4ed8; --accent-soft: #dbe6fd; --purple: #5b21b6; --purple-soft: #e6dcfb; --orange: #9a3f00; --orange-soft: #fbe3cc;
+      --green: #0b6b38; --green-soft: #d8f2e3; --red: #b91c1c; --red-soft: #fde2e2; --yellow-soft: #fdf3c8; color-scheme: light; }
+    @page { size: A4; margin: 13mm 12mm; }
+    html, body { background: #fff !important; }
+    body { font-size: 10pt; }
+    .site-header, .site-footer, .pager, .toc, .screen-only, .hl-toolbar { display: none !important; }
+    .layout, main { max-width: none; padding: 0; margin: 0; display: block; }
+    h2 { break-after: avoid; } h3 { break-after: avoid; }
+    .use, .card, .lab, .why, th, .sup { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">MIDTERM</div>
+    <h1>📖 小抄導讀（詳細版）</h1>
+    <div class="meta"><span>考前閱讀用；考場帶的是 <a href="cheatsheet.html">A4 小抄</a></span><span>順序與小抄相同：① → ⑤ → K1–K27 → ⑥</span></div>
+  </div>
+  <div class="callout note screen-only">這份導讀把 <a href="cheatsheet.html">期中小抄</a> 上每一行的縮寫展開成完整句子：每一區先說「考場上怎麼用」，再逐行說明為什麼、怎麼運作、對應哪一章。專有名詞在每一區第一次出現時就地解釋，滑鼠移到虛線名詞上也會跳出解釋，最後附小抄用到的名詞表。內容取自各章筆記；講義上沒有、依標準或推理補充的標 <span class="sup">補充</span>。
+    <div style="margin-top:8px"><a class="btn" href="pdf/cheatsheet-guide.pdf" download style="text-decoration:none">⬇ 下載 PDF</a></div></div>
+
+  <h2 id="how">0. 怎麼用這張小抄</h2>
+  <div class="use"><b>考場流程：</b>看題目 → 在 <b>①</b> 用題目的英文字眼找到機制與卡片編號 → 用 <b>④</b> 的骨架決定答案的段落結構 → 到 <b>K 卡</b> 取「目的／運作／優缺點／比較」的內容 → 題目問「為什麼」時，從 <b>③</b> 找出是哪一個無線特性造成的 → 計算題到 <b>⑥</b> 找公式與常數。</div>
+  <ul>
+    <li><b>正面</b>（找入口、推答案）：① 題目字眼索引、② OSI 七層、③ 無線特性推導表、④ 答題骨架、⑤ 跨章比較矩陣，以及 K1–K7 機制卡。</li>
+    <li><b>背面</b>（內容）：K8–K27 機制卡與 ⑥ 公式計算區。</li>
+    <li><b>卡片上的符號</b>：<span class="lab">目</span>目的（這個機制要解決什麼問題）、<span class="lab">運</span>運作（誰、何時、送什麼、用哪個欄位）、<span class="lab p">＋</span>優點、<span class="lab m">－</span>缺點、<span class="lab c">比</span>要拿來比較的機制。紫色粗體 <span class="why">為何</span> 是「為什麼這樣設計」的答案。<span class="sup">補充</span> 表示講義沒有、依標準或推理補上的內容，答題時可以寫，但要知道它不是講義原文。</li>
+    <li><b>老師的出題風格</b>：英文題目、觀念與跨章比較、反事實（「如果 X 改用 Y 會怎樣」）、優缺點、解釋名詞、限制條件（「不用 RTS/CTS 怎麼解」）。很少考規格細節，所以小抄重點放在「為什麼」與「比較」。</li>
+  </ul>
+
+  <h2 id="s1">① 題目字眼 → 機制 → 卡片</h2>
+  <div class="use"><b>考場上怎麼用：</b>題目常常不直接說機制名稱（例如考古題 Q2 只問「怎麼睡覺又不掉封包」，Q5 只問「怎麼用時間給優先權」），要自己答出機制名稱。先在左欄找題目裡出現的英文字，中間欄就是要寫的機制，右欄告訴你去哪張卡找內容。</div>
+  <div class="tbl-wrap"><table>
+    <tr><th>題目出現</th><th>要想到的機制，以及為什麼</th><th>卡</th></tr>
+    <tr><td>sleep, power, battery, without losing</td><td>省電機制。基礎架構網路用 TIM（Beacon 裡標示「誰有緩衝資料」的點陣圖）、DTIM（廣播／群播的送出時機）、PS-Poll（醒來向 AP 取資料的控制訊框）；IBSS 用 ATIM 視窗互相通知；802.11e 用 APSD 降低省電造成的延遲。「without losing packets」的關鍵是 <b>AP 替睡著的站台緩衝</b>。</td><td>K11 K12 K26</td></tr>
+    <tr><td>priority, "time", differentiate</td><td>用「等待時間」給優先權：IFS（訊框間隔，等越短越優先）、隨機退避、802.11e 的 AIFS（每個流量類別各自的等待時間）與 EDCA。考古題 Q5 就是這一題。</td><td>K3 K4 K21</td></tr>
+    <tr><td>collision, contention, access method</td><td>存取方法：802.3 的 CSMA/CD（碰撞偵測）對比 802.11 的 CSMA/CA（碰撞避免）、BEB（二元指數退避）、DCF（分散式協調功能，也就是 802.11 的 CSMA/CA）。</td><td>K1 K2 K4</td></tr>
+    <tr><td>reliable, acknowledge, lost, duplicate</td><td>正向 ACK（收對才回確認，沒收到就重傳）、Retry 位元＋序號（刪除重傳造成的重複訊框）、分段（錯誤率高時降低重傳量）。</td><td>K5 K7 K17</td></tr>
+    <tr><td>hidden, exposed, cannot hear</td><td>隱藏／暴露節點與對策：RTS/CTS 預約、NAV（虛擬載波偵測的計時器）、經過 AP、輪詢。</td><td>K6</td></tr>
+    <tr><td>erroneous frame, CRC error</td><td>EIFS：收到錯誤訊框後改等較長的間隔，保護別人的 ACK。</td><td>K3</td></tr>
+    <tr><td>reserve, duration, virtual carrier sense</td><td>NAV 與 Duration/ID 欄位：訊框公告「媒介還要被佔用多久」，聽到的人照著延後。</td><td>K6 K17</td></tr>
+    <tr><td>contention-free, polling, time-bounded</td><td>無競爭存取：PCF（AP 輪詢）、802.11e 的 HCCA（依流量規格輪詢）。</td><td>K9 K22</td></tr>
+    <tr><td>QoS, real-time, delay, jitter, voice, video</td><td>802.11e：EDCA（優先式）、HCCA（參數化）、TSPEC（流量規格）、TXOP（一段可連續傳送的時間）。</td><td>K21–K23</td></tr>
+    <tr><td>overhead, efficiency, throughput</td><td>減少負擔的機制：TXOP、Block Ack、分段 burst、捎帶確認、DLS。每一項都要說出它省掉哪一種負擔。</td><td>K23–K25</td></tr>
+    <tr><td>mobility, roaming, handoff, location</td><td>移動性：關聯、重新關聯、DS（分散式系統）、掃描。核心觀念是「位址不等於位置」。</td><td>K13–K15</td></tr>
+    <tr><td>join, find network, scan</td><td>被動／主動掃描。考古題 Q7。</td><td>K13</td></tr>
+    <tr><td>security, access control, privacy</td><td>認證、WEP 加密、站台狀態與訊框類別。核心觀念是「無線沒有實體邊界」。</td><td>K14 K18</td></tr>
+    <tr><td>address, DS, bridge, WDS, wired LAN</td><td>四個位址欄位、Portal（接到有線 LAN 的出入口）、Integration 服務。考古題 Q4。</td><td>K15 K16</td></tr>
+    <tr><td>synchronization, timing, beacon</td><td>TSF（計時同步功能）、TBTT（預定送 Beacon 的時間）。</td><td>K10</td></tr>
+    <tr><td>direct, peer-to-peer, ad hoc</td><td>DLS（同一 BSS 內兩站直接互傳）、IBSS（沒有 AP 的隨意網路）。</td><td>K12 K25</td></tr>
+    <tr><td>rate, modulation, spread spectrum, PHY</td><td>PLCP（實體層匯聚協定）、多速率、DSSS（直接序列展頻）、QAM（正交振幅調變）。</td><td>K19 K20</td></tr>
+    <tr><td>layer, OSI, encapsulation</td><td>OSI 七層與 802 的子層：LLC／MAC／PLCP／PMD。</td><td>②</td></tr>
+    <tr><td>Infrastructure, AP, BSS, ESS</td><td>架構與「全部經過 AP」的優缺點。</td><td>K27</td></tr>
+  </table></div>
+
+  <h2 id="s2">② OSI 七層：802 只做 L1、L2</h2>
+  <div class="use"><b>考場上怎麼用：</b>題目問「在哪一層解決」「為什麼 802.11 對上層透明」「封裝」時用。考試重點在 MAC 與 PHY，上面五層只要記得各做什麼。</div>
+  <ul>
+    <li><b>L7 應用層</b>：使用者的程式。<b>L6 表達層</b>：資料格式的轉換、壓縮、加密。<b>L5 會議層</b>：對話的建立與同步。<b>L4 傳輸層</b>：端對端的傳輸品質，例如 TCP。<b>L3 網路層</b>：繞送，例如 IP；Mobile IP 在這一層處理跨網段的移動。</li>
+    <li><b>L2 鏈結層</b>：節點到節點傳送無錯誤的訊框。802 把它分成兩個子層：
+      <ul><li><b>LLC</b>（邏輯鏈結控制，802.2）：所有 802 網路共用的上半部，所以上層看到的介面都一樣。</li>
+      <li><b>MAC</b>（媒介存取控制）：決定誰何時能用共享媒介。802.11 的 MAC 還負責 ACK、重傳、分段、加密、省電、漫遊——有線 MAC 不需要做的事，無線都要在這裡做。</li></ul></li>
+    <li><b>L1 實體層</b>：傳送位元流，不負責重傳。802.11 分成：
+      <ul><li><b>PLCP</b>（實體層匯聚協定）：加上前導碼與標頭，並提供 CCA（通道是否閒置的判斷）給 MAC。</li>
+      <li><b>PMD</b>（實體媒介相依子層）：實際的調變與天線。</li></ul></li>
+    <li><b>封裝</b>：MSDU（LLC 交給 MAC 的資料）→ MAC 加上標頭與 FCS 成為 <b>MPDU</b>；MPDU 交給 PLCP 時叫 <b>PSDU</b>（同一串位元，從 PHY 的角度稱呼）→ PLCP 加上前導碼與標頭成為 <b>PPDU</b>，由 PMD 送出。一般規則：上一層交下來的 SDU＋本層標頭＝本層的 PDU。</li>
+    <li><span class="why">為何 802 只做 L1、L2</span>：各種 LAN 的差別只在媒介與存取方式，上層都透過共用的 LLC，所以無線網路對 IP 是透明的；也因此「站台會移動」這件事必須在 MAC 內部解決，不能丟給上層。</li>
+    <li><b>LAN 的需求</b>（講義用來評價 MAC 的標準）：1–1000 Mbps、1–5 km、數百台站台、盡量不依賴集中控制、高負載下仍穩定、公平、可靠、低成本。答「評價某個 MAC」的題目時，可以拿這幾項逐一檢查。</li>
+  </ul>
+
+  <h2 id="s3">③ 無線的特性 → 後果 → 機制</h2>
+  <div class="use"><b>考場上怎麼用：</b>這是「為什麼」的來源。題目問「為什麼 802.11 需要 X」「為什麼 Ethernet 不用 X」「X 改用 Y 會怎樣」，就從這張表找出是哪個特性，照「特性 → 沒有這個機制會怎樣 → 機制怎麼解 → 代價」寫成一段。</div>
+  <ol>
+    <li><b>送的時候聽不到別人 → 不能做碰撞偵測（CD）。</b>無線電發射時自己的訊號遠比收到的強，無法邊送邊聽；而且碰撞發生在接收端，傳送端不一定聽得到。所以 802.11 改成碰撞<b>避免</b>（CA）：先等 DIFS、再隨機退避，送出後靠接收端回的<b>正向 ACK</b> 才知道成功，失敗就把競爭視窗 CW 加倍。（K2、K4、K5）</li>
+    <li><b>不能假設所有站台都聽得到彼此 → 隱藏節點。</b>兩個彼此聽不到的站台可能同時傳給同一個接收端。對策：NAV 與 RTS/CTS 讓接收端周圍的站台也知道媒介被佔用；或讓所有流量都經過大家都聽得到的 AP；或由 AP 輪詢。（K6、K9）</li>
+    <li><b>干擾、雜訊、通道隨時間與位置改變 → 錯誤率高。</b>對策：ACK＋重傳；分段讓錯誤時只重送一段；Retry 位元配合序號刪除重複訊框；收到錯誤訊框時用 EIFS 保護別人的 ACK。（K5、K7、K3）</li>
+    <li><b>站台會移動 → 位址不等於位置。</b>有線網路的位址就代表接在哪個埠，無線不是。對策：Association 建立「站台在哪個 AP」的對應、DS 依對應遞送、Reassociation 在換 AP 時更新、掃描找新的 AP。（K13–K15）</li>
+    <li><b>靠電池 → 不能一直開著接收。</b>對策：TIM／PS-Poll 讓 AP 替睡眠的站台緩衝；IBSS 用 ATIM；802.11e 的 APSD 降低延遲；這些都需要 TSF 讓大家對時，才能在同一時間醒來。（K10–K12、K26）</li>
+    <li><b>開放媒介、沒有實體邊界 → 誰都能接入、能竊聽。</b>有線網路「接上線」就代表有權限、線路本身是封閉的。對策：用認證取代「接上線」、用 WEP 加密取代「封閉線路」、用站台狀態與訊框類別限制未認證者能送的訊框。（K14、K18）</li>
+    <li><b>有多種 PHY 與速率 → 有些站台聽不懂別人的資料。</b>對策：PLCP 的前導碼與標頭用最低速率送，大家都聽得懂；LENGTH 欄位告訴別人要傳幾微秒；NAV；802.11g 有 11b 站台時先送 CTS 保護。（K19）</li>
+    <li><b>頻寬有限，每個訊框又有固定負擔 → 效率低。</b>對策：TXOP（一次競爭送多筆）、Block Ack（多筆共用一個確認）、捎帶確認、DLS（不經 AP 轉送）。（K23–K25）</li>
+    <li><b>即時多媒體 → 需要有上限的延遲與抖動。</b>對策：802.11e 的 EDCA（優先權）與 HCCA（參數化保證）。（K21、K22）</li>
+    <li><b>共用免執照的 ISM 頻段 → 干擾多。</b>對策：展頻（DSSS 的 Barker 序列帶來約 10.4 dB 的處理增益）與選擇不重疊的頻道。（K20）</li>
+    <li><b>對照組：有線網路封閉、可靠、能做 CD。</b>所以 Ethernet 不需要 ACK、認證、省電；但因為要做 CD，需要最小訊框 64 bytes（K1）。這一列是反事實題與「Ethernet 為什麼不用」題的答案來源。</li>
+  </ol>
+
+  <h2 id="s4">④ 答題骨架</h2>
+  <div class="use"><b>考場上怎麼用：</b>先判斷題型，用對應的骨架決定段落，再從 K 卡填內容。骨架能確保不漏掉得分點（尤其是「為什麼」與「代價」）。</div>
+  <ul>
+    <li><b>比較／差異</b>：一句話定位兩者 → 逐面向對照（運作方式、誰控制、碰撞、確認、效率、延遲／QoS、公平、省電、安全、適用組態）→ 各自適合什麼情境。<b>盡量畫表</b>，閱卷清楚。<div class="ex">例：考古題 Q1（802.3 vs 802.11）、Q7（主動 vs 被動掃描）。</div></li>
+    <li><b>優缺點</b>：優點從效率、延遲、公平、簡單、相容找；缺點從負擔、延遲、複雜、需要協調者、隱藏節點、組態限制、沒有保證找 → 最後寫「誰改進了它」（後繼機制）。<div class="ex">例：考古題 Q6（PCF）→ 結尾寫 HCCA 怎麼改進。</div></li>
+    <li><b>為什麼這樣設計</b>：在 ③ 找出特性 → 沒有這個機制會發生什麼 → 機制怎麼解決 → 付出什麼代價。</li>
+    <li><b>反事實（X 改用 Y）</b>：Y 成立的前提在 X 的環境裡成立嗎 → 失去了什麼 → 結果分「正確性」與「效率」兩面。<div class="ex">例：無線改用 CD＝做不到（聽不到、碰撞在接收端）；有線改用 CA＝能用，但多了等待與 ACK、卻沒有好處。</div></li>
+    <li><b>「不用某機制」</b>：從四類工具找替代：架構（經過 AP、輪詢）、時間（IFS、EIFS、NAV、退避）、訊框（分段、短訊框、Duration）、PHY（發射功率、偵測門檻、速率）。<div class="ex">例：考古題 Q8「不用 RTS/CTS 解決隱藏節點」。</div></li>
+    <li><b>解釋題</b>：目的（解決什麼）→ 運作（誰送、何時、用什麼欄位）→ 例子或相關機制。不要只翻譯名詞。<div class="ex">例：考古題 Q3（QAM、More Data、Integration、Duration/ID）。</div></li>
+    <li><b>定義題</b>：一句定義 → 發生條件（最好畫站台位置圖）→ 後果 → 對策。<div class="ex">例：考古題 Q8 的隱藏／暴露節點。</div></li>
+    <li><b>計算題</b>：先畫時間軸 → 列出每一段時間 → 加總 → 最後用一句話解釋這個數字代表什麼（例如「固定負擔不隨速率變小，所以效率下降」）。</li>
+  </ul>
+
+  <h2 id="s5">⑤ 跨章比較矩陣</h2>
+  <div class="use"><b>考場上怎麼用：</b>比較題直接取欄位當比較面向；優缺點題用來找「相對於誰」的優缺點。五個存取方式：802.3 CSMA/CD、DCF、PCF、EDCA、HCCA。</div>
+  <ul>
+    <li><b>控制</b>：802.3、DCF、EDCA 是<b>分散式</b>（每個站台自己競爭）；PCF（由 AP 中的 PC，點協調器，負責）與 HCCA（由 QAP 中的 HC，混合協調器，負責）是<b>集中式</b>。</li>
+    <li><b>方式</b>：802.3 先聽、送的時候也聽；DCF 競爭；PCF 輪詢；EDCA 是各個 AC（存取類別）之間競爭；HCCA 依 TSPEC 輪詢。</li>
+    <li><b>碰撞</b>：802.3 偵測到就停；DCF 與 EDCA 只能避免，靠 ACK 得知失敗；PCF 的 CFP（無競爭期）與 HCCA 的輪詢沒有碰撞。</li>
+    <li><b>優先權</b>：802.3 沒有；DCF 的 IFS 區分的是<b>訊框種類</b>（ACK 用 SIFS、資料用 DIFS），不是流量；PCF 用 PIFS 搶在 DCF 前；EDCA 用 AIFS、CW、TXOP 區分<b>流量類別</b>；HCCA 用排程。</li>
+    <li><b>一次傳多少</b>：802.3、DCF 一次一個訊框（DCF 的分段可以用 SIFS 連送）；PCF 每次輪詢一個訊框；EDCA 與 HCCA 給一段 TXOP，可以連送多筆。</li>
+    <li><b>確認</b>：802.3 沒有 MAC 層確認；DCF 每個訊框一個 ACK；PCF 可以把 CF-Ack 捎帶在資料訊框上；802.11e 可選 Normal ACK、No Ack、Block Ack。</li>
+    <li><b>QoS</b>：802.3、DCF 沒有；PCF 不夠（理由見 K9）；EDCA 是統計式（機率上較快，不保證）；HCCA 是參數化保證。</li>
+    <li><b>必備與否／組態</b>：DCF 必備，ad hoc 與 infrastructure 都能用；PCF 選用、只能用在 infrastructure；EDCA 兩種組態都可；HCCA 只能用在 infrastructure。</li>
+  </ul>
+  <p><b>演進表</b>：一條功能從「舊 → 中 → 新」怎麼改進，適合回答「後來怎麼改善」。</p>
+  <ul>
+    <li><b>確認</b>：802.3 沒有 → 802.11 每個訊框 ACK → 802.11e Block Ack、No Ack。</li>
+    <li><b>優先權</b>：沒有 → IFS（區分訊框種類）→ AIFS＋CW（區分流量類別）、TSPEC。</li>
+    <li><b>一次傳</b>：一個訊框 → 分段 burst（SIFS 連送）→ TXOP。</li>
+    <li><b>省電</b>：TIM／PS-Poll、DTIM、ATIM → U-APSD、S-APSD。</li>
+    <li><b>隱藏節點</b>：RTS/CTS＋NAV → 輪詢（PCF／HCCA）。</li>
+    <li><b>存取控制</b>：有線靠「接上線」→ Open System／Shared Key 認證、WEP → 802.1X、802.11i <span class="sup">補充</span>。</li>
+    <li><b>漫遊</b>：Reassociation、預先認證 → IAPP（802.11f）、802.11r。</li>
+    <li><b>直接傳</b>：IBSS 可以直接傳，但 infrastructure 全部經過 AP → DLS。</li>
+  </ul>
+  <p><b>誰發起</b>：Association 與 Reassociation 只能由 STA 發起；Disassociation 與 Deauthentication 雙方都可以發起，而且是「通知」，對方不能拒絕（因為任何一方都可能需要離開，硬要維持沒有意義）。</p>
+
+  <h2 id="cards">機制卡 K1–K27</h2>
+  <div class="use"><b>考場上怎麼用：</b>每張卡依「目的 → 運作 → 優點 → 缺點 → 比較」排列，正好對應解釋題與優缺點題的段落。答題時先寫目的（一句），再寫運作（流程），最後寫優缺點或比較。</div>
+
+  <div class="card"><h3><span class="n">K1</span>CSMA/CD＋BEB（802.3）</h3>
+    <div class="row"><span class="lab">目的</span>多個站台共用同一條線時，決定誰可以送。</div>
+    <div class="row"><span class="lab">運作</span>先聽線路是否閒置 → 閒置就送，送的同時繼續聽 → 偵測到碰撞就送出 32 bits 的 jam 訊號讓大家都知道，然後停止 → 第 n 次碰撞後等待 r 個 slot，r 從 [0, 2<sup>k</sup>−1] 隨機選，k＝min(n, 10)。slot time 是 51.2 µs，等於訊號來回傳播加上偵測所需的時間。嘗試超過 16 次就放棄。</div>
+    <div class="row"><span class="lab p">優點</span>一撞就立刻停止，浪費的時間很少；整個訊框送完都沒偵測到碰撞，就幾乎可以確定成功，所以不需要 ACK。</div>
+    <div class="row"><span class="lab m">缺點</span>有「先進後出」的不公平（新來的站台退避範圍小，反而比較早送）；負載高時延遲變大；為了讓碰撞在送完前傳回來，需要最小訊框 64 bytes，網路長度也受限；只能用在有線網路。</div>
+    <div class="row"><span class="lab c">比較</span>和 K2 比：CD 是<b>撞了之後</b>才退避，退避只是單純等待、不會凍結；CA 是<b>只要媒介忙過</b>就退避，而且忙的時候計數器凍結。</div>
+    <div class="terms"><b>名詞</b>：CSMA/CD＝載波偵測多重存取／碰撞偵測。BEB（BEBA）＝截斷二元指數退避，碰撞越多次，隨機範圍加倍，最多到 2<sup>10</sup>。jam＝讓所有站台都偵測到碰撞的干擾訊號。slot time＝退避的時間單位。</div></div>
+
+  <div class="card"><h3><span class="n">K2</span>DCF（CSMA/CA）</h3>
+    <div class="row"><span class="lab">目的</span>在沒有中央控制者的情況下，讓所有站台公平地共享無線媒介。</div>
+    <div class="row"><span class="lab">運作</span>實體載波偵測 CCA 與虛擬載波偵測 NAV 都顯示閒置 → 等 DIFS → 隨機退避 → 送出 → 接收端等 SIFS 後回 ACK；沒收到 ACK 就把 CW 加倍再試。DCF 是所有站台都必須實作的基本存取方式，ad hoc 與 infrastructure 都使用；PCF 與 HCF 都建立在 DCF 之上。</div>
+    <div class="row"><span class="lab p">優點</span>分散式、穩健（不依賴任何一台）、高負載下仍穩定、存取順序近似先到先服務。</div>
+    <div class="row"><span class="lab m">缺點</span>沒有 QoS；每個訊框的負擔大（前導碼、IFS、退避、ACK）；有隱藏節點問題；不保證頻寬公平——每個站台實際用到的頻寬可能不同，講義因此提出「要不要做負載分擔」的問題。</div>
+    <div class="row"><span class="lab c">比較</span>K1（有線的 CD）、K9（集中式的 PCF）、K21（加上優先權的 EDCA）。</div>
+    <div class="terms"><b>名詞</b>：DCF＝分散式協調功能。CCA＝PHY 判斷通道是否閒置。NAV＝記錄「媒介被預約到何時」的計時器。DIFS＝一般資料使用的訊框間隔。SIFS＝最短的訊框間隔。CW＝競爭視窗，退避值的隨機範圍。</div></div>
+
+  <div class="card"><h3><span class="n">K3</span>IFS 訊框間隔（含 EIFS、AIFS）</h3>
+    <div class="row"><span class="lab">目的</span>用「媒介要閒置多久才能送」來給優先權，不需要額外的控制訊框。</div>
+    <div class="row"><span class="lab">運作</span>由短到長：<b>SIFS</b>（ACK、CTS、回應輪詢、分段之間）＜ <b>PIFS</b>（PCF 的 PC 使用）＜ <b>DIFS</b>（DCF 的一般資料）＜ <b>EIFS</b>（收到錯誤訊框之後）。EIFS 不看 NAV，因為訊框有錯就讀不到裡面的 Duration；它的長度足夠讓別人用 1 Mbps 送完 ACK。802.11e 加入 <b>AIFS[AC]＝AIFSN×slot＋SIFS</b>，每個存取類別等不同的時間，而且一定大於 SIFS，以保護 ACK。802.11n 另有 RIFS。</div>
+    <div class="row"><span class="lab p">優點</span>SIFS 最短，所以一次訊框交換（Data–ACK、RTS–CTS）中間不會被別人插入；PIFS 比 DIFS 短，所以 PCF 能搶在 DCF 站台之前取得媒介。</div>
+    <div class="row"><span class="lab m">缺點</span>DCF 的 IFS 只區分<b>訊框種類</b>，所有站台的資料都用同一個 DIFS，所以沒辦法區分語音和一般資料。</div>
+    <div class="terms"><b>名詞</b>：IFS＝訊框間隔。PIFS＝PCF 用的訊框間隔。EIFS＝延伸訊框間隔。AIFS＝仲裁訊框間隔；AIFSN＝AIFS 的 slot 數。AC＝存取類別（語音、影像、盡力而為、背景）。RIFS＝縮減訊框間隔。</div></div>
+
+  <div class="card"><h3><span class="n">K4</span>退避與 CW</h3>
+    <div class="row"><span class="lab">運作</span>退避時間＝Random[0, CW]×slot。媒介忙的時候計數器<b>凍結</b>，媒介閒置滿 DIFS 後從剩下的值繼續數。傳送失敗就把 CW 加倍（DSSS 從 31 到 1023；OFDM 從 15 起）。剛傳完、還有下一筆要送，也必須退避。例外：封包到達時媒介已經閒置超過 DIFS，可以直接送。</div>
+    <div class="row"><span class="lab p">優點</span>等得越久的站台，剩下的計數越小，越早送出，所以近似先到先服務；傳完也要退避，避免贏家一直霸佔媒介。</div>
+    <div class="row"><span class="lab m">缺點</span>媒介閒置時大家也在等，浪費時間；失敗過的站台 CW 已經變大，和新加入的站台競爭時仍然吃虧。</div>
+    <div class="row"><span class="lab c">比較</span>BEB：撞了才退避、只是單純等待；初始範圍小，因為有線的碰撞很便宜（立刻偵測、立刻停）。CA：初始範圍大，因為無線的碰撞很貴（整個訊框都浪費，還要等 ACK 逾時才知道）。</div></div>
+
+  <div class="card"><h3><span class="n">K5</span>正向 ACK</h3>
+    <div class="row"><span class="lab">目的</span>無線偵測不到碰撞與錯誤，只能靠接收端回覆來確認。</div>
+    <div class="row"><span class="lab">運作</span>接收端收對（CRC 正確）→ 等 SIFS 回 ACK；傳送端沒收到 ACK 就當作失敗 → 退避後重傳，直到重試上限（分 short／long retry count）。Data、Poll、Request、Response 訊框需要 ACK；廣播不回 ACK。ACK 遺失會讓傳送端重傳一個其實已經收到的訊框，接收端用 Retry 位元加上序號刪除重複的。</div>
+    <div class="row"><span class="lab p">優點</span>在 MAC 層就能快速復原，不必等上層（例如 TCP）逾時。</div>
+    <div class="row"><span class="lab m">缺點</span>每個訊框多一個 SIFS 加上一個 ACK 訊框（ACK 也有自己的 PLCP 前導碼與標頭）。</div>
+    <div class="row"><span class="lab c">比較</span>Ethernet 不用 ACK：它能偵測碰撞、線路可靠、可靠度交給上層的 LLC 或 TCP。802.11e 改成可選 No Ack、Block Ack。考古題 Q9 就是這張卡。</div>
+    <div class="terms"><b>名詞</b>：CRC＝循環冗餘檢查，放在 FCS 欄位，用來檢查訊框有沒有錯。Retry＝標頭中表示「這是重傳」的位元。</div></div>
+
+  <div class="card"><h3><span class="n">K6</span>RTS/CTS＋NAV；隱藏／暴露節點</h3>
+    <div class="row"><span class="lab">目的</span>讓聽不到傳送端的站台，也知道媒介正被佔用。</div>
+    <div class="row"><span class="lab">運作</span>傳送端送 RTS（帶 Duration）→ 接收端回 CTS（也帶 Duration），兩者把「還要佔用多久」分別散布到傳送端與接收端周圍 → 聽到的站台存進 NAV。NAV 或 CCA 任一個顯示忙碌就延後。只用在單播，而且訊框長度超過 RTS_Threshold 才用（是否使用可選，但每個站台都必須實作）。</div>
+    <div class="row"><span class="lab p">優點</span>碰撞只會損失一個短的 RTS，而不是整個資料訊框；NAV 是依公告的時間運作，所以在多種速率混用時仍然有效。</div>
+    <div class="row"><b>NAV 的來源</b>（不只 RTS/CTS）：RTS/CTS；分段與 ACK 的 Duration；CFP 開始時設成 CFPMaxDuration（CF-End 重設）；802.11g 保護機制送的 CTS；HCCA 的 QoS CF-Poll（為 polled TXOP 設定）。另外 PLCP 的 LENGTH 欄位讓低速站台知道媒介會忙多久。收到錯誤訊框時讀不到 Duration，改用 EIFS。</div>
+    <div class="row"><span class="lab m">缺點</span>每個資料訊框多兩個控制訊框和兩個 SIFS，短訊框不划算；解決不了暴露節點。</div>
+    <div class="row"><b>隱藏節點</b>：A、C 都在 B 的範圍內但彼此聽不到，同時送給 B，訊框在接收端 B 碰撞；傳送端聽不到對方，所以載波偵測防不了。<b>暴露節點</b>：A–B–C–D 排成一列，B 傳給 A 時，C 聽到 B 而延後，但 C 傳給 D 其實不會干擾 A；在 802.11 裡 C 還需要收 D 的 ACK，而 B 的訊號會干擾 C 收 ACK，所以這個機會也不能簡單利用。</div>
+    <div class="row"><b>不用 RTS/CTS 的解法</b>（考古題 Q8）：infrastructure 模式（大家都聽得到 AP）；PCF／HCCA 輪詢（沒有競爭）；分段（每段的 Duration 扮演虛擬 RTS/CTS，碰撞也只毀掉一段）；EIFS（保護聽不懂的 ACK）；調整發射功率或偵測門檻讓站台彼此聽得到 <span class="sup">補充</span>。</div>
+    <div class="terms"><b>名詞</b>：RTS／CTS＝要求傳送／允許傳送。Duration＝標頭中公告佔用時間（微秒）的欄位。RTS_Threshold＝超過這個長度才使用 RTS/CTS。CFPMaxDuration＝CFP 的最長時間。CF-End＝結束 CFP 的訊框。TXOP＝一段可以連續傳送的時間。</div></div>
+
+  <div class="card"><h3><span class="n">K7</span>分段與重組</h3>
+    <div class="row"><span class="lab">目的</span>錯誤率高時，短訊框比較容易成功；出錯也只需要重送一段 <span class="sup">補充</span>（講義寫的是「因應不同的實體層特性」）。</div>
+    <div class="row"><span class="lab">運作</span>把 MSDU 切成不超過 Fragmentation_Threshold 的分段，各段等長（最後一段可以較短），使用同一個序號、分段號遞增，除了最後一段都設 More Fragments。各段之間用 SIFS 連送（fragment burst），每段各自 ACK。每段的 Duration 涵蓋「下一段＋它的 ACK」，等於虛擬的 RTS/CTS；最後一段的 Duration 是 0。接收端有計時器，逾時沒收齊就丟棄。</div>
+    <div class="row"><span class="lab p">優點</span>出錯時重傳的量小。</div>
+    <div class="row"><span class="lab m">缺點</span>多了標頭、PLCP 前導碼與 ACK。</div>
+    <div class="row"><span class="lab c">比較</span>802.3 有最小訊框（為了 CD）、不分段（線路可靠）。分段過程中若某段的 ACK 遺失：聽得到傳送端的站台照 NAV 繼續等，只聽得到目的端的站台沒收到 ACK，可以自由存取媒介。</div>
+    <div class="terms"><b>名詞</b>：MSDU＝上層交給 MAC 的資料單元。Fragmentation_Threshold＝分段門檻。More Fragments＝標頭中表示「後面還有分段」的位元。</div></div>
+
+  <div class="card"><h3><span class="n">K8</span>廣播／群播</h3>
+    <div class="row">廣播與群播不用 RTS/CTS、不回 ACK，所以沒有 MAC 層的復原機制（例外：STA 把它送給 AP 時 To DS＝1，這一段是單播，有 ACK）。傳送者自己也會收到 AP 轉送回來的廣播，所以要過濾 SA 是自己的訊框。只要有站台在省電，AP 會把廣播／群播緩衝到 DTIM 之後再送。廣播會傳遍整個 ESS。</div>
+    <div class="terms"><b>名詞</b>：To DS＝標頭中表示「送往 DS」的位元。SA＝原始來源位址。DTIM＝傳送廣播／群播的 Beacon。ESS＝多個 BSS 經 DS 串起來的延伸服務集。</div></div>
+
+  <div class="card"><h3><span class="n">K9</span>PCF</h3>
+    <div class="row"><span class="lab">目的</span>提供無競爭存取，支援有時間限制的服務（例如語音）。</div>
+    <div class="row"><span class="lab">運作</span>PC 在 AP 裡。CFP 開始時 PC 等 PIFS 後送 Beacon → 所有站台把 NAV 設為 CFPMaxDuration → PC 依序送 CF-Poll 給被點名的站台（可以和資料、CF-Ack 合併成一個訊框）→ 被點名的站台等 SIFS 回應（沒資料就回 Null）→ PC 送 CF-End 重設 NAV → 進入 CP，大家用 DCF 競爭。CFP 每隔若干個 DTIM 出現一次；Beacon 若因媒介忙而延後，CFP 就被縮短，最晚在 TBTT＋CFPMaxDuration 結束。</div>
+    <div class="row"><span class="lab p">優點</span>CFP 中沒有碰撞、延遲變化小；和 DCF 共存在同一個超級訊框中；可以捎帶確認，減少控制訊框；所有站台都聽得到 AP，減少隱藏節點的影響。</div>
+    <div class="row"><span class="lab m">缺點</span>每次輪詢只能送一個訊框；PC 不知道各流量的 QoS 需求，無法保證頻寬、延遲、抖動；CFP 會被縮短，時間不可預測；輪到沒資料的站台浪費時間；只能用在 infrastructure；對 PC 隱藏的站台聽不到 Beacon、不會設 NAV，會在 CFP 中干擾；商用產品幾乎沒有實作。</div>
+    <div class="row"><span class="lab c">比較</span>K22 的 HCCA 逐點改進了這些缺點。考古題 Q6。</div>
+    <div class="terms"><b>名詞</b>：PCF＝點協調功能。PC＝點協調器。CFP／CP＝無競爭期／競爭期，兩者合起來是一個超級訊框。CF-Poll＝輪詢訊框。CF-Ack＝無競爭期中的確認，可以捎帶在其他訊框上。TBTT＝預定送 Beacon 的時間。</div></div>
+
+  <div class="card"><h3><span class="n">K10</span>TSF 同步、Beacon、TBTT</h3>
+    <div class="row"><span class="lab">目的</span>讓整個 BSS 的時鐘一致。省電（大家同時醒）、PCF 時序、FH 跳頻（同時換頻道）、S-APSD（定時醒來）都依賴它。</div>
+    <div class="row"><span class="lab">運作</span>infrastructure：AP 在每個 TBTT 送 Beacon，裡面的 timestamp 是送出當下的計時器值，站台用它校正自己的時鐘。TBTT 依固定排程，不是相對於上一個 Beacon，所以 Beacon 延後也不會讓之後的時程漂移；站台也不必每個 Beacon 都聽到。IBSS：每個 TBTT，每個站台等一段 [0, 2·CWmin·slot] 的隨機時間，先聽到別人的 Beacon 就取消自己的。</div>
+    <div class="row"><b>Beacon 內容</b>：timestamp、Beacon 間隔、能力資訊、SSID、支援速率、參數組（包括 CF 參數組）、TIM。Probe Response 的內容和 Beacon 一樣，只是沒有 TIM。</div>
+    <div class="terms"><b>名詞</b>：TSF＝計時同步功能。Beacon＝AP 定期廣播的管理訊框。FH＝跳頻展頻。SSID＝網路名稱。TIM＝流量指示圖。</div></div>
+
+  <div class="card"><h3><span class="n">K11</span>省電（infrastructure）</h3>
+    <div class="row"><span class="lab">運作</span>STA 把 Power Management 位元設為 1，告訴 AP 自己要睡 → AP 緩衝給它的訊框 → STA 在 Beacon 前醒來，看 TIM 裡（依 AID）有沒有自己 → 有就送 PS-Poll（帶 AID），並保持清醒接收；More Data＝1 表示還有，繼續要 → 沒有就再睡。廣播／群播等 DTIM 才送；DTIM 間隔是 TIM 間隔的倍數。考古題 Q2。</div>
+    <div class="row"><span class="lab p">優點</span>對上層透明；可以在吞吐量／延遲與電池之間取捨（睡越久越省電、延遲越長）。</div>
+    <div class="row"><span class="lab m">缺點</span>下行資料要等 Beacon 才能送：Beacon 間隔 100 ms 時，延遲是 100–300 ms，遠超過語音要求；每一筆緩衝資料都要一個 PS-Poll。</div>
+    <div class="row"><span class="lab c">比較</span>K26 的 APSD 解決這兩個缺點。</div>
+    <div class="terms"><b>名詞</b>：AID＝關聯時 AP 分配的識別碼。PS-Poll＝省電輪詢。More Data＝標頭中表示「還有緩衝資料」的位元。</div></div>
+
+  <div class="card"><h3><span class="n">K12</span>IBSS（ad hoc）與 ATIM</h3>
+    <div class="row">IBSS 沒有 DS，所以只有站台服務（SS）、只用 Class 1 訊框、BSSID 用亂數產生（沒有 AP 的 MAC 位址可用）、Beacon 由大家分散產生。</div>
+    <div class="row"><b>省電</b>：沒有 AP 可以緩衝，所以省電站台在 TBTT 前醒來 → 在 ATIM 視窗內，有資料要送的站台送 ATIM 給對方 → 對方回 ACK，並保持清醒到下一個 ATIM 視窗結束。視窗內只能送 RTS、CTS、ACK、Beacon、ATIM；視窗結束後用 DCF 傳資料。</div>
+    <div class="terms"><b>名詞</b>：IBSS＝獨立基本服務集（ad hoc 網路）。ATIM＝宣告流量指示訊息。BSSID＝BSS 的識別碼。</div></div>
+
+  <div class="card"><h3><span class="n">K13</span>掃描</h3>
+    <div class="row"><b>被動掃描（Passive）</b>：在每個頻道只聽 Beacon，最多聽 ChannelTime；不發射，所以省電、不增加流量 <span class="sup">補充</span>，但要等 Beacon，比較慢。</div>
+    <div class="row"><b>主動掃描（Active）</b>：在每個頻道送 Probe Request（指定 SSID 或廣播）→ MinProbeResponseTime 內沒有回應就換下一個頻道，有回應就等到 MaxProbeResponseTime 收齊；比較快，但耗電、佔用頻道 <span class="sup">補充</span>。</div>
+    <div class="row"><b>用途</b>：加入網路、漫遊時找新 AP、建立 IBSS；找不到想要的網路時可以自己建一個 IBSS。掃描之後：選最好的 AP → 認證 → Association。考古題 Q7。</div>
+    <div class="terms"><b>名詞</b>：Probe Request／Response＝探測要求／回應。ChannelTime、Min／MaxProbeResponseTime＝每個頻道停留時間的參數。</div></div>
+
+  <div class="card"><h3><span class="n">K14</span>認證、關聯、漫遊、狀態</h3>
+    <div class="row"><span class="lab">目的</span>認證取代有線網路的「接上線」，確立身分；關聯讓 DS 知道這個 STA 在哪個 AP 底下。</div>
+    <div class="row"><span class="lab">運作</span>State 1（未認證）→ 認證 → State 2（已認證）→ 關聯 → State 3（已關聯）。<b>Class 1</b> 訊框任何狀態都能送：RTS、CTS、ACK、Beacon、Probe、Authentication、Deauthentication、ATIM；<b>Class 2</b> 要 State 2 以上：(Re)Association、Disassociation；<b>Class 3</b> 要 State 3：經過 DS 的資料、PS-Poll。收到未認證者送來的訊框 → 回 Deauthentication。</div>
+    <div class="row"><span class="why">Class 1 為何不用認證</span>：找網路（Beacon、Probe）和參與共用媒介的協定（RTS、CTS、ACK）是加入網路之前就必須做的，否則永遠加入不了，也會變成不設 NAV 的干擾者 <span class="sup">補充</span>。</div>
+    <div class="row"><b>認證</b>在鏈結層，不是端對端；方法有 Open System 與 Shared Key（挑戰／回應）。一個 STA 同時只能和一個 AP 關聯，但可以先對多個 AP 認證（<b>預先認證</b>），漫遊時就只需要重新關聯，比較快。</div>
+    <div class="row"><b>漫遊</b>：和目前 AP 的連線變差 → 掃描（或用之前的結果）→ 向新 AP 送 Reassociation Request → 新 AP 通知 DS，舊 AP 經由 DS 得知。跨 AP 的協調在 L2 有 IAPP（802.11f），跨網段在 L3 有 Mobile IP。</div>
+    <div class="terms"><b>名詞</b>：Authentication／Deauthentication＝認證／解除認證。Association／Reassociation／Disassociation＝關聯／重新關聯／解除關聯。Open System＝開放系統認證（實際上不驗證）。Shared Key＝共享金鑰認證。IAPP＝存取點間協定。</div></div>
+
+  <div class="card"><h3><span class="n">K15</span>DS、Distribution、Integration、Portal</h3>
+    <div class="row"><span class="lab">目的</span>在「位址不等於位置」的情況下，仍然讓上層看到一個普通的 802 LAN。</div>
+    <div class="row"><span class="lab">運作</span>DS 把多個 BSS 串成一個 ESS，對 LLC 來說整個 ESS 就像一個 BSS。Distribution 服務依關聯資訊找出目的地在哪個 AP（輸出點）；目的地若在有線 LAN 上，輸出點就是 Portal，由 Integration 服務做媒介與位址的轉換。802.11 只定義這些「服務」，不規定 DS 要怎麼實作。</div>
+    <div class="row"><b>橋接器 vs Portal</b>：橋接器原本是用來延伸同類 MAC 的範圍；在 802.11 中，涵蓋範圍改由 ESS 提供。要接到異質 LAN 時，講義問「接到 DSM 還是 WM」→ 用 Portal，因為它還要處理 BSS 成員的動態變化，以及位址與位置的對應。</div>
+    <div class="row"><b>兩類服務</b>：SS（每台站台都有）＝認證、解除認證、隱私、MSDU 傳遞；DSS（由 DS 提供）＝關聯、重新關聯、解除關聯、分配、整合；802.11e 再加上 QoS 相關服務。考古題 Q3C。</div>
+    <div class="terms"><b>名詞</b>：DS＝分散式系統。DSM＝DS 使用的媒介。WM＝無線媒介。Portal＝802.11 與其他 LAN 之間的出入口。SS／DSS＝站台服務／分散式系統服務。</div></div>
+
+  <div class="card"><h3><span class="n">K16</span>四個位址</h3>
+    <div class="row">依 To DS／From DS 兩個位元決定各位址欄位的意義：</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>To DS / From DS</th><th>Address 1</th><th>Address 2</th><th>Address 3</th><th>Address 4</th><th>情況</th></tr>
+      <tr><td>00</td><td>DA</td><td>SA</td><td>BSSID</td><td>–</td><td>IBSS</td></tr>
+      <tr><td>01</td><td>DA</td><td>BSSID</td><td>SA</td><td>–</td><td>AP → STA</td></tr>
+      <tr><td>10</td><td>BSSID</td><td>SA</td><td>DA</td><td>–</td><td>STA → AP</td></tr>
+      <tr><td>11</td><td>RA</td><td>TA</td><td>DA</td><td>SA</td><td>WDS（AP ↔ AP）</td></tr>
+    </table></div>
+    <div class="row"><span class="why">為何要四個</span>：有線網路只需要原始來源與最終目的地；無線這一跳的接收端／傳送端可能和它們都不同。Address 1 永遠是這一跳的接收端（所有站台都用它過濾），Address 2 永遠是傳送端（ACK 回給它）。只有 AP 對 AP 的無線橋接時，四個位址才全都不同，所以才需要第四個。控制訊框用 1–2 個位址、管理訊框 3 個、資料訊框最多 4 個。考古題 Q4。</div>
+    <div class="terms"><b>名詞</b>：DA／SA＝最終目的／原始來源位址。RA／TA＝這一跳的接收端／傳送端位址。WDS＝無線分散式系統。</div></div>
+
+  <div class="card"><h3><span class="n">K17</span>標頭欄位</h3>
+    <ul>
+      <li><b>Duration/ID</b>：一般放微秒數，別人用它設 NAV；CFP 中送的訊框固定放 32768；PS-Poll 改放 AID，讓 AP 知道是誰來取資料。考古題 Q3D。</li>
+      <li><b>More Data</b>：AP 告訴省電中的站台「還有緩衝資料」；或 STA 表示還有資料可以在下次 CF-Poll 時送。考古題 Q3B。</li>
+      <li><b>Retry</b>：這是重傳的訊框，接收端用來刪除重複。</li>
+      <li><b>Pwr Mgt</b>：1 表示傳送者之後要進入省電；AP 送出的訊框永遠是 0。</li>
+      <li><b>More Frag</b>：後面還有分段。</li>
+      <li><b>Sequence Control</b>：12 位元序號＋4 位元分段號。</li>
+    </ul></div>
+
+  <div class="card"><h3><span class="n">K18</span>WEP／隱私</h3>
+    <div class="row"><span class="lab">目的</span>補回有線網路「封閉媒介」所提供的機密性。</div>
+    <div class="row"><span class="lab">運作</span>使用 RC4，金鑰 40 位元加上 24 位元的 IV；用 ICV 檢查完整性；只加密資料訊框的 payload，每個 MPDU 各自加密；ICV 錯誤時照樣回 ACK，但把訊框丟掉；關聯之前要議定隱私演算法。</div>
+    <div class="row"><span class="lab m">缺點</span>只保護無線這一段，不是端對端；金鑰分配沒有標準化；已被破解，後來由 802.11i 取代 <span class="sup">補充</span>。</div>
+    <div class="terms"><b>名詞</b>：WEP＝有線等效隱私。RC4＝串流加密演算法。IV＝初始向量，每個訊框不同，和金鑰一起產生金鑰序列。ICV＝完整性檢查值。</div></div>
+
+  <div class="card"><h3><span class="n">K19</span>PLCP 與多速率</h3>
+    <div class="row">Long PLCP：前導碼 144 位元＋標頭 48 位元，都用 1 Mbps 送 → 192 µs；Short PLCP：96 µs。</div>
+    <div class="row"><span class="why">為何用最低速率</span>：最低速率最穩健、每個站台都聽得懂，所以不論資料用什麼速率，大家都能同步並讀到 SIGNAL（速率）與 LENGTH 欄位。LENGTH 是「資料要傳幾微秒」，聽不懂資料部分的站台也能知道媒介何時空出來，等於一種虛擬載波偵測。</div>
+    <div class="row"><b>速率選擇</b>不在標準內（常見做法是依 ACK 成敗或訊號品質升降速率 <span class="sup">補充</span>）。<b>一個 BSS 用一個頻道</b>（FHSS 是全體一起跳頻）；要用多個頻道就是多個 BSS 放在同一地點 <span class="sup">補充</span>。</div>
+    <div class="row"><b>802.11g 保護</b>：BSS 中有 11b 站台時，先送 CTS（用 11b 聽得懂的速率）設定 NAV，再用 OFDM 送資料。<b>減少 PHY 負擔</b>：short preamble 96 µs（11b）、short slot 9 µs（11g；BSS 中有舊站台就不能用）。</div>
+    <div class="terms"><b>名詞</b>：PLCP＝實體層匯聚協定。preamble＝前導碼，讓接收端同步。OFDM＝正交分頻多工。FHSS＝跳頻展頻。</div></div>
+
+  <div class="card"><h3><span class="n">K20</span>調變與展頻</h3>
+    <div class="row"><b>DSSS</b>：每個位元用 11 chip 的 Barker 序列表示，處理（編碼）增益 10.4 dB → 抗干擾、抗延遲擴散、能分辨多路徑回波；代價是頻寬變寬（每個訊號約 22 MHz <span class="sup">補充</span>）。2.4 GHz 頻道中心間隔 5 MHz，互不重疊的只有 1、6、11，所以重疊的 BSS 最多 3 個。</div>
+    <div class="row"><b>鍵控</b>：PSK 改變相位、FSK 改變頻率、ASK 改變振幅。<b>QAM</b>：同相 I（cos）與正交 Q（sin）兩個載波各做 ASK 再相加，等於 PSK 與 ASK 的組合；802.11a/g 的 24、36 Mbps 用 16-QAM，48、54 Mbps 用 64-QAM；每個符元帶的位元越多，越需要好的訊號品質（SNR）<span class="sup">補充</span>。DBPSK 每符元 1 位元、DQPSK 每符元 2 位元。考古題 Q3A。</div>
+    <div class="terms"><b>名詞</b>：DSSS＝直接序列展頻。chip＝展頻序列中的一個碼元。Barker 序列＝802.11 DSSS 使用的 11 chip 序列。延遲擴散＝多路徑造成訊號先後抵達。SNR＝訊雜比。DBPSK／DQPSK＝差分二元／四相位移鍵控。</div></div>
+
+  <div class="card"><h3><span class="n">K21</span>EDCA</h3>
+    <div class="row"><span class="lab">目的</span>優先式 QoS：只給相對的高低，不保證數值。</div>
+    <div class="row"><span class="lab">運作</span>每個訊框帶 UP（8 個值，和 802.1D 相同，所以有線網路的優先權標記可以直接帶進來）→ 對應到 AC：UP 1、2 → BK；0、3 → BE；4、5 → VI；6、7 → VO。<b>競爭發生在 AC 之間</b>，每個 AC 有自己的 AIFS、CW、TXOP limit；這些參數由 AP 在 Beacon 的 EDCA Parameter Set 宣告（ACM 位元表示該 AC 必須經過允入控制）。預設值：VO 是 AIFSN 2＋退避 0–3 slot、VI 是 2＋0–7、BE 是 3＋0–15、BK 是 7＋0–15。</div>
+    <div class="row"><span class="lab p">優點</span>分散式、和 DCF 相容、AP 可以動態調整參數。</div>
+    <div class="row"><span class="lab m">缺點</span>統計式，不保證延遲；低優先權的流量可能餓死；同一台站台內不同 AC 之間也可能內部碰撞 <span class="sup">補充</span>。</div>
+    <div class="terms"><b>名詞</b>：EDCA＝增強型分散式通道存取。UP＝使用者優先權。AC＝存取類別：VO 語音、VI 影像、BE 盡力而為、BK 背景。ACM＝允入控制強制位元。</div></div>
+
+  <div class="card"><h3><span class="n">K22</span>HCCA、TSPEC、允入控制</h3>
+    <div class="row"><span class="lab">目的</span>參數化 QoS：保證具體數值（例如 10 Mbps、10 ms 延遲上限）。</div>
+    <div class="row"><span class="lab">運作</span>QSTA 送 ADDTS Request（內含 TSPEC）→ HC 判斷能不能允入 → 回 ADDTS Response → HC 依 TSPEC 排輪詢時程 → 送 QoS CF-Poll → QSTA 在 Polled TXOP 內傳送。CFP 與 CP 都可以輪詢；這類流量的 TID 是 8–15；用 DELTS 刪除。</div>
+    <div class="row"><span class="lab p">優點</span>可以保證頻寬與延遲。<b>對比 PCF 逐點改進</b>：一次一個訊框 → 一段 TXOP；不知道需求 → TSPEC；沒有保證 → 排程加允入控制。考古題 Q6 可以用這段收尾。</div>
+    <div class="row"><span class="lab m">缺點</span>需要 HC、複雜、只能用在 infrastructure、仍有隱藏站問題。<b>允入控制</b>的意義：通道時間有限，不超賣才能守住已經允諾的保證。</div>
+    <div class="terms"><b>名詞</b>：HCCA＝HCF 控制通道存取。HC＝混合協調器（在 QAP 上）。TSPEC＝流量規格（速率、服務間隔、延遲上限……）。ADDTS／DELTS＝新增／刪除流量串流。TID＝流量識別碼，0–7 是 UP、8–15 是 TSPEC 註冊的流。QSTA／QAP＝支援 802.11e 的站台／AP。</div></div>
+
+  <div class="card"><h3><span class="n">K23</span>TXOP</h3>
+    <div class="row">一段有開始時間與最長長度的傳送機會。<b>EDCA TXOP</b>：贏得競爭取得，上限由 Beacon 宣告；<b>Polled TXOP</b>：收到 QoS CF-Poll 取得，上限寫在 QoS Control 欄位。TXOP 內各訊框用 SIFS 連送；長度以 32 µs 為單位，範圍 32–8160 µs。</div>
+    <div class="row"><span class="lab p">優點</span>一次競爭送多筆，分攤競爭負擔；用<b>時間</b>（不是訊框數）限制佔用，所以延遲可控。<span class="lab m">缺點</span>TXOP 越長，其他人等得越久；所以語音給短的、影像給長的。</div></div>
+
+  <div class="card"><h3><span class="n">K24</span>ACK 政策與 Block Ack</h3>
+    <div class="row">四種 ACK 政策：Normal（SIFS 後回 ACK）、No Ack、No explicit Ack、Block Ack。Block Ack 流程：ADDBA 建立（TID、政策、緩衝大小、逾時）→ QoS Data 連續送出 → BAR（要求確認）→ BA（點陣圖，最多涵蓋 64 個 MSDU）→ DELBA 結束。</div>
+    <div class="row"><b>Immediate</b>：BAR 之後立刻回 BA，適合高頻寬、低延遲的流量。<b>Delayed</b>：BAR 先回一般 ACK，之後再送 BA，適合能容忍中等延遲的應用。<span class="lab p">優點</span>省下每筆的 SIFS＋ACK。<span class="lab m">缺點</span>需要事先建立、接收端要緩衝並重新排序。No Ack 適合語音（晚到的重傳沒用）<span class="sup">補充</span>。</div>
+    <div class="terms"><b>名詞</b>：ADDBA／DELBA＝建立／刪除 Block Ack 協議。BAR＝Block Ack Request。BA＝Block Ack。</div></div>
+
+  <div class="card"><h3><span class="n">K25</span>DLS</h3>
+    <div class="row">兩個 QSTA 先經過 QAP 交換 DLS Request／Response——經過 QAP 是因為接收端可能在省電、需要 QAP 叫醒，而且雙方要交換能力資訊 → 之後兩者直接互傳 → 超過 DLPTimeout 沒有流量就失效，回到經過 AP 的路徑；直接鏈路存在期間接收端不能進入省電。它解決的是「全部經過 AP，頻寬用兩倍」的缺點（K27）。</div>
+    <div class="terms"><b>名詞</b>：DLS＝直接鏈路建立。DLPTimeout＝直接鏈路的閒置逾時。</div></div>
+
+  <div class="card"><h3><span class="n">K26</span>APSD</h3>
+    <div class="row"><b>U-APSD</b>（WMM Power Save，以 EDCA 為基礎）：STA 醒來送一個 trigger 訊框（通常就是自己的上行資料）→ 開始一段服務期間 SP → QAP 送出 delivery-enabled AC 的緩衝訊框（最多 Max SP Length：全部、2、4 或 6 個）→ 用 EOSP 標示結束。<b>S-APSD</b>（以 HCCA 為基礎）：用 ADDTS 協商一個排程，STA 定時醒來接收。</div>
+    <div class="row"><b>VoIP 例子</b>：語音每 20 ms 一包、延遲要小於 20 ms。用 U-APSD 時，上行語音本身就是 trigger，所以不必等 Beacon（解決 K11 的 100–300 ms 延遲），也省掉 PS-Poll；其他 AC 仍然走 PS-Poll。</div>
+    <div class="terms"><b>名詞</b>：APSD＝自動省電傳送。U-／S-APSD＝非排程式／排程式。SP＝服務期間。EOSP＝服務期間結束位元。WMM＝Wi-Fi 聯盟依 802.11e 訂的認證規格。</div></div>
+
+  <div class="card"><h3><span class="n">K27</span>架構與 AP</h3>
+    <div class="row">三種架構：IBSS（ad hoc）、Infrastructure（AP＋DS）、Mesh。BSS＝由單一協調功能控制的一群 STA；AP＝一個 STA 加上存取 DS 的能力。802.11 只標準化空中介面（PHY＋MAC）。</div>
+    <div class="row"><b>全部經過 AP 的取捨</b>：<span class="lab m">缺點</span>STA 對 STA 的流量用掉兩倍頻寬，競爭與碰撞也變多；<span class="lab p">優點</span>輕易解決隱藏終端問題（大家都聽得到 AP）、可以替省電站台緩衝、符合 AAA 架構、可以做每個流的 QoS。</div>
+    <div class="terms"><b>名詞</b>：BSS＝基本服務集。Mesh＝網狀網路。AAA＝認證、授權、計費。</div></div>
+
+  <h2 id="s6">⑥ 公式計算區</h2>
+  <div class="use"><b>考場上怎麼用：</b>先畫時間軸，再照這裡的公式把每一段時間列出來加總。題目沒給參數時用常數表；寫完一定要加一句話說明數字的意義。</div>
+  <div class="tbl-wrap"><table>
+    <tr><th>PHY</th><th>SIFS</th><th>slot</th><th>PIFS</th><th>DIFS</th><th>CWmin</th><th>PLCP</th></tr>
+    <tr><td>OFDM（講義）</td><td>16 µs</td><td>9 µs</td><td>25 µs <span class="sup">補充</span></td><td>34 µs</td><td>15</td><td>16 µs＋每符元 ≥ 4 µs</td></tr>
+    <tr><td>DSSS <span class="sup">補充</span></td><td>10 µs</td><td>20 µs</td><td>30 µs</td><td>50 µs</td><td>31</td><td>192／96 µs</td></tr>
+  </table></div>
+  <ul>
+    <li><b>802.3 最小訊框</b>：碰撞傳回來時還必須在送，所以傳輸時間 ≥ slot time → 最小訊框＝slot×速率＝51.2 µs×10 Mbps＝512 bits＝64 bytes。DA＋SA＋Length＋FCS＝18 bytes，所以 PAD＝46−LLC 資料長度。單程傳播 ≤ slot/2，所以距離＝傳播速度×slot/2；速率提高 10 倍，距離就縮為 1/10。最晚在 2τ（來回）偵測到碰撞；jam 是 32 bits。</li>
+    <li><b>BEB</b>：兩站在第 k 階段再撞的機率是 1/2<sup>k</sup>；最長等待 (2<sup>k</sup>−1)×51.2 µs；三站以上用列舉（每台有 2<sup>k</sup> 種選擇）。</li>
+    <li><b>退避</b>：Random[0, CW]×slot；平均是 CW/2×slot；失敗後 CW<sub>新</sub>＝2(CW＋1)−1（例如 31 → 63）。凍結題：畫時間軸，每次媒介忙完，扣掉已經數過的 slot，閒置滿 DIFS 後再繼續數。</li>
+    <li><b>IFS</b>：PIFS＝SIFS＋slot <span class="sup">補充</span>；DIFS＝SIFS＋2 slot；AIFS＝AIFSN×slot＋SIFS（OFDM：VO、VI 34 µs，BE 43 µs，BK 79 µs）；EIFS＝SIFS＋以 1 Mbps 送 14 bytes ACK 的時間（8×14 µs）＋前導碼＋PLCP 標頭＋DIFS（DSSS 為 364 µs）。</li>
+    <li><b>EDCA 誰先送</b>：每個 AC 的開始時間 t＝AIFS＋9×b（b 是抽到的退避值），列出所有 (b<sub>VO</sub>, b<sub>BE</sub>) 組合，數哪一方較小、哪些相等（相等就是碰撞）。</li>
+    <li><b>一次交換的時間</b>：DIFS＋退避＋PLCP＋8(28＋L)/R＋SIFS＋PLCP＋8×14/R<sub>ACK</sub>（28＝24 bytes 標頭＋4 bytes FCS，L 是資料長度，R 是速率）。加上 RTS/CTS 時再加 RTS（20 bytes）＋CTS（14 bytes）＋2 個 SIFS＋2 個 PLCP。吞吐量＝8L ÷ 總時間；固定負擔不會隨速率變小，所以速率越高效率越低。</li>
+    <li><b>Duration</b>：從本訊框結束算到它要保護的最後一個訊框結束。RTS＝3 SIFS＋CTS＋Data＋ACK；CTS＝RTS 的值−SIFS−CTS；Data＝SIFS＋ACK；分段 i＝SIFS＋ACK＋SIFS＋分段 i+1＋SIFS＋ACK；ACK<sub>i</sub>＝分段 i 的值−SIFS−ACK。</li>
+    <li><b>PCF</b>：CFP 重複間隔＝CFP period×DTIM 間隔（DTIM 間隔＝DTIM period×Beacon 間隔）。Beacon 延後 x，實際 CFP＝CFPMaxDuration−x（結束時間不晚於 TBTT＋CFPMaxDuration）。</li>
+    <li><b>容易被隱藏站干擾的時間</b>：不用 RTS/CTS 時是整個資料 PPDU；用 RTS/CTS 時只有 RTS 本身（CTS 之後隱藏站已設 NAV）。</li>
+    <li><b>TXOP</b>：TXOP limit×32 µs；n 次交換需要 n×(Data＋SIFS＋ACK)＋(n−1)×SIFS，必須 ≤ TXOP。</li>
+    <li><b>Block Ack</b>：省下 n×(SIFS＋ACK)，但要加回 BAR＋BA＋2 個 SIFS；訊框很少時可能反而不划算。</li>
+    <li><b>HCCA 允入</b>：每個服務間隔 SI 要傳的位元＝速率×SI → 筆數＝⌈位元 ÷ MSDU⌉ → TXOP＝筆數×每次交換時間 → 最多可允入的串流數＝⌊SI ÷ TXOP⌋。</li>
+    <li><b>錯誤率</b>：n 位元全部正確的機率 P＝(1−p)<sup>n</sup>≈e<sup>−np</sup>；期望傳送次數＝1/P；期望傳送位元數＝n/P。可以用來說明「錯誤率高時分段比較划算」。</li>
+    <li><b>省電</b>：平均功率＝d×P<sub>醒</sub>＋(1−d)×P<sub>睡</sub>，d＝醒著的時間 ÷ 週期；下行最壞延遲約等於監聽週期；廣播要等下一個 DTIM。</li>
+    <li><b>PHY</b>：位元速率＝符元速率×每符元位元數×編碼率；DSSS：11 Mchip/s ÷ 11＝1 Msymbol/s；dB＝10 log(P1/P2)（例：100 W 對 1 W＝20 dB）；Barker：10 log 11＝10.4 dB；OFDM 54 Mbps＝48 個資料子載波×6 位元×3/4 ÷ 4 µs <span class="sup">補充</span>。</li>
+    <li><b>常用常數</b>：MSDU ≤ 2304 bytes（常用 1500）；802.3 訊框 64–1518 bytes；資料訊框標頭 24＋FCS 4 bytes；ACK、CTS 14 bytes，RTS 20 bytes；AID 1–2007；TXOP 32–8160 µs；Block Ack 最多 64 個 MSDU；VoIP 每 20 ms 一包；Beacon 間隔常用 100 ms。</li>
+  </ul>
+
+  <h2 id="glossary">附錄：小抄名詞表</h2>
+  <p>小抄上出現、有懸浮解釋的名詞，依在小抄上第一次出現的順序排列；解釋與各章「專有名詞對照」相同（同一名詞以後面章節為準）。</p>
+  <div class="tbl-wrap"><table class="gl no-terms">
+    <tr><th>名詞</th><th>解釋</th></tr>
+    <tr><td>區域網路</td><td>中等範圍（1–5 km 內）內的裝置直接互相通訊的網路</td></tr>
+    <tr><td>TIM</td><td>Beacon 裡的一張表，標示 AP 替哪些省電站台緩衝了資料</td></tr>
+    <tr><td>DTIM</td><td>之後會送出緩衝廣播／群播的 TIM</td></tr>
+    <tr><td>PS-Poll</td><td>省電站台醒來後，送給 AP 要求取一筆緩衝資料的訊框</td></tr>
+    <tr><td>ATIM</td><td>IBSS 中通知接收端「我有資料給你」</td></tr>
+    <tr><td>APSD</td><td>自動省電遞送，AP 依 AC 自動把緩衝的資料送給省電中的站台</td></tr>
+    <tr><td>IFS</td><td>訊框間隔，兩個訊框之間要空出的時間</td></tr>
+    <tr><td>退避</td><td>隨機多等幾個 slot，數到 0 才送，通道忙時暫停倒數</td></tr>
+    <tr><td>AIFS</td><td>仲裁訊框間隔，每個 AC 自己的 IFS，AIFS[AC] = AIFSN[AC] × slot + SIFS</td></tr>
+    <tr><td>EDCA</td><td>強化分散式通道存取：AC 之間的競爭式存取，每個 AC 用自己的 AIFS、CW</td></tr>
+    <tr><td>CSMA/CD</td><td>載波偵測多重存取／碰撞偵測（CSMA/CD）：先聽再傳、邊傳邊聽、碰撞就退避重傳</td></tr>
+    <tr><td>DCF</td><td>分散式協調功能，802.11 的基本存取方式：CSMA/CA 加隨機退避</td></tr>
+    <tr><td>ACK</td><td>收方回的確認</td></tr>
+    <tr><td>分段</td><td>分段／重組（Fragmentation / Defragmentation）：大 MSDU 切成多個 MPDU 分別傳送與確認，接收端再組回（補充）</td></tr>
+    <tr><td>RTS</td><td>要求傳送／允許傳送（Request To Send / Clear To Send（RTS / CTS））：預約媒介的控制訊框</td></tr>
+    <tr><td>CTS</td><td>要求傳送／允許傳送（Request To Send / Clear To Send（RTS / CTS））：預約媒介的控制訊框</td></tr>
+    <tr><td>NAV</td><td>站台記錄通道被預約到何時的計時器</td></tr>
+    <tr><td>AP</td><td>存取點，站台透過它連上網路</td></tr>
+    <tr><td>輪詢</td><td>PC 點名站台「換你送」</td></tr>
+    <tr><td>CRC</td><td>用多項式除法產生的檢查碼，802.3 用 CRC-32</td></tr>
+    <tr><td>EIFS</td><td>收到錯誤訊框後使用，比 DIFS 長</td></tr>
+    <tr><td>Virtual Carrier Sense</td><td>不實際聽通道，而是依訊框中的 Duration 推算通道忙碌多久</td></tr>
+    <tr><td>Duration/ID</td><td>這次傳送要佔用通道多久，其他站台據此設定 NAV</td></tr>
+    <tr><td>Polling</td><td>AP 依序詢問站台是否要傳資料</td></tr>
+    <tr><td>PCF</td><td>點協調功能，AP 在無競爭期輪詢站台；在 802.11e 中給非 QoS 站台用</td></tr>
+    <tr><td>HCCA</td><td>HCF 控制式通道存取：HC 依 TSPEC 輪詢、配發 TXOP</td></tr>
+    <tr><td>QoS</td><td>服務品質，對延遲、抖動、頻寬的保證或區分</td></tr>
+    <tr><td>Delay</td><td>延遲，封包從送出到被收到所花的時間</td></tr>
+    <tr><td>Jitter</td><td>抖動，每個封包的延遲不一樣，延遲的變化就是抖動</td></tr>
+    <tr><td>TSPEC</td><td>流量規格：站台向 HC 登記的流量需求，例如速率、延遲上限</td></tr>
+    <tr><td>TXOP</td><td>傳送機會，一段可以連續傳送的時間</td></tr>
+    <tr><td>throughput</td><td>吞吐量，單位時間成功送達的資料量</td></tr>
+    <tr><td>Block Ack</td><td>區塊確認，一次確認多個訊框，不必每個都回 ACK</td></tr>
+    <tr><td>捎帶</td><td>把確認夾在下一個資料訊框裡送</td></tr>
+    <tr><td>DLS</td><td>直接連線設定，同一個 BSS 裡的兩個站台直接傳送，不經 AP 轉送</td></tr>
+    <tr><td>Roaming</td><td>從一台 AP 移到另一台 AP 而不中斷</td></tr>
+    <tr><td>關聯</td><td>建立 STA 與 AP 的對應關係，由 STA 發起</td></tr>
+    <tr><td>重新關聯</td><td>漫遊時換到新 AP 的程序</td></tr>
+    <tr><td>DS</td><td>連接多個 BSS 的骨幹，內部實作不在 802.11 標準內</td></tr>
+    <tr><td>Privacy</td><td>加密傳輸內容，達到有線媒介的封閉效果</td></tr>
+    <tr><td>認證</td><td>認證／解除認證（Authentication / Deauthentication）：確認對方身分／終止既有的認證</td></tr>
+    <tr><td>WEP</td><td>802.11 原始的選用加密，以 RC4 加密資料 payload</td></tr>
+    <tr><td>站台</td><td>具備 802.11 MAC 與 PHY 的裝置</td></tr>
+    <tr><td>Bridge</td><td>連接同類或不同類 MAC 的鏈結層設備</td></tr>
+    <tr><td>WDS</td><td>AP 之間用無線互連，需要 4 個位址</td></tr>
+    <tr><td>LAN</td><td>中等範圍（1–5 km 內）內的裝置直接互相通訊的網路</td></tr>
+    <tr><td>Portal</td><td>802.11 與有線 LAN 之間的邏輯出入口</td></tr>
+    <tr><td>Integration</td><td>把 MSDU 經 Portal 送到有線 LAN，必要時做媒介或位址轉換</td></tr>
+    <tr><td>Beacon</td><td>AP 定期廣播的訊框，帶有網路參數</td></tr>
+    <tr><td>TSF</td><td>讓 BSS 內所有站台的計時器同步</td></tr>
+    <tr><td>TBTT</td><td>目標 Beacon 傳送時間，Beacon 預定送出的時刻，照 Beacon Interval 排好、不隨實際送出時間移動</td></tr>
+    <tr><td>IBSS</td><td>不需 AP 的 ad hoc 網路</td></tr>
+    <tr><td>PHY</td><td>實體層，負責把位元變成無線訊號送出去</td></tr>
+    <tr><td>PLCP</td><td>把各種 PHY 包裝成統一介面給 MAC，並提供 CCA</td></tr>
+    <tr><td>DSSS</td><td>跳頻展頻／直接序列展頻（FHSS / DSSS）：依次快速更換頻率／資料乘上虛擬隨機序列把頻寬展開</td></tr>
+    <tr><td>QAM</td><td>同時改變振幅與相位；64-QAM 每個符號 6 bits</td></tr>
+    <tr><td>Encapsulation</td><td>封裝／解封裝（Encapsulation / Decapsulation）：往下送時加 header，往上送時拆 header</td></tr>
+    <tr><td>LLC</td><td>鏈結層上半部，802.2，所有 802 網路共用</td></tr>
+    <tr><td>MAC</td><td>鏈結層下半部，決定何時能使用共享媒介</td></tr>
+    <tr><td>PMD</td><td>實際調變與收發的部分</td></tr>
+    <tr><td>Infrastructure</td><td>所有傳送都經過 AP</td></tr>
+    <tr><td>BSS</td><td>一個 AP 和連上它的站台組成的網路</td></tr>
+    <tr><td>ESS</td><td>基本／延伸服務集（BSS / ESS）：802.11 的基本單位／多個 BSS 經 DS 串起來，對上層像單一 BSS</td></tr>
+    <tr><td>端對端</td><td>鏈結層級／端對端（Link Level / End-to-End）：802.11 認證只在相鄰的無線站台間</td></tr>
+    <tr><td>漫遊</td><td>從一台 AP 移到另一台 AP 而不中斷</td></tr>
+    <tr><td>CCA</td><td>PHY 的實體載波感測</td></tr>
+    <tr><td>MSDU</td><td>上層交給 MAC 層要送出去的一筆資料</td></tr>
+    <tr><td>MPDU</td><td>MAC 層實際送出的訊框</td></tr>
+    <tr><td>PSDU</td><td>MAC／PLCP 服務與協定資料單元（MSDU / MPDU / PSDU / PPDU）：LLC→MAC 的資料／加 MAC header／PHY 收到的 MPDU／加 preamble 與 header 送上空中</td></tr>
+    <tr><td>PPDU</td><td>MAC／PLCP 服務與協定資料單元（MSDU / MPDU / PSDU / PPDU）：LLC→MAC 的資料／加 MAC header／PHY 收到的 MPDU／加 preamble 與 header 送上空中</td></tr>
+    <tr><td>SDU</td><td>上一層交給本層的資料</td></tr>
+    <tr><td>PDU</td><td>本層加上 header 後的資料單元</td></tr>
+    <tr><td>Mbps</td><td>每秒百萬位元／每秒百萬位元組（Mbps / MB/s）：bit 與 byte 差 8 倍：MB/s = Mbps ÷ 8，例如 1 Gbps ≈ 125 MB/s</td></tr>
+    <tr><td>DIFS</td><td>DCF 送資料前，通道要先閒置的固定時間</td></tr>
+    <tr><td>CW</td><td>競爭視窗，隨機退避值的抽取範圍</td></tr>
+    <tr><td>隱藏節點</td><td>彼此聽不到、但共用同一個接收端的站台</td></tr>
+    <tr><td>Association</td><td>站台加入 AP 的程序</td></tr>
+    <tr><td>Reassociation</td><td>漫遊時換到新 AP 的程序</td></tr>
+    <tr><td>dB</td><td>功率比的對數表示：10 log10(P1/P2)</td></tr>
+    <tr><td>PC</td><td>點協調器，AP 上負責點名（輪詢）的角色</td></tr>
+    <tr><td>HC</td><td>混合協調器，QAP 上負責輪詢（執行 HCCA）的角色</td></tr>
+    <tr><td>AC</td><td>存取類別：把流量分成 4 類（BK、BE、VI、VO），每類用不同的競爭參數</td></tr>
+    <tr><td>CFP</td><td>無競爭期，站台要被點名才能送</td></tr>
+    <tr><td>PIFS</td><td>比 DIFS 短的訊框間隔，讓 AP 能先搶到通道</td></tr>
+    <tr><td>Polled TXOP</td><td>QSTA 收到 HC 的 QoS CF-Poll 後得到的 TXOP</td></tr>
+    <tr><td>CF-Ack</td><td>無競爭期裡夾帶在訊框中的確認</td></tr>
+    <tr><td>QSTA</td><td>支援 QoS 的站台</td></tr>
+    <tr><td>QAP</td><td>支援 QoS 的 AP</td></tr>
+    <tr><td>SIFS</td><td>最短的訊框間隔，用在回應訊框（例如 ACK）</td></tr>
+    <tr><td>預先認證</td><td>還連著舊 AP 時先跟新 AP 認證，加速漫遊</td></tr>
+    <tr><td>IAPP</td><td>802.11f，AP 之間交換站台資訊以支援漫遊</td></tr>
+    <tr><td>11r</td><td>快速漫遊／無線資源管理（11r / 11k）：加快 AP 切換／讓站台取得周圍頻道與 AP 的資訊</td></tr>
+    <tr><td>STA</td><td>具備 802.11 MAC 與 PHY 的裝置</td></tr>
+    <tr><td>slot</td><td>時槽，退避倒數的時間單位</td></tr>
+    <tr><td>CSMA/CA</td><td>先聽通道是否閒置，閒置才送，並用隨機退避避免大家同時送</td></tr>
+    <tr><td>HCF</td><td>混合協調功能，802.11e 的存取方法，含 EDCA、HCCA</td></tr>
+    <tr><td>FCFS</td><td>退避凍結帶來的公平傾向</td></tr>
+    <tr><td>負載分擔</td><td>負載分擔（Load Sharing / Balancing）：把流量分散到多個 AP 或頻道</td></tr>
+    <tr><td>訊框間隔</td><td>媒介空閒後必須等的時間，決定優先權</td></tr>
+    <tr><td>AIFSN</td><td>決定 AIFS 長度的數字，越小等得越短</td></tr>
+    <tr><td>RIFS</td><td>802.11n 連續傳送時使用</td></tr>
+    <tr><td>OFDM</td><td>802.11a／g 用的 PHY</td></tr>
+    <tr><td>暴露節點</td><td>（p.19）聽得到別人在送就延後，其實不會干擾，浪費頻寬</td></tr>
+    <tr><td>RTS_Threshold</td><td>訊框超過此長度才用 RTS/CTS</td></tr>
+    <tr><td>CFPMaxDuration</td><td>CFP 最多能持續多久</td></tr>
+    <tr><td>CF-End</td><td>宣告無競爭期結束的訊框</td></tr>
+    <tr><td>CF-Poll</td><td>點名訊框，被點到的站台才能送</td></tr>
+    <tr><td>重組</td><td>分段／重組（Fragmentation / Defragmentation）：大 MSDU 切成多個 MPDU 分別傳送與確認，接收端再組回（補充）</td></tr>
+    <tr><td>Fragmentation_Threshold</td><td>超過此長度就切段</td></tr>
+    <tr><td>接收計時器</td><td>重組時等分段的時限，逾時全丟</td></tr>
+    <tr><td>SA</td><td>來源／目的位址（Source / Destination Address（SA / DA））：MSDU 的原始來源與最終目的</td></tr>
+    <tr><td>CP</td><td>競爭期，大家用 DCF／EDCA 搶通道</td></tr>
+    <tr><td>超級訊框</td><td>一個 CFP 加一個 CP，週期性重複</td></tr>
+    <tr><td>Timestamp</td><td>Beacon 實際送出時的計時器值</td></tr>
+    <tr><td>CWmin</td><td>CW 的初始值</td></tr>
+    <tr><td>SSID</td><td>ESS 或 IBSS 的名稱，0–32 octets</td></tr>
+    <tr><td>CF</td><td>決定 BSS 內站台何時可傳送的邏輯，如 DCF、PCF</td></tr>
+    <tr><td>AID</td><td>Association 時 AP 分配給站台的編號</td></tr>
+    <tr><td>吞吐量</td><td>單位時間成功送達的資料量</td></tr>
+    <tr><td>SS</td><td>認證、解除認證、隱私、MSDU 傳送</td></tr>
+    <tr><td>BSSID</td><td>BSS 的 48-bit 識別碼；Infrastructure 為 AP 位址</td></tr>
+    <tr><td>Probe Request</td><td>探測要求／回應（Probe Request / Response）：主動掃描時的詢問與回覆</td></tr>
+    <tr><td>Distribution</td><td>在 DS 內把 MSDU 送到正確的 AP</td></tr>
+    <tr><td>橋接器</td><td>連接同類或不同類 MAC 的鏈結層設備</td></tr>
+    <tr><td>DSM</td><td>DS 連接各 AP 所用的媒介，邏輯上與 WM 分開</td></tr>
+    <tr><td>WM</td><td>無線 LAN 使用的傳輸媒介，即空氣中的電波</td></tr>
+    <tr><td>解除認證</td><td>認證／解除認證（Authentication / Deauthentication）：確認對方身分／終止既有的認證</td></tr>
+    <tr><td>DSS</td><td>關聯、重新關聯、解除關聯、分送、整合</td></tr>
+    <tr><td>解除關聯</td><td>刪除既有關聯，任一方可發起，屬於通知</td></tr>
+    <tr><td>整合</td><td>把 MSDU 經 Portal 送到有線 LAN，必要時做媒介或位址轉換</td></tr>
+    <tr><td>DA</td><td>來源／目的位址（Source / Destination Address（SA / DA））：MSDU 的原始來源與最終目的</td></tr>
+    <tr><td>RA</td><td>傳送端／接收端位址（Transmitter / Receiver Address（TA / RA））：這一跳無線傳輸的送方與收方</td></tr>
+    <tr><td>TA</td><td>傳送端／接收端位址（Transmitter / Receiver Address（TA / RA））：這一跳無線傳輸的送方與收方</td></tr>
+    <tr><td>機密性</td><td>讓非預期接收者看不懂內容</td></tr>
+    <tr><td>IV</td><td>24 bits，每框可更換，以明文隨資料送出</td></tr>
+    <tr><td>ICV</td><td>對明文算出的 32-bit 檢查碼，加密後附在密文後</td></tr>
+    <tr><td>虛擬載波偵測</td><td>不實際聽通道，而是依訊框中的 Duration 推算通道忙碌多久</td></tr>
+    <tr><td>FHSS</td><td>跳頻展頻／直接序列展頻（FHSS / DSSS）：依次快速更換頻率／資料乘上虛擬隨機序列把頻寬展開</td></tr>
+    <tr><td>Short Preamble</td><td>802.11b 較短的 PHY 前導碼，降低額外負擔</td></tr>
+    <tr><td>Chip</td><td>巴克序列／片碼（Barker Sequence / Chip）：11 chips 的展頻碼／展頻碼中的每一個位元</td></tr>
+    <tr><td>編碼增益</td><td>編碼增益／處理增益（Coding / Processing Gain）：展頻帶來的抗干擾能力，Barker 為 10.4 dB</td></tr>
+    <tr><td>延遲擴散</td><td>多路徑造成同一訊號先後抵達的時間差</td></tr>
+    <tr><td>PSK</td><td>振幅／頻率／相位移鍵控（ASK / FSK / PSK）：分別改變載波的振幅、頻率、相位來表示資料</td></tr>
+    <tr><td>FSK</td><td>振幅／頻率／相位移鍵控（ASK / FSK / PSK）：分別改變載波的振幅、頻率、相位來表示資料</td></tr>
+    <tr><td>ASK</td><td>振幅／頻率／相位移鍵控（ASK / FSK / PSK）：分別改變載波的振幅、頻率、相位來表示資料</td></tr>
+    <tr><td>DBPSK</td><td>差分二元／四相位移鍵控（DBPSK / DQPSK）：以相位變化表示資料，每個符號分別載 1 / 2 bits</td></tr>
+    <tr><td>DQPSK</td><td>差分二元／四相位移鍵控（DBPSK / DQPSK）：以相位變化表示資料，每個符號分別載 1 / 2 bits</td></tr>
+    <tr><td>UP</td><td>使用者優先權，每筆資料的優先等級，0–7，同 802.1D</td></tr>
+    <tr><td>TXOP limit</td><td>一個 TXOP 最長能多久</td></tr>
+    <tr><td>EDCA Parameter Set</td><td>Beacon 中宣告各 AC 的 AIFSN、CW、TXOP limit 的元素</td></tr>
+    <tr><td>ACM</td><td>Admission Control Mandatory，= 1 時這個 AC 要先經過 Admission Control 才能用</td></tr>
+    <tr><td>內部碰撞</td><td>同一站台內兩個 AC 同時數完退避，優先權高的贏</td></tr>
+    <tr><td>ADDTS</td><td>Add Traffic Stream，新增一條 TS 的 Action 訊框</td></tr>
+    <tr><td>TID</td><td>流量識別碼，0–15，標示這筆資料屬於哪個 TC 或 TS</td></tr>
+    <tr><td>DELTS</td><td>Delete Traffic Stream，刪除一條 TS 的 Action 訊框</td></tr>
+    <tr><td>QoS Control</td><td>QoS 訊框標頭新增的欄位，含 TID、Ack Policy、EOSP、TXOP limit 或 Queue size 等</td></tr>
+    <tr><td>ADDBA</td><td>Add Block Ack，建立 Block Ack 協定</td></tr>
+    <tr><td>QoS Data</td><td>802.11e 新增的資料訊框，標頭多了 QoS Control 欄位</td></tr>
+    <tr><td>BAR</td><td>BlockAckReq，要求收方回報接收狀態的訊框</td></tr>
+    <tr><td>DELBA</td><td>Delete Block Ack，結束 Block Ack 協定</td></tr>
+    <tr><td>WMM</td><td>Wi-Fi Multimedia，Wi-Fi Alliance 的 EDCA 認證，含 WMM Power Save</td></tr>
+    <tr><td>SP</td><td>服務期間，QAP 送資料給某個 QSTA 的一段時間</td></tr>
+    <tr><td>Max SP Length</td><td>一個 SP 最多送幾個訊框</td></tr>
+    <tr><td>EOSP</td><td>End of Service Period，表示這段服務期間結束</td></tr>
+    <tr><td>VoIP</td><td>網路電話，把語音放在 IP 封包裡傳送</td></tr>
+    <tr><td>Mesh</td><td>基礎架構網路／網狀網路（Infrastructure / Mesh）：站台透過 AP 連到 DS／AP 之間用無線互連（802.11s）</td></tr>
+    <tr><td>協調功能</td><td>決定 BSS 內站台何時可傳送的邏輯，如 DCF、PCF</td></tr>
+    <tr><td>AAA</td><td>確認身分、決定權限、記錄使用量的架構</td></tr>
+    <tr><td>FCS</td><td>錯誤檢查碼，收方用來判斷訊框有沒有出錯</td></tr>
+    <tr><td>PAD</td><td>資料不足 46 bytes 時補上的無意義資料</td></tr>
+    <tr><td>CFP 重複間隔</td><td>兩次 CFP 開始的間隔，以 DTIM 間隔個數定義</td></tr>
+    <tr><td>Beacon 間隔</td><td>相鄰兩個 TBTT 的間隔</td></tr>
+    <tr><td>碼率</td><td>卷積碼／碼率（Convolutional Code / Coding Rate）：加入冗餘位元以更正錯誤；碼率 3/4 代表 4 個位元中 3 個是資料</td></tr>
+    <tr><td>子載波</td><td>OFDM 中的小頻率通道，11a 每頻道 64 個</td></tr>
+  </table></div>
+</main>
+<aside class="toc"></aside>
+</div>
+<script src="assets/js/terms-all.js"></script>
+<script src="assets/js/terms.js"></script>
+</body>
+</html>
