@@ -60,6 +60,20 @@
     });
     const cur = header.querySelector('[aria-current]');
     if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+    const nav = header.querySelector('.chapters');
+    const fade = () => {
+      const max = nav.scrollWidth - nav.clientWidth;
+      nav.classList.toggle('fade-l', nav.scrollLeft > 2);
+      nav.classList.toggle('fade-r', nav.scrollLeft < max - 2);
+    };
+    nav.addEventListener('scroll', fade, { passive: true });
+    window.addEventListener('resize', fade);
+    nav.addEventListener('wheel', e => {
+      if (nav.scrollWidth <= nav.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      e.preventDefault();
+      nav.scrollLeft += e.deltaY;
+    }, { passive: false });
+    fade();
 
     const footer = document.createElement('footer');
     footer.className = 'site-footer';

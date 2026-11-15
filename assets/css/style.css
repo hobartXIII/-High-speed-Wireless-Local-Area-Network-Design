@@ -71,7 +71,10 @@ hr { border: 0; border-top: 1px solid var(--border); margin: 2em 0; }
 .brand { font-weight: 700; color: var(--fg); white-space: nowrap; display: flex; align-items: center; gap: 8px; }
 .brand:hover { text-decoration: none; }
 .brand .logo { width: 26px; height: 26px; }
-.chapters { display: flex; gap: 4px; overflow-x: auto; flex: 1; scrollbar-width: none; }
+.chapters { display: flex; gap: 4px; overflow-x: auto; flex: 1; min-width: 0; scrollbar-width: none; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+.chapters.fade-r { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); }
+.chapters.fade-l { -webkit-mask-image: linear-gradient(to right, transparent, #000 32px); mask-image: linear-gradient(to right, transparent, #000 32px); }
+.chapters.fade-l.fade-r { -webkit-mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, transparent, #000 32px, #000 calc(100% - 32px), transparent); }
 .chapters::-webkit-scrollbar { display: none; }
 .chapters a { padding: 4px 10px; border-radius: 6px; color: var(--muted); white-space: nowrap; font-size: .92rem; }
 .chapters a:hover { background: var(--surface-2); text-decoration: none; color: var(--fg); }
