@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>期中考古題</title>
+<meta name="description" content="114-1 高速無線區域網路設計期中考古題 9 題：英文原題、中文翻譯、中文說明與英文參考答案，附講義出處與相關練習題。">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/highlighter.css">
+<script src="assets/js/highlighter.js"></script>
+<script src="assets/js/common.js"></script>
+<style>
+  .mq { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; margin: 16px 0; }
+  .mq-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 8px; }
+  .mq-id { font-weight: 700; font-size: 1.05rem; }
+  .mq-pts { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
+  .chip { font-size: .78rem; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap; }
+  .q-en { font-size: 1.02rem; }
+  .q-en ol, .q-zh ol { padding-left: 1.4em; margin: .3em 0; }
+  .q-zh { color: var(--muted); border-left: 3px solid var(--border); padding-left: 12px; margin-top: 10px; font-size: .95rem; }
+  .mq details { margin-top: 12px; border-top: 1px dashed var(--border); padding-top: 8px; }
+  .mq summary { cursor: pointer; color: var(--accent); font-weight: 600; user-select: none; }
+  .ans-en { background: var(--accent-soft); border-radius: 8px; padding: 10px 14px; margin: 10px 0; }
+  .ans-zh { padding: 2px 2px; }
+  .ans-label { font-size: .78rem; font-weight: 700; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; margin: 10px 0 2px; }
+  .src { font-size: .85rem; color: var(--muted); margin-top: 8px; }
+  .mq table { border-collapse: collapse; margin: 8px 0; font-size: .92rem; }
+  .mq th, .mq td { border: 1px solid var(--border); padding: 4px 8px; text-align: left; vertical-align: top; }
+  .mq th { background: var(--surface-2); }
+  .tbl-scroll { overflow-x: auto; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+</style>
+</head>
+<body>
+<div class="layout">
+<main>
+  <div class="page-head">
+    <div class="eyebrow">PAST EXAM</div>
+    <h1>📄 期中考古題（114-1）</h1>
+    <div class="meta"><span>9 題</span><span>來源：11EnhancedQoS 講義 p.81 附的考古題（114-1 Midterm_考古.pdf）</span></div>
+  </div>
+
+  <div class="callout note">英文題目照考卷原文（原文的拼字錯誤保留，旁邊註明），下面附中文翻譯。參考答案<b>不是老師提供的</b>，是依講義整理的；講義上沒有的內容標 <span class="sup">補充</span>。每題最後列出 <a href="midterm-practice.html">練習題</a> 中延伸這一題的題目。</div>
+
+  <div class="toolbar">
+    <button class="btn" type="button" id="open-all">展開全部答案</button>
+    <button class="btn" type="button" id="close-all">收合全部答案</button>
+  </div>
+
+  <h2 id="exam">考古題</h2>
+  <div id="qp"></div>
+</main>
+<aside class="toc"></aside>
+</div>
+
+<script>
+const P = [
+{
+  id: 'Q1', pts: '20%',
+  en: `At present, IEEE 802.3 Ethernet uses CSMA/CD and IEEE 802.11 WLAN uses CSMA/CA to access channel. Please describe the differences between IEEE 802.3 and IEEE 802.11 in detail (10%). In addition, as IEEE 802.3 Ethernet uses CSMA/CA and IEEE 802.11 WLAN uses CSMA/CD, they show what kinds of results are generated? (10%)`,
+  zh: `目前 IEEE 802.3 乙太網路使用 CSMA/CD、IEEE 802.11 無線區域網路使用 CSMA/CA 存取通道。請詳細說明 IEEE 802.3 與 IEEE 802.11 的差異（10%）。另外，如果 IEEE 802.3 乙太網路改用 CSMA/CA、IEEE 802.11 無線區域網路改用 CSMA/CD，會產生什麼結果？（10%）`,
+  az: `<p><b>第一部分：差異</b>（建議用表格作答）</p>
+  <div class="tbl-scroll"><table><tr><th></th><th>802.3 CSMA/CD</th><th>802.11 CSMA/CA</th></tr>
+  <tr><td>碰撞處理</td><td>傳送中偵測碰撞，送 32 位元 jam 後停止</td><td>無法在傳送時偵測碰撞，只能事先避免</td></tr>
+  <tr><td>退避</td><td>碰撞後才做 BEB，r ∈ [0, 2<sup>k</sup>−1]，k = min(n,10)，slot 51.2 µs</td><td>媒介忙過就要 DIFS＋隨機退避；忙時凍結計數；失敗才把 CW 加倍</td></tr>
+  <tr><td>確認</td><td>沒有 MAC 層 ACK</td><td>正向 ACK，SIFS 後回</td></tr>
+  <tr><td>載波偵測</td><td>實體</td><td>實體 CCA＋虛擬 NAV（RTS/CTS 的 Duration）</td></tr>
+  <tr><td>優先權</td><td>無</td><td>用 IFS 長短區分（SIFS／PIFS／DIFS）</td></tr>
+  <tr><td>媒介特性</td><td>封閉、可靠、大家都聽得到</td><td>開放、不可靠、隱藏節點、移動、需要省電與安全</td></tr></table></div>
+  <p><b>第二部分：互換的結果</b></p>
+  <ul><li><b>802.11 改用 CD：做不到也沒有用。</b>無線電傳送時自己的訊號遠強於收到的訊號，無法邊送邊聽；而且碰撞發生在<b>接收端</b>，隱藏節點的情況下傳送端根本聽不到另一個傳送者。結果是碰撞偵測不到、沒有 ACK 也不知道失敗，訊框大量遺失。</li>
+  <li><b>802.3 改用 CA：可以運作但效率變差。</b>有線網路本來就能立刻偵測碰撞並停止，改成 CA 之後：每個訊框前都要多等 DIFS 與退避（媒介空閒也浪費時間）；碰撞時整個訊框都送完才發現；還要多送 ACK 才知道成功。吞吐量和延遲都變差，卻沒有得到好處，因為有線網路沒有隱藏節點問題。</li></ul>`,
+  ae: `<p><b>Differences:</b> 802.3 detects collisions while transmitting, sends a 32-bit jam and then uses truncated BEB (r ∈ [0, 2<sup>k</sup> − 1], k = min(n, 10), slot 51.2 µs) only after a collision; there is no MAC-level ACK. 802.11 cannot detect collisions, so it avoids them: after the medium has been busy a station defers for DIFS plus a random backoff (Random[0, CW] × slot), the backoff is frozen while the medium is busy, and CW doubles only after a failure. Every directed frame is positively acknowledged after SIFS. Carrier sense is both physical (CCA) and virtual (NAV, set by the Duration of RTS/CTS), and IFSs of different lengths give priorities. These differences come from the medium: wired is closed and reliable; wireless is open, unreliable, has hidden nodes, mobility and battery constraints.</p>
+  <p><b>Swapped:</b> 802.11 with CD would not work: a radio cannot listen while transmitting because its own signal overwhelms the received one, and collisions happen at the receiver, which a hidden sender cannot hear. Collisions would go undetected and, without ACKs, frames would be lost silently. 802.3 with CA would still work but less efficiently: every frame pays DIFS and backoff even on an idle cable, a collision is only discovered after the whole frame (and the missing ACK), and every frame needs an ACK. Throughput falls and delay rises, with no benefit because a cable has no hidden-node problem.</p>`,
+  src: `1CSMA_CD p.6–7、p.10；2-1 p.7–9「What is unique about wireless?」；2-4 p.11–13、p.16、p.20–21、p.24–25`,
+  rel: ['A1', 'A10', 'C1', 'C2', 'C12']
+},
+{
+  id: 'Q2', pts: '10%',
+  en: `What mechanism does IEEE 802.11 provide for SATs <span style="color:var(--muted)">[sic，應為 STAs]</span> to enter sleep mode without losing packets? (10%)`,
+  zh: `IEEE 802.11 提供什麼機制，讓站台（STA）進入睡眠模式而不遺失封包？（10%）`,
+  az: `<p>題目沒說機制名稱，要自己答出<b>電源管理（TIM／DTIM／PS-Poll）</b>，最好兩種組態都寫。</p>
+  <ol><li><b>Infrastructure：</b>STA 把 Frame Control 的 <b>Power Management 位元</b>設為 1 通知 AP → AP <b>緩衝</b>給它的訊框 → 靠 <b>TSF</b> 同步，STA 在信標前醒來看 <b>TIM</b> → TIM 裡有自己（依 AID）就送 <b>PS-Poll（帶 AID）</b>並保持清醒收資料，<b>More Data</b> 位元表示還有 → 沒有就再睡。</li>
+  <li><b>廣播／群播：</b>也被緩衝，只在 <b>DTIM</b> 信標之後送出；DTIM 間隔是 TIM 間隔的倍數。</li>
+  <li><b>IBSS：</b>沒有 AP，用 <b>ATIM 視窗</b>：省電站台在 TBTT 前醒來；有資料要送的站在視窗內送 ATIM，對方回 ACK 並保持清醒到下一個 ATIM 視窗結束，視窗後再用 DCF 傳資料。</li></ol>
+  <p>可加一句 802.11e 的 <b>APSD</b>（U-APSD 用觸發訊框、S-APSD 用排程），說明它改善了傳統省電延遲太長的問題。</p>`,
+  ae: `<p>802.11 power management lets idle stations sleep while the AP buffers their frames. In an infrastructure BSS, a STA sets the <b>Power Management</b> bit to 1 to tell the AP it is in power-save mode; the AP buffers all frames for it. All stations are synchronized by the TSF, so the STA wakes up just before the beacon and checks the <b>TIM</b> (traffic indication map), which lists by AID the stations with buffered frames. If its bit is set, the STA sends a <b>PS-Poll</b> carrying its AID and stays awake to receive the frame; <b>More Data</b> = 1 means more frames are buffered. Otherwise it goes back to sleep. Broadcast and multicast frames are buffered and sent after a <b>DTIM</b> beacon (the DTIM interval is a multiple of the TIM interval). In an IBSS, stations wake up before each TBTT and use the <b>ATIM window</b>: a sender announces buffered traffic with an ATIM, the receiver ACKs and stays awake, and the data is sent with DCF after the window. 802.11e adds APSD (U-APSD with trigger frames, S-APSD with a negotiated schedule).</p>`,
+  src: `2-3 p.14–15（Power Management、More Data）；2-5 p.15、p.18–24「Power Management」；11EnhancedQoS「Automatic Power Save Delivery (APSD)」`,
+  rel: ['A6', 'B9', 'C16', 'C17']
+},
+{
+  id: 'Q3', pts: '20%',
+  en: `Explanation (20%):
+  <ol type="A"><li>QAM (quadrature amplitude modulation):</li><li>More Data Field:</li><li>Integration service:</li><li>Duration or Connection ID:</li></ol>`,
+  zh: `解釋（20%）：
+  <ol type="A"><li>QAM（正交振幅調變）</li><li>More Data 欄位</li><li>整合服務（Integration service）</li><li>Duration 或 Connection ID（持續時間／連線 ID）</li></ol>`,
+  az: `<p>每項都寫「是什麼＋為什麼需要／怎麼用」，不只是名詞翻譯。</p>
+  <ol type="A"><li><b>QAM：</b>同相（I，cos）與正交（Q，sin）兩個載波各自做有限個振幅的調變後相加，可視為兩個 ASK 通道，也等於 PSK＋ASK 的組合（至少兩種相位、兩種振幅）。每個符元能帶更多位元，所以速率更高：802.11a/g OFDM 的 24、36 Mbps 用 16-QAM，48、54 Mbps 用 64-QAM。代價是符元點更密，需要更好的訊號品質 <span class="sup">補充</span>。</li>
+  <li><b>More Data：</b>AP 用來告訴省電中的 STA「AP 這邊還有給你的緩衝訊框」，STA 就繼續送 PS-Poll、不要回去睡；也用來表示 STA 還有緩衝的 MSDU，可在回應下一次 CF-Poll 時傳送。</li>
+  <li><b>Integration：</b>DS 服務之一。分配服務判斷接收者在整合的有線 LAN 上時，輸出點是 <b>Portal</b> 而不是 AP；整合服務負責把 MSDU 從 DS 媒介送到那個 LAN，包括必要的媒介與位址轉換。它讓 802.11 能和既有的 802.x LAN 連在一起。</li>
+  <li><b>Duration/ID：</b>一般訊框放<b>微秒值</b>，收到的站用它更新 <b>NAV</b>（虛擬載波偵測，例如 RTS/CTS、分段）；CFP 中傳送的訊框固定為 32768；在 <b>PS-Poll</b> 中改放 STA 的 <b>AID</b>（關聯 ID），讓 AP 知道是誰來取資料。</li></ol>`,
+  ae: `<ol type="A"><li><b>QAM:</b> the in-phase (I, cosine) and quadrature (Q, sine) carriers are each amplitude-modulated with a finite number of levels and then added; it is a two-channel ASK system, equivalent to a combination of PSK and ASK (at least two phases and two amplitudes). Each symbol carries more bits, giving higher rates: 802.11a/g OFDM uses 16-QAM for 24/36 Mbps and 64-QAM for 48/54 Mbps; denser constellations need a better SNR.</li>
+  <li><b>More Data:</b> used by the AP to tell a station in power-save mode that more MSDUs/MMPDUs are buffered for it, so it keeps polling instead of sleeping; also indicates that a STA has at least one more buffered MSDU to send in response to a subsequent CF-Poll.</li>
+  <li><b>Integration service:</b> a distribution system service. When the distribution service finds that the intended recipient is on an integrated LAN, the output point is a <b>Portal</b> instead of an AP; the integration service delivers the MSDU from the DS medium to that LAN, including any required media or address translation.</li>
+  <li><b>Duration/ID:</b> normally a value in microseconds that receiving stations use to update their <b>NAV</b> (virtual carrier sense, e.g., RTS/CTS and fragment bursts); frames sent during the CFP carry the fixed value 32768; in a <b>PS-Poll</b> frame it carries the station's <b>AID</b> (association ID) so the AP knows who is retrieving buffered frames.</li></ol>`,
+  src: `2-1 p.74–75（QAM）、p.44（OFDM 速率與調變）；2-2 p.23「Integration」；2-3 p.15–16（More Data、Duration/ID）`,
+  rel: ['B2', 'B4', 'B9', 'C9']
+},
+{
+  id: 'Q4', pts: '10%',
+  en: `What do the reasons use four address fields in MAC header of IEEE 802.11 data frame? Please describe the details. (10%)`,
+  zh: `IEEE 802.11 資料訊框的 MAC 標頭為什麼要用四個位址欄位？請詳細說明。（10%）`,
+  az: `<p><b>核心原因：</b>在無線網路裡，「這一跳的傳送端／接收端」和「原始來源／最終目的地」可能都不同。有線 LAN 只需要 SA、DA；802.11 要多記錄經手的 AP（BSSID），在 AP 之間用無線轉送（WDS）時，四個位址全都不同，所以需要第四個。</p>
+  <div class="tbl-scroll"><table><tr><th>To DS</th><th>From DS</th><th>Addr 1</th><th>Addr 2</th><th>Addr 3</th><th>Addr 4</th><th>情況</th></tr>
+  <tr><td>0</td><td>0</td><td>DA</td><td>SA</td><td>BSSID</td><td>–</td><td>IBSS（ad hoc）</td></tr>
+  <tr><td>0</td><td>1</td><td>DA</td><td>BSSID</td><td>SA</td><td>–</td><td>AP → STA</td></tr>
+  <tr><td>1</td><td>0</td><td>BSSID</td><td>SA</td><td>DA</td><td>–</td><td>STA → AP</td></tr>
+  <tr><td>1</td><td>1</td><td>RA</td><td>TA</td><td>DA</td><td>SA</td><td>WDS（AP ↔ AP 無線橋接）</td></tr></table></div>
+  <ul><li><b>Address 1</b> 永遠是這一跳的接收端，所有站台都用它過濾。</li>
+  <li><b>Address 2</b> 永遠是這一跳的傳送端（TA），ACK 回給它。</li>
+  <li><b>Address 3</b> 依 To/From DS 而定，補上缺的 BSSID、SA 或 DA。</li>
+  <li><b>Address 4</b> 只在 WDS 訊框需要標出原始來源時使用。</li></ul>
+  <p>補充一句：控制訊框只用 1–2 個位址、管理訊框 3 個，只有資料訊框可能用到 4 個。</p>`,
+  ae: `<p>In a wired LAN the sender and receiver of a frame are its source and destination, so SA and DA are enough. In 802.11 a frame may be relayed through the AP and the distribution system, so the transmitter/receiver of the current wireless hop can differ from the original source and final destination, and the BSSID must also be identified. The meaning of the addresses depends on the To DS / From DS bits: 00 (IBSS): A1 = DA, A2 = SA, A3 = BSSID; 01 (from the AP): DA, BSSID, SA; 10 (to the AP): BSSID, SA, DA; 11 (wireless distribution system, AP to AP): A1 = RA, A2 = TA, A3 = DA, A4 = SA. Address 1 is always the immediate receiver, used by all stations for filtering; Address 2 is the transmitter, to which the ACK is sent. Only in the WDS case are all four different (receiving AP, transmitting AP, final destination, original source), so the fourth address is needed to carry the original source.</p>`,
+  src: `2-3 p.12–13「Frame Format」「Address Field Description」、p.21`,
+  rel: ['B1']
+},
+{
+  id: 'Q5', pts: '10%',
+  en: `In IEEE 802.11, how to use "time" to set different priorities? (10%)`,
+  zh: `在 IEEE 802.11 中，怎麼用「時間」設定不同的優先權？（10%）`,
+  az: `<p>題目沒說「IFS」，要自己答出<b>訊框間隔（IFS）</b>：等越短的越優先。</p>
+  <ul><li><b>SIFS</b>（最短）：ACK、CTS、回應輪詢、分段之間。讓一次訊框交換不被別人插入。</li>
+  <li><b>PIFS</b> = SIFS＋1 slot <span class="sup">補充</span>：PCF 的 PC 用，比 DIFS 短，所以能在 CFP 開始時搶到媒介。</li>
+  <li><b>DIFS</b> = SIFS＋2 slot：一般 DCF 資料。</li>
+  <li><b>EIFS</b>（最長）：收到錯誤訊框後使用，讓別人有時間送完 ACK。</li>
+  <li>再加上<b>隨機退避</b>（Random[0, CW]×slot）：DIFS 之後再等一段隨機時間，解決同優先權站台之間的競爭。</li>
+  <li><b>802.11e</b>：<b>AIFS[AC] = AIFSN[AC]×slot＋SIFS</b>，再搭配每個 AC 不同的 CW，讓語音、視訊、盡力而為、背景流量有不同的等待時間；AIFS 一定大於 SIFS，以保護 ACK。</li></ul>`,
+  ae: `<p>802.11 gives priority through the length of the <b>inter-frame space (IFS)</b>: a station must sense the medium idle for its IFS before transmitting, so a shorter IFS wins. <b>SIFS</b> (shortest) is used for ACK, CTS, responses to polls and between fragments, so a frame exchange cannot be interrupted. <b>PIFS</b> (SIFS + one slot) is used by the point coordinator, so it can seize the medium before DCF stations and start the CFP. <b>DIFS</b> (SIFS + two slots) is used by DCF for ordinary data. <b>EIFS</b> is used after receiving an erroneous frame, long enough for another station to send its ACK. Among stations with the same IFS, a random backoff (Random[0, CW] × slot time) after DIFS resolves contention. 802.11e EDCA extends this with <b>AIFS[AC] = AIFSN[AC] × aSlotTime + aSIFSTime</b> and a different CW per access category (voice, video, best effort, background), so higher-priority traffic waits less; AIFS is always larger than SIFS to protect ACKs.</p>`,
+  src: `2-4 p.13「Inter-Frame Space (IFS)」、p.15「EIFS」、p.16、p.20；11EnhancedQoS「Arbitration Interframe Space (AIFS)」「IFS in EDCF」`,
+  rel: ['A4', 'C5', 'C18', 'B16']
+},
+{
+  id: 'Q6', pts: '10%',
+  en: `Please explain the advantages and disadvantages of the PCF mechanism. (10%)`,
+  zh: `請說明 PCF 機制的優點與缺點。（10%）`,
+  az: `<p><b>先用一兩句說明 PCF 怎麼運作</b>：AP 中的 PC 用輪詢決定誰能傳；超級訊框 = CFP＋CP；CFP 以信標開始，PC 等 PIFS 取得媒介，其他站把 NAV 設成 CFPMaxDuration；CF-End 結束 CFP。</p>
+  <p><b>優點</b></p><ul><li>無競爭、沒有碰撞，傳輸延遲變化小，適合時間受限的服務（語音、影音）。</li>
+  <li>和 DCF 共存在同一個超級訊框中（建立在 DCF 之上、用 PIFS 取得優先），不增加實作負擔。</li>
+  <li>可捎帶確認（Data＋CF-Ack＋CF-Poll），減少控制訊框。</li>
+  <li>由 AP 統一排程，大家都聽得到 AP，能減少隱藏節點的影響。</li></ul>
+  <p><b>缺點</b></p><ul><li>每次輪詢只能送 <b>1 個訊框</b>。</li>
+  <li>PC <b>不知道各流量的 QoS 需求</b>，無法保證頻寬、延遲、抖動。</li>
+  <li>信標遇到媒介忙會延後，<b>CFP 被縮短</b>，時間不可預測。</li>
+  <li>輪詢沒有資料的站浪費時間（只回 Null）。</li>
+  <li>只能用在 infrastructure；對 PC 隱藏的站台不會設 NAV，可能在 CFP 中干擾。</li>
+  <li>選用功能，商用產品幾乎沒有實作。</li></ul>
+  <p>可以補一句：802.11e 的 HCCA 就是針對這些缺點改進（TSPEC、Polled TXOP）。</p>`,
+  ae: `<p>PCF is an optional contention-free access method built on DCF. A point coordinator (PC) in the AP polls stations; each superframe has a contention-free period (CFP) followed by a contention period (CP). The PC starts the CFP with a beacon after PIFS, all other stations set their NAV to CFPMaxDuration, and a CF-End resets the NAV.</p>
+  <p><b>Advantages:</b> no contention and no collisions in the CFP, so transfer delay variation is small, supporting time-bounded services; it coexists with DCF in the same superframe without extra burden, gaining priority through PIFS; acknowledgements can be piggybacked (Data + CF-Ack + CF-Poll); scheduling by the AP, which everyone hears, reduces hidden-node problems.</p>
+  <p><b>Disadvantages:</b> only one frame per poll; the PC does not know the QoS requirements of the traffic, so bandwidth, delay and jitter cannot be guaranteed; a beacon delayed by a busy medium foreshortens the CFP, so timing is unpredictable; polling stations that have nothing to send wastes time; it works only in infrastructure mode, and stations hidden from the PC do not set their NAV and may interfere; as an optional feature it is rarely implemented in commercial products. 802.11e HCCA was designed to remove these limitations (TSPEC, polled TXOPs).</p>`,
+  src: `2-1 p.36「MAC Services」；2-5 p.1–12「Point Coordination Function」；11EnhancedQoS「Is IEEE 802.11 enough for QoS?」「Alternating CFP and CP」`,
+  rel: ['A3', 'A16', 'B5']
+},
+{
+  id: 'Q7', pts: '10%',
+  en: `In IEEE 802.11, what are the differences between active scan and passive scan? Please describe the details. (10%)`,
+  zh: `在 IEEE 802.11 中，主動掃描與被動掃描有什麼差異？請詳細說明。（10%）`,
+  az: `<div class="tbl-scroll"><table><tr><th></th><th>被動掃描（Passive）</th><th>主動掃描（Active）</th></tr>
+  <tr><td>做法</td><td>在每個頻道上<b>只收聽信標</b>，找含有所要 SSID（或廣播 SSID）的信標；每個頻道最多聽 ChannelTime</td><td>在每個頻道上<b>送 Probe Request</b>（所要 SSID 或廣播 SSID、廣播 BSSID），等 Probe Response</td></tr>
+  <tr><td>時間</td><td>要等信標週期，比較慢</td><td>MinProbeResponseTime 內沒回應就換下一頻道；有回應就等到 MaxProbeResponseTime 再處理，比較快</td></tr>
+  <tr><td>耗電與流量 <span class="sup">補充</span></td><td>不發射，省電、不增加流量</td><td>要發射，耗電、增加頻道負載</td></tr>
+  <tr><td>取得資訊</td><td>信標：時間戳記、信標間隔、能力、SSID、速率、參數組、TIM</td><td>Probe Response：和信標相同但沒有 TIM</td></tr></table></div>
+  <p>相同點：都是為了找網路並加入、漫遊時找新 AP、或建立 IBSS；找不到所要的 BSS 時可以自己建一個 IBSS。主動掃描後的流程：選最佳 AP → 認證 → Association Request／Response。</p>`,
+  ae: `<p>Scanning is used to find and join a network, to find a new AP when roaming, and to start an IBSS. In <b>passive scanning</b> the station only listens on each channel for beacon frames containing the desired SSID (or any SSID), staying at most ChannelTime per channel. It transmits nothing, so it saves power and adds no traffic, but it is slow because it must wait for beacons. In <b>active scanning</b> the station sends a Probe Request (desired or broadcast SSID, broadcast BSSID) on each channel and starts a probe timer: if no response arrives before MinProbeResponseTime it moves to the next channel; otherwise it collects all Probe Responses until MaxProbeResponseTime. It is faster but consumes power and channel time. Both beacon and probe response contain the information needed to join (timestamp, beacon interval, capabilities, SSID, supported rates, parameter sets; the probe response has no TIM). The station then selects the best AP, authenticates and sends an Association Request. If no BSS is found, it may start its own IBSS.</p>`,
+  src: `2-3 p.26–27（Beacon、Probe Response 內容）；2-5 p.26–29「Scanning」「Channel Scanning」「Active Scanning」`,
+  rel: ['B7', 'B12']
+},
+{
+  id: 'Q8', pts: '15%',
+  en: `Please define hidden node problem and exposed node problem in detail. (10%) If we want to solve the problem to follow IEEE 802.11 standard, please describe your ideas. (5%) Note that you do not use RTS and CTS control frames.`,
+  zh: `請詳細定義隱藏節點問題與暴露節點問題。（10%）如果要在符合 IEEE 802.11 標準的前提下解決這個問題，請說明你的想法。（5%）注意：不能使用 RTS 與 CTS 控制訊框。`,
+  az: `<p><b>隱藏節點：</b>A、C 都在 B 的範圍內，但 A、C 彼此聽不到。A 傳給 B 時，C 偵測媒介是空閒的，也開始傳，兩個訊號在 <b>B（接收端）</b>碰撞。傳送端聽不到對方，所以無法用載波偵測避免，只能從沒收到 ACK 知道失敗。</p>
+  <p><b>暴露節點</b> <span class="sup">補充</span>：A – B – C – D 排成一列，B 傳給 A，C 想傳給 D。C 聽得到 B，所以載波偵測判斷忙碌而延後；但 C 傳給 D 其實不會干擾 A，媒介被不必要地浪費。在 802.11 中還有另一層：C 的資料需要 D 回 ACK，而 B 的訊號會蓋過 C 收 ACK，所以就算讓 C 傳也沒用。</p>
+  <p><b>不用 RTS/CTS 的解法</b>（任選幾項並說明原理）：</p>
+  <ol><li><b>Infrastructure 模式：</b>所有站都聽得到 AP，講義說能「輕易解決隱藏終端問題」；下行流量由 AP 一個傳送者送出。</li>
+  <li><b>PCF／HCCA 輪詢：</b>CFP 中由 AP 一次輪詢一台，完全沒有競爭；信標讓大家把 NAV 設成 CFPMaxDuration。</li>
+  <li><b>分段：</b>長訊框切小段，碰撞只毀掉一段；每段與 ACK 的 Duration 設定 NAV，扮演虛擬的 RTS/CTS。</li>
+  <li><b>EIFS：</b>收到錯誤訊框的站等更久，不會撞到聽不懂的 ACK。</li>
+  <li><b>調整發射功率或載波偵測門檻</b>，讓站台彼此聽得到 <span class="sup">補充</span>。</li></ol>`,
+  ae: `<p><b>Hidden node:</b> A and C are both in range of B but cannot hear each other. When A transmits to B, C senses an idle medium and also transmits, so the frames collide at the receiver B. Because the senders cannot hear each other, carrier sense cannot prevent it, and the failure is only known from the missing ACK.</p>
+  <p><b>Exposed node:</b> in a chain A – B – C – D, B sends to A and C wants to send to D. C hears B and defers, although its transmission to D would not disturb A; the medium is wasted. In 802.11 C would also be unable to receive D's ACK while B is transmitting, so the two-way exchange prevents exploiting it.</p>
+  <p><b>Solutions without RTS/CTS:</b> (1) infrastructure mode: all stations hear the AP, which easily solves the hidden terminal problem; (2) PCF/HCCA polling: in the CFP the AP polls one station at a time, so there is no contention, and every station sets its NAV for the CFP from the beacon; (3) fragmentation: short fragments reduce the loss from a collision, and the Duration of each fragment and ACK sets the NAV like a virtual RTS/CTS; (4) EIFS after an erroneous frame protects ACKs the station could not decode; (5) adjusting transmit power or carrier-sense threshold so stations hear each other.</p>`,
+  src: `2-1 p.7、p.34；2-4 p.15、p.24–25「Hidden Node Problem」、p.29–33；2-5 p.10–12`,
+  rel: ['B3', 'A13', 'C20']
+},
+{
+  id: 'Q9', pts: '10%',
+  en: `What are positive ACK? (5%) Why does not Ethernet use ACK frame? (5%)`,
+  zh: `什麼是正向確認（positive ACK）？（5%）為什麼乙太網路不使用 ACK 訊框？（5%）`,
+  az: `<p><b>正向確認：</b>接收端成功收到一個指定目的地（單播）的訊框、CRC 正確後，<b>等 SIFS 立刻回 ACK</b>；傳送端只有收到 ACK 才算成功，<b>沒收到 ACK 就認為出錯</b>，隨機退避（CW 加倍）後重傳，直到重試上限。需要 ACK 的訊框：Data、Poll、Request、Response；廣播／群播不 ACK。因為 ACK 可能遺失造成重傳，接收端用 Retry 位元與序號刪除重複訊框。</p>
+  <p><b>乙太網路為什麼不用：</b></p><ul><li>802.3 能<b>邊送邊偵測碰撞</b>（CD），訊框長度 ≥ 碰撞視窗，所以傳完沒偵測到碰撞，就幾乎可以確定成功。</li>
+  <li>有線媒介封閉、錯誤率低，沒有隱藏節點。</li>
+  <li>可靠度交給上層處理（802.2 LLC 的序號與 ACK、TCP）。加 MAC ACK 只會增加負擔。</li></ul>
+  <p>對比 802.11：不能偵測碰撞、錯誤率高、有隱藏節點，所以一定要 ACK。這是講義 2-4 p.11 的原句問題。</p>`,
+  ae: `<p><b>Positive ACK:</b> after successfully receiving a directed frame with a correct CRC, the receiver immediately returns an ACK frame after SIFS. The sender treats the transmission as successful only when the ACK arrives; the absence of an ACK indicates an error, so it backs off (doubling CW) and retransmits until the retry limit. Data, poll, request and response frames are acknowledged; broadcast/multicast frames are not. Duplicates caused by lost ACKs are removed with the Retry bit and the sequence number.</p>
+  <p><b>Ethernet:</b> a station detects collisions while transmitting, and a frame lasts at least one collision window, so if the whole frame is sent without a detected collision it has almost certainly been delivered. The cable is closed and reliable, with no hidden nodes, and reliability is left to upper layers (802.2 LLC sequence numbers and ACKs, TCP). A MAC-level ACK would only add overhead. Wireless needs it because collisions cannot be detected, errors are frequent and hidden nodes exist.</p>`,
+  src: `0Intro_LAN p.26（802.2 LLC）；1CSMA_CD p.6–10；2-3 p.14（Retry）；2-4 p.11「MAC-Level Acknowledgments」（Why does not Ethernet use ACK frame?）、p.21`,
+  rel: ['A7', 'A10', 'C11']
+}
+];
+const SRC = s => `<div class="src">📖 出處：${s}</div>`;
+const REL = r => `<div class="src">🔗 相關練習：${r.map(id => `<a href="midterm-practice.html#${id}">${id}</a>`).join('、')}</div>`;
+document.getElementById('qp').innerHTML = P.map(q => `
+  <section class="mq" id="${q.id}">
+    <div class="mq-head"><span class="mq-id">${q.id}</span><span class="mq-pts">(${q.pts})</span></div>
+    <div class="q-en" lang="en">${q.en}</div>
+    <div class="q-zh">${q.zh}</div>
+    <details>
+      <summary>參考答案</summary>
+      <div class="ans-label">中文說明</div>
+      <div class="ans-zh">${q.az}</div>
+      <div class="ans-label">Model answer</div>
+      <div class="ans-en" lang="en">${q.ae}</div>
+      ${SRC(q.src)}
+      ${REL(q.rel)}
+    </details>
+  </section>`).join('');
+document.getElementById('open-all').addEventListener('click', () => document.querySelectorAll('.mq details').forEach(d => d.open = true));
+document.getElementById('close-all').addEventListener('click', () => document.querySelectorAll('.mq details').forEach(d => d.open = false));
+</script>
+</body>
+</html>

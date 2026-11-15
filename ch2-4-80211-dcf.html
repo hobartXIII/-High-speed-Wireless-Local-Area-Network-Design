@@ -21,13 +21,33 @@
   <div class="callout note">PDF 共 33 頁，對應投影片第 1–35 頁；<b>第 12、18 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-3「WEP 與 MAC 訊框格式」：2-3 講訊框<b>長什麼樣子</b>，這一章講站台<b>什麼時候可以送</b>。</div>
 
   <div class="callout key">
-    <p><b>DCF（分散式協調功能）就是 802.11 的 CSMA/CA：沒有裁判，每個站台自己「先聽媒介 → 閒置 DIFS → 隨機退避倒數 → 送出 → 等 ACK」，靠同一套規則輪流用同一個頻道。</b>（DIFS：DCF 訊框間隔；ACK：確認）</p>
+    <p><b>一句話：DCF（分散式協調功能）就是 802.11 的 CSMA/CA：沒有裁判，每個站台自己照同一套規則輪流使用同一個頻道；所有站台都必須實作，PCF 是蓋在它上面的選用輪詢機制。</b>（CSMA/CA：載波偵測多重存取／碰撞避免；PCF：點協調功能，由 AP 輪詢）</p>
+    <p class="ks">🔄 流程：送一個訊框</p>
+    <ol>
+      <li><b>聽</b>：實體載波偵測 CCA 與虛擬載波偵測 NAV 都說閒置。（CCA：PHY 判斷通道是否閒置；NAV：記錄媒介被預約到何時的計時器）</li>
+      <li><b>等 DIFS</b>；封包到達時媒介已閒置超過 DIFS 且不在退避中，可以直接送。（DIFS：一般資料用的訊框間隔）</li>
+      <li><b>隨機退避</b>：Random[0, CW] × slot time 倒數，媒介一忙就<b>凍結</b>，閒置 DIFS 後接著數。（CW：競爭視窗；slot time：退避的時間單位）</li>
+      <li><b>送出</b>：長訊框（超過 RTS_Threshold）先用 RTS/CTS 預約媒介。（RTS／CTS：要求傳送／允許傳送）</li>
+      <li><b>等 ACK</b>：接收端隔 SIFS 回 ACK 才算成功；沒收到 → CW 加倍（例：DSSS 31 → 63 → … → 1023）重來，超過重試上限就丟棄。（SIFS：最短訊框間隔；ACK：確認）</li>
+    </ol>
+    <p class="ks">💡 觀念（為什麼）</p>
     <ul>
-      <li><b>DCF</b>：802.11 最基本的存取方法，所有站台都必須實作；PCF 是蓋在 DCF 上面的選用輪詢機制。（PCF：點協調功能，由 AP 輪詢）</li>
-      <li><b>IFS 決定優先權</b>：SIFS ＜ PIFS ＜ DIFS ＜ EIFS，等得越短越優先（ACK／CTS 用 SIFS，PCF 用 PIFS，一般資料用 DIFS）。（IFS：訊框間隔；SIFS／PIFS／EIFS：最短／PCF／延長訊框間隔）</li>
-      <li><b>退避</b>：Backoff = Random(0..CW) × Slot time；媒介忙時計時器凍結，失敗一次 CW 加倍（15 → 31 → … → 1023）。（CW：競爭視窗，退避值的抽取範圍；Slot time：時槽，退避倒數的時間單位）</li>
-      <li><b>RTS/CTS＋NAV</b>：用 Duration 預約媒介，解決 hidden node；超過 RTS_Threshold 才用，廣播／群播不用、也不回 ACK。（RTS／CTS：要求傳送／允許傳送；NAV：網路配置向量；Duration：預約時間欄位；hidden node：隱藏節點；RTS_Threshold：使用 RTS/CTS 的長度門檻）</li>
+      <li><b>無線不能偵測碰撞</b> → 只能事先<b>避免</b>（等待＋隨機退避），事後靠 <b>ACK</b> 確認。</li>
+      <li><b>IFS 的長短就是優先權</b>：SIFS ＜ PIFS ＜ DIFS ＜ EIFS，等得越短越優先；ACK、CTS 用 SIFS，所以一次訊框交換不會被別人插入。（IFS：訊框間隔；PIFS：PCF 用；EIFS：收到錯誤訊框後用）</li>
+      <li><b>凍結讓存取比較公平</b>：等越久，剩下的退避值越小 → 近似先到先服務；剛送完、還有下一筆也要退避。</li>
+      <li><b>NAV 保護整個交換</b>：RTS/CTS 的 Duration 散布到傳送端與接收端兩邊，解決 hidden node（隱藏節點）；分段時每段與 ACK 也扮演虛擬 RTS/CTS。</li>
+      <li><b>廣播／群播</b>：不用 RTS/CTS、不回 ACK，沒有 MAC 層的重傳。</li>
     </ul>
+    <p class="ks">⚖️ 比較：和第 1 章的 802.3 CSMA/CD</p>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>802.3 CSMA/CD</th><th>802.11 DCF（CSMA/CA）</th></tr>
+      <tr><td>碰撞</td><td>邊送邊偵測</td><td>偵測不到，事先避免</td></tr>
+      <tr><td>退避時機</td><td>撞了才退避</td><td>媒介忙過就退避，忙時凍結</td></tr>
+      <tr><td>確認</td><td>沒有 ACK</td><td>正向 ACK</td></tr>
+      <tr><td>載波偵測</td><td>實體</td><td>實體 CCA＋虛擬 NAV</td></tr>
+      <tr><td>優先權</td><td>無</td><td>IFS 長短</td></tr>
+      <tr><td>公平性</td><td>先進後出</td><td>近似先到先服務</td></tr>
+    </table></div>
   </div>
 
   <h2 id="std">1. 標準依據</h2>

@@ -20,13 +20,33 @@
   </div>
 
   <div class="callout key">
-    <p><b>802.11 MAC 讓無線網路對上層（LLC）看起來就像一般的 802 LAN。它用 BSS、ESS、DS、AP 組成網路，並提供 9＋1 項服務。</b>（LLC：邏輯鏈結控制；BSS：基本服務集；ESS：延伸服務集；DS：分散式系統；AP：無線基地台）</p>
+    <p><b>一句話：802.11 MAC 要讓會移動的無線站台在上層（LLC）看起來就像一般的 802 LAN：用 BSS、DS、ESS 組成網路，再用 9＋1 項服務解決「位址 ≠ 位置」與「媒介是開放的」兩個問題。</b>（BSS：基本服務集，一群受同一協調功能控制的站台；DS：分散式系統，串起多個 BSS 的骨幹；ESS：延伸服務集，多個 BSS 串成的網路）</p>
+    <p class="ks">🔄 流程：站台加入網路並把資料送到有線 LAN</p>
+    <ol>
+      <li><b>Authentication（認證）</b>：證明身分，取代有線網路「接上線就能用」。</li>
+      <li><b>Association（關聯）</b>：由 STA 發起，向一個 AP 建立關聯，DS 記下「這個 STA 在這個 AP」。（STA：站台）</li>
+      <li><b>Distribution（分配）</b>：輸入 AP 把資料交給 DS，DS 依關聯資訊找到輸出點。</li>
+      <li><b>Integration（整合）</b>：如果目的地在有線 LAN，輸出點是 Portal（接有線 LAN 的邏輯元件），由它做媒介與位址轉換。</li>
+      <li>移到同一 ESS 的另一個 BSS → <b>Reassociation（重新關聯）</b>；離開 → <b>Disassociation（解除關聯）</b>，是通知、不能拒絕。</li>
+    </ol>
+    <p class="ks">💡 觀念（為什麼）</p>
     <ul>
-      <li><b>無線和有線的差別</b>：位址 ≠ 位置（站台會移動）、媒介共享且不可靠、拓樸動態變化，這些都要在 MAC 層處理。</li>
-      <li><b>架構元件</b>：BSS 是基本單位；DS 把多個 BSS 串成 ESS；AP＝具 STA 功能＋提供 DS 存取；Portal 接到有線 LAN。（STA：站台；Portal：入口，連到有線 LAN 的邏輯元件）</li>
-      <li><b>服務</b>：SS（Authentication、Deauthentication、Privacy、MSDU delivery）與 DSS（Association、Reassociation、Disassociation、Distribution、Integration），第 10 項是 QoS。（SS：站台服務；DSS：分散式系統服務；MSDU：上層交給 MAC 的資料；QoS：服務品質）</li>
-      <li><b>必考</b>：先 Authentication 才能 Association；Association、Reassociation 只能由 STA 發起；Disassociation 雙方都能發，是通知、不能拒絕。</li>
+      <li><b>位址 ≠ 位置</b>：有線站台固定在一條線上，無線站台會移動 → DS 必須知道「誰現在在哪個 AP」，所以一個 STA 同時只能和一個 AP 關聯。</li>
+      <li><b>開放的媒介</b>：有線 LAN 假設媒介封閉 → 無線要用<b>認證</b>取代實體連線、用<b>隱私</b>取代封閉媒介；而且要先認證才能關聯。</li>
+      <li><b>只規定服務、不規定 DS 怎麼做</b>：DS 可以是有線 LAN 或其他網路，802.11 只標準化空中介面。</li>
+      <li><b>移動對上層透明</b>：ESS 對 LLC 看起來就是一個 BSS，站台在 BSS 之間移動，上層不會察覺。</li>
     </ul>
+    <p class="ks">⚖️ 比較：各項服務</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>服務</th><th>類別</th><th>誰發起</th><th>作用</th></tr>
+      <tr><td>Authentication／Deauthentication</td><td>SS（站台服務）</td><td>雙方；Deauth 是通知</td><td>確認身分（鏈路層，不是端對端）</td></tr>
+      <tr><td>Privacy／MSDU delivery</td><td>SS</td><td>—</td><td>加密內容／傳送資料</td></tr>
+      <tr><td>Association</td><td>DSS（分散式系統服務）</td><td>只有 STA</td><td>建立 STA↔AP 對應</td></tr>
+      <tr><td>Reassociation</td><td>DSS</td><td>只有 STA</td><td>把對應搬到新 AP</td></tr>
+      <tr><td>Disassociation</td><td>DSS</td><td>雙方；通知，不能拒絕</td><td>刪除對應</td></tr>
+      <tr><td>Distribution／Integration</td><td>DSS</td><td>DS</td><td>在 DS 內送／送到有線 LAN</td></tr>
+    </table></div>
+    <p>第 10 項服務是 802.11e 加的 QoS（服務品質）。</p>
   </div>
 
   <h2 id="std">1. 標準依據</h2>

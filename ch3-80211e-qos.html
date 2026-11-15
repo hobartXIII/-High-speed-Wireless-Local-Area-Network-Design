@@ -21,14 +21,34 @@
   <div class="callout note">PDF 共 92 頁（p.92 是 Q &amp; A）。本章接續 2-4、2-5：2-4 的 DCF（分散式協調功能）讓大家<b>平等地搶</b>，2-5 的 PCF（點協調功能）讓 AP <b>點名</b>；這一章在兩者之上加入 <b>QoS</b>（服務品質），讓語音、影像能比背景流量先送、送得穩。</div>
 
   <div class="callout key">
-    <p><b>802.11e 在 MAC 層加上 QoS：先把資料分類（UP（使用者優先權）→ AC（存取類別），或用 TSPEC（流量規格）註冊的 TS（流量串流）），再用新的混合協調功能 HCF 存取媒介。EDCA（強化分散式通道存取）讓四個 AC 用不同的 AIFS（仲裁訊框間隔）與 CW（競爭視窗）競爭，優先權高的等得短、退避得少；HCCA（HCF 控制式通道存取）由 QAP（支援 QoS 的 AP）上的 HC（混合協調器）依 TSPEC 輪詢、配發 TXOP（傳送機會）。另外用 Block Ack（區塊確認）、DLS（直接連線設定）、APSD（自動省電遞送）提高效率與省電。</b></p>
+    <p><b>一句話：802.11e 為 MAC 加上 QoS（服務品質）：先把資料分類（UP → AC，或用 TSPEC 註冊 TS），再用新的 HCF 存取媒介：EDCA 讓不同類別用不同的等待時間競爭，HCCA 由 HC 依需求輪詢；另外用 TXOP、Block Ack、DLS、APSD 提高效率與省電。</b>（UP：使用者優先權；AC：存取類別；TSPEC：流量規格；TS：流量串流；HCF：混合協調功能；EDCA：強化分散式通道存取；HCCA：HCF 控制式通道存取；HC：混合協調器，在 QAP 上；QAP：支援 QoS 的 AP；TXOP：傳送機會；DLS：直接連線設定；APSD：自動省電遞送）</p>
+    <p class="ks">🔄 流程</p>
+    <ol>
+      <li><b>EDCA</b>：MSDU 依 UP 放進四個 AC 的佇列 → 每個 AC 等自己的 AIFS[AC]＝AIFSN×slot＋SIFS → 用自己的 CW 退避 → 贏了得到 EDCA TXOP → 在 TXOP limit 內隔 SIFS 連續送。（AIFS：仲裁訊框間隔；CW：競爭視窗；TXOP limit：TXOP 長度上限）</li>
+      <li><b>HCCA</b>：QSTA 送 ADDTS Request（帶 TSPEC）→ HC 判斷能否允入，回 ADDTS Response → HC 依 TSPEC 排程，送 QoS CF-Poll → QSTA 在 polled TXOP 內傳送。（QSTA：支援 QoS 的站台；ADDTS：新增流量串流）</li>
+      <li><b>U-APSD</b>：省電站台醒來送 trigger（觸發訊框，通常就是上行資料）→ 開始服務期間（SP）→ QAP 送出緩衝的下行訊框 → EOSP 標示結束 → 再睡。（EOSP：服務期間結束位元）</li>
+    </ol>
+    <p class="ks">💡 觀念（為什麼）</p>
     <ul>
-      <li><b>為什麼需要</b>：語音、影像要的是有上限的延遲與抖動；DCF 不分優先權，PCF 每次點名只能送 1 個訊框、PC（點協調器）也不知道流量的 QoS 需求。</li>
-      <li><b>流量區分</b>：8 個 UP（同 802.1D）對應 4 個 AC（BK 背景、BE 盡力而為、VI 視訊、VO 語音）；TID（流量識別碼）0–7 是 UP（EDCA），8–15 是 TSPEC 註冊的 TS（HCCA）。</li>
-      <li><b>EDCA</b>：AC 之間競爭（不是站台之間）；AIFS[AC] = AIFSN[AC] × slot（時槽）+ SIFS（最短訊框間隔）；VO、VI 的 AIFSN 2、CW 小；搶到的是 TXOP，可在 TXOP limit（TXOP 長度上限）內隔 SIFS 連送。</li>
-      <li><b>HCCA</b>：類似 PCF，但 HC 在 CFP（無競爭期）與 CP（競爭期）都能用 QoS CF-Poll（點名訊框）配發 polled TXOP（被點名得到的 TXOP），輪詢排程依 TSPEC 計算。</li>
-      <li><b>Block Ack／DLS／APSD</b>：一次確認多個 MPDU（MAC 訊框）；站台之間直接傳；QAP 依 AC 自動遞送緩衝資料給省電站台（S-APSD 排程式、U-APSD 非排程式由 trigger（觸發訊框）觸發，即 WMM Power Save（Wi-Fi 多媒體省電））。</li>
+      <li><b>為什麼需要</b>：語音、影像要有上限的延遲與抖動；DCF 不分優先權；PCF 每次點名只能送 1 個訊框，PC（點協調器）也不知道流量的 QoS 需求。</li>
+      <li><b>兩種 QoS</b>：優先式（相對高低，用 UP，EDCA 提供，不保證）vs 參數化（量化需求如 10 Mbps、10 ms，用 TSPEC，HCCA 提供）。TID（流量識別碼）0–7 是 UP，8–15 是 TSPEC。</li>
+      <li><b>EDCA 的優先權是統計的</b>：AIFS 與 CW 讓高優先權通常先送，但等待範圍重疊，不保證；AIFS 一定大於 SIFS，才不會打斷 ACK。</li>
+      <li><b>TXOP 用時間限制</b>：一次競爭可送多個訊框，分攤額外負擔，又能控制每次佔用多久。</li>
+      <li><b>其他機制省什麼</b>：Block Ack 一次確認多個 MPDU（省 ACK）；DLS 站台直接互傳（省一半頻寬）；APSD 不必等 Beacon（VoIP 要 ＜ 20 ms，傳統省電會延遲 100–300 ms）。（MPDU：MAC 訊框）</li>
     </ul>
+    <p class="ks">⚖️ 比較</p>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>DCF</th><th>EDCA</th><th>PCF</th><th>HCCA</th></tr>
+      <tr><td>方式</td><td>競爭</td><td>競爭（AC 之間）</td><td>輪詢</td><td>輪詢（依 TSPEC）</td></tr>
+      <tr><td>優先依據</td><td>無（大家都用 DIFS）</td><td>AIFS、CW、TXOP 依 AC</td><td>Poll list</td><td>TSPEC 排程</td></tr>
+      <tr><td>一次能送</td><td>1 個訊框</td><td>一段 TXOP</td><td>1 個訊框</td><td>一段 polled TXOP</td></tr>
+      <tr><td>保證</td><td>無</td><td>統計上的優先</td><td>無</td><td>可規劃頻寬與延遲</td></tr>
+    </table></div>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>傳統省電</th><th>U-APSD（WMM Power Save）</th><th>S-APSD</th></tr>
+      <tr><td>基礎</td><td>TIM＋PS-Poll</td><td>EDCA，trigger 觸發</td><td>HCCA，ADDTS 協商排程</td></tr>
+      <tr><td>何時取資料</td><td>等 Beacon，每筆一個 PS-Poll</td><td>站台送上行時順便取</td><td>依排程定時醒來</td></tr>
+    </table></div>
   </div>
 
   <h2 id="std">1. 標準依據</h2>

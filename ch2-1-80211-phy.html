@@ -20,12 +20,31 @@
   </div>
 
   <div class="callout key">
-    <p><b>IEEE 802.11 是無線區域網路（Wi-Fi）的標準，定義 MAC 與 PHY 兩層。本章講它的網路架構與 PHY（實體層）。</b></p>
+    <p><b>一句話：IEEE 802.11 用一個 MAC 搭配多種 PHY（實體層），站台經由 AP 組成網路；PHY 從 DSSS 演進到 OFDM、MIMO，速率越來越高，但存取方法一直是 CSMA/CA。</b>（MAC：媒介存取控制；AP：無線基地台；CSMA/CA：載波偵測多重存取／碰撞避免）</p>
+    <p class="ks">🔄 流程：一筆資料從 LLC 到空中</p>
+    <ol>
+      <li>LLC 交給 MAC 的資料叫 <b>MSDU</b>。（LLC：邏輯鏈結控制；MSDU：MAC 服務資料單元）</li>
+      <li>MAC 加上 802.11 標頭成為 <b>MPDU</b>，往下交給 PLCP 時又叫 <b>PSDU</b>。（MPDU：MAC 協定資料單元；PLCP：實體層匯聚子層）</li>
+      <li>PLCP 加上前導碼與標頭成為 <b>PPDU</b>：long 格式的前導 144 bits＋標頭 48 bits 都用 1 Mbps 送，共 <b>192 µs</b>。（PPDU：實體層協定資料單元）</li>
+      <li>PMD 依速率調變送出（1、2、5.5、11 Mbps…）。（PMD：實體媒介相依子層，負責調變與編碼）</li>
+    </ol>
+    <p class="ks">💡 觀念（為什麼）</p>
     <ul>
-      <li><b>架構</b>：三種配置：Independent（ad hoc，站台直接互傳）、Infrastructure（經 AP 連到 DS）、Mesh（AP 之間無線互連）。（AP：無線基地台；DS：分散式系統，把多台 AP 串起來的骨幹網路）</li>
-      <li><b>PHY 演進</b>：802.11／11b 用 DSSS（2.4 GHz）、11a 用 OFDM（5 GHz）、11g 用 ERP（把 OFDM 帶到 2.4 GHz）、11n 用 HT（MIMO）。（DSSS：直接序列展頻；OFDM：正交分頻多工；ERP：延伸速率 PHY；HT：高吞吐量；MIMO：多天線同時收發）</li>
-      <li><b>存取方法是 CSMA/CA，不是 CSMA/CD</b>：無線站台無法一邊傳一邊偵測碰撞，所以改成事先避免碰撞；協調功能分 DCF 與 PCF。（DCF：分散式協調功能；PCF：點協調功能）</li>
+      <li><b>無線的難處決定了設計</b>：干擾與雜訊、品質隨時空變化、不能假設大家都聽得到（隱藏節點）、站台會移動、靠電池、沒有實體邊界（安全） → 才需要 ACK、RTS/CTS、省電、認證。</li>
+      <li><b>前導與標頭用最低速率</b>：所有站台都看得懂；標頭的 LENGTH 寫出資料要傳幾微秒，聽不懂高速資料的站也知道媒介會忙多久。</li>
+      <li><b>DSSS 用頻寬換強健度</b>：每個位元用 11 chips 的 Barker 序列展開，得到 10.4 dB 編碼增益，抗干擾、抗多路徑回波。（DSSS：直接序列展頻；chip：展頻碼的單位）</li>
+      <li><b>速率怎麼選不在標準裡</b>：標準只提供多種速率，速率切換演算法由廠商決定。</li>
+      <li><b>所有流量經過 AP</b>：缺點是頻寬用兩倍、競爭變多；優點是容易解隱藏節點、能替睡著的站台緩衝（省電）、符合認證計費架構、能做 QoS（服務品質）。</li>
     </ul>
+    <p class="ks">⚖️ 比較：PHY 演進</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>標準</th><th>技術</th><th>頻段</th><th>速率</th></tr>
+      <tr><td>802.11</td><td>FHSS（跳頻展頻）／DSSS／IR（紅外線）</td><td>2.4 GHz</td><td>1、2 Mbps</td></tr>
+      <tr><td>802.11b</td><td>DSSS＋CCK（互補碼鍵控）</td><td>2.4 GHz</td><td>5.5、11 Mbps</td></tr>
+      <tr><td>802.11a</td><td>OFDM（正交分頻多工）</td><td>5 GHz</td><td>6–54 Mbps</td></tr>
+      <tr><td>802.11g</td><td>ERP（延伸速率 PHY，把 OFDM 帶到 2.4 GHz）</td><td>2.4 GHz</td><td>最高 54 Mbps</td></tr>
+      <tr><td>802.11n</td><td>HT（高吞吐量）＋MIMO（多天線）</td><td>2.4／5 GHz <span class="sup">補充</span></td><td>最高 600 Mbps</td></tr>
+    </table></div>
   </div>
 
   <h2 id="outline">0. 本章大綱（講義）</h2>

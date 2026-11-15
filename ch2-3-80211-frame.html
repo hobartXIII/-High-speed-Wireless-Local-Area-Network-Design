@@ -21,13 +21,29 @@
   <div class="callout note">PDF 共 32 頁，對應投影片第 1–33 頁；<b>第 22 頁不在 PDF 中</b> <span class="pill">待確認</span>。本章接續 2-2「IEEE 802.11 MAC 架構與服務」：2-2 講 Authentication、Association、Privacy 這些<b>服務</b>，這一章講它們實際用到的<b>訊框</b>長什麼樣子。</div>
 
   <div class="callout key">
-    <p><b>802.11 MAC 訊框就是無線站台之間實際送出的資料單位：Header（誰送給誰、怎麼處理）＋Frame Body（內容）＋FCS（檢查碼）；WEP 是 802.11 最早用來加密 Frame Body 的方法。</b>（WEP：有線等效隱私）</p>
+    <p><b>一句話：802.11 MAC 訊框＝Header＋Frame Body＋FCS；站台的狀態決定它能送哪一類訊框，To DS／From DS 兩個位元決定四個位址欄位怎麼填；WEP 是最早用來加密 Frame Body 的方法。</b>（FCS：訊框檢查碼；To DS／From DS：標示訊框送往或來自分散式系統；WEP：有線等效隱私）</p>
+    <p class="ks">🔄 流程</p>
+    <ol>
+      <li><b>站台狀態</b>：State 1（未認證、未關聯，只能送 Class 1 訊框）→ 認證成功 → State 2（再加 Class 2）→ 關聯成功 → State 3（所有訊框）。Deauthentication 退回 State 1，Disassociation 退回 State 2；收到未認證站台的 Class 3 訊框，就回一個 Deauthentication。</li>
+      <li><b>WEP 加密</b>：24-bit IV＋40-bit 秘密金鑰 → RC4 產生金鑰串 → 和「明文＋ICV」做運算成密文 → 送出 IV＋密文＋ICV；接收端用同一把金鑰解密，重算 ICV 比對。（IV：初始向量；RC4：串流加密演算法；ICV：完整性檢查值）</li>
+    </ol>
+    <p class="ks">💡 觀念（為什麼）</p>
     <ul>
-      <li><b>WEP</b>：802.11 原始的選用加密，用 RC4＋24-bit IV，只加密資料訊框的 payload、只保護無線這一段。<span class="sup">補充</span>已被破解，由 802.11i（WPA2）取代。（RC4：一種串流加密演算法；IV：初始向量；payload：訊框裡的資料內容）</li>
-      <li><b>站台狀態</b>：State 1／2／3 決定能送 Class 1／2／3 訊框；Deauthentication 退回 State 1，Disassociation 退回 State 2。</li>
-      <li><b>MAC 訊框</b>＝Header＋Frame Body（0–2312 bytes）＋FCS；To DS／From DS 決定 4 個位址欄位怎麼填。（To DS／From DS：標示訊框是送往還是來自分散式系統的兩個位元）</li>
-      <li><b>三類訊框</b>：控制（RTS、CTS、ACK、PS-Poll）、資料、管理（Beacon、Probe、Authentication、Association）。（RTS／CTS：要求傳送／允許傳送；ACK：確認；PS-Poll：省電站台取資料；Beacon：AP 定期廣播的訊框；Probe：探詢附近的 AP）</li>
+      <li><b>為什麼要 3～4 個位址</b>：無線這一跳的收／送端，不一定是原始來源與最終目的；AP 之間無線橋接（WDS）時四個都不同。Address 1 永遠是接收端（大家用它過濾），Address 2 永遠是傳送端（ACK 回給它）。（WDS：無線分散式系統）</li>
+      <li><b>Duration/ID 一欄三用</b>：平常放微秒讓別人設 NAV；CFP 中固定 32768；PS-Poll 中放 AID。（NAV：網路配置向量；CFP：無競爭期；AID：關聯 ID）</li>
+      <li><b>Retry＋序號</b>：正向 ACK 可能遺失而重傳，接收端靠它們刪除重複訊框。</li>
+      <li><b>Class 1 為什麼在認證前就能送</b>：Beacon、Probe 是找網路用的，RTS、CTS、ACK 是大家共用媒介必須配合的 <span class="sup">補充</span>。</li>
+      <li><b>WEP 只保護無線這一段</b>：鏈路層加密、只加密資料的 payload（資料內容）；ICV 錯誤時照樣回 ACK，但丟掉訊框。<span class="sup">補充</span>已被破解，由 802.11i 取代。</li>
     </ul>
+    <p class="ks">⚖️ 比較：四種位址組合</p>
+    <div class="tbl-wrap"><table>
+      <tr><th>To DS</th><th>From DS</th><th>Addr 1</th><th>Addr 2</th><th>Addr 3</th><th>Addr 4</th><th>情況</th></tr>
+      <tr><td>0</td><td>0</td><td>DA</td><td>SA</td><td>BSSID</td><td>–</td><td>IBSS（ad hoc）</td></tr>
+      <tr><td>0</td><td>1</td><td>DA</td><td>BSSID</td><td>SA</td><td>–</td><td>AP → STA</td></tr>
+      <tr><td>1</td><td>0</td><td>BSSID</td><td>SA</td><td>DA</td><td>–</td><td>STA → AP</td></tr>
+      <tr><td>1</td><td>1</td><td>RA</td><td>TA</td><td>DA</td><td>SA</td><td>WDS（AP ↔ AP）</td></tr>
+    </table></div>
+    <p>（DA／SA：目的／來源位址；RA／TA：這一跳的接收端／傳送端；BSSID：BSS 的識別碼，infrastructure 中就是 AP 的位址）控制訊框用 1–2 個位址，管理訊框 3 個，資料訊框最多 4 個。</p>
   </div>
 
   <h2 id="std">1. 標準依據</h2>

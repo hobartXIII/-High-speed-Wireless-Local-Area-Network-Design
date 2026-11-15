@@ -102,6 +102,9 @@ main { min-width: 0; max-width: 900px; padding-bottom: 80px; overflow-wrap: brea
 .callout.tip { background: var(--accent-soft); border-color: transparent; }
 .callout.key { background: var(--green-soft); border-color: transparent; }
 .callout.warn { background: var(--yellow-soft); border-color: transparent; }
+.callout.key .ks { font-weight: 700; margin: .8em 0 .2em; }
+.callout.key ol, .callout.key ul { margin: .2em 0; }
+.callout.key .tbl-wrap { margin: .3em 0 0; }
 .callout > :first-child { margin-top: 0; }
 .callout > :last-child { margin-bottom: 0; }
 

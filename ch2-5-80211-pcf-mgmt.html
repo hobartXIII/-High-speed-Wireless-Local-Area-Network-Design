@@ -21,14 +21,33 @@
   <div class="callout note">PDF 共 32 頁，對應投影片第 1–32 頁。本章接續 2-4「DCF 存取機制」：2-4 講大家<b>怎麼搶</b>媒介（DCF），這一章前半講 AP <b>怎麼點名</b>（PCF），後半講站台怎麼<b>對時、睡覺、找網路、換 AP</b>（MAC 管理層）。</div>
 
   <div class="callout key">
-    <p><b>PCF 是 AP 當「點名老師」的選用存取方式：在超級訊框開頭的無競爭期（CFP）裡，AP 用 PIFS 搶到媒介、一個一個輪詢站台；MAC 管理層則靠 Beacon 裡的時間戳記讓全 BSS 對時，站台才能放心睡覺、準時醒來收 TIM，並透過掃描、Association、Reassociation 加入網路與漫遊。</b>（PCF：點協調功能；CFP：無競爭期；PIFS：PCF 訊框間隔；Beacon：AP 定期廣播的訊框；TIM：流量指示表；Association／Reassociation：與 AP 建立連線／換到新 AP）</p>
+    <p><b>一句話：PCF 讓 AP 當「點名老師」，在無競爭期（CFP）一個一個輪詢站台；MAC 管理層則靠 Beacon 的時間戳記讓整個 BSS 對時，站台才能放心睡覺、準時醒來，並透過掃描、Association、Reassociation 加入網路與漫遊。</b>（PCF：點協調功能；CFP：無競爭期；Beacon：AP 定期廣播的訊框；BSS：基本服務集；Association／Reassociation：與 AP 建立關聯／換到新 AP）</p>
+    <p class="ks">🔄 流程</p>
+    <ol>
+      <li><b>PCF 超級訊框</b>：PC 偵測媒介閒置 PIFS 後送 Beacon → 其他站台把 NAV 設成 CFPMaxDuration → PC 送 CF-Poll（可合併資料與 CF-Ack），被點到的站隔 SIFS 回應 → CF-End 結束 CFP、重設 NAV → 進入競爭期（CP），用 DCF。（PC：點協調器，在 AP 裡；PIFS：PCF 訊框間隔；NAV：網路配置向量；CF-Poll／CF-Ack／CF-End：點名／捎帶確認／結束；CFPMaxDuration：CFP 最長時間）</li>
+      <li><b>省電</b>：站台把 Power Management 位元設 1 → AP 緩衝它的資料 → 站台在 Beacon 前醒來看 TIM → 有自己就送 PS-Poll 取資料（More Data＝1 表示還有）→ 沒有就再睡；廣播／群播等 DTIM 之後才送。（TIM：流量指示表；PS-Poll：省電站台取資料；DTIM：每隔幾個 TIM 一次、之後送廣播的特殊 TIM）</li>
+      <li><b>加入與漫遊</b>：掃描（被動聽 Beacon 或主動送 Probe Request）→ 選 AP → 認證 → Association；訊號變差 → 掃描 → 對新 AP 送 Reassociation → 新 AP 通知 DS 更新。（DS：分散式系統）</li>
+    </ol>
+    <p class="ks">💡 觀念（為什麼）</p>
     <ul>
-      <li><b>PCF</b>：Point Coordinator 在 AP；CFP 開頭等 PIFS（比 DIFS 短）就送 Beacon，之後每個訊框只隔 SIFS，DCF 站台插不進來；用 CF-Poll 點名、CF-Ack 捎帶確認、CF-End 結束並重設 NAV。（Point Coordinator：點協調器；DIFS／SIFS：DCF／最短訊框間隔；CF-Poll／CF-Ack／CF-End：點名／確認／結束無競爭期；NAV：網路配置向量）</li>
-      <li><b>CFP 時序</b>：CFP 每隔「若干個 DTIM 間隔」出現一次；Beacon 被延後時 CFP 會縮短（foreshortened），但最晚在 TBTT + CFPMaxDuration 結束。（DTIM：遞送流量指示訊息，緩衝的廣播在它之後送；TBTT：目標 Beacon 傳送時間）</li>
-      <li><b>同步（TSF）</b>：AP 的 Beacon 帶時間戳記，大家照著校正；Beacon 永遠排在 TBTT，不是「上一次 Beacon 之後再算」。（TSF：計時同步功能）</li>
-      <li><b>省電</b>：AP 替睡著的站台緩衝資料，Beacon 的 TIM 告訴它「你有信」，站台醒來送 PS-Poll 取件；廣播／群播只在 DTIM 之後送。IBSS 改用 ATIM window 互相通知。（PS-Poll：省電站台取資料；ATIM：IBSS 的流量通知訊息）</li>
-      <li><b>掃描與漫遊</b>：被動掃描聽 Beacon、主動掃描送 Probe Request；選好 AP 後 Association；訊號變差就用 Reassociation 換到新 AP。（Probe Request：主動詢問附近的 AP）</li>
+      <li><b>PIFS ＜ DIFS</b>：PC 比 DCF 站台早一步取得媒介，之後每個訊框只隔 SIFS，DCF 站台插不進來。</li>
+      <li><b>Beacon 排在 TBTT</b>：固定排程（不是相對上一個 Beacon），睡覺的站台才知道何時醒來；Beacon 遇到媒介忙會延後，CFP 因此被縮短，但最晚在 TBTT＋CFPMaxDuration 結束。（TBTT：目標 Beacon 傳送時間）</li>
+      <li><b>TSF 對時</b>是省電、PCF 時序與跳頻的基礎；IBSS 沒有 AP，改成大家輪流隨機送 Beacon，省電用 ATIM 視窗互相通知。（TSF：計時同步功能；IBSS：沒有 AP 的 ad hoc 網路；ATIM：IBSS 的流量通知訊息）</li>
+      <li><b>PCF 的限制</b>：每次點名只能送 1 個訊框、PC 不知道流量的 QoS 需求、CFP 會被縮短，商用產品幾乎沒做 → 802.11e 用 HCCA 改進。</li>
     </ul>
+    <p class="ks">⚖️ 比較</p>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>DCF</th><th>PCF</th></tr>
+      <tr><td>誰決定誰送</td><td>每台自己競爭</td><td>AP 輪詢</td></tr>
+      <tr><td>碰撞</td><td>可能發生</td><td>CFP 中沒有競爭</td></tr>
+      <tr><td>必備／選用</td><td>必備</td><td>選用，建在 DCF 上</td></tr>
+      <tr><td>適用</td><td>ad hoc 與 infrastructure</td><td>只有 infrastructure</td></tr>
+    </table></div>
+    <div class="tbl-wrap"><table>
+      <tr><th></th><th>被動掃描</th><th>主動掃描</th></tr>
+      <tr><td>做法</td><td>每個頻道聽 Beacon</td><td>送 Probe Request，等 Probe Response</td></tr>
+      <tr><td>特性 <span class="sup">補充</span></td><td>不發射、省電，但要等 Beacon，較慢</td><td>較快，但耗電、增加頻道負載</td></tr>
+    </table></div>
   </div>
 
   <h2 id="std">1. 標準依據</h2>
