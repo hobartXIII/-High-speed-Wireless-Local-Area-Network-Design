@@ -658,9 +658,9 @@ sequenceDiagram
   <details><summary>4. To DS = 1、From DS = 0 時，Address 1～3 各放什麼？為什麼 Addr 1 是 BSSID？</summary><div class="inner">Addr 1 = BSSID、Addr 2 = SA、Addr 3 = DA。這一跳的接收者是 AP，而所有站台用 Addr 1 過濾收件，所以 Addr 1 放 AP 位址（Infrastructure 下 BSSID 就是 AP 的 MAC）；最終目的地 DA 放 Addr 3 讓 AP 轉送。</div></details>
   <details><summary>5. Sequence Control 的用途？為什麼分段要用同一個序號？</summary><div class="inner">用來過濾 ACK 遺失造成的重複訊框。同一 MSDU 的分段共用序號，接收端才能辨認是同一筆資料，再依 Fragment Number 重組。</div></details>
   <h3>計算題</h3>
-  <details><summary>6. 4 位址資料訊框的最大 MPDU 長度？11 Mbps 下的傳輸時間（不含 PLCP）？</summary><div class="inner">標頭 = 2+2+6+6+6+2+6 = 30 bytes；最大 MPDU = 30 + 2312 + 4 = 2346 bytes。2346 × 8 = 18768 bits；T = 18768 ÷ 11 ≈ 1706.2 µs。</div></details>
+  <details><summary>6. 4 位址資料訊框的最大 MPDU 長度？</summary><div class="inner">依講義的訊框格式：標頭 = 2+2+6+6+6+2+6 = 30 bytes；資料最多 2312 bytes；FCS 4 bytes。最大 MPDU = 30 + 2312 + 4 = 2346 bytes。</div></details>
   <details><summary>7. AID = 100 的 PS-Poll，Duration/ID 的十進位與十六進位值？</summary><div class="inner">bit 15、14 設 1 → 32768 + 16384 = 49152（0xC000）。49152 + 100 = 49252；100 = 0x64，所以是 0xC064。可以用第 8 節的解碼器驗證。</div></details>
-  <details><summary>8. 104-bit 金鑰的 WEP，種子幾 bits？AP 每秒送 2000 框、IV 逐框加 1，多久必定重複？</summary><div class="inner">種子 = 104 + 24 = 128 bits。2<sup>24</sup> = 16,777,216；16,777,216 ÷ 2000 ≈ 8388.6 秒 ≈ 2.33 小時。</div></details>
+  <details><summary>8. 104-bit 金鑰的 WEP，種子幾 bits？</summary><div class="inner">種子 = 金鑰 + 24-bit IV = 104 + 24 = 128 bits。講義原本的例子是 40 + 24 = 64 bits，並提到新版有 128、152 bits。</div></details>
   <h3>情境應用題</h3>
   <details><summary>9. 筆電連上咖啡廳的 AP 後，AP 突然重開機，接著收到筆電的資料訊框，會發生什麼？</summary><div class="inner">AP 重開後沒有筆電的認證紀錄，筆電對 AP 而言在 State 1。依講義 p.8 的 PS，AP 收到未認證站台的 Class 3 訊框會回 Deauthentication。筆電回到 State 1，要重新 Authentication（State 2）再 Association（State 3）才能繼續傳資料。</div></details>
   <details><summary>10. 2.4 GHz 要部署三台相鄰 AP，北美應選哪些頻道？歐洲呢？</summary><div class="inner">北美選 1、6、11：2412、2437、2462 MHz，間距 25 MHz，大於 DSSS 約 22 MHz 頻寬，彼此不重疊。歐洲選 1、7、13：2412、2442、2472 MHz，間距 30 MHz，同樣不重疊且間隔更寬。</div></details>

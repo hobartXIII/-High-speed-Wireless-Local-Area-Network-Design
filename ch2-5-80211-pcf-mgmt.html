@@ -626,12 +626,10 @@ sequenceDiagram
   <details><summary>4. IBSS 沒有 AP，省電站台怎麼知道有人要傳資料給它？</summary><div class="inner">所有站台在每個 TBTT 前醒來，Beacon 後有一段 ATIM window。想傳資料的站台在 window 內送 ATIM 給接收端，接收端回 ACK，雙方保持清醒到下一個 ATIM window 結束；window 過後才用 DCF 傳資料。沒收到 ATIM 的站台在 window 結束後就回去睡。</div></details>
   <details><summary>5. 被動掃描與主動掃描各適合什麼情況？</summary><div class="inner">被動掃描不發射、省電，適合不急著連線或不允許主動發射的頻道（例如需要 DFS 的 5 GHz 頻道）；主動掃描速度快，適合第一次連線或漫遊時要盡快找到新 AP。</div></details>
   <h3>計算題</h3>
-  <details><summary>6. Beacon Interval 100 TU、DTIM Period 2、CFP Period 3，CFP 多久出現一次（ms）？</summary><div class="inner">3 × 2 × 100 = 600 TU = 600 × 1.024 = 614.4 ms。</div></details>
-  <details><summary>7. CFPMaxDuration = 30 TU，TBTT 時媒介被一筆交換佔用 1.2 ms，PC 再等 PIFS 25 µs 送 Beacon。這個 CFP 實際最長多久？最晚何時結束？</summary><div class="inner">30 TU = 30,720 µs；延遲 1,200 + 25 = 1,225 µs；實際最長 30,720 − 1,225 = 29,495 µs ≈ 29.5 ms；最晚在 TBTT + 30,720 µs 結束。</div></details>
-  <details><summary>8. 寫出 CF-End + CF-Ack 與 Data + CF-Ack 的 Frame Control 第一個 octet。</summary><div class="inner">CF-End + CF-Ack：Type 01、Subtype 1111 → 15 × 16 + 1 × 4 = 244 = 0xF4。Data + CF-Ack：Type 10、Subtype 0001 → 16 + 8 = 24 = 0x18。</div></details>
+  <details><summary>6. Beacon Interval 100 TU、DTIM Period 2、CFP Period 3，CFP 多久出現一次？</summary><div class="inner">講義：CFP 的重複頻率（CFPRate）以「DTIM 間隔」為單位。DTIM 間隔 = 2 × 100 = 200 TU，所以 CFP 每 3 × 200 = 600 TU 出現一次。</div></details>
   <h3>情境應用題</h3>
-  <details><summary>9. 手機連上 AP 後幾乎不傳資料，但希望電池撐久，又不能漏接推播。該怎麼設定省電參數？</summary><div class="inner">開啟省電模式，加大 Listen Interval（例如每 3～10 個 Beacon 醒一次），只醒來看 TIM；有自己的資料才送 PS-Poll。代價是推播延遲變長（最多多等 Listen Interval × Beacon Interval）。若需要收廣播（例如 ARP），還要在每個 DTIM 醒來，所以 AP 端的 DTIM Period 也會影響耗電。</div></details>
-  <details><summary>10. 使用者從辦公室 A 區走到 B 區，視訊通話會短暫卡住。從講義的漫遊流程看，卡住發生在哪幾步？怎麼縮短？</summary><div class="inner">卡住發生在「判斷連線變差 → 掃描找新 AP → Reassociation Request／Response → 新 AP 通知 DS、更新轉送資訊」。縮短的方法：利用之前的掃描結果（講義 p.32 的 use information from previous scans），省掉掃描時間；用主動掃描代替被動掃描；適當調整「連線變差」的門檻，提早在背景找好新 AP。</div></details>
+  <details><summary>7. 手機連上 AP 後幾乎不傳資料，但希望電池撐久，又不能漏接推播。該怎麼設定省電參數？</summary><div class="inner">開啟省電模式，加大 Listen Interval（例如每 3～10 個 Beacon 醒一次），只醒來看 TIM；有自己的資料才送 PS-Poll。代價是推播延遲變長（最多多等 Listen Interval × Beacon Interval）。若需要收廣播（例如 ARP），還要在每個 DTIM 醒來，所以 AP 端的 DTIM Period 也會影響耗電。</div></details>
+  <details><summary>8. 使用者從辦公室 A 區走到 B 區，視訊通話會短暫卡住。從講義的漫遊流程看，卡住發生在哪幾步？怎麼縮短？</summary><div class="inner">卡住發生在「判斷連線變差 → 掃描找新 AP → Reassociation Request／Response → 新 AP 通知 DS、更新轉送資訊」。縮短的方法：利用之前的掃描結果（講義 p.32 的 use information from previous scans），省掉掃描時間；用主動掃描代替被動掃描；適當調整「連線變差」的門檻，提早在背景找好新 AP。</div></details>
 
   <h2 id="recap">17. 一頁速記</h2>
   <ol>

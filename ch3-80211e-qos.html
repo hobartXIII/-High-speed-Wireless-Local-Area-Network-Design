@@ -834,12 +834,11 @@ sequenceDiagram
   <details><summary>5. U-APSD 為什麼比舊的省電機制適合 VoIP？</summary><div class="inner">舊機制要等 Beacon（100 ms）的 TIM 才取件，延遲 100～300 ms，且每個訊框都要 PS-Poll。U-APSD 由 Client 每 20 ms 送 trigger（夾帶上行語音），AP 立刻在 SP 內用 TXOP burst 送出緩衝的語音，延遲 ＜ 20 ms，其他時間都能睡。</div></details>
   <h3>計算題</h3>
   <details><summary>6. 802.11a（slot 9 µs、SIFS 16 µs），算出四個 AC 的 AIFS。</summary><div class="inner">VO、VI：2 × 9 + 16 = 34 µs；BE：3 × 9 + 16 = 43 µs；BK：7 × 9 + 16 = 79 µs。</div></details>
-  <details><summary>7. DSSS 的 aCWmin = 31，算出 AC_VO 與 AC_VI 的 CWmin、CWmax。</summary><div class="inner">VO：CWmin = 32/4 − 1 = 7、CWmax = 32/2 − 1 = 15。VI：CWmin = 15、CWmax = aCWmin = 31。</div></details>
-  <details><summary>8. EDCA Parameter Record 的 ECWmin/ECWmax octet 是 0x43，CWmin、CWmax 各是多少？</summary><div class="inner">低 4 bits ECWmin = 3 → CWmin = 2³ − 1 = 7；高 4 bits ECWmax = 4 → CWmax = 15。</div></details>
-  <details><summary>9. QoS Control 的 TXOP duration requested = 100，站台要多長的 TXOP？</summary><div class="inner">100 × 32 = 3200 µs = 3.2 ms（包含 PHY overhead）。</div></details>
+  <details><summary>7. EDCA Parameter Record 的 ECWmin/ECWmax octet 是 0x43，CWmin、CWmax 各是多少？</summary><div class="inner">低 4 bits ECWmin = 3 → CWmin = 2³ − 1 = 7；高 4 bits ECWmax = 4 → CWmax = 15。</div></details>
+  <details><summary>8. QoS Control 的 TXOP duration requested = 100，站台要多長的 TXOP？</summary><div class="inner">100 × 32 = 3200 µs = 3.2 ms（包含 PHY overhead）。</div></details>
   <h3>情境應用題</h3>
-  <details><summary>10. 會議室同時有視訊會議、檔案下載與雲端備份，QAP 要怎麼用 EDCA 讓視訊順暢？</summary><div class="inner">視訊標 UP 4／5 → AC_VI（AIFSN 2、CW 7～15、TXOP 3.008 ms）；下載用 AC_BE；備份標 UP 1／2 → AC_BK（AIFSN 7）。VI 等得最短、退避最少、搶到後能連送；若要保證頻寬，視訊改用 ADDTS 註冊 TSPEC，由 HC 做 admission control。</div></details>
-  <details><summary>11. 家裡兩台 QSTA 要互傳大檔案，經過 AP 會佔兩倍空中時間，可以怎麼做？</summary><div class="inner">用 DLS：Sender 經 QAP 送 DLS Request、Recipient 經 QAP 回 DLS Response，之後直接互傳；再配合 Block Ack 減少 ACK 開銷。DLPTimeoutValue 內沒有訊框就回到經 AP 傳送。</div></details>
+  <details><summary>9. 會議室同時有視訊會議、檔案下載與雲端備份，QAP 要怎麼用 EDCA 讓視訊順暢？</summary><div class="inner">視訊標 UP 4／5 → AC_VI（AIFSN 2、CW 7～15、TXOP 3.008 ms）；下載用 AC_BE；備份標 UP 1／2 → AC_BK（AIFSN 7）。VI 等得最短、退避最少、搶到後能連送；若要保證頻寬，視訊改用 ADDTS 註冊 TSPEC，由 HC 做 admission control。</div></details>
+  <details><summary>10. 家裡兩台 QSTA 要互傳大檔案，經過 AP 會佔兩倍空中時間，可以怎麼做？</summary><div class="inner">用 DLS：Sender 經 QAP 送 DLS Request、Recipient 經 QAP 回 DLS Response，之後直接互傳；再配合 Block Ack 減少 ACK 開銷。DLPTimeoutValue 內沒有訊框就回到經 AP 傳送。</div></details>
 
   <h2 id="recap">18. 一頁速記</h2>
   <ol>
