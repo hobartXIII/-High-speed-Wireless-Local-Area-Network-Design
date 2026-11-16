@@ -319,29 +319,16 @@
 
 
 
-  <div class="blk flow"><h3 class="calc">⑥ 公式計算區</h3>
-  <table>
-    <tr><th>PHY</th><th>SIFS</th><th>slot</th><th>PIFS</th><th>DIFS</th><th>CWmin</th><th>PLCP</th></tr>
-    <tr><td>OFDM（講義）</td><td>16</td><td>9</td><td>25<span class="sup">補充</span></td><td>34</td><td>15</td><td>16＋≥4 µs</td></tr>
-    <tr><td>DSSS<span class="sup">補充</span></td><td>10</td><td>20</td><td>30</td><td>50</td><td>31</td><td>192／96 µs</td></tr>
-  </table>
+  <div class="blk flow"><h3 class="calc">⑥ 公式計算區（只收講義上有的）</h3>
   <ul>
-    <li><b>802.3</b>：最小訊框＝slot×R（51.2 µs×10 Mbps＝512 bits＝64 B）；DA＋SA＋Len＋FCS＝18 B → PAD＝46−LLC；單程 ≤ slot/2 → 距離＝v×slot/2；速率×10 → 距離÷10；偵測碰撞最晚 2τ；jam 32 bits</li>
-    <li><b>BEB</b>：兩站再撞 1/2<sup>k</sup>；最長等待 (2<sup>k</sup>−1)×51.2 µs；多站用列舉（每台 2<sup>k</sup> 種）</li>
-    <li><b>退避</b>：Random[0,CW]×slot；平均 CW/2×slot；CW<sub>新</sub>＝2(CW＋1)−1；凍結題：畫時間軸，每次忙後扣掉已數的 slot、閒 DIFS 再數</li>
-    <li><b>IFS</b>：PIFS＝SIFS＋slot<span class="sup">補充</span>；DIFS＝SIFS＋2 slot；AIFS＝AIFSN×slot＋SIFS（OFDM：VO／VI 34、BE 43、BK 79）；EIFS＝SIFS＋8×ACK(14 B)@1M＋前導＋標頭＋DIFS（DSSS 364 µs）</li>
-    <li><b>EDCA 誰先送</b>：t＝AIFS＋9b，列出 (b<sub>V</sub>, b<sub>B</sub>) 所有組合數比大小</li>
-    <li><b>一次交換</b>：DIFS＋退避＋PLCP＋8(28＋L)/R＋SIFS＋PLCP＋8×14/R<sub>ACK</sub>；＋RTS/CTS：＋RTS（20 B）＋CTS（14 B）＋2 SIFS＋2 PLCP；吞吐量＝8L ÷ 總時間（固定負擔不隨速率變小）</li>
-    <li><b>Duration</b>：從本訊框結束到它保護的最後一個訊框結束。RTS＝3 SIFS＋CTS＋Data＋ACK；CTS＝RTS值−SIFS−CTS；Data＝SIFS＋ACK；分段 i＝SIFS＋ACK＋SIFS＋分段 i＋1＋SIFS＋ACK；ACK<sub>i</sub>＝分段 i 的值−SIFS−ACK</li>
-    <li><b>PCF</b>：CFP 重複間隔＝CFP period×DTIM 間隔（DTIM 間隔＝DTIM period×Beacon 間隔）；Beacon 延遲 x → 實際 CFP＝CFPMaxDuration−x（結束 ≤ TBTT＋CFPMaxDuration）</li>
-    <li><b>易受隱藏站干擾的時間</b>：無 RTS＝整個資料 PPDU；有 RTS＝只有 RTS</li>
-    <li><b>TXOP</b>：limit×32 µs；n 次交換＝n×(Data＋SIFS＋ACK)＋(n−1)×SIFS ≤ TXOP</li>
-    <li><b>Block Ack</b>：省下 n×(SIFS＋ACK)，加回 BAR＋BA＋2 SIFS</li>
-    <li><b>HCCA</b>：每 SI 位元＝速率×SI → 筆數＝⌈÷MSDU⌉ → TXOP＝筆數×交換時間 → 可允入＝⌊SI ÷ TXOP⌋</li>
-    <li><b>錯誤率</b>：P(對)＝(1−p)<sup>n</sup>≈e<sup>−np</sup>；期望傳送次數＝1/P；期望位元＝n/P</li>
-    <li><b>省電</b>：平均功率＝d×P<sub>醒</sub>＋(1−d)×P<sub>睡</sub>，d＝醒的時間 ÷ 週期；下行最壞延遲≈監聽週期；廣播等下一個 DTIM</li>
-    <li><b>PHY</b>：位元速率＝符元速率×每符元位元×編碼率；DSSS 11 Mchip/s ÷ 11＝1 Msym/s；dB＝10 log(P1/P2)（100 W→1 W＝20 dB）；Barker 10 log 11＝10.4 dB；OFDM 54＝48 子載波×6×3/4 ÷ 4 µs <span class="sup">補充</span></li>
-    <li><b>常數</b>：MSDU ≤2304 B（常用 1500）；802.3 訊框 64–1518 B；資料標頭 24＋FCS 4；ACK、CTS 14、RTS 20；AID 1–2007；TXOP 32–8160 µs；BA 64 MSDU；VoIP 20 ms 一包、Beacon 100 ms</li>
+    <li><b>802.3</b>：slot time 51.2 µs（來回傳播＋載波偵測）；碰撞偵測視窗＝2a；jam 32 bits。BEB：第 n 次碰撞（n ≤ 16）等 r 個 slot，0 ≤ r ＜ 2<sup>k</sup>，k＝min(n, 10)；訊框 64–1518 B</li>
+    <li><b>退避</b>：Backoff time＝Random()×slot，Random() 從 [0, CW] 均勻抽；CWmin＝2<sup>ECWmin</sup>−1、CWmax＝2<sup>ECWmax</sup>−1</li>
+    <li><b>Slot time</b>＝發射器開啟延遲＋傳播延遲＋忙碌偵測反應時間</li>
+    <li><b>IFS</b>：DIFS＝2×slot＋SIFS；AIFS[AC]＝AIFSN[AC]×slot＋SIFS；EIFS＝SIFS＋8×ACK 長度（以 1 Mbps 計）＋前導＋PLCP 標頭＋DIFS</li>
+    <li><b>OFDM 數值</b>：SIFS 16、slot 9、DIFS 34 µs；PLCP 前導 16＋標頭 ≥4 µs；CWmin 15</li>
+    <li><b>DSSS</b>：Long PLCP 192 µs（144＋48 bits，都用 1 Mbps）</li>
+    <li><b>dB</b>＝10 log<sub>10</sub>(P1/P2)（100 W → 1 W＝20 dB）</li>
+    <li><b>常數</b>：MSDU ≤ 2304 B（常用 1500）；資料標頭 24 B＋FCS 4 B；AID 1–2007；TXOP 32–8160 µs（單位 32 µs）；BA 最多 64 MSDU；VoIP 每 20 ms 一包</li>
   </ul></div>
 </section>
 </main>
