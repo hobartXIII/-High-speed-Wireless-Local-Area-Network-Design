@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>期中考練習題</title>
-<meta name="description" content="依 114-1 期中考古題的出題風格（觀念、跨章比較、假設推演、設計題）出的英文練習題，範圍 0Intro_LAN ～ 11EnhancedQoS，含計算題；附中文說明、英文參考答案與講義出處。">
+<meta name="description" content="依 114-1 期中考古題的出題風格（觀念、跨章比較、假設推演、設計題）出的英文練習題，範圍 0Intro_LAN ～ 11EnhancedQoS，含兩題套用講義公式的計算題；附中文說明、英文參考答案與講義出處。">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/highlighter.css">
 <script src="assets/js/highlighter.js"></script>
@@ -56,7 +56,7 @@
     <tr><td>評價題</td><td>優缺點（PCF）、差異（active／passive scan）。</td></tr>
     <tr><td>講義上的問句</td><td>第 9 題「Why does not Ethernet use ACK frame?」就是 2-4 講義 p.11 的原句。</td></tr>
     <tr><td>不考規格細節</td><td>即使題目問到欄位（第 3、4 題），問的也是「為什麼要這樣設計」，不考位元編碼、欄位長度或公式各項。</td></tr>
-    <tr><td>配分</td><td>大題 10%，兩段式題目每段 5～10%，約 9 題。考古題沒有 802.11e 與計算題，這裡都補上。</td></tr>
+    <tr><td>配分</td><td>大題 10%，兩段式題目每段 5～10%，約 9 題。考古題沒有 802.11e 與計算題；802.11e 這裡補上，計算題只留兩題直接套用講義公式的。</td></tr>
   </table></div>
   <p>題目標籤：<span class="chip x">跨章</span> 跨兩章以上的比較，<span class="chip past">考古變形</span> 由考古題改編，<span class="chip calc">計算</span> 計算題。</p>
 
@@ -72,8 +72,8 @@
   <h2 id="part-b">B. 機制與設計</h2>
   <div id="qb"></div>
 
-  <h2 id="part-c">C. 計算題</h2>
-  <div class="callout tip">計算題常用參數（題目沒給時用這組）：802.11b DSSS：SIFS 10 µs、slot 20 µs、DIFS 50 µs、PIFS 30 µs、long PLCP preamble＋header 192 µs（1 Mbps）、CWmin 31、CWmax 1023。802.11a OFDM：SIFS 16 µs、slot 9 µs、DIFS 34 µs。802.3：slot time 51.2 µs（10 Mbps）。</div>
+  <h2 id="part-c">C. 計算題（只套講義公式）</h2>
+  <div class="callout tip">老師上課沒有做計算題，考古題也沒有，這裡只留直接套用講義公式的兩題。講義上的數值：802.3 slot time 51.2 µs；802.11 OFDM：SIFS 16 µs、slot 9 µs、DIFS 34 µs、CWmin 15；AIFS[AC]＝AIFSN[AC]×slot＋SIFS。其他公式見 <a href="cheatsheet.html">小抄</a> ⑥。</div>
   <div id="qc"></div>
 </main>
 <aside class="toc"></aside>
@@ -598,94 +598,16 @@ qb: [
 ],
 qc: [
 {
-  id: 'C1', pts: '10%', chips: [['calc','計算'],['x','ch1 × ch2-4']],
-  en: `IEEE 802.3 at 10 Mbps uses a slot time of 51.2 µs.
-  <ol type="a"><li>Show that the minimum MAC frame is 64 bytes, and compute the PAD length when the LLC frame is 20 bytes. (4%)</li>
-  <li>Ignoring repeater and transceiver delays and assuming a propagation speed of 2 × 10<sup>8</sup> m/s, what is the maximum distance between two stations? What happens to this distance at 100 Mbps if the minimum frame is still 64 bytes? (4%)</li>
-  <li>Why does 802.11 not need a minimum frame length for the same purpose? (2%)</li></ol>`,
-  zh: `10 Mbps 的 IEEE 802.3 使用 51.2 µs 的 slot time。
-  <ol type="a"><li>證明最短 MAC 訊框是 64 bytes，並計算 LLC 訊框為 20 bytes 時的 PAD 長度。（4%）</li>
-  <li>忽略中繼器與收發器延遲，傳播速度 2 × 10<sup>8</sup> m/s，兩站之間的最大距離是多少？若最短訊框仍是 64 bytes，在 100 Mbps 時這個距離會變成多少？（4%）</li>
-  <li>為什麼 802.11 不需要為了同樣的目的設定最短訊框長度？（2%）</li></ol>`,
-  zd: `<p><b>(a)</b> 碰撞傳回來時，傳送端必須還在傳送，也就是傳送時間 ≥ 來回延遲（slot time）。51.2 µs × 10 Mbps = 512 bits = <b>64 bytes</b>（從 DA 到 FCS）。標頭與 FCS：DA 6 + SA 6 + Length 2 + FCS 4 = 18 bytes，所以資料至少 46 bytes。LLC = 20 bytes → PAD = 46 − 20 = <b>26 bytes</b>。</p>
-  <p><b>(b)</b> 來回 ≤ 51.2 µs → 單程 ≤ 25.6 µs → 25.6 × 10<sup>−6</sup> × 2 × 10<sup>8</sup> = <b>5120 m</b>（實際 802.3 的上限是 2500 m，因為還要算進中繼器、電纜與 jam 時間）。在 100 Mbps 下，512 bits 只要 5.12 µs，所以距離縮短 10 倍，變成 <b>512 m</b>。</p>
-  <p><b>(c)</b> 802.11 不會邊送邊偵測碰撞；它是從沒收到 ACK 得知失敗。訊框不需要持續一個來回時間，所以不需要為了碰撞偵測而規定最短長度。</p>`,
-  ae: `<p><b>(a)</b> A sender must still be transmitting when the collision comes back, i.e. transmission time ≥ round-trip delay (slot time). 51.2 µs × 10 Mbps = 512 bits = <b>64 bytes</b> (DA to FCS). Header and FCS: DA 6 + SA 6 + Length 2 + FCS 4 = 18 bytes, so data must be ≥ 46 bytes. LLC = 20 bytes → PAD = 46 − 20 = <b>26 bytes</b>.</p>
-  <p><b>(b)</b> Round trip ≤ 51.2 µs → one way ≤ 25.6 µs → 25.6 × 10<sup>−6</sup> × 2 × 10<sup>8</sup> = <b>5120 m</b> (the real 802.3 limit is 2500 m because repeaters, cables and jam time are included). At 100 Mbps, 512 bits take 5.12 µs, so the distance shrinks 10 times to <b>512 m</b>.</p>
-  <p><b>(c)</b> 802.11 does not detect collisions while transmitting; it learns about a failure from the missing ACK. The frame does not have to last a round-trip time, so no minimum length is needed for collision detection.</p>`,
-  az: `<p>核心觀念：最短訊框＝「傳送時間 ≥ 來回傳播延遲」，所以速率×10，距離就要÷10。(c) 是跨章：碰撞偵測（CD）才需要最短訊框，CA＋ACK 不需要。</p>`,
-  src: `1CSMA_CD p.6「CSMA/CD Protocol」、p.8「Frame Format」、p.10「Collision Detection Window」、p.14；2-4 p.11`
+  id: 'C1', pts: '10%', chips: [['calc','計算']],
+  en: `Truncated binary exponential backoff. In 802.3, two stations collide for the first time. What is the probability that they collide again on the next attempt? After their 3rd collision? Give the range of r and the maximum waiting time after the 3rd and the 12th collision. (10%)`,
+  zh: `截斷二元指數退避。802.3 中兩個站台第一次碰撞。它們在下一次嘗試再次碰撞的機率是多少？第 3 次碰撞之後呢？寫出第 3 次與第 12 次碰撞後 r 的範圍與最長等待時間。（10%）`,
+  zd: `<p>第 n 次碰撞後 r ∈ [0, 2<sup>k</sup> − 1]，k = min(n, 10)。兩個站台選到同一個 r 就會再次碰撞：第 1 次碰撞後 r ∈ {0, 1} → P = <b>1/2</b>；第 3 次碰撞後 r ∈ [0, 7] → P = <b>1/8</b>。第 3 次碰撞後最長等待 = 7 × 51.2 = <b>358.4 µs</b>；第 12 次碰撞後 k = 10，r ∈ [0, 1023]，最長 = 1023 × 51.2 = <b>52,377.6 µs ≈ 52.4 ms</b>。嘗試 16 次後就丟棄訊框。</p>`,
+  ae: `<p>After the n-th collision r ∈ [0, 2<sup>k</sup> − 1], k = min(n, 10). Two stations collide again if they pick the same r: after the 1st collision r ∈ {0, 1} → P = <b>1/2</b>; after the 3rd collision r ∈ [0, 7] → P = <b>1/8</b>. Max wait after the 3rd collision = 7 × 51.2 = <b>358.4 µs</b>; after the 12th collision k = 10, r ∈ [0, 1023], max = 1023 × 51.2 = <b>52,377.6 µs ≈ 52.4 ms</b>. After 16 attempts the frame is discarded.</p>`,
+  az: `<p>兩站同時從 2<sup>k</sup> 個值中選，選到一樣的機率是 1/2<sup>k</sup>；公式全在講義 1CSMA_CD p.7。</p>`,
+  src: `1CSMA_CD p.7「CSMA/CD Collision Handling」`
 },
 {
-  id: 'C2', pts: '10%', chips: [['calc','計算'],['x','ch1 × ch2-4']],
-  en: `Truncated binary exponential backoff.
-  <ol type="a"><li>In 802.3, two stations collide for the first time. What is the probability that they collide again on the next attempt? After their 3rd collision? Give the range of r and the maximum waiting time after the 3rd and the 12th collision. (6%)</li>
-  <li>In 802.11b (CWmin 31, CWmax 1023, slot 20 µs), what is the CW and the maximum backoff time at the 3rd retransmission? Why is 802.11's initial window much larger than 802.3's? (4%)</li></ol>`,
-  zh: `截斷二元指數退避。
-  <ol type="a"><li>802.3 中兩個站台第一次碰撞。它們在下一次嘗試再次碰撞的機率是多少？第 3 次碰撞之後呢？寫出第 3 次與第 12 次碰撞後 r 的範圍與最長等待時間。（6%）</li>
-  <li>802.11b（CWmin 31、CWmax 1023、slot 20 µs）第 3 次重傳時的 CW 和最長退避時間是多少？為什麼 802.11 的初始視窗比 802.3 大很多？（4%）</li></ol>`,
-  zd: `<p><b>(a)</b> 第 n 次碰撞後 r ∈ [0, 2<sup>k</sup> − 1]，k = min(n, 10)。兩個站台選到同一個 r 就會再次碰撞：第 1 次碰撞後 r ∈ {0, 1} → P = <b>1/2</b>；第 3 次碰撞後 r ∈ [0, 7] → P = <b>1/8</b>。第 3 次碰撞後最長等待 = 7 × 51.2 = <b>358.4 µs</b>；第 12 次碰撞後 k = 10，r ∈ [0, 1023]，最長 = 1023 × 51.2 = <b>52,377.6 µs ≈ 52.4 ms</b>。嘗試 16 次後就丟棄訊框。</p>
-  <p><b>(b)</b> CW：31 → 63 → 127 → <b>255</b>；最長退避 = 255 × 20 = <b>5100 µs</b>。802.3 只在碰撞後才退避，而它偵測碰撞又快又便宜。802.11 是在傳送<i>之前</i>就退避以避免碰撞，而且碰撞的代價很高（整個訊框都遺失，只能從沒收到 ACK 才發現），所以一開始就用較寬的視窗，讓碰撞從一開始就不容易發生。</p>`,
-  ae: `<p><b>(a)</b> After the n-th collision r ∈ [0, 2<sup>k</sup> − 1], k = min(n, 10). Two stations collide again if they pick the same r: after the 1st collision r ∈ {0, 1} → P = <b>1/2</b>; after the 3rd collision r ∈ [0, 7] → P = <b>1/8</b>. Max wait after the 3rd collision = 7 × 51.2 = <b>358.4 µs</b>; after the 12th collision k = 10, r ∈ [0, 1023], max = 1023 × 51.2 = <b>52,377.6 µs ≈ 52.4 ms</b>. After 16 attempts the frame is discarded.</p>
-  <p><b>(b)</b> CW: 31 → 63 → 127 → <b>255</b>; max backoff = 255 × 20 = <b>5100 µs</b>. 802.3 backs off only after a collision, which it detects quickly and cheaply. 802.11 backs off <i>before</i> transmitting to avoid collisions, and a collision is expensive (the whole frame is lost and only noticed by the missing ACK), so it starts with a wider window to make collisions unlikely in the first place.</p>`,
-  az: `<p>(a) 兩站同時從 2<sup>k</sup> 個值中選，選到一樣的機率是 1/2<sup>k</sup>。(b) 的「為什麼」是觀念：CD 碰撞代價小、CA 碰撞代價大（整個訊框都浪費）。</p>`,
-  src: `1CSMA_CD p.7；2-4 p.16–17「Binary Exponential Backoff Window」、p.28`
-},
-{
-  id: 'C3', pts: '15%', chips: [['calc','計算'],['x','ch2-1 × ch2-3 × ch2-4']],
-  en: `An 802.11b station sends a 1500-byte MSDU at 11 Mbps with the long PLCP (192 µs). MAC header = 24 bytes, FCS = 4 bytes. ACK (14 bytes), RTS (20 bytes) and CTS (14 bytes) are sent at 1 Mbps. SIFS = 10 µs, slot = 20 µs, DIFS = 50 µs. The station draws a backoff of 7 slots.
-  <ol type="a"><li>Compute the time from the start of DIFS to the end of the ACK, and the resulting throughput, without RTS/CTS. (6%)</li>
-  <li>Repeat with RTS/CTS. (4%)</li>
-  <li>What value does the station put in the Duration field of the RTS? Explain what the other stations do with it. (5%)</li></ol>`,
-  zh: `一個 802.11b 站台用 11 Mbps、long PLCP（192 µs）送 1500 bytes 的 MSDU。MAC header = 24 bytes，FCS = 4 bytes。ACK（14 bytes）、RTS（20 bytes）、CTS（14 bytes）用 1 Mbps 送。SIFS = 10 µs、slot = 20 µs、DIFS = 50 µs。站台抽到的退避是 7 個 slot。
-  <ol type="a"><li>不用 RTS/CTS 時，計算從 DIFS 開始到 ACK 結束的時間，以及得到的吞吐量。（6%）</li>
-  <li>改用 RTS/CTS 再算一次。（4%）</li>
-  <li>站台在 RTS 的 Duration 欄位填什麼值？說明其他站台怎麼使用它。（5%）</li></ol>`,
-  zd: `<p>DATA = 192 + (1500 + 24 + 4) × 8 / 11 = 192 + 1111.3 = <b>1303.3 µs</b>；ACK = 192 + 14 × 8 / 1 = <b>304 µs</b>；RTS = 192 + 160 = <b>352 µs</b>；CTS = 192 + 112 = <b>304 µs</b>。</p>
-  <p><b>(a)</b> DIFS 50 + 退避 7 × 20 = 140 + DATA 1303.3 + SIFS 10 + ACK 304 = <b>1807.3 µs</b>。吞吐量 = 1500 × 8 / 1807.3 µs ≈ <b>6.64 Mbps</b>（約 11 Mbps 的 60%）。</p>
-  <p><b>(b)</b> 加上 RTS 352 + SIFS 10 + CTS 304 + SIFS 10 = 676 µs → <b>2483.3 µs</b>，吞吐量 ≈ <b>4.83 Mbps</b>。</p>
-  <p><b>(c)</b> Duration(RTS) = 3 × SIFS + CTS + DATA + ACK = 30 + 304 + 1303.3 + 304 = 1941.3 → <b>1942 µs</b>（無條件進位）。每個聽到 RTS 的站台都把 NAV 設成這個值，即使偵測到媒介閒置也要延後（虛擬載波偵測）。CTS 帶的是 Duration(RTS) − SIFS − CTS = 1628 µs（進位），所以接收端附近、對傳送端隱藏的站台也會被保護。</p>`,
-  ae: `<p>DATA = 192 + (1500 + 24 + 4) × 8 / 11 = 192 + 1111.3 = <b>1303.3 µs</b>; ACK = 192 + 14 × 8 / 1 = <b>304 µs</b>; RTS = 192 + 160 = <b>352 µs</b>; CTS = 192 + 112 = <b>304 µs</b>.</p>
-  <p><b>(a)</b> DIFS 50 + backoff 7 × 20 = 140 + DATA 1303.3 + SIFS 10 + ACK 304 = <b>1807.3 µs</b>. Throughput = 1500 × 8 / 1807.3 µs ≈ <b>6.64 Mbps</b> (about 60% of 11 Mbps).</p>
-  <p><b>(b)</b> Add RTS 352 + SIFS 10 + CTS 304 + SIFS 10 = 676 µs → <b>2483.3 µs</b>, throughput ≈ <b>4.83 Mbps</b>.</p>
-  <p><b>(c)</b> Duration(RTS) = 3 × SIFS + CTS + DATA + ACK = 30 + 304 + 1303.3 + 304 = 1941.3 → <b>1942 µs</b> (rounded up). Every station that hears the RTS sets its NAV to this value and defers even if it senses the medium idle (virtual carrier sense). The CTS carries Duration(RTS) − SIFS − CTS = 1628 µs (rounded up), so stations near the receiver that are hidden from the sender are also protected.</p>`,
-  az: `<p>這題同時用到 2-1（PLCP 192 µs）、2-3（訊框長度、Duration）、2-4（DIFS、退避、NAV）。觀念重點：PHY overhead 是固定時間，不會因速率提高而變短，所以速率越高、效率越低；RTS/CTS 的額外成本在 11 Mbps 下佔了約 27%，所以只對長訊框（超過 RTS_Threshold）才用。</p>`,
-  src: `2-1 p.66–68（Long PLCP 192 µs）；2-3 p.12、p.19（RTS/CTS/ACK 格式）；2-4 p.16、p.21–22「Drawback of DCF」、p.25`
-},
-{
-  id: 'C4', pts: '10%', chips: [['calc','計算']],
-  en: `Three 802.11b stations A, B and C are deferring. When the medium becomes idle at t = 0, their backoff counters are A = 5, B = 2, C = 7. Each frame exchange (DATA + SIFS + ACK) occupies the medium for 1000 µs. After its first frame, B has another frame queued and draws a new backoff of 4. DIFS = 50 µs, slot = 20 µs.
-  <ol type="a"><li>Give the transmission order and the start time of each transmission, with the remaining backoff of every station after each transmission. (7%)</li>
-  <li>Which DCF rules does this example illustrate? (3%)</li></ol>`,
-  zh: `三個 802.11b 站台 A、B、C 都在等待。媒介在 t = 0 變成閒置時，它們的退避計數器分別是 A = 5、B = 2、C = 7。每次訊框交換（DATA + SIFS + ACK）佔用媒介 1000 µs。B 送完第一個訊框後還有下一個訊框，抽到新的退避值 4。DIFS = 50 µs、slot = 20 µs。
-  <ol type="a"><li>寫出傳送順序、每次傳送的開始時間，以及每次傳送後各站剩下的退避值。（7%）</li>
-  <li>這個例子說明了 DCF 的哪些規則？（3%）</li></ol>`,
-  zd: `<p><b>(a)</b> 時間軸如下（單位 µs）：</p>
-  <div class="tbl-scroll"><table>
-  <tr><th>事件</th><th>時間</th><th>A</th><th>B</th><th>C</th></tr>
-  <tr><td>閒置，DIFS 結束</td><td>50</td><td>5</td><td>2</td><td>7</td></tr>
-  <tr><td>B 傳送（過 2 個 slot）</td><td>90 → 1090</td><td>3</td><td>新抽 4</td><td>5</td></tr>
-  <tr><td>DIFS 結束</td><td>1140</td><td>3</td><td>4</td><td>5</td></tr>
-  <tr><td>A 傳送（過 3 個 slot）</td><td>1200 → 2200</td><td>—</td><td>1</td><td>2</td></tr>
-  <tr><td>B 傳送（過 1 個 slot）</td><td>2250 + 20 = 2270 → 3270</td><td>—</td><td>—</td><td>1</td></tr>
-  <tr><td>C 傳送（過 1 個 slot）</td><td>3320 + 20 = 3340</td><td>—</td><td>—</td><td>—</td></tr>
-  </table></div>
-  <p><b>(b)</b> (1) 退避只在媒介閒置時倒數，媒介忙時凍結；下一個 DIFS 之後用剩下的值繼續。(2) 剛傳送完、佇列裡還有下一個訊框的站台必須重新退避，所以 B 不能連續送兩個。(3) 等待中的站台計數器持續變小，所以存取趨向先到先服務（FCFS）。</p>`,
-  ae: `<div class="tbl-scroll"><table>
-  <tr><th>Event</th><th>Time</th><th>A</th><th>B</th><th>C</th></tr>
-  <tr><td>Idle, DIFS ends</td><td>50</td><td>5</td><td>2</td><td>7</td></tr>
-  <tr><td>B transmits (after 2 slots)</td><td>90 → 1090</td><td>3</td><td>new 4</td><td>5</td></tr>
-  <tr><td>DIFS ends</td><td>1140</td><td>3</td><td>4</td><td>5</td></tr>
-  <tr><td>A transmits (after 3 slots)</td><td>1200 → 2200</td><td>—</td><td>1</td><td>2</td></tr>
-  <tr><td>B transmits (after 1 slot)</td><td>2250 + 20 = 2270 → 3270</td><td>—</td><td>—</td><td>1</td></tr>
-  <tr><td>C transmits (after 1 slot)</td><td>3320 + 20 = 3340</td><td>—</td><td>—</td><td>—</td></tr>
-  </table></div>
-  <p><b>(b)</b> (1) Backoff counts down only while the medium is idle and is frozen while busy; it resumes after the next DIFS with the remaining value. (2) A station that has just transmitted and has another frame queued must perform a new backoff, so B cannot send back-to-back. (3) The counters of waiting stations keep shrinking, so access tends toward FCFS.</p>`,
-  az: `<p>做法：每次媒介忙完都要先等 DIFS，之後每經過一個閒置 slot，所有站的計數器減 1，先減到 0 的先送。注意 B 的新退避值 4 是從 A 傳送前的 DIFS 之後才開始倒數。和 11EnhancedQoS 第 37 張「DCF Example」同類型。</p>`,
-  src: `2-4 p.16、p.20、p.27「DCF Access Procedure」；11EnhancedQoS「DCF Example」`
-},
-{
-  id: 'C5', pts: '10%', chips: [['calc','計算'],['x','ch2-4 × ch3']],
+  id: 'C2', pts: '10%', chips: [['calc','計算'],['x','ch2-4 × ch3']],
   en: `EDCA in 802.11a (SIFS = 16 µs, slot = 9 µs). Use the lecture's WME defaults: AIFSN = 2, 2, 3, 7 and random backoff 0–3, 0–7, 0–15, 0–15 slots for AC_VO, AC_VI, AC_BE, AC_BK.
   <ol type="a"><li>Compute AIFS[AC] and the minimum and maximum initial waiting time of each AC. Compare AIFS with DIFS. (6%)</li>
   <li>If an administrator configures all four ACs with the same AIFSN and the same CW, what happens to the service differentiation? (2%)</li>
@@ -718,262 +640,7 @@ qc: [
   <p><b>(c)</b> No. The ranges overlap (e.g. VO can draw 61 µs while BE draws 43 µs), so EDCA gives <i>statistical</i> priority — prioritized QoS, a relative priority — not a strict guarantee. Strict guarantees need parameterized QoS (TSPEC + HCCA).</p>`,
   az: `<p>(c) 連到講義第 5 張的 Parameterized QoS vs. Prioritized QoS：EDCA 是相對優先（機率上較快），HCCA＋TSPEC 才是量化保證。</p>`,
   src: `11EnhancedQoS「Two Kinds of QoS Control」「EDCA」「IFS in EDCF: Contention between ACs」「Arbitration Interframe Space (AIFS)」；2-4 p.13`
-},
-{
-  id: 'C6', pts: '10%', chips: [['calc','計算']],
-  en: `TXOP.
-  <ol type="a"><li>The TXOP limit of an AC is announced as 94 (units of 32 µs). How long is the TXOP? Each exchange is QoS DATA (260 µs) + SIFS (16 µs) + ACK (44 µs), and consecutive exchanges are separated by SIFS. How many exchanges fit in one TXOP? (6%)</li>
-  <li>The default TXOP limit of AC_VI (3.008 ms) is twice that of AC_VO (1.504 ms). Explain the trade-off of a long TXOP limit and why voice is given the shorter one. (4%)</li></ol>`,
-  zh: `TXOP。
-  <ol type="a"><li>某個 AC 公告的 TXOP limit 是 94（單位 32 µs）。TXOP 有多長？每次交換是 QoS DATA（260 µs）+ SIFS（16 µs）+ ACK（44 µs），相鄰的交換之間隔一個 SIFS。一個 TXOP 內能放幾次交換？（6%）</li>
-  <li>AC_VI 的預設 TXOP limit（3.008 ms）是 AC_VO（1.504 ms）的兩倍。說明 TXOP limit 設得長的取捨，以及為什麼語音分到較短的。（4%）</li></ol>`,
-  zd: `<p><b>(a)</b> 94 × 32 = <b>3008 µs</b>。一次交換 = 260 + 16 + 44 = 320 µs；n 次交換需要 320n + 16(n − 1) = 336n − 16 ≤ 3008 → n ≤ 9 → <b>9 次交換</b>（剛好 3008 µs）。一次競爭（AIFS + 退避）的成本由九個訊框分攤，而不是一個。</p>
-  <p><b>(b)</b> 長 TXOP 把競爭負擔分攤到很多訊框上，提高吞吐量；但一個 AC 佔住媒介時，其他人都要等，它們的延遲最多會增加一個 TXOP limit。影像會產生大量連續的訊框，適合長 TXOP。語音封包小又週期性（每 20 ms 一個），需要的是頻繁、短的存取，而不是長的；語音用短的上限，也能讓它對別人造成的延遲保持很小。</p>`,
-  ae: `<p><b>(a)</b> 94 × 32 = <b>3008 µs</b>. One exchange = 260 + 16 + 44 = 320 µs; n exchanges take 320n + 16(n − 1) = 336n − 16 ≤ 3008 → n ≤ 9 → <b>9 exchanges</b> (exactly 3008 µs). One contention (AIFS + backoff) is paid for nine frames instead of one.</p>
-  <p><b>(b)</b> A long TXOP spreads the contention overhead over many frames, raising throughput, but while one AC holds the medium all others must wait, so their delay grows by up to one TXOP limit. Video produces large bursts of frames and benefits from a long TXOP. Voice packets are small and periodic (one every 20 ms), so they need frequent, short accesses rather than long ones; a short limit for voice also keeps the delay it causes others small.</p>`,
-  az: `<p>注意 n 次交換之間只有 n − 1 個 SIFS。(b) 是觀念：TXOP 長 → 競爭成本攤提、吞吐量高；但別人要等更久。語音封包小又週期性，不需要長 TXOP。</p>`,
-  src: `11EnhancedQoS「TXOP」「Transmission Opportunity (TXOP) (cont.)」「Default EDCA Parameter Set」「Processing of Media Streams」`
-},
-{
-  id: 'C7', pts: '10%', chips: [['calc','計算']],
-  en: `A QSTA sends 16 QoS DATA frames of 200 µs each within one TXOP. Given: ACK = 44 µs, BlockAckReq = 56 µs, BlockAck = 228 µs, SIFS = 16 µs.
-  <ol type="a"><li>Compute the total time with Normal ACK and with Immediate Block Ack. (6%)</li>
-  <li>Under what conditions does Block Ack save more? Why does 802.11e also define a Delayed Block Ack? (4%)</li></ol>`,
-  zh: `一個 QSTA 在一個 TXOP 內送 16 個 QoS DATA 訊框，每個 200 µs。已知：ACK = 44 µs、BlockAckReq = 56 µs、BlockAck = 228 µs、SIFS = 16 µs。
-  <ol type="a"><li>分別計算使用 Normal ACK 與 Immediate Block Ack 的總時間。（6%）</li>
-  <li>在什麼條件下 Block Ack 省得更多？為什麼 802.11e 還要定義 Delayed Block Ack？（4%）</li></ol>`,
-  zd: `<p><b>(a)</b> Normal ACK：16 × (200 + 16 + 44) + 15 × 16 = 4160 + 240 = <b>4400 µs</b>。Block Ack：16 × 200 + 15 × 16 = 3440，再加 SIFS + BAR + SIFS + BA = 16 + 56 + 16 + 228 = 316 → <b>3756 µs</b>。節省 644 µs ≈ <b>14.6%</b>。</p>
-  <p><b>(b)</b> 共用一個 BlockAck 的訊框越多、資料訊框越短（ACK 負擔佔的比例越大）、每個訊框的固定負擔（PHY preamble、SIFS）相對於資料越大——也就是資料速率越高時——節省就越多。訊框很少時，冗長的 BlockAck 可能花的比省的還多。Immediate Block Ack 適合高頻寬、低延遲的流量；Delayed Block Ack 適合能容忍中等延遲的應用：接收端先用一般 ACK 回應 BlockAckReq，之後才送 BlockAck，讓它有時間準備回應。</p>`,
-  ae: `<p><b>(a)</b> Normal ACK: 16 × (200 + 16 + 44) + 15 × 16 = 4160 + 240 = <b>4400 µs</b>. Block Ack: 16 × 200 + 15 × 16 = 3440, then SIFS + BAR + SIFS + BA = 16 + 56 + 16 + 228 = 316 → <b>3756 µs</b>. Saving 644 µs ≈ <b>14.6%</b>.</p>
-  <p><b>(b)</b> The saving grows when more frames share one BlockAck, when the data frames are short (ACK overhead is a larger fraction), and when per-frame overhead (PHY preamble, SIFS) is large compared with the data — i.e. at high data rates. With few frames the long BlockAck can cost more than it saves. Immediate Block Ack suits high-bandwidth, low-latency traffic; Delayed Block Ack suits applications that tolerate moderate latency: the recipient first answers the BlockAckReq with a normal ACK and sends the BlockAck later, giving it time to prepare the response.</p>`,
-  az: `<p>這題的時間是題目給定的假設，不是講義數據。觀念：Block Ack 把多個 ACK 合併，但 BlockAck 本身很長，訊框數少時效益有限。Immediate／Delayed 的適用情境取自講義「Brief of Block ACK」。</p>`,
-  src: `11EnhancedQoS「Brief of Block ACK」「Procedure of Block Ack」「BlockAck Frame Format」`
-},
-{
-  id: 'C8', pts: '10%', chips: [['calc','計算'],['x','ch2-5 × ch3']],
-  en: `A G.729 VoIP call produces 8 kbps of voice and one RTP packet every 20 ms. The beacon interval is 100 ms.
-  <ol type="a"><li>How many bytes of voice payload are in each packet? (2%)</li>
-  <li>With legacy power save, how many downlink voice packets are buffered at the AP per beacon interval, and how many PS-Polls are needed to fetch them? If the station listens only every 3 beacons, what is the worst-case delay? (5%)</li>
-  <li>With U-APSD, what is the delay and how many extra polling frames are needed? (3%)</li></ol>`,
-  zh: `G.729 VoIP 通話產生 8 kbps 的語音，每 20 ms 一個 RTP 封包。Beacon interval 是 100 ms。
-  <ol type="a"><li>每個封包有多少 bytes 的語音內容？（2%）</li>
-  <li>使用傳統省電時，每個 beacon interval AP 會緩存幾個下行語音封包？要幾個 PS-Poll 才能取回？如果站台每 3 個 beacon 才聽一次，最差延遲是多少？（5%）</li>
-  <li>使用 U-APSD 時，延遲是多少？需要多少額外的輪詢訊框？（3%）</li></ol>`,
-  zd: `<p><b>(a)</b> 8000 bit/s × 0.02 s = 160 bits = <b>20 bytes</b>。</p>
-  <p><b>(b)</b> 100 / 20 = 每個 beacon interval <b>5 個封包</b>，需要 <b>5 個 PS-Poll</b>（每個緩衝訊框一個，More Data 告訴 STA 要繼續）。每 3 個 beacon 才聽一次：延遲最多 <b>300 ms</b>，緩衝 15 個封包——遠超過 20 ms 的需求。</p>
-  <p><b>(c)</b> STA 自己每 20 ms 一次的上行語音訊框就是 trigger frame，所以每個 service period 會送下那一個緩衝的下行封包：延遲 ≤ <b>20 ms</b>，而且<b>不需要額外的</b>輪詢訊框（trigger 就附在資料訊框上）。</p>`,
-  ae: `<p><b>(a)</b> 8000 bit/s × 0.02 s = 160 bits = <b>20 bytes</b>.</p>
-  <p><b>(b)</b> 100 / 20 = <b>5 packets</b> per beacon interval, needing <b>5 PS-Polls</b> (one per buffered frame, with More Data telling the STA to continue). Listening every 3 beacons: up to <b>300 ms</b> delay and 15 buffered packets — far above the 20 ms requirement.</p>
-  <p><b>(c)</b> The STA's own uplink voice frame every 20 ms is the trigger frame, so each service period delivers the one buffered downlink packet: delay ≤ <b>20 ms</b>, and <b>no extra</b> polling frames (the trigger is associated with a data frame).</p>`,
-  az: `<p>把講義第 3 張（G.729 8 kbps、20 ms 一包）和第 72–73 張（beacon 100 ms、延遲 100–300 ms、需求 &lt; 20 ms）的數字串起來。U-APSD 的優勢：上行資料本身就是 trigger，不用額外的 PS-Poll。</p>`,
-  src: `11EnhancedQoS「Processing of Media Streams」「Unscheduled APSD」「WMM Power Save」「Study Case: VoIP」「Comparisons」；2-5 p.22`
-},
-{
-  id: 'C9', pts: '10%', chips: [['calc','計算'],['past','考古 Q3-A 延伸']],
-  en: `Modulation and spreading.
-  <ol type="a"><li>802.11 DSSS uses an 11-chip Barker sequence at 11 Mchip/s. What is the symbol rate, and how do DBPSK and DQPSK give 1 and 2 Mbps? Compute the processing gain in dB. (4%)</li>
-  <li>Explain QAM. Given 48 data subcarriers and a 4 µs OFDM symbol, show how 802.11a obtains 54 Mbps with 64-QAM and rate-3/4 coding, and 24 Mbps with 16-QAM and rate-1/2 coding. (6%)</li></ol>`,
-  zh: `調變與展頻。
-  <ol type="a"><li>802.11 DSSS 使用 11 chip 的 Barker 序列，chip rate 11 Mchip/s。符元速率是多少？DBPSK 與 DQPSK 怎麼得到 1 與 2 Mbps？以 dB 計算處理增益。（4%）</li>
-  <li>解釋 QAM。已知有 48 個資料子載波、OFDM 符元長 4 µs，說明 802.11a 怎麼用 64-QAM＋3/4 編碼得到 54 Mbps，以及用 16-QAM＋1/2 編碼得到 24 Mbps。（6%）</li></ol>`,
-  zd: `<p><b>(a)</b> 11 Mchip/s ÷ 11 chips = <b>1 Msymbol/s</b>。DBPSK 每個符元帶 1 bit → 1 Mbps；DQPSK 每個符元帶 2 bits（相位變化 0、π/2、π、3π/2）→ 2 Mbps。處理增益 = 10 log<sub>10</sub>(11) ≈ <b>10.4 dB</b>，讓訊號能抵抗窄頻干擾與雜訊。</p>
-  <p><b>(b)</b> QAM 對同相（cosine）與正交（sine）兩個載波分別做振幅調變，也就是兩通道的 ASK 系統，等同於 PSK 與 ASK 的組合；M-QAM 每個子載波的每個符元帶 log<sub>2</sub>M bits。54 Mbps：48 × 6 bits × 3/4 = 每符元 216 bits ÷ 4 µs = <b>54 Mbps</b>。24 Mbps：48 × 4 × 1/2 = 96 bits ÷ 4 µs = <b>24 Mbps</b>。</p>`,
-  ae: `<p><b>(a)</b> 11 Mchip/s ÷ 11 chips = <b>1 Msymbol/s</b>. DBPSK carries 1 bit/symbol → 1 Mbps; DQPSK carries 2 bits/symbol (phase changes 0, π/2, π, 3π/2) → 2 Mbps. Processing gain = 10 log<sub>10</sub>(11) ≈ <b>10.4 dB</b>, which makes the signal robust against narrowband interference and noise.</p>
-  <p><b>(b)</b> QAM amplitude-modulates an in-phase (cosine) and a quadrature (sine) carrier, i.e. a two-channel ASK system, equivalent to combining PSK and ASK; M-QAM carries log<sub>2</sub>M bits per symbol per subcarrier. 54 Mbps: 48 × 6 bits × 3/4 = 216 bits per symbol ÷ 4 µs = <b>54 Mbps</b>. 24 Mbps: 48 × 4 × 1/2 = 96 bits ÷ 4 µs = <b>24 Mbps</b>.</p>`,
-  az: `<p>考古題第 3 題 A 只問 QAM 是什麼，這裡加上計算。48 個資料子載波與 4 µs 符元長度是題目給的條件。</p>`,
-  src: `2-1 p.43–44「Four PHYs」、p.59–60（Barker、dB）、p.74–77（QAM、DBPSK、DQPSK）`
-},
-{
-  id: 'C10', pts: '5%', chips: [['calc','計算']],
-  en: `An 802.11b station receives a frame with a CRC error, so it must wait EIFS = SIFS + (time to transmit an ACK at the lowest rate) + DIFS before contending. Given SIFS = 10 µs, DIFS = 50 µs, and an ACK at 1 Mbps takes 304 µs including the PLCP.
-  <ol type="a"><li>Compute EIFS and explain why it is so much longer than DIFS. (3%)</li>
-  <li>EIFS starts "without regard to the virtual carrier-sense mechanism". Why can the station not rely on its NAV in this case? (2%)</li></ol>`,
-  zh: `一個 802.11b 站台收到 CRC 錯誤的訊框，因此在競爭前要等 EIFS = SIFS +（用最低速率送一個 ACK 的時間）+ DIFS。已知 SIFS = 10 µs、DIFS = 50 µs，1 Mbps 的 ACK 含 PLCP 需要 304 µs。
-  <ol type="a"><li>計算 EIFS，並說明它為什麼比 DIFS 長這麼多。（3%）</li>
-  <li>EIFS 的開始「不考慮虛擬載波偵測」。為什麼這種情況下站台不能依賴自己的 NAV？（2%）</li></ol>`,
-  zd: `<p><b>(a)</b> EIFS = 10 + 304 + 50 = <b>364 µs</b>。多出來的 SIFS + ACK 時間，剛好是那個損壞訊框真正的接收端回 ACK 所需要的時間。這個站台解不出那個訊框，但真正的接收端可能解得出來，所以這個站台不能開始傳送而撞上那個 ACK。</p>
-  <p><b>(b)</b> Duration 欄位就在損壞的訊框裡，所以站台從來沒拿到有效的時間長度，NAV 也沒有被更新。EIFS 是一個保守的替代方案，涵蓋這個站台無法預測的 ACK。</p>`,
-  ae: `<p><b>(a)</b> EIFS = 10 + 304 + 50 = <b>364 µs</b>. The extra SIFS + ACK time is exactly what the intended receiver of the corrupted frame needs to return its ACK. This station could not decode the frame, but the real receiver may have, so it must not start transmitting and collide with that ACK.</p>
-  <p><b>(b)</b> The Duration field is inside the corrupted frame, so the station never obtained a valid duration and its NAV was not updated. EIFS is a conservative substitute that covers the ACK the station cannot predict.</p>`,
-  az: `<p>不用背公式各項（題目已給），重點是「為什麼」：收壞的訊框 → 讀不到 Duration → NAV 沒更新 → 用 EIFS 保守地讓對方回完 ACK。</p>`,
-  src: `2-4 p.15「EIFS」；2-1 p.66–68`
-},
-{
-  id: 'C11', pts: '10%', chips: [['calc','計算']],
-  en: `Two stations A and B are 2 km apart on a 10 Mbps CSMA/CD bus (propagation speed 2 × 10<sup>8</sup> m/s). A sends a 1000-bit frame.
-  <ol type="a"><li>Compute the transmission time, the propagation delay and a = propagation / transmission. (3%)</li>
-  <li>In the worst case, B starts transmitting just before A's signal arrives. When does A detect the collision? When does A stop, including a 32-bit jam? (4%)</li>
-  <li>Repeat (b) qualitatively for a 100-bit frame. What goes wrong, and what rule of 802.3 prevents it? (3%)</li></ol>`,
-  zh: `A、B 兩站在 10 Mbps 的 CSMA/CD 匯流排上相距 2 km（傳播速度 2 × 10<sup>8</sup> m/s）。A 送出一個 1000 位元的訊框。
-  <ol type="a"><li>計算傳輸時間、傳播延遲，以及 a = 傳播延遲 ÷ 傳輸時間。（3%）</li>
-  <li>最壞情況下，B 剛好在 A 的訊號到達前開始傳送。A 什麼時候偵測到碰撞？加上 32 位元的 jam，A 什麼時候停止？（4%）</li>
-  <li>如果訊框只有 100 位元，定性地重做 (b)。會出什麼問題？802.3 用哪條規則避免？（3%）</li></ol>`,
-  zd: `<p><b>(a)</b> 傳輸時間 = 1000 / 10<sup>7</sup> = <b>100 µs</b>；傳播延遲 τ = 2000 / (2 × 10<sup>8</sup>) = <b>10 µs</b>；a = 10 / 100 = <b>0.1</b>。</p>
-  <p><b>(b)</b> B 在 t ≈ τ − ε 開始傳送，在 τ 時偵測到碰撞。B 的訊號還要再一個 τ 才能傳到 A，所以 A 大約在 <b>2τ = 20 µs</b> 偵測到碰撞（正規化單位下就是碰撞視窗 2a）。Jam = 32 / 10<sup>7</sup> = 3.2 µs，所以 A 大約在 <b>23.2 µs</b> 停止，遠早於它 100 µs 的訊框結束時間。</p>
-  <p><b>(c)</b> 100 bits 的訊框只持續 10 µs &lt; 2τ = 20 µs：碰撞傳到 A 之前 A 就送完了，所以 A 永遠偵測不到，以為成功，但其實 B 造成的碰撞已經毀了這個訊框。802.3 要求傳輸時間 ≥ slot time（51.2 µs，來回延遲加上載波偵測時間），也就是最短訊框 64 bytes，並限制網路長度。</p>`,
-  ae: `<p><b>(a)</b> Transmission = 1000 / 10<sup>7</sup> = <b>100 µs</b>; propagation τ = 2000 / (2 × 10<sup>8</sup>) = <b>10 µs</b>; a = 10 / 100 = <b>0.1</b>.</p>
-  <p><b>(b)</b> B starts at t ≈ τ − ε and detects the collision at τ. B's signal needs another τ to reach A, so A detects it at ≈ <b>2τ = 20 µs</b> (the collision window 2a in normalized units). Jam = 32 / 10<sup>7</sup> = 3.2 µs, so A stops at about <b>23.2 µs</b>, long before its 100 µs frame would end.</p>
-  <p><b>(c)</b> A 100-bit frame lasts only 10 µs &lt; 2τ = 20 µs: A finishes before the collision reaches it, so A never detects it and assumes success, although B's collision destroyed the frame. 802.3 requires transmission time ≥ slot time (51.2 µs, round-trip delay plus carrier-sense time), i.e. a minimum frame of 64 bytes, and limits the network length.</p>`,
-  az: `<p>講義 1CSMA_CD p.10 的圖是用正規化的時間（傳輸時間 = 1、a = 0.5）。這題換成實際數字：碰撞偵測最晚要 2τ，所以訊框至少要持續 2τ。</p>`,
-  src: `1CSMA_CD p.6–7、p.10「Collision Detection Window for Baseband CSMA/CD」、p.13`
-},
-{
-  id: 'C12', pts: '10%', chips: [['calc','計算'],['x','ch1 × ch2-4']],
-  en: `Three stations collide for the first time.
-  <ol type="a"><li>In 802.3 each picks r ∈ {0, 1}. What is the probability that exactly one station transmits successfully in slot 0? What is the probability that all three choose the same slot? (6%)</li>
-  <li>In 802.11b the three stations each draw a backoff from [0, 31] (CWmin). What is the probability that all three values are different? Comment on the difference from (a). (4%)</li></ol>`,
-  zh: `三個站台第一次碰撞。
-  <ol type="a"><li>在 802.3 中，每台從 r ∈ {0, 1} 中選。恰好一台在 slot 0 成功傳送的機率是多少？三台都選同一個 slot 的機率是多少？（6%）</li>
-  <li>在 802.11b 中，三台各從 [0, 31]（CWmin）中選退避值。三個值都不同的機率是多少？和 (a) 比較並說明。（4%）</li></ol>`,
-  zd: `<p><b>(a)</b> 2<sup>3</sup> = 8 種等機率的結果。恰好一台選 0：C(3,1) = 3 種 → <b>3/8</b>。三台都選同一個 slot（000 或 111）：<b>2/8 = 1/4</b>；它們一定會再次碰撞。</p>
-  <p><b>(b)</b> 32 個值：P(全部不同) = (32 × 31 × 30) / 32<sup>3</sup> = 29760 / 32768 ≈ <b>0.908</b>。802.3 的初始範圍很小，碰撞常常重複（至少有 1/4 的機率一定碰撞），但每次碰撞都很便宜，因為馬上就偵測到。802.11 無法偵測碰撞，碰撞會損失整個訊框，所以一開始就用大的視窗，避開大部分碰撞，代價是更多閒置的退避 slot。</p>`,
-  ae: `<p><b>(a)</b> 2<sup>3</sup> = 8 equally likely outcomes. Exactly one picks 0: C(3,1) = 3 outcomes → <b>3/8</b>. All pick the same slot (000 or 111): <b>2/8 = 1/4</b>; they will certainly collide again.</p>
-  <p><b>(b)</b> 32 values: P(all different) = (32 × 31 × 30) / 32<sup>3</sup> = 29760 / 32768 ≈ <b>0.908</b>. With 802.3's tiny initial range, collisions repeat often (at least 1/4 chance of a sure collision), but each collision is cheap because it is detected at once. 802.11 cannot detect a collision and loses a whole frame, so it starts with a large window and avoids most collisions at the cost of more idle backoff slots.</p>`,
-  az: `<p>(a) 用列舉：每台兩種選擇，共 8 種。(b) 是生日問題的算法。結論回到觀念：「碰撞代價小 → 初始視窗小」與「碰撞代價大 → 初始視窗大」。</p>`,
-  src: `1CSMA_CD p.7「CSMA/CD Collision Handling」；2-4 p.16–17、p.20`
-},
-{
-  id: 'C13', pts: '15%', chips: [['calc','計算']],
-  en: `Use the 802.11 OFDM values in the lecture: DIFS 34 µs, slot 9 µs, SIFS 16 µs, PLCP preamble + header 20 µs, ACK 24 µs, MAC header + FCS 28 bytes, data rate 54 Mbps, CW = 15 (use the average backoff).
-  <ol type="a"><li>Compute the time for one Data–ACK exchange and the throughput for a 1500-byte payload. (6%)</li>
-  <li>Repeat for a 100-byte payload. (5%)</li>
-  <li>Explain the result and name two 802.11e mechanisms that improve it. (4%)</li></ol>`,
-  zh: `使用講義中的 802.11 OFDM 數值：DIFS 34 µs、slot 9 µs、SIFS 16 µs、PLCP 前導＋標頭 20 µs、ACK 24 µs、MAC 標頭＋FCS 28 bytes、資料速率 54 Mbps、CW = 15（退避用平均值）。
-  <ol type="a"><li>計算 payload 1500 bytes 時一次 Data–ACK 交換的時間與吞吐量。（6%）</li>
-  <li>payload 100 bytes 時再算一次。（5%）</li>
-  <li>說明結果，並舉出兩個改善它的 802.11e 機制。（4%）</li></ol>`,
-  zd: `<p>平均退避 = 15 / 2 × 9 = 67.5 µs。</p>
-  <p><b>(a)</b> 資料 PPDU = 20 + (1528 × 8) / 54 = 20 + 226.37 = 246.37 µs。總時間 = 34 + 67.5 + 246.37 + 16 + 24 = <b>387.87 µs</b>。吞吐量 = 12000 bits / 387.87 µs ≈ <b>30.9 Mbps</b>（54 Mbps 的 57%）。</p>
-  <p><b>(b)</b> 資料 PPDU = 20 + (128 × 8) / 54 = 20 + 18.96 = 38.96 µs。總時間 = 34 + 67.5 + 38.96 + 16 + 24 = <b>180.46 µs</b>。吞吐量 = 800 / 180.46 ≈ <b>4.43 Mbps</b>（8.2%）。</p>
-  <p><b>(c)</b> DIFS、退避、SIFS、PLCP 與 ACK 每次交換大約要 162 µs，和 payload 大小無關；只有 payload 部分會隨速率縮短。所以小訊框效率非常差。802.11e 的改善：<b>TXOP</b>（一次競爭送多個訊框，之間用 SIFS，DIFS／退避只付一次）與 <b>Block Ack</b>（一個 BA 取代每個訊框各一個 ACK）；No Ack 則可為合適的流量省掉 ACK。</p>`,
-  ae: `<p>Average backoff = 15 / 2 × 9 = 67.5 µs.</p>
-  <p><b>(a)</b> Data PPDU = 20 + (1528 × 8) / 54 = 20 + 226.37 = 246.37 µs. Total = 34 + 67.5 + 246.37 + 16 + 24 = <b>387.87 µs</b>. Throughput = 12000 bits / 387.87 µs ≈ <b>30.9 Mbps</b> (57% of 54 Mbps).</p>
-  <p><b>(b)</b> Data PPDU = 20 + (128 × 8) / 54 = 20 + 18.96 = 38.96 µs. Total = 34 + 67.5 + 38.96 + 16 + 24 = <b>180.46 µs</b>. Throughput = 800 / 180.46 ≈ <b>4.43 Mbps</b> (8.2%).</p>
-  <p><b>(c)</b> DIFS, backoff, SIFS, PLCP and ACK take about 162 µs per exchange regardless of the payload; only the payload part shrinks with the rate. Small frames are therefore very inefficient. 802.11e helps with a <b>TXOP</b> (several frames per contention, SIFS between them, so DIFS/backoff is paid once) and <b>Block Ack</b> (one BA instead of an ACK per frame); No Ack removes the ACK for suitable traffic.</p>`,
-  az: `<p>這組數字都在 2-4 p.22「DCF 的缺點」圖上（ACK 用講義的下限 24 µs）。重點是 (c)：固定負擔約 162 µs，不會因為速率變高而減少，所以要靠一次競爭送多個訊框來分攤。</p>`,
-  src: `2-4 p.22「Drawbacks of DCF」；11EnhancedQoS「Transmission Opportunity (TXOP)」「Brief of Block ACK」「ACK Policy」`
-},
-{
-  id: 'C14', pts: '15%', chips: [['calc','計算']],
-  en: `An 802.11b station sends a 1500-byte MSDU at 11 Mbps (long PLCP 192 µs, MAC header + FCS 28 bytes, ACK 14 bytes sent at 2 Mbps, SIFS 10 µs, DIFS 50 µs; ignore backoff).
-  <ol type="a"><li>Compute the time to send it without fragmentation, and as 3 fragments of 500 bytes in one fragment burst. (6%)</li>
-  <li>The bit error rate is 10<sup>−4</sup>. Using P(frame OK) = (1 − p)<sup>n</sup> ≈ e<sup>−np</sup> over the MPDU bits, compute the expected number of transmissions of the unfragmented frame and of each fragment, and the expected number of MPDU bits sent in each case. (6%)</li>
-  <li>When is fragmentation worthwhile? (3%)</li></ol>`,
-  zh: `一個 802.11b 站台以 11 Mbps 傳送 1500 bytes 的 MSDU（long PLCP 192 µs、MAC 標頭＋FCS 28 bytes、ACK 14 bytes 以 2 Mbps 送、SIFS 10 µs、DIFS 50 µs；忽略退避）。
-  <ol type="a"><li>計算不分段，以及分成 3 段各 500 bytes 用一次分段突發送出所需的時間。（6%）</li>
-  <li>位元錯誤率是 10<sup>−4</sup>。用 MPDU 位元數算 P(訊框正確) = (1 − p)<sup>n</sup> ≈ e<sup>−np</sup>，計算不分段訊框與每個分段的期望傳送次數，以及兩種方式期望送出的 MPDU 位元數。（6%）</li>
-  <li>什麼時候值得分段？（3%）</li></ol>`,
-  zd: `<p>ACK = 192 + 112 / 2 = 248 µs。</p>
-  <p><b>(a)</b> 不分段 MPDU = 1528 bytes：192 + 12224 / 11 = 192 + 1111.27 = 1303.27 µs；總時間 = 50 + 1303.27 + 10 + 248 = <b>1611.27 µs</b>。每個分段 MPDU = 528 bytes：192 + 4224 / 11 = 192 + 384 = 576 µs；每個分段 + SIFS + ACK = 834 µs；總時間 = 50 + 3 × 834 + 2 × 10（ACK 與下一個分段之間的 SIFS）= <b>2572 µs</b>。沒有錯誤時，分段大約多花 60% 的時間（多出來的標頭、PLCP 與 ACK）。</p>
-  <p><b>(b)</b> 不分段：n = 12224，P = e<sup>−1.2224</sup> ≈ 0.2945 → 期望傳送次數 = 1 / 0.2945 ≈ <b>3.40</b>；期望位元數 ≈ 3.40 × 12224 ≈ <b>41,500</b>。分段：n = 4224，P = e<sup>−0.4224</sup> ≈ 0.6555 → 每段約 <b>1.53</b> 次；期望位元數 ≈ 3 × 1.53 × 4224 ≈ <b>19,300</b>，不到一半。</p>
-  <p><b>(c)</b> 錯誤率高（干擾、雜訊）時：長訊框很少能被正確收到，而且每次重試都要整個重送；分段出錯時只需要重送一小段。通道乾淨時，分段只會增加負擔，所以 Fragmentation_Threshold 應該依通道狀況決定。</p>`,
-  ae: `<p>ACK = 192 + 112 / 2 = 248 µs.</p>
-  <p><b>(a)</b> Unfragmented MPDU = 1528 bytes: 192 + 12224 / 11 = 192 + 1111.27 = 1303.27 µs; total = 50 + 1303.27 + 10 + 248 = <b>1611.27 µs</b>. Each fragment MPDU = 528 bytes: 192 + 4224 / 11 = 192 + 384 = 576 µs; each fragment + SIFS + ACK = 834 µs; total = 50 + 3 × 834 + 2 × 10 (SIFS between ACK and next fragment) = <b>2572 µs</b>. Without errors, fragmentation costs about 60% more time (extra headers, PLCP and ACKs).</p>
-  <p><b>(b)</b> Unfragmented: n = 12224, P = e<sup>−1.2224</sup> ≈ 0.2945 → expected transmissions = 1 / 0.2945 ≈ <b>3.40</b>; expected bits ≈ 3.40 × 12224 ≈ <b>41,500</b>. Fragment: n = 4224, P = e<sup>−0.4224</sup> ≈ 0.6555 → ≈ <b>1.53</b> transmissions each; expected bits ≈ 3 × 1.53 × 4224 ≈ <b>19,300</b>, less than half.</p>
-  <p><b>(c)</b> When the error rate (interference, noise) is high: a long frame is then rarely received correctly, and every retry repeats it entirely, while a fragment error repeats only one small fragment. When the channel is clean, fragmentation only adds overhead, so the Fragmentation_Threshold should depend on the channel.</p>`,
-  az: `<p>(a) 是固定負擔變多；(b) 是錯誤時重傳量變少，兩者互相抵銷，這就是分段門檻的取捨。(b) 用的錯誤模型（位元錯誤彼此獨立）是假設 <span class="sup">補充</span>，數字都是題目給定的。</p>`,
-  src: `2-1 p.66–68（PLCP 192 µs）；2-3 p.17（Sequence Control、分段）；2-4 p.29–33「Fragmentation」`
-},
-{
-  id: 'C15', pts: '10%', chips: [['calc','計算']],
-  en: `Continue C14 (3 fragments, each fragment PPDU 576 µs, ACK and CTS 248 µs, SIFS 10 µs), now with RTS/CTS. The RTS is 20 bytes at 2 Mbps.
-  <ol type="a"><li>Compute the Duration field of the RTS, the CTS, fragment 1 and ACK 1. (6%)</li>
-  <li>A station hears only the destination. Until what time (measured from the end of the CTS) does its NAV keep it silent if every frame is received correctly? (4%)</li></ol>`,
-  zh: `延續 C14（3 個分段，每個分段 PPDU 576 µs，ACK 與 CTS 都是 248 µs，SIFS 10 µs），現在加上 RTS/CTS。RTS 是 20 bytes、以 2 Mbps 傳送。
-  <ol type="a"><li>計算 RTS、CTS、分段 1 與 ACK 1 的 Duration 欄位。（6%）</li>
-  <li>某站台只聽得到目的端。如果每個訊框都正確收到，它的 NAV 會讓它安靜到什麼時候（從 CTS 結束起算）？（4%）</li></ol>`,
-  zd: `<p>RTS = 192 + 160 / 2 = 272 µs（算 Duration 用不到）。</p>
-  <p><b>(a)</b> RTS/CTS 只涵蓋第一個分段和它的 ACK。RTS：3 × SIFS + CTS + 分段 1 + ACK 1 = 30 + 248 + 576 + 248 = <b>1102 µs</b>。CTS：RTS 的值 − SIFS − CTS = 1102 − 10 − 248 = <b>844 µs</b>。分段 1 涵蓋 ACK 1 + 分段 2 + ACK 2：3 × SIFS + 248 + 576 + 248 = <b>1102 µs</b>。ACK 1 涵蓋分段 2 + ACK 2：2 × SIFS + 576 + 248 = <b>844 µs</b>。</p>
-  <p><b>(b)</b> 它聽到 CTS（NAV 到 ACK 1 結束），之後每個 ACK 把 NAV 延長到下一個 ACK 結束。ACK 2 涵蓋分段 3 + ACK 3。所以它的 NAV 在 ACK 3 結束：從 CTS 之後算起，3 × (SIFS + 576 + SIFS + 248) = 3 × 844 = <b>2532 µs</b>。</p>`,
-  ae: `<p>RTS = 192 + 160 / 2 = 272 µs (not needed for the Durations).</p>
-  <p><b>(a)</b> RTS/CTS cover only the first fragment and its ACK. RTS: 3 × SIFS + CTS + frag 1 + ACK 1 = 30 + 248 + 576 + 248 = <b>1102 µs</b>. CTS: RTS value − SIFS − CTS = 1102 − 10 − 248 = <b>844 µs</b>. Fragment 1 covers ACK 1 + fragment 2 + ACK 2: 3 × SIFS + 248 + 576 + 248 = <b>1102 µs</b>. ACK 1 covers fragment 2 + ACK 2: 2 × SIFS + 576 + 248 = <b>844 µs</b>.</p>
-  <p><b>(b)</b> It hears CTS (NAV until end of ACK 1), then each ACK extends the NAV to the end of the next ACK. ACK 2 covers fragment 3 + ACK 3. So its NAV ends with ACK 3: after the CTS, 3 × (SIFS + 576 + SIFS + 248) = 3 × 844 = <b>2532 µs</b>.</p>`,
-  az: `<p>算 Duration 的口訣：「從這個訊框結束起，到它要保護的最後一個訊框結束」。CTS = RTS 的值 − SIFS − CTS，ACK 1 = 分段 1 的值 − SIFS − ACK。(b) 把 2-4 p.30–31 的 NAV 圖變成數字。</p>`,
-  src: `2-3 p.15–16（Duration）；2-4 p.30–31「RTS/CTS with Fragmentation」`
-},
-{
-  id: 'C16', pts: '10%', chips: [['calc','計算']],
-  en: `A PS station has a beacon interval of 100 ms. Each time it wakes up it stays awake 2 ms. Given: awake power 800 mW, sleep power 20 mW.
-  <ol type="a"><li>Compute the average power if it wakes for every beacon, and if it wakes every 3rd beacon (listen interval = 3). (6%)</li>
-  <li>For a downlink frame arriving at a random time, what is the worst-case waiting time in both cases? Discuss the trade-off. (4%)</li></ol>`,
-  zh: `一個省電站台的信標間隔是 100 ms，每次醒來保持清醒 2 ms。已知：清醒功率 800 mW、睡眠功率 20 mW。
-  <ol type="a"><li>計算每個信標都醒來，以及每 3 個信標才醒來（listen interval = 3）時的平均功率。（6%）</li>
-  <li>下行訊框在隨機時間到達 AP，兩種情況下最壞要等多久？討論其中的取捨。（4%）</li></ol>`,
-  zd: `<p><b>(a)</b> 每個 beacon 都醒：工作比例 = 2 / 100 → P = 0.02 × 800 + 0.98 × 20 = 16 + 19.6 = <b>35.6 mW</b>。每 3 個 beacon 醒一次：工作比例 = 2 / 300 → P = (2/300) × 800 + (298/300) × 20 = 5.33 + 19.87 = <b>25.2 mW</b>。</p>
-  <p><b>(b)</b> 訊框會在站台下一次聽的 TIM 中被公告：最壞情況約 <b>100 ms</b> 對比約 <b>300 ms</b>（再加上 PS-Poll 交換）。睡越久越省電，但延遲越長；這就是 802.11 電源管理在吞吐量／延遲與電池之間的取捨，也是傳統 PS 無法支援 VoIP（&lt; 20 ms）的原因。</p>`,
-  ae: `<p><b>(a)</b> Every beacon: duty = 2 / 100 → P = 0.02 × 800 + 0.98 × 20 = 16 + 19.6 = <b>35.6 mW</b>. Every 3rd beacon: duty = 2 / 300 → P = (2/300) × 800 + (298/300) × 20 = 5.33 + 19.87 = <b>25.2 mW</b>.</p>
-  <p><b>(b)</b> The frame is announced in the next TIM the station listens to: worst case ≈ <b>100 ms</b> vs ≈ <b>300 ms</b> (plus the PS-Poll exchange). Longer sleep saves power but increases delay; this is the throughput/delay vs. battery trade-off of 802.11 power management, and why legacy PS cannot support VoIP (&lt; 20 ms).</p>`,
-  az: `<p>功率與醒來時間都是題目給定的假設值。(b) 的 100–300 ms 正好對上講義 VoIP 案例的「延遲 100 到 300 毫秒」。</p>`,
-  src: `2-5 p.18–22「Power Management」；2-3 p.26（Listen Interval）；11EnhancedQoS「Study Case: VoIP」`
-},
-{
-  id: 'C17', pts: '10%', chips: [['calc','計算']],
-  en: `An AP sends beacons at t = 0, 100, 200, … ms with a DTIM period of 3 (DTIM beacons at 0, 300, 600 ms). At least one station is in PS mode.
-  <ol type="a"><li>A broadcast frame arrives at the AP at t = 130 ms. When is it sent, and what is its delay? What is the worst-case delay? (5%)</li>
-  <li>If the DTIM period is changed to 1, what is the delay of the same frame? Why might the administrator still prefer a DTIM period larger than 1? (5%)</li></ol>`,
-  zh: `AP 在 t = 0、100、200 … ms 送信標，DTIM period 是 3（DTIM 信標在 0、300、600 ms）。至少有一台站台處於省電模式。
-  <ol type="a"><li>一個廣播訊框在 t = 130 ms 到達 AP。它什麼時候送出？延遲多少？最壞情況的延遲是多少？（5%）</li>
-  <li>如果 DTIM period 改成 1，同一個訊框的延遲是多少？為什麼管理者仍可能偏好大於 1 的 DTIM period？（5%）</li></ol>`,
-  zd: `<p><b>(a)</b> 廣播／群播訊框會被緩衝，只在 DTIM beacon 之後送出。下一個 DTIM = 300 ms → 延遲 = 300 − 130 = <b>170 ms</b>（再加上 beacon 與競爭時間）。最壞情況：訊框在 DTIM 剛過時到達，要等將近一整個 DTIM 間隔 ≈ <b>300 ms</b>。</p>
-  <p><b>(b)</b> 每個 beacon 都是 DTIM → 在 200 ms 的 beacon 之後送出 → 延遲 <b>70 ms</b>（最壞情況約 100 ms）。DTIM 週期越大，只需要廣播流量的省電站台可以睡過更多 beacon，越省電；代價是廣播／群播訊框的延遲變長。</p>`,
-  ae: `<p><b>(a)</b> Broadcast/multicast frames are buffered and sent only after a DTIM beacon. Next DTIM = 300 ms → delay = 300 − 130 = <b>170 ms</b> (plus the beacon and contention). Worst case: a frame arriving just after a DTIM waits almost a full DTIM interval ≈ <b>300 ms</b>.</p>
-  <p><b>(b)</b> Every beacon is a DTIM → sent after the beacon at 200 ms → delay <b>70 ms</b> (worst case ≈ 100 ms). A larger DTIM period lets PS stations that only need broadcast traffic sleep through more beacons, saving power; the cost is the longer delay of broadcast/multicast frames.</p>`,
-  az: `<p>DTIM 間隔是 TIM 間隔的倍數，廣播只在 DTIM 之後送。這題的取捨和 C16 一樣：睡越久越省電、延遲越長。</p>`,
-  src: `2-5 p.20–22「Power Management in Infrastructure」`
-},
-{
-  id: 'C18', pts: '10%', chips: [['calc','計算'],['x','ch2-4 × ch3']],
-  en: `In an OFDM QBSS (slot 9 µs, SIFS 16 µs) an AC_VO frame (AIFSN 2, backoff 0–3) and an AC_BE frame (AIFSN 3, backoff 0–15) in two different stations start waiting at the same moment, after the medium becomes idle. Each backoff value is uniform.
-  <ol type="a"><li>Compute AIFS for both ACs and the transmit time of each as a function of its backoff b. (3%)</li>
-  <li>Compute the probability that BE transmits first, that both transmit at the same time, and that VO transmits first. (5%)</li>
-  <li>What does this say about EDCA priority? (2%)</li></ol>`,
-  zh: `在 OFDM 的 QBSS（slot 9 µs、SIFS 16 µs）中，兩台不同站台的 AC_VO 訊框（AIFSN 2、退避 0–3）與 AC_BE 訊框（AIFSN 3、退避 0–15）在媒介變空閒的同一時刻開始等待。退避值均勻分布。
-  <ol type="a"><li>計算兩個 AC 的 AIFS，以及各自傳送時間與退避值 b 的關係。（3%）</li>
-  <li>計算 BE 先傳、兩者同時傳、VO 先傳的機率。（5%）</li>
-  <li>這說明了 EDCA 優先權的什麼特性？（2%）</li></ol>`,
-  zd: `<p><b>(a)</b> AIFS[VO] = 2 × 9 + 16 = <b>34 µs</b>；AIFS[BE] = 3 × 9 + 16 = <b>43 µs</b>。t<sub>VO</sub> = 34 + 9b<sub>V</sub>，t<sub>BE</sub> = 43 + 9b<sub>B</sub>。</p>
-  <p><b>(b)</b> 共 4 × 16 = 64 組等機率的組合。t<sub>BE</sub> &lt; t<sub>VO</sub> ⇔ b<sub>B</sub> ≤ b<sub>V</sub> − 2：(b<sub>V</sub>=2, b<sub>B</sub>=0) 與 (b<sub>V</sub>=3, b<sub>B</sub>=0,1) → 3 組 → <b>3/64 ≈ 4.7%</b>。相等 ⇔ b<sub>B</sub> = b<sub>V</sub> − 1：b<sub>V</sub> = 1、2、3 → 3 組 → <b>3/64</b>（碰撞）。VO 先送：58/64 ≈ <b>90.6%</b>。</p>
-  <p><b>(c)</b> 優先權是<b>統計上的</b>：VO 通常會贏，但兩者的等待範圍重疊，所以 BE 仍可能贏，或和 VO 碰撞。EDCA 能區分服務，但不保證延遲；要保證就需要 HCCA 搭配 TSPEC 與 admission control。</p>`,
-  ae: `<p><b>(a)</b> AIFS[VO] = 2 × 9 + 16 = <b>34 µs</b>; AIFS[BE] = 3 × 9 + 16 = <b>43 µs</b>. t<sub>VO</sub> = 34 + 9b<sub>V</sub>, t<sub>BE</sub> = 43 + 9b<sub>B</sub>.</p>
-  <p><b>(b)</b> 4 × 16 = 64 equally likely pairs. t<sub>BE</sub> &lt; t<sub>VO</sub> ⇔ b<sub>B</sub> ≤ b<sub>V</sub> − 2: (b<sub>V</sub>=2, b<sub>B</sub>=0) and (b<sub>V</sub>=3, b<sub>B</sub>=0,1) → 3 pairs → <b>3/64 ≈ 4.7%</b>. Equal ⇔ b<sub>B</sub> = b<sub>V</sub> − 1: b<sub>V</sub> = 1, 2, 3 → 3 pairs → <b>3/64</b> (collision). VO first: 58/64 ≈ <b>90.6%</b>.</p>
-  <p><b>(c)</b> The priority is <b>statistical</b>: VO usually wins, but the waiting ranges overlap, so BE can still win or collide with VO. EDCA differentiates service but does not guarantee delay; guarantees need HCCA with TSPEC and admission control.</p>`,
-  az: `<p>參數直接用講義的 WME 預設圖（VO 2＋0–3、BE 3＋0–15）。簡化假設：兩者都從同一時刻、對齊 slot 開始倒數 <span class="sup">補充</span>。這題把「統計式優先權」變成具體數字。</p>`,
-  src: `2-4 p.22（OFDM 時間參數）；11EnhancedQoS「IFS in EDCF: Contention between ACs」「Arbitration Interframe Space (AIFS)」`
-},
-{
-  id: 'C19', pts: '15%', chips: [['calc','計算']],
-  en: `A QSTA requests an HCCA traffic stream: mean data rate 4 Mbps, service interval 50 ms, MSDU 1500 bytes. Use the per-frame times of C13 at 54 Mbps (data PPDU 246.37 µs, SIFS 16 µs, ACK 24 µs), with SIFS between consecutive exchanges.
-  <ol type="a"><li>How many MSDUs must be sent per service interval? (3%)</li>
-  <li>How long must the polled TXOP be? Express it in the 32 µs units used for TXOP durations and check the 8160 µs maximum. (6%)</li>
-  <li>Ignoring all other traffic and overheads, how many such streams can the HC admit? Why is admission control needed? (6%)</li></ol>`,
-  zh: `一台 QSTA 申請一個 HCCA 流量串流：平均速率 4 Mbps、服務間隔 50 ms、MSDU 1500 bytes。使用 C13 在 54 Mbps 下的每個訊框時間（資料 PPDU 246.37 µs、SIFS 16 µs、ACK 24 µs），相鄰交換之間隔 SIFS。
-  <ol type="a"><li>每個服務間隔要送幾個 MSDU？（3%）</li>
-  <li>輪詢 TXOP 要多長？用 TXOP 時間的 32 µs 單位表示，並檢查是否超過 8160 µs 上限。（6%）</li>
-  <li>忽略其他流量與額外負擔，HC 最多能允入幾個這樣的串流？為什麼需要允入控制？（6%）</li></ol>`,
-  zd: `<p><b>(a)</b> 4 × 10<sup>6</sup> × 0.05 = 200,000 bits = 25,000 bytes → 25,000 / 1500 = 16.7 → <b>17 個 MSDU</b>。</p>
-  <p><b>(b)</b> 一次交換 = 246.37 + 16 + 24 = 286.37 µs；17 次交換 + 16 個 SIFS = 17 × 286.37 + 16 × 16 = 4868.3 + 256 = <b>5124.3 µs</b> → 5124.3 / 32 = 160.1 → <b>161 個單位 = 5152 µs</b> ≤ 8160 µs，所以每個服務間隔一個 TXOP 就夠了。</p>
-  <p><b>(c)</b> 每個串流每 50 ms 用掉約 5.15 ms（約 10.3%）→ 最多 ⌊50 / 5.152⌋ = <b>9 個串流</b>。第 10 個串流會超過通道時間；這時 HC 就無法維持任何一個串流的服務間隔。Admission control 讓 HC 可以拒絕或重新協商這種請求，讓已接受的串流保有它們的保證。</p>`,
-  ae: `<p><b>(a)</b> 4 × 10<sup>6</sup> × 0.05 = 200,000 bits = 25,000 bytes → 25,000 / 1500 = 16.7 → <b>17 MSDUs</b>.</p>
-  <p><b>(b)</b> One exchange = 246.37 + 16 + 24 = 286.37 µs; 17 exchanges + 16 SIFS = 17 × 286.37 + 16 × 16 = 4868.3 + 256 = <b>5124.3 µs</b> → 5124.3 / 32 = 160.1 → <b>161 units = 5152 µs</b> ≤ 8160 µs, so one TXOP per service interval is enough.</p>
-  <p><b>(c)</b> Each stream uses ≈ 5.15 ms of every 50 ms (≈ 10.3%) → at most ⌊50 / 5.152⌋ = <b>9 streams</b>. A 10th stream would exceed the channel time; then the HC could not keep the service interval of any stream. Admission control lets the HC reject or renegotiate such a request so that admitted streams keep their guarantees.</p>`,
-  az: `<p>TXOP 用 32 µs 為單位、範圍 32–8160 µs 是講義「要求的 TXOP 持續時間」的規定。(c) 的上限只看這個串流的時間，實際還要扣掉 beacon、EDCA 流量等，所以只是上界。</p>`,
-  src: `11EnhancedQoS「TXOP」（要求的 TXOP 持續時間）、「Traffic Specification」「TSPEC Element Format」「HCF Controlled Channel Access (HCCA)」`
-},
-{
-  id: 'C20', pts: '10%', chips: [['calc','計算'],['x','ch2-1 × ch2-4']],
-  en: `In 802.11b (long PLCP 192 µs, SIFS 10 µs), a 1528-byte MPDU is sent at 11 Mbps; RTS (20 bytes) and CTS (14 bytes) are sent at 2 Mbps. A hidden station cannot hear the sender.
-  <ol type="a"><li>Without RTS/CTS, for how long is the data frame vulnerable to the hidden station? With RTS/CTS, which frame is vulnerable and for how long? (6%)</li>
-  <li>How much time does RTS/CTS add to every exchange? When is it worth it? (4%)</li></ol>`,
-  zh: `在 802.11b（long PLCP 192 µs、SIFS 10 µs）中，一個 1528 bytes 的 MPDU 以 11 Mbps 傳送；RTS（20 bytes）與 CTS（14 bytes）以 2 Mbps 傳送。某個隱藏站台聽不到傳送端。
-  <ol type="a"><li>不用 RTS/CTS 時，資料訊框暴露在隱藏站台干擾下的時間多長？用 RTS/CTS 時，哪個訊框會被干擾、時間多長？（6%）</li>
-  <li>RTS/CTS 讓每次交換多花多少時間？什麼時候值得？（4%）</li></ol>`,
-  zd: `<p><b>(a)</b> 隱藏站偵測不到傳送端，所以它可能在資料訊框的任何時刻開始傳送：易受干擾時間 = 資料 PPDU = 192 + 12224 / 11 = <b>1303.27 µs</b>。用 RTS/CTS 時，CTS 之後隱藏站的 NAV 已經設定；只有 RTS 可能被撞：192 + 160 / 2 = <b>272 µs</b>，大約短了 4.8 倍，而且碰撞現在只浪費一個短的 RTS。</p>
-  <p><b>(b)</b> CTS = 192 + 112 / 2 = 248 µs。每次交換多出 = RTS + SIFS + CTS + SIFS = 272 + 10 + 248 + 10 = <b>540 µs</b>。在有隱藏站而且訊框很長時划算（省下的碰撞時間超過 540 µs）；短訊框則不划算，這就是 RTS_Threshold 存在的原因。</p>`,
-  ae: `<p><b>(a)</b> The hidden station cannot sense the sender, so it may start at any moment of the data frame: vulnerable time = data PPDU = 192 + 12224 / 11 = <b>1303.27 µs</b>. With RTS/CTS, after the CTS the hidden station's NAV is set; only the RTS can be hit: 192 + 160 / 2 = <b>272 µs</b>, about 4.8 times shorter, and a collision now wastes only a short RTS.</p>
-  <p><b>(b)</b> CTS = 192 + 112 / 2 = 248 µs. Added = RTS + SIFS + CTS + SIFS = 272 + 10 + 248 + 10 = <b>540 µs</b> per exchange. It is worth it when hidden stations are present and frames are long (the saved collision time exceeds 540 µs); for short frames it is not, which is why RTS_Threshold exists.</p>`,
-  az: `<p>把「RTS/CTS 讓碰撞只發生在短的 RTS 上」變成數字：易受干擾時間從 1303 µs 降到 272 µs，代價是每次多 540 µs。這就是 B11 決定門檻的依據。</p>`,
-  src: `2-1 p.66–68（PLCP）；2-3 p.19（RTS、CTS 格式）；2-4 p.24–26`
-},
+}
 ]};
 
 function chip([k, t]) { return `<span class="chip ${k}">${t}</span>`; }

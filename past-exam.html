@@ -80,7 +80,7 @@ const P = [
   ae: `<p><b>Differences:</b> 802.3 detects collisions while transmitting, sends a 32-bit jam and then uses truncated BEB (r ∈ [0, 2<sup>k</sup> − 1], k = min(n, 10), slot 51.2 µs) only after a collision; there is no MAC-level ACK. 802.11 cannot detect collisions, so it avoids them: after the medium has been busy a station defers for DIFS plus a random backoff (Random[0, CW] × slot), the backoff is frozen while the medium is busy, and CW doubles only after a failure. Every directed frame is positively acknowledged after SIFS. Carrier sense is both physical (CCA) and virtual (NAV, set by the Duration of RTS/CTS), and IFSs of different lengths give priorities. These differences come from the medium: wired is closed and reliable; wireless is open, unreliable, has hidden nodes, mobility and battery constraints.</p>
   <p><b>Swapped:</b> 802.11 with CD would not work: a radio cannot listen while transmitting because its own signal overwhelms the received one, and collisions happen at the receiver, which a hidden sender cannot hear. Collisions would go undetected and, without ACKs, frames would be lost silently. 802.3 with CA would still work but less efficiently: every frame pays DIFS and backoff even on an idle cable, a collision is only discovered after the whole frame (and the missing ACK), and every frame needs an ACK. Throughput falls and delay rises, with no benefit because a cable has no hidden-node problem.</p>`,
   src: `1CSMA_CD p.6–7、p.10；2-1 p.7–9「What is unique about wireless?」；2-4 p.11–13、p.16、p.20–21、p.24–25`,
-  rel: ['A1', 'A10', 'C1', 'C2', 'C12']
+  rel: ['A1', 'A10', 'C1']
 },
 {
   id: 'Q2', pts: '10%',
@@ -94,7 +94,7 @@ const P = [
   <p>802.11e 另外加入 <b>APSD</b>（U-APSD 用觸發訊框、S-APSD 用排程），說明它改善了傳統省電延遲太長的問題。</p>`,
   ae: `<p>802.11 power management lets idle stations sleep while the AP buffers their frames. In an infrastructure BSS, a STA sets the <b>Power Management</b> bit to 1 to tell the AP it is in power-save mode; the AP buffers all frames for it. All stations are synchronized by the TSF, so the STA wakes up just before the beacon and checks the <b>TIM</b> (traffic indication map), which lists by AID the stations with buffered frames. If its bit is set, the STA sends a <b>PS-Poll</b> carrying its AID and stays awake to receive the frame; <b>More Data</b> = 1 means more frames are buffered. Otherwise it goes back to sleep. Broadcast and multicast frames are buffered and sent after a <b>DTIM</b> beacon (the DTIM interval is a multiple of the TIM interval). In an IBSS, stations wake up before each TBTT and use the <b>ATIM window</b>: a sender announces buffered traffic with an ATIM, the receiver ACKs and stays awake, and the data is sent with DCF after the window. 802.11e adds APSD (U-APSD with trigger frames, S-APSD with a negotiated schedule).</p>`,
   src: `2-3 p.14–15（Power Management、More Data）；2-5 p.15、p.18–24「Power Management」；11EnhancedQoS「Automatic Power Save Delivery (APSD)」`,
-  rel: ['A6', 'B9', 'C16', 'C17']
+  rel: ['A6', 'B9']
 },
 {
   id: 'Q3', pts: '20%',
@@ -112,7 +112,7 @@ const P = [
   <li><b>Integration service:</b> a distribution system service. When the distribution service finds that the intended recipient is on an integrated LAN, the output point is a <b>Portal</b> instead of an AP; the integration service delivers the MSDU from the DS medium to that LAN, including any required media or address translation.</li>
   <li><b>Duration/ID:</b> normally a value in microseconds that receiving stations use to update their <b>NAV</b> (virtual carrier sense, e.g., RTS/CTS and fragment bursts); frames sent during the CFP carry the fixed value 32768; in a <b>PS-Poll</b> frame it carries the station's <b>AID</b> (association ID) so the AP knows who is retrieving buffered frames.</li></ol>`,
   src: `2-1 p.74–75（QAM）、p.44（OFDM 速率與調變）；2-2 p.23「Integration」；2-3 p.15–16（More Data、Duration/ID）`,
-  rel: ['B2', 'B4', 'B9', 'C9']
+  rel: ['B2', 'B4', 'B9']
 },
 {
   id: 'Q4', pts: '10%',
@@ -148,7 +148,7 @@ const P = [
   <li><b>802.11e</b>：<b>AIFS[AC] = AIFSN[AC]×slot＋SIFS</b>，再搭配每個 AC 不同的 CW，讓語音、視訊、盡力而為、背景流量有不同的等待時間；AIFS 一定大於 SIFS，以保護 ACK。</li></ul>`,
   ae: `<p>802.11 gives priority through the length of the <b>inter-frame space (IFS)</b>: a station must sense the medium idle for its IFS before transmitting, so a shorter IFS wins. <b>SIFS</b> (shortest) is used for ACK, CTS, responses to polls and between fragments, so a frame exchange cannot be interrupted. <b>PIFS</b> (SIFS + one slot) is used by the point coordinator, so it can seize the medium before DCF stations and start the CFP. <b>DIFS</b> (SIFS + two slots) is used by DCF for ordinary data. <b>EIFS</b> is used after receiving an erroneous frame, long enough for another station to send its ACK. Among stations with the same IFS, a random backoff (Random[0, CW] × slot time) after DIFS resolves contention. 802.11e EDCA extends this with <b>AIFS[AC] = AIFSN[AC] × aSlotTime + aSIFSTime</b> and a different CW per access category (voice, video, best effort, background), so higher-priority traffic waits less; AIFS is always larger than SIFS to protect ACKs.</p>`,
   src: `2-4 p.13「Inter-Frame Space (IFS)」、p.15「EIFS」、p.16、p.20；11EnhancedQoS「Arbitration Interframe Space (AIFS)」「IFS in EDCF」`,
-  rel: ['A4', 'C5', 'C18', 'B16']
+  rel: ['A4', 'C2', 'B16']
 },
 {
   id: 'Q6', pts: '10%',
@@ -205,7 +205,7 @@ const P = [
   <p><b>Exposed node:</b> in a chain A – B – C – D, B sends to A and C wants to send to D. C hears B and defers, although its transmission to D would not disturb A; the medium is wasted. In 802.11 C would also be unable to receive D's ACK while B is transmitting, so the two-way exchange prevents exploiting it.</p>
   <p><b>Solutions without RTS/CTS:</b> (1) infrastructure mode: all stations hear the AP, which easily solves the hidden terminal problem; (2) PCF/HCCA polling: in the CFP the AP polls one station at a time, so there is no contention, and every station sets its NAV for the CFP from the beacon; (3) fragmentation: short fragments reduce the loss from a collision, and the Duration of each fragment and ACK sets the NAV like a virtual RTS/CTS; (4) EIFS after an erroneous frame protects ACKs the station could not decode; (5) adjusting transmit power or carrier-sense threshold so stations hear each other.</p>`,
   src: `2-1 p.7、p.34；2-4 p.15、p.24–25「Hidden Node Problem」、p.29–33；2-5 p.10–12`,
-  rel: ['B3', 'A13', 'C20']
+  rel: ['B3', 'A13']
 },
 {
   id: 'Q9', pts: '10%',
@@ -220,7 +220,7 @@ const P = [
   ae: `<p><b>Positive ACK:</b> after successfully receiving a directed frame with a correct CRC, the receiver immediately returns an ACK frame after SIFS. The sender treats the transmission as successful only when the ACK arrives; the absence of an ACK indicates an error, so it backs off (doubling CW) and retransmits until the retry limit. Data, poll, request and response frames are acknowledged; broadcast/multicast frames are not. Duplicates caused by lost ACKs are removed with the Retry bit and the sequence number.</p>
   <p><b>Ethernet:</b> a station detects collisions while transmitting, and a frame lasts at least one collision window, so if the whole frame is sent without a detected collision it has almost certainly been delivered. The cable is closed and reliable, with no hidden nodes, and reliability is left to upper layers (802.2 LLC sequence numbers and ACKs, TCP). A MAC-level ACK would only add overhead. Wireless needs it because collisions cannot be detected, errors are frequent and hidden nodes exist.</p>`,
   src: `0Intro_LAN p.26（802.2 LLC）；1CSMA_CD p.6–10；2-3 p.14（Retry）；2-4 p.11「MAC-Level Acknowledgments」（Why does not Ethernet use ACK frame?）、p.21`,
-  rel: ['A7', 'A10', 'C11']
+  rel: ['A7', 'A10']
 }
 ];
 const SRC = s => `<div class="src">📖 出處：${s}</div>`;
