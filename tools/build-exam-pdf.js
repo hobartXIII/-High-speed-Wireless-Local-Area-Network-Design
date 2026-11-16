@@ -11,9 +11,16 @@ function readData(file, name, endMark) {
   const s = fs.readFileSync(path.join(ROOT, file), 'utf8');
   const i = s.indexOf(`const ${name} = `), j = s.indexOf(endMark, i) + endMark.length;
   const SRC = (x) => x; // 資料裡不會呼叫，保險起見
-  return new Function('SRC', `return ${s.slice(i + `const ${name} = `.length, j - 1)};`)(SRC);
+  const SUP = '<span class="sup">補充</span>'; // 講義反問題 L 的資料會用到
+  return new Function('SRC', 'SUP', `return ${s.slice(i + `const ${name} = `.length, j - 1)};`)(SRC, SUP);
 }
 const P = readData('past-exam.html', 'P', '\n];');
+const L = readData('past-exam.html', 'L', '\n];');
+const tipL = (() => {
+  const s = fs.readFileSync(path.join(ROOT, 'past-exam.html'), 'utf8');
+  const m = s.match(/<h2 id="lecture-q">[^<]*<\/h2>\s*(<div class="callout note">[\s\S]*?<\/div>)/);
+  return m ? m[1].replace('這一節只有中文詳答，沒有英文答案。', '') : '';
+})();
 const Q = readData('midterm-practice.html', 'Q', ']};');
 const tipC = (() => {
   const s = fs.readFileSync(path.join(ROOT, 'midterm-practice.html'), 'utf8');
@@ -53,7 +60,7 @@ sup, sub { line-height: 0; }
 const chip = ([, t]) => `<span class="chip">${t}</span>`;
 const card = (q) => `
 <section class="mq">
-  <div class="mq-head"><span class="mq-id">${q.id}</span><span class="mq-pts">(${q.pts})</span>${(q.chips || []).map(chip).join('')}</div>
+  <div class="mq-head"><span class="mq-id">${q.id}</span>${q.pts ? `<span class="mq-pts">(${q.pts})</span>` : ''}${(q.chips || []).map(chip).join('')}${q.ch ? `<span class="chip">${q.ch}</span><span class="chip">${q.kind}</span>` : ''}</div>
   <div class="q-en" lang="en">${q.en}</div>
   <div class="q-zh">${q.zh}</div>
   <div class="lbl">作答重點</div><div class="ans key">${q.az}</div>
@@ -66,8 +73,8 @@ const page = (title, meta, body) => `<!doctype html><html lang="zh-Hant"><head><
 const today = new Date().toISOString().slice(0, 10);
 const NOTE = '參考答案不是老師提供的，是依講義整理的；講義上沒有的內容標 <span class="sup">補充</span>。';
 const docs = {
-  'past-exam': page('期中考古題（114-1）', `高速無線區域網路設計｜9 題｜英文題目、中文翻譯、作答重點、中文詳答、講義出處｜${NOTE}｜產生日期 ${today}`,
-    P.map(card).join('')),
+  'past-exam': page('期中考古題（114-1）', `高速無線區域網路設計｜考古題 ${P.length} 題＋講義反問題 ${L.length} 題｜英文題目、中文翻譯、作答重點、中文詳答、講義出處｜${NOTE}｜產生日期 ${today}`,
+    `<h2>考古題</h2>${P.map(card).join('')}<h2>講義反問題</h2>${tipL}${L.map(card).join('')}`),
   'midterm-practice': page('期中練習題', `高速無線區域網路設計｜${Q.qa.length + Q.qb.length + Q.qc.length} 題（自編練習題，非老師題目）｜英文題目、中文翻譯、作答重點、中文詳答、講義出處｜${NOTE}｜產生日期 ${today}`,
     `<h2>A. 跨章觀念與比較</h2>${Q.qa.map(card).join('')}<h2>B. 機制與設計</h2>${Q.qb.map(card).join('')}<h2>C. 計算題</h2>${tipC}${Q.qc.map(card).join('')}`),
 };
