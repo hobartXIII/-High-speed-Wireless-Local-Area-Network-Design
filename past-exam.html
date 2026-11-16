@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>期中考古題</title>
-<meta name="description" content="114-1 高速無線區域網路設計期中考古題 9 題：英文原題、中文翻譯、作答重點、中文詳答與英文參考答案，附講義出處與相關練習題。">
+<meta name="description" content="114-1 高速無線區域網路設計期中考古題 9 題：英文原題、中文翻譯、作答重點、中文詳答與英文參考答案，附講義出處與相關練習題；另收講義上老師反問的 15 題與中文詳答。">
 <link rel="stylesheet" href="assets/css/style.css">
 <link rel="stylesheet" href="assets/css/highlighter.css">
 <script src="assets/js/highlighter.js"></script>
@@ -38,7 +38,7 @@
   <div class="page-head">
     <div class="eyebrow">PAST EXAM</div>
     <h1>📄 期中考古題（114-1）</h1>
-    <div class="meta"><span>9 題</span><span>來源：11EnhancedQoS 講義 p.81 附的考古題（114-1 Midterm_考古.pdf）</span></div>
+    <div class="meta"><span>考古題 9 題＋講義反問題 15 題</span><span>來源：11EnhancedQoS 講義 p.81 附的考古題（114-1 Midterm_考古.pdf）</span></div>
   </div>
 
   <div class="callout note">英文題目照考卷原文（原文的拼字錯誤保留，旁邊註明），下面附中文翻譯。參考答案<b>不是老師提供的</b>，是依講義整理的；講義上沒有的內容標 <span class="sup">補充</span>。每題最後列出 <a href="midterm-practice.html">練習題</a> 中延伸這一題的題目。</div>
@@ -51,6 +51,10 @@
 
   <h2 id="exam">考古題</h2>
   <div id="qp"></div>
+
+  <h2 id="lecture-q">講義反問題</h2>
+  <div class="callout note">老師在投影片上反問、但不一定當場給答案的問題，共 15 題，依講義順序排列。題目照投影片原文。每題的答案來源標在標題旁：<b>講義有答案</b>是投影片本身就寫了答案；<b>部分</b>是講義只有提示；<b>補充</b>是講義沒有答案，要依標準或推理補上，內文中講義上沒有的內容都標 <span class="sup">補充</span>。這一節只有中文詳答，沒有英文答案。</div>
+  <div id="lq"></div>
 </main>
 <aside class="toc"></aside>
 </div>
@@ -236,6 +240,218 @@ document.getElementById('qp').innerHTML = P.map(q => `
       <div class="ans-en" lang="en">${q.ae}</div>
       ${SRC(q.src)}
       ${REL(q.rel)}
+    </details>
+  </section>`).join('');
+const SUP = '<span class="sup">補充</span>';
+const L = [
+{
+  id: 'L1', ch: '0 LAN 概論 p.8', kind: '部分',
+  en: `What is a LAN? PAN? MAN? WAN?`,
+  zh: `什麼是區域網路（LAN）？個人區域網路（PAN）、都會區域網路（MAN）、廣域網路（WAN）又是什麼？`,
+  az: `<p>LAN 的定義照講義背；PAN、MAN、WAN 講義只寫了問號，用「涵蓋範圍」比較，並舉講義 p.3–4 列出的 IEEE 標準當例子。</p>`,
+  zd: `<p><b>LAN（講義定義）：</b>一種資料通訊系統，讓若干<b>獨立的裝置</b>在<b>中等大小的地理區域</b>內，透過<b>中等資料速率</b>的實體通訊通道<b>直接</b>互相通訊。</p>
+  <p>其他三種用涵蓋範圍區分 ${SUP}：</p>
+  <ul><li><b>PAN</b>（Personal Area Network）：一個人身邊的裝置，例如手機連耳機。講義 p.3–4 的 IEEE 802.15 就是無線 PAN（WPAN），例如藍牙（802.15.1）、Zigbee（802.15.4）。</li>
+  <li><b>MAN</b>（Metropolitan Area Network）：涵蓋一個城市。講義 p.3–4 的 IEEE 802.16 是無線 MAN（WMAN，WiMAX）。</li>
+  <li><b>WAN</b>（Wide Area Network）：跨城市、跨國家，通常租用電信業者的線路，網際網路就是最大的 WAN。</li></ul>
+  <p>範圍由小到大：PAN ＜ LAN ＜ MAN ＜ WAN。</p>`,
+  src: `0Intro_LAN p.3–4（IEEE 802.15、802.16）、p.8「What is a LAN?」`
+},
+{
+  id: 'L2', ch: '2-1 p.7、p.9', kind: '講義有答案',
+  en: `What is unique about wireless?`,
+  zh: `無線有什麼獨特之處？`,
+  az: `<p>講義分五點：困難的媒介、無法假設全連通（隱藏節點）、各國法規、移動性、安全性。這題是後面所有 802.11 機制的「為什麼」。</p>`,
+  zd: `<ol><li><b>困難的媒介</b>：有干擾和雜訊；品質隨空間與時間變化；要和不相干的 802.11 裝置共用；還要和非 802 裝置共用免執照頻譜，例如微波爐、藍牙、Zigbee。</li>
+  <li><b>無法假設全連通</b>：不是每台都聽得到每台，會有<b>隱藏節點問題</b>（兩台彼此聽不到，同時送給中間那台而碰撞）。</li>
+  <li><b>各國法規要求不同</b>：可用頻段與功率限制因國家而異。</li>
+  <li><b>移動性</b>：連線可靠度會變化；靠電池，所以需要電源管理；使用者希望移動時不斷線。</li>
+  <li><b>安全性</b>：沒有實體邊界，訊號會傳出建築物；不同的區域網路可能重疊在同一個空間。</li></ol>
+  <p>對應的機制：ACK 與重傳、RTS/CTS、省電、漫遊、WEP／802.11i。</p>`,
+  src: `2-1 p.7「What is unique about wireless?」、p.9「Uniqueness of Wireless (continued)」`
+},
+{
+  id: 'L3', ch: '2-1 p.9', kind: '補充',
+  en: `Security: no physical boundaries, overlapping LANs — power control ???`,
+  zh: `安全性：沒有實體邊界、區域網路互相重疊——功率控制？？？`,
+  az: `<p>講義在「安全性」旁邊寫了 power control 加三個問號，意思是「能不能用控制發射功率來改善安全性」。回答能減少外洩，但不能取代加密。</p>`,
+  zd: `<p>${SUP} 有線網路的訊號留在線裡，無線訊號則會傳到建築物外面。降低發射功率，讓訊號剛好涵蓋需要的範圍，外面的人比較難收到，也比較不會干擾隔壁重疊的網路。</p>
+  <p>${SUP} 但這只能<b>降低</b>風險：</p>
+  <ul><li>攻擊者可以用高增益的指向性天線，在更遠的地方收到微弱訊號。</li>
+  <li>功率降低後，邊緣的合法使用者訊號變差，速率也會下降。</li></ul>
+  <p>所以真正的保護還是要靠認證和加密（WEP，後來的 802.1X、802.11i）。</p>
+  <p>講義 p.49 也提到歐洲 5 GHz 要求 <b>TPC</b>（Transmit Power Control，傳輸功率控制），不過那是為了減少干擾，不是為了安全。</p>`,
+  src: `2-1 p.9「Uniqueness of Wireless」、p.39（802.1x、802.11i）、p.49「UNII 5GHz」（TPC）`
+},
+{
+  id: 'L4', ch: '2-1 p.11', kind: '講義有答案',
+  en: `Need to be robust for interference?`,
+  zh: `需要能抵抗干擾嗎？`,
+  az: `<p>答「需要」，理由是講義列的三種干擾來源；再寫 802.11 用哪些機制抵抗。</p>`,
+  zd: `<p><b>需要。</b>講義列出的原因：</p>
+  <ul><li>802.11 用 <b>ISM 頻段</b>（工業、科學與醫療用的免執照頻段，例如 2.45 GHz），任何人都能用。</li>
+  <li>有<b>微波爐和其他非 802.11 的干擾源</b>。</li>
+  <li>有<b>同頻道干擾</b>：附近其他 802.11 網路用同一個頻道。</li></ul>
+  <p><b>抵抗干擾的機制</b>（都在講義其他頁）：</p>
+  <ul><li><b>展頻</b>：DSSS 用 11-chip Barker 碼把每個位元展開，編碼增益 10.4 dB，被干擾翻掉幾個 chip 還是能解回來（p.59、p.61）。</li>
+  <li><b>正向 ACK 與重傳</b>：收不到 ACK 就重送。</li>
+  <li><b>分段</b>：把長訊框切小，出錯時只重送一小段。</li>
+  <li><b>選頻道</b>：相鄰的 BSS 用不同頻道，頻率至少相隔 30 MHz（802.11b 是 25 MHz），避免同頻道干擾（p.64）。在 2.4 GHz 就是常用的頻道 1、6、11 ${SUP}。</li></ul>`,
+  src: `2-1 p.11「Requirements」、p.59–61「DSSS」、p.64；2-4 p.11「MAC-Level Acknowledgments」、p.29–30「Fragment」`
+},
+{
+  id: 'L5', ch: '2-1 p.11', kind: '部分',
+  en: `Need mechanisms to deal with Hidden Nodes?`,
+  zh: `需要處理隱藏節點的機制嗎？`,
+  az: `<p>答「需要」，理由是無線無法假設全連通；再列講義出現過的三種機制。</p>`,
+  zd: `<p><b>需要。</b>講義 p.7 說無線「無法假設全連通」：A、C 都在 B 的範圍內，但彼此聽不到。A 傳給 B 時，C 偵測到通道空閒也開始傳，兩個訊號在 B 碰撞。傳送端聽不到對方，所以光靠載波偵測擋不住。</p>
+  <p><b>講義中的機制：</b></p>
+  <ol><li><b>RTS/CTS＋NAV</b>（虛擬載波偵測）：傳送前先交換 RTS、CTS，裡面的 Duration 欄位寫著要用多久。聽到 CTS 的站，即使聽不到傳送端，也會把 NAV 設成忙。講義 p.38 稱為 hidden node protection。</li>
+  <li><b>Infrastructure 模式</b>：所有站都和 AP 通訊，講義 p.34 說這樣能「輕易解決隱藏終端問題」。</li>
+  <li><b>PCF 輪詢</b>：由 AP 一次點名一台，沒有競爭。</li></ol>
+  <p>考古題 Q8 問的是不用 RTS/CTS 的解法，可以接著看。</p>`,
+  src: `2-1 p.7、p.34「Access Points」、p.38「MAC Functionality」；2-4 p.24–25「Hidden Node Problem」`
+},
+{
+  id: 'L6', ch: '2-1 p.24', kind: '補充',
+  en: `Wireless Bridging (Building A ↔ Building B, vs. private lease line): Security? Data Rate. Range? Legal? Cost?`,
+  zh: `無線橋接（A 大樓 ↔ B 大樓，對比私人租用專線）：安全性？資料速率。範圍？合法性？成本？`,
+  az: `<p>投影片比較兩棟大樓之間用無線橋接，還是租專線（802.1g 遠端橋接）。四個問號各寫一兩句利弊。注意 Data Rate 後面沒有問號，不要硬解讀。</p>`,
+  zd: `<p>以下都是 ${SUP}：</p>
+  <ul><li><b>安全性</b>：訊號在兩棟大樓之間的空中傳送，路過的人都可能收到，一定要加密（WEP 不夠安全，要用 802.11i）。專線則是實體線路，不容易被竊聽。</li>
+  <li><b>範圍</b>：一般 AP 的天線涵蓋不遠，大樓之間要用<b>指向性天線</b>（講義 p.26 有圖）對準對方，而且中間最好沒有遮蔽。距離太遠或有遮蔽就連不起來，專線則不受距離影響。</li>
+  <li><b>合法性</b>：ISM 頻段雖然免執照，但各國對發射功率有限制（講義 p.7 提到各國法規要求不同），加大功率或用高增益天線可能違法。</li>
+  <li><b>成本</b>：無線橋接只需要一次買設備，沒有月租費；專線要持續付租金，但比較穩定。</li></ul>`,
+  src: `2-1 p.7（Multiple international regulatory requirements）、p.24「Wireless Bridging」、p.26（Directional Antenna）`
+},
+{
+  id: 'L7', ch: '2-1 p.36', kind: '講義有答案',
+  en: `Time Bounded Services: optional point coordination function (PCF) — Existing in commercial products?`,
+  zh: `時間受限的服務：選用的點協調功能（PCF）——商業產品中存在嗎？`,
+  az: `<p>答「幾乎沒有」，理由是講義列的兩點，最後補上後來由 WMM／802.11e 取代。</p>`,
+  zd: `<p><b>幾乎沒有。</b>講義列出兩個原因：</p>
+  <ol><li><b>頻寬不足以支援即時服務</b>：早期 802.11 速率低，就算用 PCF 輪詢也撐不起即時影音。</li>
+  <li><b>沒有必要，CSMA/CA 就運作得很好</b>：和乙太網路的歷史一樣，簡單的競爭式存取已經夠用，比複雜的排程更受市場歡迎。</li></ol>
+  <p>後來改由 <b>WMM／IEEE 802.11e</b> 強化 QoS。PCF 本身的缺點（每次輪詢只能送一個訊框、PC 不知道流量需求）見考古題 Q6。</p>`,
+  src: `2-1 p.36「MAC Services」；11EnhancedQoS 第 7 張「Is IEEE 802.11 enough for QoS?」`
+},
+{
+  id: 'L8', ch: '2-1 p.40', kind: '部分',
+  en: `Question: how to decide the proper data rate?`,
+  zh: `問題：如何決定適當的資料速率？`,
+  az: `<p>先答講義的重點：<b>標準不規定</b>，由廠商自己做；再舉常見做法。</p>`,
+  zd: `<p>講義：802.11 支援多種速率，但「執行速率切換的演算法<b>不在標準的範圍內</b>」（802.11b 規格 p.6）。也就是說，標準只定義有哪些速率可用，怎麼選由各家廠商決定。</p>
+  <p>常見做法 ${SUP}：</p>
+  <ul><li><b>看 ACK 成敗</b>：連續失敗幾次就降速；連續成功一段時間就試著升速。</li>
+  <li><b>看訊號品質</b>：訊號強、雜訊低就用高速調變（例如 64-QAM），訊號弱就用低速但比較耐干擾的調變（例如 BPSK）。</li></ul>
+  <p>標準保證的部分：DSSS 的 Long PLCP 前導與標頭固定用 1 Mbps 送，所以不管資料用哪個速率，大家都看得懂標頭，也就知道這個訊框要佔多久。</p>`,
+  src: `2-1 p.40「PHY Layer Services」、PLCP 訊框格式圖`
+},
+{
+  id: 'L9', ch: '2-2 p.4', kind: '部分',
+  en: `Bandwidth fairness is guaranteed or not (to observe long time). By employing the CSMA/CA protocol, the bandwidth employed by each station may be different. Needs load sharing scheme in the near future?`,
+  zh: `頻寬公平性有沒有保證（需要長時間觀察）。使用 CSMA/CA 時，每個站台用到的頻寬可能不同。不久的將來需要負載分擔機制嗎？`,
+  az: `<p>講義的答案是：<b>公平性不保證</b>，每台用到的頻寬可能不同。再說明為什麼不同，以及負載分擔的方向。</p>`,
+  zd: `<p><b>講義：</b>CSMA/CA 的頻寬公平性不保證，要長時間觀察才看得出來；每個站台實際用到的頻寬可能不同。</p>
+  <p><b>為什麼會不同</b> ${SUP}：</p>
+  <ul><li>DCF 讓每台搶到通道的<b>機會</b>差不多，但每次送多久不一樣：速率低的站送一個訊框要佔比較久，連帶拖慢大家。</li>
+  <li>失敗過的站 CW 加倍，之後比較難搶到。</li>
+  <li>隱藏節點、訊號品質不同，也讓各站的成功率不同。</li></ul>
+  <p><b>負載分擔</b> ${SUP}：需要。做法是把流量分散到多個 AP 或頻道，例如讓 STA 連到比較空閒的 AP；802.11e 也用 TXOP limit 限制每次能佔用通道的時間。</p>`,
+  src: `2-2 p.4「802.11 Wireless LAN Characteristics」；11EnhancedQoS 第 46–48 張「TXOP」`
+},
+{
+  id: 'L10', ch: '2-2 p.14', kind: '補充',
+  en: `Question: Is it possible for a single BSS to utilizes multiple channels?`,
+  zh: `問題：單一 BSS 有可能使用多個頻道嗎？`,
+  az: `<p>傳統的答案是<b>不行</b>，一個 BSS 用一個頻道；要用多個頻道就是多個 BSS 放在同一個地方。可以補充新標準的做法。</p>`,
+  zd: `<p>這題在講義列「重疊 BSS 的最大數量」（DSSS 2.4 GHz 3 個、FHSS 2.4 GHz 26 個、OFDM 5 GHz 12 個）之後。</p>
+  <p>${SUP} <b>傳統上不行</b>：AP 在一個頻道上發 Beacon（AP 定期廣播的訊框，帶網路參數），所有成員都在這個頻道上收發。FHSS 雖然會換頻率，但整個 BSS 是一起照同一個順序跳，任何時間點還是只用一個頻道。</p>
+  <p>${SUP} 所以要用多個頻道，就是在同一個地點放<b>多個 BSS</b>，各用一個不重疊的頻道，這也就是講義列出最多能重疊幾個 BSS 的意思。</p>
+  <p>${SUP} 新標準的做法：</p>
+  <ul><li><b>頻道聚合</b>：11n 起把相鄰的 20 MHz 頻道綁成更寬的頻道，對 BSS 來說還是「一個比較寬的頻道」。</li>
+  <li><b>多重連結運作（MLO）</b>：11be 讓同一個 AP 在 2.4／5／6 GHz 多條連結上服務同一台裝置，最接近「一個 BSS 用多個頻道」。</li></ul>`,
+  src: `2-2 p.14「802.11 Architecture Components」`
+},
+{
+  id: 'L11', ch: '2-2 p.17', kind: '部分',
+  en: `Bridging to the 802.11 architecture raises the questions of which logical medium to bridge to; the DSM or the WM?`,
+  zh: `橋接到 802.11 架構時就產生一個問題：要橋接到哪個邏輯媒介，DSM 還是 WM？`,
+  az: `<p>答 <b>DSM</b>，並說明是由 Portal 處理；理由用講義下一句：Portal 要處理 BSS 成員動態變化與位址／位置對應。</p>`,
+  zd: `<p><b>名詞：</b>WM（Wireless Medium）是 STA 與 AP 之間的無線媒介；DSM（Distribution System Medium）是 DS 用來連接各 AP 的媒介，通常是有線網路。</p>
+  <p><b>講義的背景：</b>橋接器原本用來延伸同類 MAC 的範圍，但 802.11 的涵蓋範圍已經由 ESS（DS＋AP）提供；橋接器也用來連接不同類型的 MAC，這時才會遇到要接哪一邊的問題。講義接著說，<b>Portal 必須考慮 BSS 成員的動態變化，以及移動性需要的位址與位置對應</b>。</p>
+  <p><b>答案</b> ${SUP}：<b>橋接到 DSM，透過 Portal</b>。</p>
+  <ul><li>如果有線 LAN 直接接到 WM，有線端的設備就得自己追蹤「哪台 STA 現在在哪個 AP 底下」，STA 一移動就要更新。</li>
+  <li>接到 DSM 時，這些都由 DS 與 Portal 處理，有線 LAN 看到的就是一個普通的 802 LAN。</li>
+  <li>實務上 AP 本身就同時扮演 Portal 和橋接器，把 802.11 訊框轉成 802.3 訊框送上乙太網路。</li></ul>`,
+  src: `2-2 p.16「Integration with Wired LANs」、p.17「Portals and Bridges」`
+},
+{
+  id: 'L12', ch: '2-4 p.11', kind: '講義有答案',
+  en: `Why does not Ethernet use ACK frame?`,
+  zh: `為什麼乙太網路不用 ACK 訊框？`,
+  az: `<p>這題就是考古題 <a href="#Q9">Q9</a> 的後半，完整答案看 Q9。</p>`,
+  zd: `<p>重點三句：</p>
+  <ol><li>802.3 能<b>邊送邊偵測碰撞</b>，訊框又至少和碰撞視窗一樣長，送完沒偵測到碰撞就幾乎可以確定成功。</li>
+  <li>有線媒介封閉、錯誤率低，沒有隱藏節點。</li>
+  <li>可靠度交給上層（802.2 LLC、TCP），MAC 層再加 ACK 只會增加負擔。</li></ol>
+  <p>完整答案見 <a href="#Q9">Q9</a>。</p>`,
+  src: `2-4 p.11「MAC-Level Acknowledgments」`
+},
+{
+  id: 'L13', ch: '2-5 p.18', kind: '講義有答案',
+  en: `How can we power off during idle periods while maintaining an active session?`,
+  zh: `我們要如何在閒置期間關閉電源，同時維持一個活動中的連線？`,
+  az: `<p>先說問題（閒置接收最耗電），再答 802.11 電源管理協定的三個特性，最後寫運作步驟。步驟和考古題 Q2 相同。</p>`,
+  zd: `<p><b>問題：</b>行動裝置靠電池，但現有的 LAN 協定假設站台隨時都準備好接收；長期來看，閒置的接收狀態佔網路卡耗電的大部分。</p>
+  <p><b>答案：802.11 電源管理協定</b>，講義列出三個特性：</p>
+  <ul><li>讓收發器盡可能保持關閉。</li>
+  <li>對現有協定透明：上層不需要知道站台在睡覺。</li>
+  <li>有彈性，可以在吞吐量與電池壽命之間取捨。</li></ul>
+  <p><b>怎麼做到：</b>STA 用 Power Management 位元告訴 AP 自己要睡 → AP 替它緩衝訊框 → STA 定期醒來看 Beacon 裡的 TIM → 有自己的資料就送 PS-Poll 去取 → 沒有就繼續睡。廣播與群播等 DTIM 之後送；IBSS 用 ATIM 視窗。細節見考古題 <a href="#Q2">Q2</a>。</p>`,
+  src: `2-5 p.18「Power Management」及其後各頁`
+},
+{
+  id: 'L14', ch: '11EnhancedQoS 第 7 張', kind: '講義有答案',
+  en: `Is IEEE 802.11 enough for QoS?`,
+  zh: `IEEE 802.11 足以提供 QoS 嗎？`,
+  az: `<p>答「不夠」，分 DCF、PCF 兩部分說明，最後帶出 802.11e 的 HCF。</p>`,
+  zd: `<p><b>不夠。</b></p>
+  <ul><li><b>DCF</b> 無法簡單地提供 QoS：所有站台的資料都等同樣的 DIFS、用同樣的退避規則，沒辦法區分語音和一般資料。</li>
+  <li><b>PCF</b> 不夠：
+    <ul><li>每次輪詢只能送 <b>1 個訊框</b>。</li>
+    <li>PC（點協調器）<b>不知道流量的 QoS 需求</b>。</li>
+    <li>無法保證頻寬、延遲與抖動的上限。</li></ul></li></ul>
+  <p>所以 802.11e 提出 <b>HCF</b>（混合協調功能）：<b>EDCA</b> 用不同的 AIFS、CW 區分流量類別；<b>HCCA</b> 依 TSPEC（流量規格）輪詢，並給一段 TXOP 可以連續送多個訊框。</p>`,
+  src: `11EnhancedQoS 第 6–7 張`
+},
+{
+  id: 'L15', ch: '11EnhancedQoS 第 46 張', kind: '講義有答案',
+  en: `When will a QSTA get a TXOP?`,
+  zh: `QSTA 什麼時候會得到 TXOP？`,
+  az: `<p>兩種情況：EDCA 競爭贏了，或收到 QoS CF-Poll。可再補 TXOP 內怎麼送、TXOP limit 從哪裡來。</p>`,
+  zd: `<p><b>名詞：</b>QSTA 是支援 802.11e 的站台；TXOP（Transmission Opportunity，傳輸機會）是站台可以傳送訊框的一段時間。</p>
+  <p><b>兩種情況：</b></p>
+  <ol><li>在 CP（競爭期）中<b>贏得 EDCA 競爭</b> → EDCA TXOP。</li>
+  <li><b>收到 QoS (+)CF-Poll</b> → polled TXOP，長度由 CF-Poll 指定，其他站依 CF-Poll 設定 NAV。</li></ol>
+  <p><b>補充講義後兩張：</b></p>
+  <ul><li>TXOP 內的訊框交換之間用 <b>SIFS</b> 隔開，不用重新競爭（第 47 張）。</li>
+  <li>TXOP limit 的來源：EDCA 由 AP 在 Beacon 的 EDCA Parameter Set 宣告；HCCA 寫在 QoS (+)CF-Poll 標頭的 QoS Control 欄位（第 48 張）。</li></ul>`,
+  src: `11EnhancedQoS 第 46–48 張「Transmission Opportunity (TXOP)」`
+}
+];
+document.getElementById('lq').innerHTML = L.map(q => `
+  <section class="mq" id="${q.id}">
+    <div class="mq-head"><span class="mq-id">${q.id}</span><span class="chip">${q.ch}</span><span class="chip">${q.kind}</span></div>
+    <div class="q-en" lang="en">${q.en}</div>
+    <div class="q-zh">${q.zh}</div>
+    <details>
+      <summary>參考答案</summary>
+      <div class="ans-label">作答重點</div>
+      <div class="ans-zh ans-key">${q.az}</div>
+      <div class="ans-label">中文詳答</div>
+      <div class="ans-zh">${q.zd}</div>
+      ${SRC(q.src)}
     </details>
   </section>`).join('');
 document.getElementById('open-all').addEventListener('click', () => document.querySelectorAll('.mq details').forEach(d => d.open = true));

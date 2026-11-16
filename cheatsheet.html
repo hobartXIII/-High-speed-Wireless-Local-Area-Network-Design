@@ -160,7 +160,7 @@
     <tr><td>一次傳</td><td>1 訊框</td><td>分段 burst（SIFS）</td><td>TXOP</td></tr>
     <tr><td>省電</td><td>—</td><td>TIM／PS-Poll、DTIM、ATIM</td><td>U-APSD、S-APSD</td></tr>
     <tr><td>隱藏節點</td><td>—</td><td>RTS/CTS＋NAV</td><td>輪詢（PCF／HCCA）</td></tr>
-    <tr><td>存取控制</td><td>接上線</td><td>Open／Shared Key、WEP</td><td>802.1X、11i <span class="sup">補充</span></td></tr>
+    <tr><td>存取控制</td><td>接上線</td><td>Open／Shared Key、WEP</td><td>802.1X、11i</td></tr>
     <tr><td>漫遊</td><td>—</td><td>Reassociation、預先認證</td><td>IAPP（11f）、11r</td></tr>
     <tr><td>直接傳</td><td>—</td><td>IBSS；infra 全經 AP</td><td>DLS</td></tr>
   </table>
@@ -174,7 +174,7 @@
     <p><span class="f">運</span>聽 → 邊送邊聽 → 撞：jam 32 bits → 第 n 次碰撞等 r∈[0, 2<sup>k</sup>−1] slot，k＝min(n,10)，slot 51.2 µs（來回傳播＋偵測）；n＞16 放棄</p>
     <p><span class="f p">＋</span>撞了立刻停、浪費小；送完沒撞≈成功 → 不需 ACK</p>
     <p><span class="f m">－</span>先進後出不公平；負載高延遲大；需最小訊框 64 B、距離受限；只能有線</p>
-    <p><span class="f c">比</span>K2：CD 撞後才退避、不凍結；CA 忙過就退避、凍結</p></div>
+    <p><span class="f c">比</span>K2：CD 撞後才退避、不凍結；CA 聽到有人在傳（或 NAV 有預約）就退避、凍結</p></div>
   <div class="kc"><h4><span class="n">K2</span>DCF（CSMA/CA）</h4>
     <p><span class="f">目</span>沒有中央控制下公平共享</p>
     <p><span class="f">運</span>CCA＋NAV 閒 → DIFS → 退避 → 送 → SIFS 後 ACK；失敗 CW 加倍。必備；ad hoc、infra 都用；PCF／HCF 建在其上</p>
@@ -204,7 +204,7 @@
     <p><b>NAV 的來源</b>：RTS/CTS、分段與 ACK 的 Duration、CFP 開始設 CFPMaxDuration（CF-End 重設）、11g 保護用的 CTS、QoS CF-Poll（polled TXOP）；PLCP 的 LENGTH 也讓低速站知道要忙多久；收錯訊框讀不到 Duration → 改用 EIFS</p>
     <p><span class="f m">－</span>多兩訊框＋2 SIFS，短訊框不划算；不解暴露節點</p>
     <p><b>隱藏</b>：A、C 彼此聽不到，同時送給 B，在接收端撞。<b>暴露</b>：C 聽到 B 而延後，其實傳給 D 不干擾 A；但 C 也收不到 D 的 ACK</p>
-    <p><b>不用 RTS/CTS</b>：infra 模式（都聽得到 AP）、PCF／HCCA 輪詢、分段（Duration 當虛擬 RTS/CTS）、EIFS、調功率或偵測門檻 <span class="sup">補充</span></p></div>
+    <p><b>不用 RTS/CTS</b>：infra 模式（都聽得到 AP）、分段（Duration 當虛擬 RTS/CTS）；PCF／HCCA 輪詢 <span class="sup">補充</span>、EIFS <span class="sup">補充</span>、調功率或偵測門檻 <span class="sup">補充</span></p></div>
   <div class="kc"><h4><span class="n">K7</span>分段與重組</h4>
     <p><span class="f">目</span>錯誤率高 → 短訊框；錯了只重送一段 <span class="sup">補充</span></p>
     <p><span class="f">運</span>≤ Fragmentation_Threshold、等長（最後一段可短）、同序號、分段號遞增、More Frag；SIFS 連送（burst）各自 ACK；每段 Duration 涵蓋下一段＋ACK＝虛擬 RTS/CTS，最後一段＝0；接收計時器逾時就丟</p>
@@ -237,7 +237,7 @@
     <p>沒有 DS → 只有 SS、只有 Class 1、BSSID 用亂數、Beacon 分散產生</p>
     <p>省電：TBTT 前醒 → ATIM 視窗內送 ATIM → 對方 ACK、醒到下一個視窗結束；視窗內只能送 RTS、CTS、ACK、Beacon、ATIM；視窗後用 DCF 傳資料</p></div>
   <div class="kc"><h4><span class="n">K13</span>掃描</h4>
-    <p><b>Passive</b>：每頻道聽 Beacon ≤ ChannelTime；不發射、省電 <span class="sup">補充</span>，但慢。<b>Active</b>：送 Probe Request（SSID 或廣播）→ MinProbeResponseTime 內沒回就換頻道，有回就等到 Max；快，但耗電、佔頻道 <span class="sup">補充</span></p>
+    <p><b>Passive</b>：每頻道聽 Beacon ≤ ChannelTime；不發射、省電，但慢 <span class="sup">補充</span>。<b>Active</b>：送 Probe Request（SSID 或廣播）→ MinProbeResponseTime 內沒回就換頻道，有回就等到 Max；快，但耗電、佔頻道 <span class="sup">補充</span></p>
     <p>用途：加入網路、漫遊找新 AP、建 IBSS；找不到可自建 IBSS</p></div>
   <div class="kc"><h4><span class="n">K14</span>認證、關聯、漫遊、狀態</h4>
     <p><span class="f">目</span>認證取代「接上線」；關聯讓 DS 知道 STA 在哪個 AP</p>
@@ -256,17 +256,21 @@
   <div class="kc"><h4><span class="n">K18</span>WEP／隱私</h4>
     <p><span class="f">目</span>補回有線「封閉媒介」的機密性</p>
     <p><span class="f">運</span>RC4：40-bit 金鑰＋24-bit IV；ICV 檢完整性；只加密資料的 payload、每個 MPDU；ICV 錯照樣 ACK 但丟掉；關聯前要議定隱私演算法</p>
-    <p><span class="f m">－</span>只保護無線一段（非端對端）；金鑰分配沒標準化；已被破解 → 11i <span class="sup">補充</span></p></div>
+    <p><span class="f m">－</span>金鑰分配沒標準化 → 11i；只保護無線一段（非端對端）<span class="sup">補充</span>；已被破解 <span class="sup">補充</span></p></div>
   <div class="kc"><h4><span class="n">K19</span>PLCP 與多速率</h4>
     <p>Long PLCP：前導 144＋標頭 48 bits，都用 1 Mbps → 192 µs；Short：96 µs。<span class="why">為何用最低速</span>：大家都看得懂；LENGTH＝要傳幾 µs → 聽不懂資料的站也能虛擬載波偵測。速率選擇不在標準內（做法如依 ACK 成敗或訊號品質升降速率 <span class="sup">補充</span>）。一個 BSS 用一個頻道（FHSS 是一起跳頻）；要多頻道就是多個 BSS 共址 <span class="sup">補充</span>。11g：有 11b 站時先送 CTS 設 NAV 再用 OFDM。減少 PHY 負擔：short preamble 96 µs（11b）、short slot 9 µs（11g，BSS 內有舊站就不能用）</p></div>
   <div class="kc"><h4><span class="n">K20</span>調變與展頻</h4>
-    <p><b>DSSS</b>：每位元 11-chip Barker，編碼增益 10.4 dB → 抗干擾、抗延遲擴散、分辨回波；代價：頻寬變寬（每個訊號約 22 MHz <span class="sup">補充</span>）。2.4 GHz 頻道間隔 5 MHz，不重疊 1、6、11 → 重疊 BSS 最多 3 個</p>
-    <p><b>鍵控</b>：PSK 相位、FSK 頻率、ASK 振幅。<b>QAM</b>：I（cos）、Q（sin）各做 ASK 再相加＝PSK＋ASK；16-QAM 24、36 Mbps，64-QAM 48、54 Mbps；每符元位元越多、越需好的 SNR <span class="sup">補充</span>。DBPSK 1 bit、DQPSK 2 bits／符元</p></div>
-  <div class="kc"><h4><span class="n">K21</span>EDCA</h4>
-    <p><span class="f">目</span>優先式 QoS（相對高低）</p>
-    <p><span class="f">運</span>UP（8 個，同 802.1D → 有線的優先權標記可直接帶進來）→AC：1、2 BK｜0、3 BE｜4、5 VI｜6、7 VO；<b>競爭在 AC 之間</b>，每個 AC 有自己的 AIFS、CW、TXOP limit；參數由 AP 在 Beacon 的 EDCA Parameter Set 宣告（ACM＝強制允入）。預設：VO 2＋0–3、VI 2＋0–7、BE 3＋0–15、BK 7＋0–15 slot</p>
-    <p><span class="f p">＋</span>分散、相容 DCF、可動態調參數</p>
-    <p><span class="f m">－</span>統計式，不保證；低優先可能餓死；同台 AC 內部碰撞 <span class="sup">補充</span></p></div>
+    <p><b>DSSS</b>：每個位元用一串 11 個 chip 的碼送出 → 抗干擾；代價是頻寬變寬</p>
+    <p><b>鍵控</b>（改波的哪個特性）：ASK 改大小、FSK 改快慢、PSK 改相位</p>
+    <p><b>QAM</b>：大小和相位一起變（＝ASK＋PSK）→ 每次能帶更多位元、速率更高</p></div>
+  <div class="kc"><h4><span class="n">K21</span>EDCA（802.11e 的競爭式 QoS）</h4>
+    <p><span class="f">目</span>讓語音、影像比一般資料先送；只分高低、不保證數字（優先式 QoS）</p>
+    <p><span class="f">運</span>每個訊框帶優先權 UP（0–7，和有線 802.1D 相同）→ 歸成 4 類 AC：背景 BK（1、2）、一般 BE（0、3）、影像 VI（4、5）、語音 VO（6、7）</p>
+    <p>DCF 是「站和站」搶；EDCA 是<b>「每個 AC 各自排隊、各自搶」</b></p>
+    <p>每個 AC 有三個參數：<b>AIFS</b> 先固定等多久、<b>CW</b> 再隨機等多久、<b>TXOP limit</b> 搶到後最多用多久 → 越優先等越短。預設（slot）：VO 2＋0–3｜VI 2＋0–7｜BE 3＋0–15｜BK 7＋0–15</p>
+    <p>參數由 AP 放在 Beacon 公告</p>
+    <p><span class="f p">＋</span>分散式、不用中央排程；可隨時調參數 <span class="sup">補充</span></p>
+    <p><span class="f m">－</span>只是比較容易先送，不保證頻寬、延遲；低優先可能一直搶不到 <span class="sup">補充</span>；同一台的不同 AC 也會互撞 <span class="sup">補充</span></p></div>
   <div class="kc"><h4><span class="n">K22</span>HCCA、TSPEC、允入控制</h4>
     <p><span class="f">目</span>參數化 QoS（如 10 Mbps、10 ms）</p>
     <p><span class="f">運</span>ADDTS Req（TSPEC）→ HC 判斷允入 → ADDTS Resp → 依 TSPEC 排程 → QoS CF-Poll → Polled TXOP；CFP 與 CP 都能輪詢；TID 8–15；DELTS 刪除</p>
