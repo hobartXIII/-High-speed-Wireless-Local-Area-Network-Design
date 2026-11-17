@@ -33,7 +33,7 @@
   <div class="page-head">
     <div class="eyebrow">MIDTERM</div>
     <h1>🎯 考前重點</h1>
-    <div class="meta"><span>依考古題 Q1–Q9、講義反問題 L1–L15、期中練習 A1–C2 整理</span><span>依主題排列・流程圖與時序圖</span></div>
+    <div class="meta"><span>依考古題 Q1–Q9、講義反問題 L1–L15、期中練習 A1–C2、作業一整理</span><span>依主題排列・流程圖與時序圖</span></div>
   </div>
   <div class="callout note">
     <b>怎麼讀這一頁</b>：每個主題依序是
@@ -992,7 +992,102 @@ flowchart TB
   </div>
 
   <!-- ============================================================ -->
-  <h2 id="musts">12. 總整理：小抄沒有、要背的</h2>
+  <h2 id="hw1">12. 作業一對應考點：用模擬結果解釋現象</h2>
+  <div class="qs"><span class="lb">相關題目</span><a href="midterm-practice.html#A14">A14</a><a class="lec" href="past-exam.html#L9">L9</a><a href="midterm-practice.html#A1">A1</a><a href="midterm-practice.html#B11">B11</a><a class="past" href="past-exam.html#Q8">Q8</a></div>
+  <div class="refs">小抄：K2、K3、K4、K6、K19、K24｜筆記：<a href="ch2-4-80211-dcf.html#ifs">CH2-4 §6</a>、<a href="ch2-4-80211-dcf.html#backoff">§7</a>、<a href="ch2-4-80211-dcf.html#overhead">§9</a>、<a href="ch2-4-80211-dcf.html#hidden">§10</a>；<a href="ch4-random-access.html#poisson">CH4 §5</a>、<a href="ch4-random-access.html#gs">§6</a>；<a href="ch3-80211e-qos.html#ba">CH3 §12</a>｜作業：<a href="hw1-ns3.html">作業一說明</a></div>
+
+  <p>作業一的題目是在 802.11n 下，改變 <b>STA 數（5、20）</b>、<b>每台的到達率 λ（200、800 packets/s）</b>、<b>RTS/CTS 開關</b>，畫 Throughput vs. Arrival Rate。題目列的系統參數幾乎都是考試範圍：SIFS／DIFS、PLCP 長度、MCS、CW<sub>min</sub>、資料長度、RTS/CTS。這一節不是考古題，是把作業結果整理成三個「為什麼」，遇到效率、退避、RTS/CTS 的題目可以拿來當例子。</p>
+
+  <h3>作業的設定與結果</h3>
+  <p>固定參數（<code>hw1/hw1-spec.md</code>）：20 MHz、SIFS 16 µs、slot 9 µs、DIFS = 16 + 2 × 9 = 34 µs、CW<sub>min</sub> 15、PLCP 前導＋標頭 36 µs（802.11n HT-mixed）、資料 HtMcs7（64-QAM，65 Mbps）、UDP payload 1472 B、A-MPDU 開、Poisson 到達、所有站彼此聽得到（<b>沒有隱藏節點</b>）。</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>STA</th><th>λ（pkt/s）</th><th>總負載（Mbps）</th><th>RTS/CTS 關</th><th>RTS/CTS 開</th></tr>
+    <tr><td>5</td><td>200</td><td>11.8</td><td>11.8（遺失 0%）</td><td>11.8（0%）</td></tr>
+    <tr><td>5</td><td>800</td><td>47.1</td><td>46.5（1.5%）</td><td>47.2（0%）</td></tr>
+    <tr><td>20</td><td>200</td><td>47.1</td><td>33.6（28.7%）</td><td>45.6（3.0%）</td></tr>
+    <tr><td>20</td><td>800</td><td>188.4</td><td>35.6（81.1%）</td><td>58.3（69.0%）</td></tr>
+  </table></div>
+  <p class="caption">Throughput 單位 Mbps，3 個 seed 平均。總負載 = STA 數 × λ × 1472 B × 8。</p>
+
+  <h3>為什麼 1：Throughput 為什麼到不了 PHY 速率 65 Mbps？</h3>
+  <p>DCF 每次傳送都要付<b>固定時間</b>的負擔，這些時間不會因為 MCS 變高而變短（<a href="#t11">第 11 節</a>）。作業報告依設定算出一次傳送的負擔：</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>負擔</th><th>時間</th><th>考試觀念</th></tr>
+    <tr><td>DIFS</td><td>34 µs</td><td>IFS 優先權（K3）</td></tr>
+    <tr><td>平均退避</td><td>約 68 µs（CW<sub>min</sub> 15 → 平均 7.5 slot × 9 µs）</td><td>隨機退避（K2）</td></tr>
+    <tr><td>PLCP 前導＋標頭</td><td>36 µs</td><td>PLCP 用固定格式送（K19）</td></tr>
+    <tr><td>SIFS</td><td>16 µs</td><td>保護交換（K3）</td></tr>
+    <tr><td>Block Ack</td><td>32 µs</td><td>802.11e Block Ack（K24）</td></tr>
+    <tr><td><b>合計</b></td><td><b>約 186 µs</b></td><td></td></tr>
+  </table></div>
+  <p>再加上 STA 多時的碰撞與 CW 加倍，所以 20 STA、λ = 800 時 throughput 只有 35.6 Mbps（RTS/CTS 關）。作業有開 A-MPDU，一次競爭送好幾個 MPDU、用一個 Block Ack 回應，把這些固定負擔攤到更多資料上；沒有它，效率會更低 <span class="sup">補充</span>。</p>
+
+  <h3>為什麼 2：總負載一樣，為什麼 STA 多的比較差？</h3>
+  <p>5 STA × 800 和 20 STA × 200 的總負載都是 47.1 Mbps，但 RTS/CTS 關時，throughput 是 <b>46.5 vs. 33.6 Mbps</b>，遺失率 1.5% vs. 28.7%。差別在<b>同時競爭的站數</b>，不是負載。</p>
+  <div class="figure">
+    <div class="fig-title">STA 變多 → throughput 下降 <span class="tag static">流程圖</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+flowchart LR
+  A["競爭的 STA 變多"] --> B["每台都從 0–CW 抽退避值&lt;br/&gt;（CWmin 15 → 只有 16 個值）"]
+  B --> C["兩台以上抽到同一個值&lt;br/&gt;的機率變高"]
+  C --> D["同時倒數到 0 → 碰撞"]
+  D --> E["整個訊框的時間白費&lt;br/&gt;（A-MPDU 很長）"]
+  D --> F["沒收到 ACK → CW 加倍&lt;br/&gt;閒置等待變長"]
+  E --> G["Throughput 下降、遺失增加"]
+  F --> G
+    </div></div>
+    <div class="caption">退避與 CW 加倍依講義 2-4 p.16–17；「站多碰撞機率高」的推論為補充。</div>
+  </div>
+  <p>這也對應 CH4 的觀念：吞吐量 S 取決於負載 G 和成功機率 P（S = G·P），碰撞越多，P 越低。作業的到達率用 Poisson 過程產生，就是 CH4 §5 的流量模型。L9 問的頻寬公平性也一樣：CSMA/CA 不保證每台分到的頻寬相同，STA 越多越明顯 <span class="sup">補充</span>。</p>
+
+  <h3>為什麼 3：STA 多時，開 RTS/CTS 為什麼反而比較好？</h3>
+  <p>講義 2-4 p.26 的圖是 Plain CSMA/CA 最好、全部用 RTS/CTS 最差，因為 RTS＋CTS＋2 個 SIFS 是額外負擔。作業結果卻是 20 STA 時，開 RTS/CTS 讓 throughput 從 33.6 → 45.6 Mbps（+36%）、35.6 → 58.3 Mbps（+64%）；5 STA 時幾乎沒差。</p>
+  <ul>
+    <li><b>不是因為解決隱藏節點</b>：作業拓樸裡大家都聽得到彼此，沒有隱藏節點。</li>
+    <li><b>是因為碰撞變便宜</b>：沒開時，碰撞撞掉的是整個長的 A-MPDU；開了以後，碰撞只會發生在短短的 RTS（64 µs）上。RTS 成功、CTS 回來後，其他站依 Duration 設定 NAV，長資料就不會再被撞 <span class="sup">補充</span>。</li>
+    <li><b>代價</b>：每次成功傳送多付 RTS 64 + CTS 44 + 2 × SIFS 16 = <b>140 µs</b>。碰撞少的時候（5 STA），省下的不夠彌補這個代價，所以沒差。</li>
+  </ul>
+  <div class="figure">
+    <div class="fig-title">碰撞的代價：沒開 vs. 開 RTS/CTS <span class="tag static">時序圖</span></div>
+    <div class="fig-body"><div class="mermaid-host">
+sequenceDiagram
+  participant S1 as STA 1
+  participant S2 as STA 2
+  participant AP
+  Note over S1,AP: 沒開 RTS/CTS
+  S1->>AP: A-MPDU（長）
+  S2->>AP: A-MPDU（長，同時送出）
+  Note over AP: 碰撞：整段長訊框的時間白費
+  Note over S1,AP: 開 RTS/CTS
+  S1->>AP: RTS（64 µs）
+  S2->>AP: RTS（同時送出）
+  Note over AP: 碰撞：只浪費一個 RTS 的時間
+  S1->>AP: 退避後重送 RTS
+  AP->>S1: CTS（其他站設 NAV）
+  S1->>AP: A-MPDU（不會再被撞）
+  AP->>S1: Block Ack
+    </div></div>
+    <div class="caption">RTS/CTS 與 NAV 依講義 2-4 p.24–25；時間值取自作業一 <code>--printParams</code> 輸出。</div>
+  </div>
+  <p>結論和講義的 <b>RTS_Threshold／Mixed</b> 一致：<b>訊框越長、競爭越激烈，越值得用 RTS/CTS</b>；短訊框不值得。B11 問 RTS_Threshold 怎麼設時，可以用這個當例子。</p>
+
+  <div class="skel"><b>答題骨架：「用模擬結果解釋現象」</b>
+    <ol>
+      <li>先寫觀察到的現象和數字（哪一組比哪一組高或低）。</li>
+      <li>指出原因是哪一種：固定負擔、碰撞、還是 CW 加倍。</li>
+      <li>接回講義的機制：IFS、退避、PLCP、RTS/CTS 與 NAV、Block Ack。</li>
+      <li>如果結果和講義不同（例如 RTS/CTS），說明條件差在哪裡：訊框長度、STA 數、有沒有隱藏節點。</li>
+    </ol>
+  </div>
+  <div class="must"><b>小抄沒有、要背的</b>
+    <ul>
+      <li>總負載相同、STA 多的比較差：<b>影響結果的是競爭站數</b>，CW<sub>min</sub> 15 只有 16 個退避值，站多就容易抽到同一個。</li>
+      <li>RTS/CTS 的好處有兩種：<b>解決隱藏節點</b>，以及<b>讓碰撞只撞到短的 RTS</b>。後者在沒有隱藏節點時也成立，所以長訊框、多站時值得開。</li>
+    </ul>
+  </div>
+
+  <!-- ============================================================ -->
+  <h2 id="musts">13. 總整理：小抄沒有、要背的</h2>
   <p>把上面每節橘色框的內容集中在一起，考前最後看這張表。</p>
   <div class="tbl-wrap"><table>
     <tr><th>#</th><th>內容</th><th>主題</th></tr>
@@ -1020,6 +1115,8 @@ flowchart TB
     <tr><td>22</td><td>2.4 GHz 只有 1、6、11 不重疊，最多 3 個 BSS</td><td><a href="#t10">10</a></td></tr>
     <tr><td>23</td><td>速率選擇：速率 vs. 範圍，太高遺失、太低浪費</td><td><a href="#t10">10</a></td></tr>
     <tr><td>24</td><td>IFS、退避、前導是固定時間，速率越高佔比越大</td><td><a href="#t11">11</a></td></tr>
+    <tr><td>25</td><td>總負載相同、STA 多的比較差：影響結果的是競爭站數</td><td><a href="#hw1">12</a></td></tr>
+    <tr><td>26</td><td>RTS/CTS 讓碰撞只撞到短的 RTS：長訊框、多站時值得開</td><td><a href="#hw1">12</a></td></tr>
   </table></div>
 </main>
 <aside class="toc"></aside>
