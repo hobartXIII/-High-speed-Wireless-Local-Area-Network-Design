@@ -4,6 +4,7 @@
 // 需要本機的 Chrome（預設路徑見 CHROME，或設環境變數 CHROME）。
 const fs = require('fs'), path = require('path'), os = require('os'), { execFileSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
+const examRefs = require('../assets/js/exam-refs.js');
 const OUT = path.join(ROOT, 'pdf');
 const CHROME = process.env.CHROME || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 
@@ -50,6 +51,7 @@ h2 { font-size: 12.5pt; margin: 6mm 0 2mm; padding-bottom: 1mm; border-bottom: 1
 table { border-collapse: collapse; margin: 1.5mm 0; font-size: 9pt; break-inside: avoid; }
 th, td { border: 1px solid #c9d0db; padding: 1mm 2mm; vertical-align: top; text-align: left; }
 th { background: #eef1f6; }
+.mq-refs { font-size: 8.5pt; color: #5b6475; margin: 0 0 1.5mm; display: flex; gap: 0 4mm; flex-wrap: wrap; }
 .src { font-size: 8.5pt; color: #5b6475; margin-top: 2mm; }
 .sup { font-size: .72em; font-weight: 600; color: #7a3fc4; background: #f1e9fb; border-radius: 3px; padding: 0 .35em; }
 .callout { border: 1px solid #f0d9b5; background: #fff8ec; border-radius: 6px; padding: 2mm 3mm; font-size: 9pt; margin: 0 0 3mm; }
@@ -61,6 +63,7 @@ const chip = ([, t]) => `<span class="chip">${t}</span>`;
 const card = (q) => `
 <section class="mq">
   <div class="mq-head"><span class="mq-id">${q.id}</span>${q.pts ? `<span class="mq-pts">(${q.pts})</span>` : ''}${(q.chips || []).map(chip).join('')}${q.ch ? `<span class="chip">${q.ch}</span><span class="chip">${q.kind}</span>` : ''}</div>
+  ${examRefs(q, false)}
   <div class="q-en" lang="en">${q.en}</div>
   <div class="q-zh">${q.zh}</div>
   <div class="lbl">作答重點</div><div class="ans key">${q.az}</div>

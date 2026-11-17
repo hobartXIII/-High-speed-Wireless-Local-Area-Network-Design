@@ -16,7 +16,7 @@
   <div class="page-head">
     <div class="eyebrow">CH 2-1</div>
     <h1>📶 IEEE 802.11 架構與 PHY</h1>
-    <div class="meta"><span>來源：2-1 CSMA_CA.pdf</span><span>動畫與互動 10 個・圖解 19 張</span></div>
+    <div class="meta"><span>來源：2-1 CSMA_CA.pdf</span><span>動畫與互動 9 個・圖解 19 張</span></div>
   </div>
 
   <div class="callout key">
@@ -539,19 +539,6 @@
       <li><b>BPSK／QPSK／16-QAM／64-QAM</b>：每個符號帶 1／2／4／6 bits 的調變</li>
       <li><b>卷積碼／碼率</b>：加入錯誤更正位元的編碼方式／資料位元佔編碼後位元的比例</li>
     </ul></li></ul>
-  <h3>OFDM 速率計算器</h3>
-  <div class="figure" id="fig-ofdm-wrap">
-    <div class="fig-title">54 Mbps 是怎麼算出來的？ <span class="tag">互動</span></div>
-    <div class="fig-body">
-      <div class="grid-form">
-        <div class="field"><label for="ofdm-mod">調變</label><select id="ofdm-mod"><option value="1">BPSK（1 bit／符號）</option><option value="2">QPSK（2 bits）</option><option value="4">16-QAM（4 bits）</option><option value="6" selected>64-QAM（6 bits）</option></select></div>
-        <div class="field"><label for="ofdm-rate">碼率</label><select id="ofdm-rate"><option value="1/2">1/2</option><option value="2/3">2/3</option><option value="3/4" selected>3/4</option></select></div>
-      </div>
-      <div id="fig-ofdm"></div>
-      <div class="readout" id="ofdm-out"></div>
-    </div>
-    <div class="caption"><span class="sup">補充</span>11a 每個 20MHz 頻道有 52 個子載波：48 個載資料、4 個 pilot；一個 OFDM symbol 4 μs。<span class="sup">補充</span>pilot：已知內容、用來估計通道的子載波；OFDM symbol：OFDM 一次送出的符號。</div>
-  </div>
   <div class="tbl-wrap"><table>
     <tr><th>調變</th><th>速率（Mbps）</th></tr>
     <tr><td>BPSK</td><td>6、9</td></tr><tr><td>QPSK</td><td>12、18</td></tr><tr><td>16-QAM</td><td>24、36</td></tr><tr><td>64-QAM</td><td>48、54</td></tr>
@@ -1046,110 +1033,24 @@ flowchart LR
     <li>講義例題 P1 = 100 W、P2 = 1 W：比值 100 ÷ 1 = 100。</li>
     <li>log<sub>10</sub>100 = 2（因為 10<sup>2</sup> = 100）。</li>
     <li>10 × 2 = <b>20 dB</b>。</li>
-    <li>功率變 2 倍：10 × log<sub>10</sub>2 = 10 × 0.301 = <b>3.01 dB ≈ 3 dB</b>；變一半則是 −3 dB。</li>
-    <li>反算 13 dB 是幾倍：10<sup>13/10</sup> = 10<sup>1.3</sup> = 10 × 10<sup>0.3</sup> ≈ 10 × 2 = <b>約 20 倍</b>（13 dB = 10 dB ＋ 3 dB → 10 倍 × 2 倍）。</li>
   </ol>
   <p><b>意義</b>：乘法變加法。功率連乘的增益、損耗，用 dB 直接加減即可。</p>
 
-  <h3>② <span class="sup">補充</span>dBm 與 dBW</h3>
-  <div class="callout tip"><b>dBm = 10 log<sub>10</sub>(P<sub>mW</sub> ÷ 1 mW)</b>　　<b>dBW = 10 log<sub>10</sub>(P<sub>W</sub> ÷ 1 W)</b>　　<b>dBm = dBW + 30</b></div>
-  <ol>
-    <li>100 mW：100 ÷ 1 = 100 → 10 × 2 = <b>20 dBm</b>。</li>
-    <li>1 W = 1000 mW：10 × log<sub>10</sub>1000 = 10 × 3 = <b>30 dBm</b>；用 dBW 算 10 × log<sub>10</sub>1 = 0 dBW，0 + 30 = 30 dBm ✓。</li>
-    <li>反算 −70 dBm（常見的 Wi-Fi 收訊強度）：10<sup>−70/10</sup> = 10<sup>−7</sup> mW = <b>0.0000001 mW</b>。</li>
-  </ol>
-
-  <h3>③ 展頻：chip rate 與處理增益（講義 p.55–61）</h3>
+  <h3>② 展頻：chip rate 與處理增益（講義 p.55–61）</h3>
   <div class="callout tip"><b>chip rate = symbol rate × 11</b>　　<b>處理增益 G<sub>p</sub> = 10 log<sub>10</sub>(chips 數 ÷ symbol)</b></div>
   <ol>
     <li>1 Mbps DBPSK：每個 symbol 1 bit → symbol rate = 1 Msymbol/s。</li>
-    <li>chip rate = 1 M × 11 = <b>11 Mchip/s</b>；每個 chip 時間 = 1 ÷ (11×10<sup>6</sup>) ≈ 0.0909 μs ≈ <b>90.9 ns</b>。</li>
+    <li>chip rate = 1 M × 11 = <b>11 Mchip/s</b>。</li>
     <li>2 Mbps DQPSK：每個 symbol 2 bits，symbol rate 仍是 2 ÷ 2 = 1 Msymbol/s → chip rate 同樣 11 Mchip/s，佔用的頻寬不變。</li>
     <li>G<sub>p</sub> = 10 × log<sub>10</sub>11 = 10 × 1.041 = <b>10.41 dB ≈ 10.4 dB</b>。</li>
   </ol>
   <p><b>意義</b>：速率從 1 升到 2 Mbps 是靠一個 symbol 載更多 bits，不是把 chip 打得更快。</p>
 
-  <h3>④ Barker 相關值</h3>
-  <div class="callout tip"><b>相關值 C = 11 − 2e</b>（e＝被翻掉的 chip 數）；送 1 時 C &gt; 0 判為 1，送 0 時取負號</div>
-  <ol>
-    <li>11 個 chip 對 11 個：對的貢獻 +1、錯的貢獻 −1 → C = (11 − e) × 1 + e × (−1) = 11 − 2e。</li>
-    <li>e = 0：C = 11（完美對齊）。</li>
-    <li>e = 3：C = 11 − 6 = <b>5</b> &gt; 0 → 仍正確判為 1。</li>
-    <li>e = 5：C = 11 − 10 = 1 &gt; 0 → 仍正確（極限）。</li>
-    <li>e = 6：C = 11 − 12 = <b>−1</b> &lt; 0 → 判錯成 0。</li>
-  </ol>
-
-  <h3>⑤ 符號率與位元率（講義 p.72–73）</h3>
+  <h3>③ 符號率與位元率（講義 p.72–73）</h3>
   <div class="callout tip"><b>bit rate = symbol rate × log<sub>2</sub>M</b>（M＝symbol 種類數）</div>
   <ol>
     <li>講義數據機：M = 4 → log<sub>2</sub>4 = 2 bits/symbol。</li>
     <li>1000 baud × 2 = <b>2000 bps</b>。</li>
-    <li>64-QAM：log<sub>2</sub>64 = 6；1024-QAM：log<sub>2</sub>1024 = 10；4096-QAM：log<sub>2</sub>4096 = 12。</li>
-  </ol>
-
-  <h3>⑥ <span class="sup">補充</span>OFDM 速率（802.11a/g）</h3>
-  <div class="callout tip"><b>R = N<sub>SD</sub> × N<sub>BPSC</sub> × R<sub>code</sub> ÷ T<sub>sym</sub></b></div>
-  <p>符號：N<sub>SD</sub>＝資料子載波數（11a 為 48）；N<sub>BPSC</sub>＝每個子載波每個 symbol 載幾 bits；R<sub>code</sub>＝卷積碼碼率；T<sub>sym</sub>＝一個 OFDM symbol 的時間（4 μs）。</p>
-  <ol>
-    <li>子載波間距 = 20 MHz ÷ 64 = <b>312.5 kHz</b>；有效 symbol = 1 ÷ 312.5 kHz = 3.2 μs；加保護間隔 0.8 μs → T<sub>sym</sub> = <b>4 μs</b>。</li>
-    <li>佔用頻寬：52 個子載波加中間的 DC，共 53 × 312.5 kHz ≈ <b>16.6 MHz</b>。</li>
-    <li>54 Mbps（64-QAM、3/4）：48 × 6 = 288 → × 3/4 = 216 bits/symbol → 216 ÷ 4 μs = <b>54 Mbps</b>。</li>
-    <li>6 Mbps（BPSK、1/2）：48 × 1 × 1/2 = 24 bits → 24 ÷ 4 = <b>6 Mbps</b>。</li>
-    <li>24 Mbps（16-QAM、1/2）：48 × 4 × 1/2 = 96 → 96 ÷ 4 = <b>24 Mbps</b>。</li>
-  </ol>
-
-  <h3>⑦ <span class="sup">補充</span>Wi-Fi 6 速率與「AX3000」</h3>
-  <div class="callout tip"><b>R = N<sub>SD</sub> × N<sub>BPSC</sub> × R<sub>code</sub> × N<sub>SS</sub> ÷ (T<sub>DFT</sub> + T<sub>GI</sub>)</b>（11ax：T<sub>DFT</sub> = 12.8 μs、短 GI 0.8 μs，合計 13.6 μs）</div>
-  <ol>
-    <li>160 MHz、1024-QAM（10 bits）、碼率 5/6、1 條串流：N<sub>SD</sub> = 1960 → 1960 × 10 × 5/6 = 16333.3 bits。</li>
-    <li>16333.3 ÷ 13.6 μs ≈ <b>1201 Mbps</b>；2 條串流 × 2 = <b>2402 Mbps</b>。</li>
-    <li>40 MHz（2.4 GHz）：N<sub>SD</sub> = 468 → 468 × 10 × 5/6 = 3900；3900 ÷ 13.6 ≈ 286.8 Mbps；× 2 串流 ≈ <b>574 Mbps</b>。</li>
-    <li>AX3000 = 574 + 2402 = 2976 ≈ <b>3000</b>。</li>
-    <li>串流數取兩端較小者：AP 4×4、手機 2×2 → min(4, 2) = <b>2</b> 條。</li>
-  </ol>
-
-  <h3>⑧ <span class="sup">補充</span>2.4 GHz 頻道中心頻率</h3>
-  <div class="callout tip"><b>f<sub>c</sub>(n) = 2407 + 5n MHz</b>（n = 1…13）</div>
-  <ol>
-    <li>n = 1：2407 + 5 = <b>2412 MHz</b>；n = 6：2407 + 30 = <b>2437 MHz</b>；n = 11：2407 + 55 = <b>2462 MHz</b>。</li>
-    <li>頻道 1 與 6 相距 2437 − 2412 = <b>25 MHz</b> ≥ 22 MHz（DSSS 頻寬）→ 不重疊。</li>
-    <li>頻道 1 與 3 相距 2 × 5 = 10 MHz &lt; 22 → 重疊 22 − 10 = <b>12 MHz</b>。</li>
-  </ol>
-
-  <h3>⑨ <span class="sup">補充</span>波長與天線長度</h3>
-  <div class="callout tip"><b>λ = c ÷ f</b>（c = 3×10<sup>8</sup> m/s）　　半波偶極天線長度 ≈ <b>λ ÷ 2</b></div>
-  <ol>
-    <li>2.4 GHz：3×10<sup>8</sup> ÷ 2.4×10<sup>9</sup> = 0.125 m = <b>12.5 cm</b>；λ/2 = <b>6.25 cm</b>。</li>
-    <li>5 GHz：3×10<sup>8</sup> ÷ 5×10<sup>9</sup> = 0.06 m = <b>6 cm</b>；λ/2 = 3 cm。</li>
-    <li>6 GHz：3×10<sup>8</sup> ÷ 6×10<sup>9</sup> = 0.05 m = <b>5 cm</b>。</li>
-  </ol>
-
-  <h3>⑩ <span class="sup">補充</span>自由空間路徑損耗 FSPL</h3>
-  <div class="callout tip"><b>FSPL(dB) = 20 log<sub>10</sub>(d<sub>km</sub>) + 20 log<sub>10</sub>(f<sub>MHz</sub>) + 32.44</b></div>
-  <ol>
-    <li>d = 10 m = 0.01 km：20 × log<sub>10</sub>0.01 = 20 × (−2) = <b>−40</b>。</li>
-    <li>f = 2400 MHz：20 × log<sub>10</sub>2400 = 20 × 3.380 = <b>67.60</b>。</li>
-    <li>FSPL = −40 + 67.60 + 32.44 = <b>60.04 dB</b>。</li>
-    <li>f = 5000 MHz：20 × 3.699 = 73.98 → FSPL = −40 + 73.98 + 32.44 = <b>66.42 dB</b>；比 2.4 GHz 多 66.42 − 60.04 = <b>6.38 dB</b>。</li>
-    <li>捷徑：差值只看頻率比，20 × log<sub>10</sub>(5000 ÷ 2400) = 20 × 0.319 = 6.38 dB；6 GHz 為 20 × log<sub>10</sub>2.5 = <b>7.96 dB</b>。</li>
-    <li>距離加倍：20 × log<sub>10</sub>2 = <b>+6.02 dB</b>。</li>
-  </ol>
-
-  <h3>⑪ <span class="sup">補充</span>EIRP 與天線增益換算</h3>
-  <div class="callout tip"><b>EIRP(dBm) = P<sub>tx</sub>(dBm) + G<sub>ant</sub>(dBi) − L<sub>cable</sub>(dB)</b>　　<b>dBi = dBd + 2.15</b></div>
-  <ol>
-    <li>P<sub>tx</sub> = 100 mW → 10 log<sub>10</sub>100 = 20 dBm。</li>
-    <li>EIRP = 20 + 5 − 1 = <b>24 dBm</b>。</li>
-    <li>換回 mW：10<sup>24/10</sup> = 10<sup>2.4</sup> ≈ <b>251 mW</b>（約原本的 2.5 倍，因為 +4 dB ≈ ×2.5）。</li>
-    <li>天線標 3 dBd：3 + 2.15 = <b>5.15 dBi</b>。</li>
-  </ol>
-
-  <h3>⑫ <span class="sup">補充</span>PLCP 長前導的時間</h3>
-  <div class="callout tip"><b>T<sub>PLCP</sub> = (Preamble + Header bits) ÷ 1 Mbps</b></div>
-  <ol>
-    <li>Preamble 144 bits（SYNC 128 + SFD 16）＋ Header 48 bits（8 + 8 + 16 + 16）= <b>192 bits</b>。</li>
-    <li>固定用 1 Mbps 送：192 ÷ 1 bit/μs = <b>192 μs</b>。</li>
-    <li>對照 11 Mbps 送 1500 bytes：12000 ÷ 11 ≈ 1090.9 μs，PLCP 佔 192 ÷ (192 + 1090.9) ≈ <b>15%</b>。</li>
   </ol>
 
   <h2 id="glossary">19. 專有名詞對照</h2>
@@ -1242,10 +1143,10 @@ flowchart LR
     <li><details><summary>說出 802.11 標準化與不標準化的範圍</summary><div class="inner">標準化：空中介面（PHY 與 MAC）。不標準化：MAC/PHY 內部介面、對 DS 的公開介面（只定義 DS 服務）、DS 內部運作。</div></details></li>
     <li><details><summary>比較 Infrastructure 經 AP 通訊的優缺點</summary><div class="inner">優：容易解決 hidden terminal、可省電、符合 AAA、可做 QoS。缺：STA 間通訊頻寬消耗兩倍、競爭與碰撞變多。</div></details></li>
     <li><details><summary>解釋 Barker code 的 10.4 dB coding gain</summary><div class="inner">每個 bit 展成 11 個 chip，處理增益 10 log<sub>10</sub>(11) ≈ 10.4 dB。</div></details></li>
-    <li><details><summary>計算 dB 值</summary><div class="inner">10 log<sub>10</sub>(P1/P2)。100W→1W = 20 dB；2 倍 ≈ 3 dB；100 mW = 20 dBm。</div></details></li>
+    <li><details><summary>計算 dB 值</summary><div class="inner">10 log<sub>10</sub>(P1/P2)。100 W → 1 W = 20 dB（講義 p.60）。</div></details></li>
     <li><details><summary>說明 Long 與 Short PLCP 的差別與 192 / 96 μs</summary><div class="inner">Long：144-bit preamble + 48-bit header 都用 1 Mbps → 192 μs，相容舊設備。Short：72-bit preamble（1 Mbps）+ 48-bit header（2 Mbps）→ 96 μs，降低 overhead。</div></details></li>
     <li><details><summary>背出 SIGNAL 欄位的速率代碼與 DQPSK 相位對應</summary><div class="inner">h0A 1M、h14 2M、h37 5.5M、h6E 11M（單位 100 kbps）。DQPSK：00→0、01→π/2、11→π、10→3π/2。</div></details></li>
-    <li><details><summary>說明家用 AP 規格「AX3000」的意義，以及 Wi-Fi 4～7 的關鍵技術</summary><div class="inner">各頻段最高速率相加（2.4G 574 + 5G 2402）。Wi-Fi 4：MIMO；5：MU-MIMO、160 MHz、256-QAM；6：OFDMA、1024-QAM、TWT、BSS Coloring；6E：6 GHz；7：320 MHz、4096-QAM、MLO。</div></details></li>
+    <li><details><summary>說明 Wi-Fi 4～7 的關鍵技術</summary><div class="inner">Wi-Fi 4：MIMO；5：MU-MIMO、160 MHz、256-QAM；6：OFDMA、1024-QAM、TWT、BSS Coloring；6E：6 GHz；7：320 MHz、4096-QAM、MLO。</div></details></li>
     <li><details><summary>解釋天線增益（dBi）、輻射場型與 EIRP 的關係</summary><div class="inner">天線不放大總功率，只把能量集中；全向天線增益越高場型越扁、上下樓越弱。EIRP = 發射功率 + 天線增益 − 損耗，法規限 EIRP，所以換高增益天線要降發射功率。</div></details></li>
     <li><details><summary>比較單台 AP、無線 Mesh、有線回程的優缺點</summary><div class="inner">單台：簡單但覆蓋有限。無線 Mesh：自動漫遊，但回程佔頻寬。有線回程：效能最好但要佈線。</div></details></li>
   </ul>

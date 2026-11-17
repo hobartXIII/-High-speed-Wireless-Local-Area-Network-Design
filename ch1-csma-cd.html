@@ -657,61 +657,22 @@ flowchart LR
     <li>代入 R = 10 Mbps = 10<sup>7</sup> bits/s：t<sub>bit</sub> = 1 ÷ 10<sup>7</sup> = 10<sup>−7</sup> 秒 = <b>0.1 μs</b>。</li>
     <li>T<sub>slot</sub> = 512 × 0.1 μs = <b>51.2 μs</b>。</li>
     <li>換成秒：51.2 × 10<sup>−6</sup> = 0.0000512 秒 = 0.0512 ms，約兩萬分之一秒。</li>
-    <li>換別的速率：100 Mbps → t<sub>bit</sub> = 0.01 μs，T<sub>slot</sub> = 512 × 0.01 = <b>5.12 μs</b>；1 Gbps → 512 × 0.001 = 0.512 μs（所以 Gigabit 半雙工改成 512 <b>bytes</b> = 4096 bits = 4.096 μs）。</li>
   </ol>
   <p><b>意義</b>：slot time 以「bit 數」固定，速率越快，同樣 512 bits 花的時間越短。</p>
 
-  <h3>② 訊框傳輸時間</h3>
-  <div class="callout tip"><b>T<sub>frame</sub> = L × 8 ÷ R</b></div>
-  <p>符號：L＝訊框長度（bytes）；× 8 換成 bits；R＝速率（bits/s）。</p>
-  <ol>
-    <li>最小訊框 L = 64 bytes：64 × 8 = 512 bits。</li>
-    <li>512 bits ÷ 10<sup>7</sup> bits/s = 51.2 × 10<sup>−6</sup> s = <b>51.2 μs</b>，剛好 1 個 slot time。</li>
-    <li>最大訊框 L = 1518 bytes：1518 × 8 = 12144 bits；12144 ÷ 10<sup>7</sup> = <b>1214.4 μs ≈ 1.21 ms</b>。</li>
-  </ol>
-  <p><b>意義</b>：最小訊框的傳輸時間 ＝ slot time，這就是「64 bytes」的由來。</p>
-
-  <h3>③ <span class="sup">補充</span>傳播延遲 τ 與參數 a</h3>
-  <div class="callout tip"><b>τ = d ÷ v</b>　　<b>a = τ ÷ T<sub>frame</sub></b></div>
-  <p>符號：d＝最遠兩站距離（m）；v＝訊號在線上的速度，約 2×10<sup>8</sup> m/s；τ＝單程傳播延遲；a＝把 τ 換成「幾個訊框時間」的比值（講義的 a）。</p>
-  <ol>
-    <li>d = 2500 m（10BASE5 全網路上限）：τ = 2500 ÷ (2×10<sup>8</sup>) = 1.25 × 10<sup>−5</sup> s = <b>12.5 μs</b>。</li>
-    <li>來回 2τ = 2 × 12.5 = <b>25 μs</b> &lt; 51.2 μs ✓，碰撞一定能在送完最小訊框之前被偵測到。</li>
-    <li>配最小訊框：a = 12.5 ÷ 51.2 ≈ <b>0.244</b>；配最大訊框：a = 12.5 ÷ 1214.4 ≈ <b>0.0103</b>。</li>
-  </ol>
-
-  <h3>④ 碰撞偵測視窗 2a（講義第 4 節）</h3>
+  <h3>② 碰撞偵測視窗 2a（講義第 4 節）</h3>
   <div class="callout tip"><b>最壞情況偵測時間 = 2a − ε → 2a</b>；條件：<b>T<sub>frame</sub> ≥ 2a</b>（以訊框時間為單位時寫成 1 ≥ 2a）</div>
   <ol>
     <li>講義例子 a = 0.5：A 在 t<sub>0</sub> = 0 開始送。</li>
     <li>B 在 t = a − ε = 0.5 − ε 開始送（還沒聽到 A）。</li>
     <li>碰撞訊號再走 a = 0.5 回到 A：A 在 0.5 − ε + 0.5 = <b>1 − ε</b> 偵測到。</li>
     <li>2a = 2 × 0.5 = 1，等於一個訊框時間 → 剛好在送完之前偵測到，是臨界值；a 再大一點（例如 0.6，2a = 1.2 &gt; 1）就會送完還不知道撞了。</li>
-    <li>換成實際時間：τ = 12.5 μs 時 2τ = 25 μs，訊框至少要送 25 μs；802.3 保守地取 51.2 μs。</li>
   </ol>
 
-  <h3>⑤ <span class="sup">補充</span>最小訊框長度與最大距離</h3>
-  <div class="callout tip"><b>L<sub>min</sub> = R × 2τ = 2 × d × R ÷ v</b>　　反推：<b>d<sub>max</sub> = L<sub>min</sub> × v ÷ (2R)</b></div>
-  <ol>
-    <li>10 Mbps、d = 2500 m：L<sub>min</sub> = 2 × 2500 × 10<sup>7</sup> ÷ (2×10<sup>8</sup>) = 5×10<sup>10</sup> ÷ 2×10<sup>8</sup> = <b>250 bits</b>（約 31 bytes）。</li>
-    <li>標準取 512 bits，約是 250 的 2 倍，多出來的留給 repeater、收發器電纜延遲與 jam。</li>
-    <li>反推 512 bits 理論上可到多遠：d<sub>max</sub> = 512 × 2×10<sup>8</sup> ÷ (2 × 10<sup>7</sup>) = 1.024×10<sup>11</sup> ÷ 2×10<sup>7</sup> = <b>5120 m ≈ 5 km</b>；扣掉餘裕後標準只允許 2500 m。</li>
-    <li>100 Mbps、L<sub>min</sub> 仍是 512 bits：d<sub>max</sub> = 512 × 2×10<sup>8</sup> ÷ (2 × 10<sup>8</sup>) = <b>512 m</b>（理論值）；實際扣掉 hub、線材延遲後約 200 m。</li>
-    <li>1 Gbps、200 m（第 4 節例題）：L<sub>min</sub> = 2 × 200 × 10<sup>9</sup> ÷ (2×10<sup>8</sup>) = <b>2000 bits = 250 bytes</b>。</li>
-  </ol>
-  <p><b>意義</b>：L<sub>min</sub> 與 d、R 成正比。速率變 10 倍而最小訊框不變，距離只能縮成 1/10。</p>
-
-  <h3>⑥ <span class="sup">補充</span>CSMA/CD 效率近似式</h3>
-  <div class="callout tip"><b>η ≈ 1 ÷ (1 + 5a)</b></div>
-  <ol>
-    <li>最小訊框，a = 0.244：5a = 1.22；1 + 1.22 = 2.22；η = 1 ÷ 2.22 ≈ <b>0.45（45%）</b>。</li>
-    <li>最大訊框，a = 0.0103：5a = 0.0515；η = 1 ÷ 1.0515 ≈ <b>0.951（95.1%）</b>。</li>
-  </ol>
-  <p><b>意義</b>：訊框越長（a 越小），浪費在碰撞上的時間比例越低，效率越高。</p>
-
-  <h3>⑦ BEBA 隨機延遲（講義第 5 節）</h3>
+  <h3>③ BEBA 隨機延遲（講義第 5 節）</h3>
   <div class="callout tip"><b>k = min(n, 10)</b>　　<b>0 ≤ r ≤ 2<sup>k</sup> − 1</b>　　<b>等待時間 = r × T<sub>slot</sub></b>　　n = 16（流程圖 i &gt; 16）放棄</div>
   <p>符號：n＝這個訊框已撞幾次；k＝實際用的指數（最多 10）；r＝從範圍內均勻抽出的整數。</p>
+  <p><span class="sup self">自編例子</span>下面的數字為自行代入，講義沒有這個例子。</p>
   <ol>
     <li>第 3 次碰撞（n = 3）：k = min(3, 10) = 3；r 範圍 0 到 2<sup>3</sup> − 1 = 7。</li>
     <li>假設抽到 r = 5：等待 5 × 51.2 = <b>256 μs</b>；最長 7 × 51.2 = <b>358.4 μs</b>。</li>
@@ -720,40 +681,15 @@ flowchart LR
     <li>n = 16（第 16 次碰撞，流程圖的 i 變成 17 &gt; 16）：放棄，回報上層。</li>
   </ol>
 
-  <h3>⑧ <span class="sup">補充</span>BEBA 平均等待與再撞機率</h3>
-  <div class="callout tip"><b>平均 r = (2<sup>k</sup> − 1) ÷ 2</b>　　<b>兩站再撞機率 = 1 ÷ 2<sup>k</sup></b></div>
-  <ol>
-    <li>n = 4：k = 4，2<sup>4</sup> = 16，r ∈ 0–15。</li>
-    <li>平均 r = (16 − 1) ÷ 2 = <b>7.5 slots</b>；× 51.2 = <b>384 μs</b>。</li>
-    <li>A 抽到任一值後，B 抽到相同值的機率 = 1 ÷ 16 = <b>6.25%</b>。</li>
-    <li>對照 n = 1：平均 (2 − 1) ÷ 2 = 0.5 slot = 25.6 μs，再撞機率 1/2 = 50%。</li>
-  </ol>
-
-  <h3>⑨ 訊框長度與 PAD（講義第 6 節）</h3>
+  <h3>④ 訊框長度與 PAD（講義第 6 節）</h3>
   <div class="callout tip"><b>L<sub>MAC</sub> = DA + SA + LEN + Data + PAD + FCS</b>　　<b>PAD = max(0, 46 − Data)</b>　　<b>線上長度 = L<sub>MAC</sub> + 8</b>（Preamble 7 + SFD 1）</div>
+  <p><span class="sup self">自編例子</span>下面的數字為自行代入，講義沒有這個例子。</p>
   <ol>
     <li>Data = 20 bytes：PAD = 46 − 20 = <b>26</b>。</li>
     <li>L<sub>MAC</sub> = 6 + 6 + 2 + 20 + 26 + 4 = <b>64 bytes</b>（剛好最小值）。</li>
     <li>Data = 1000 bytes：PAD = max(0, 46 − 1000) = 0；L<sub>MAC</sub> = 6 + 6 + 2 + 1000 + 0 + 4 = <b>1018 bytes</b>；線上 1018 + 8 = 1026 bytes。</li>
     <li>上下限：1500 + 18 = <b>1518</b>；64 − 18 = <b>46</b>。</li>
   </ol>
-
-  <h3>⑩ <span class="sup">補充</span>jam、IFG 與 Manchester 的時間</h3>
-  <div class="callout tip"><b>時間 = bit 數 × t<sub>bit</sub></b>　　<b>Manchester 鮑率 = 2 × bit rate</b></div>
-  <ol>
-    <li>Jam 32 bits × 0.1 μs = <b>3.2 μs</b>。</li>
-    <li>IFG 96 bits × 0.1 μs = <b>9.6 μs</b>。</li>
-    <li>Manchester：每個 bit 中間跳一次，最多每半個 bit 變一次 → 10 Mbps × 2 = <b>20 Mbaud</b>；半個 bit = 0.1 ÷ 2 = 0.05 μs = 50 ns。</li>
-  </ol>
-
-  <h3>⑪ <span class="sup">補充</span>每秒最多幾個訊框</h3>
-  <div class="callout tip"><b>每框佔用 = (L<sub>MAC</sub> + 8 + 12) × 8 bits</b>（Preamble＋SFD 8 bytes、IFG 12 bytes）　　<b>訊框數/秒 = R ÷ 每框佔用</b></div>
-  <ol>
-    <li>最小訊框：64 + 8 + 12 = 84 bytes = 672 bits；10<sup>7</sup> ÷ 672 ≈ <b>14,881 訊框/秒</b>。</li>
-    <li>最大訊框：1518 + 8 + 12 = 1538 bytes = 12304 bits；10<sup>7</sup> ÷ 12304 ≈ <b>813 訊框/秒</b>。</li>
-    <li>最大訊框的資料效率：1500 ÷ 1538 ≈ <b>97.5%</b>；最小訊框只載 46 bytes：46 ÷ 84 ≈ 54.8%。</li>
-  </ol>
-  <p><b>意義</b>：即使沒有碰撞，標頭、前導碼與訊框間隔也會吃掉頻寬，小訊框特別明顯。</p>
 
   <h2 id="glossary">13. 專有名詞對照</h2>
   <details><summary>展開 42 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>
@@ -810,8 +746,6 @@ flowchart LR
     <li><details><summary>能寫出 BEBA 的 n、k、r 公式，並算出第 n 次碰撞的隨機範圍</summary><div class="inner">k = min(n, 10)，0 ≤ r &lt; 2<sup>k</sup>（單位 slot time）。例如 n = 4：k = 4，r ∈ 0–15；n = 12：k = 10，r ∈ 0–1023；第 16 次碰撞（流程圖 i &gt; 16）放棄。</div></details></li>
     <li><details><summary>說明 BEBA 的 LIFO 缺點</summary><div class="inner">碰撞多次的站台退避範圍大、等得久；新來的站台範圍小、很快重傳，反而先搶到通道，不公平。</div></details></li>
     <li><details><summary>說明碰撞是怎麼被偵測出來的</summary><div class="inner">量測媒介上的能量：同軸電纜上兩個訊號疊加，平均直流電壓超過門檻就判定碰撞；10BASE-T 是送出時接收線對也收到訊號。無線因為自己發射的能量太強，只能在傳送前偵測。</div></details></li>
-    <li><details><summary>用 L<sub>min</sub> = 2dR／v 算最小訊框</summary><div class="inner">例：1 Gbps、200 m、v = 2×10<sup>8</sup> m/s → τ = 1 μs，2τ = 2 μs，L<sub>min</sub> = 2000 bits = 250 bytes。</div></details></li>
-    <li><details><summary>算 BEBA 第 n 次碰撞後的平均等待與再撞機率</summary><div class="inner">平均 (2<sup>k</sup> − 1)／2 個 slot，再撞機率 1／2<sup>k</sup>，k = min(n, 10)。例：n = 3 → 3.5 slot = 179.2 μs，機率 1/8。</div></details></li>
     <li><details><summary>比較 Hub 與 Switch 的碰撞網域、廣播網域</summary><div class="inner">Hub：所有埠同一個碰撞網域、一個廣播網域，半雙工需 CSMA/CD。Switch：每埠一個碰撞網域、仍是一個廣播網域（要 router／VLAN 才能切開），全雙工不需 CSMA/CD。</div></details></li>
     <li><details><summary>畫出 802.3 訊框格式並算出 1518 / 64 / 46 的由來</summary><div class="inner">Preamble 7｜SFD 1｜DA 6｜SA 6｜LEN 2｜LLC ≤1500｜PAD 0–46｜FCS 4。Header+FCS = 18；1500+18 = 1518；64−18 = 46。</div></details></li>
     <li><details><summary>說明 I/G 與 U/L 位元的意義</summary><div class="inner">I/G：0 個別位址、1 群體位址。U/L：0 全球統一管理、1 區域自行管理。</div></details></li>

@@ -434,11 +434,12 @@ flowchart LR
   </div>
 
   <h2 id="calc">13. 公式拆解與範例計算</h2>
-  <div class="callout note">本章公式都以「一個封包（訊框）傳輸時間」為時間單位。G、S 的單位是「個 ⁄ 封包時間」；換成實際數字時，先算一個封包要送多久。</div>
+  <div class="callout note">本章公式都以「一個封包（訊框）傳輸時間」為時間單位。G、S 的單位是「個 ⁄ 封包時間」。</div>
 
   <h3>① Poisson 機率</h3>
   <div class="callout tip"><b>Pr[k] = G<sup>k</sup>e<sup>−G</sup> ⁄ k!</b></div>
   <p>符號：G＝每個封包時間平均產生幾個封包；k＝實際產生的個數。</p>
+  <p><span class="sup self">自編例子</span>λ = 4 取自講義 p.11 的圖；下面的機率值為自行代入計算，講義沒有列出。</p>
   <ol>
     <li>講義 p.11 的 λ = 4：Pr[0] = e<sup>−4</sup> = <b>0.0183</b>。</li>
     <li>Pr[4] = 4<sup>4</sup> × e<sup>−4</sup> ⁄ 4! = 256 × 0.0183 ⁄ 24 = <b>0.195</b>，和 p.11 圖上紫色峰值（約 0.20）一致。</li>
@@ -450,55 +451,20 @@ flowchart LR
   <ol>
     <li>令 dS ⁄ dG = 0：e<sup>−2G</sup> 永遠 &gt; 0，所以 1 − 2G = 0 → <b>G = 0.5</b>。</li>
     <li>S = 0.5 × e<sup>−1</sup> = 0.5 × 0.3679 = <b>0.184</b>。</li>
-    <li>G = 1 時：S = e<sup>−2</sup> = 0.135，負載加倍，吞吐量反而下降。</li>
   </ol>
   <p><b>意義</b>：通道最多只有 18.4% 的時間在成功傳送，其餘是碰撞或閒置。</p>
 
-  <h3>③ Slotted ALOHA 最大吞吐量與 slot 的三種結果</h3>
+  <h3>③ Slotted ALOHA 最大吞吐量</h3>
   <div class="callout tip"><b>S = Ge<sup>−G</sup></b>　　<b>dS ⁄ dG = (1 − G)e<sup>−G</sup></b></div>
   <ol>
     <li>1 − G = 0 → <b>G = 1</b>；S = 1 × e<sup>−1</sup> = <b>0.368</b>。</li>
-    <li><span class="sup">補充</span>G = 1 時每個 slot 的結果：空的 Pr[0] = e<sup>−1</sup> = <b>36.8%</b>；成功 Pr[1] = 1 × e<sup>−1</sup> = <b>36.8%</b>；碰撞 1 − 0.368 − 0.368 = <b>26.4%</b>。</li>
   </ol>
 
-  <h3>④ 換算成實際數字</h3>
-  <ol>
-    <li>通道 1 Mbps、封包 1000 bits：一個封包時間 = 1000 ÷ 10<sup>6</sup> = <b>1 ms</b>，通道最多每秒 1000 個封包。</li>
-    <li>Pure ALOHA 最多 1000 × 0.184 = <b>184 個／秒</b>（約 184 kbps）。</li>
-    <li>Slotted ALOHA 最多 1000 × 0.368 = <b>368 個／秒</b>。</li>
-    <li>如果所有站台合起來每秒產生 500 個封包（含重送），G = 500 × 1 ms = 0.5：Pure ALOHA S = 0.5 × e<sup>−1</sup> = 0.184 → 184 個成功；Slotted S = 0.5 × e<sup>−0.5</sup> = 0.5 × 0.6065 = <b>0.303</b> → 303 個成功。</li>
-  </ol>
-
-  <h3>⑤ <span class="sup">補充</span>平均要送幾次才成功</h3>
-  <div class="callout tip"><b>G ⁄ S = 1 ⁄ P<sub>0</sub></b>：Pure ALOHA = e<sup>2G</sup>，Slotted = e<sup>G</sup></div>
-  <ol>
-    <li>Pure ALOHA 在 G = 0.5：e<sup>1</sup> = <b>2.72</b> 次。</li>
-    <li>Slotted 在 G = 1：e<sup>1</sup> = 2.72 次；G = 2 時 e<sup>2</sup> = 7.39 次，負載越高重送越多。</li>
-  </ol>
-
-  <h3>⑥ 指數分佈</h3>
+  <h3>④ 指數分佈</h3>
   <div class="callout tip"><b>P(W &gt; t) = e<sup>−λt</sup></b>　　<b>E(W) = 1 ⁄ λ</b>　　<b>Var(W) = 1 ⁄ λ<sup>2</sup></b></div>
-  <ol>
-    <li>平均每 ms 到 2 個封包（λ = 2 ⁄ ms）：平均間隔 E(W) = 1 ⁄ 2 = <b>0.5 ms</b>；Var = 1 ⁄ 4 = 0.25 ms<sup>2</sup>，標準差 0.5 ms。</li>
-    <li>超過 1 ms 都沒有封包：P(W &gt; 1) = e<sup>−2</sup> = <b>0.135</b>。</li>
-    <li>0.5 ms 內就有封包：P(W ≤ 0.5) = 1 − e<sup>−1</sup> = <b>0.632</b>。</li>
-  </ol>
 
-  <h3>⑦ On-Off 平均位元率</h3>
+  <h3>⑤ On-Off 平均位元率</h3>
   <div class="callout tip"><b>R<sub>m</sub> = αR ⁄ (α + β)</b></div>
-  <ol>
-    <li>語音 R = 64 kbps，平均講話 1⁄β = 0.4 s（β = 2.5），平均安靜 1⁄α = 0.6 s（α = 1.667）。</li>
-    <li>R<sub>m</sub> = 1.667 × 64 ⁄ (1.667 + 2.5) = 106.7 ⁄ 4.167 = <b>25.6 kbps</b>。</li>
-    <li>驗算：ON 比例 = 0.4 ⁄ (0.4 + 0.6) = 40%，64 × 0.4 = 25.6 ✓。</li>
-  </ol>
-
-  <h3>⑧ <span class="sup">補充</span>CSMA 的吞吐量</h3>
-  <div class="callout tip">Nonpersistent：<b>S = Ge<sup>−aG</sup> ⁄ (G(1 + 2a) + e<sup>−aG</sup>)</b>　　1-persistent（a = 0）：<b>S = G(1 + G)e<sup>−G</sup> ⁄ (G + e<sup>−G</sup>)</b></div>
-  <ol>
-    <li>Nonpersistent，a = 0.01、G = 1：e<sup>−0.01</sup> = 0.990；S = 0.990 ⁄ (1.02 + 0.990) = <b>0.493</b>。</li>
-    <li>a = 0 時 Nonpersistent 化簡成 S = G ⁄ (1 + G)，G → ∞ 時逼近 1。</li>
-    <li>1-persistent，a = 0、G = 1：S = 1 × 2 × 0.368 ⁄ (1 + 0.368) = 0.736 ⁄ 1.368 = <b>0.538</b>，約是它的最大值。</li>
-  </ol>
 
   <h2 id="glossary">14. 專有名詞對照</h2>
   <details><summary>展開 22 個名詞</summary><div class="inner"><div class="tbl-wrap"><table>

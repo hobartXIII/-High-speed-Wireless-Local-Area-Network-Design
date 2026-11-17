@@ -574,57 +574,6 @@
     S('text', { x: 450, y: 248, 'font-size': 12, fill: 'var(--orange)', 'font-weight': 600, text: 'Beacon、PLCP 標頭用最外圈 1 Mbps 送' }, svg);
   })();
 
-  /* ---------- 7. OFDM 計算器 ---------- */
-  (function ofdm() {
-    const svg = svgRoot(document.getElementById('fig-ofdm'), 720, 240, 'OFDM 速率計算');
-    const modSel = document.getElementById('ofdm-mod');
-    const rateSel = document.getElementById('ofdm-rate');
-    const out = document.getElementById('ofdm-out');
-    const STD = { '1|1/2': 6, '1|3/4': 9, '2|1/2': 12, '2|3/4': 18, '4|1/2': 24, '4|3/4': 36, '6|2/3': 48, '6|3/4': 54 };
-    const NAME = { 1: 'BPSK', 2: 'QPSK', 4: '16-QAM', 6: '64-QAM' };
-    function draw() {
-      clear(svg);
-      const b = +modSel.value, rs = rateSel.value;
-      const [rn, rd] = rs.split('/').map(Number);
-      // constellation
-      const cx = 115, cy = 120, half = 95;
-      S('rect', { x: cx - half, y: cy - half, width: half * 2, height: half * 2, rx: 6, fill: 'var(--surface-2)', stroke: 'var(--border)' }, svg);
-      S('line', { x1: cx - half, y1: cy, x2: cx + half, y2: cy, stroke: 'var(--muted)' }, svg);
-      S('line', { x1: cx, y1: cy - half, x2: cx, y2: cy + half, stroke: 'var(--muted)' }, svg);
-      S('text', { x: cx + half - 4, y: cy - 4, 'text-anchor': 'end', 'font-size': 10, cls: 't-muted', text: 'I' }, svg);
-      S('text', { x: cx + 4, y: cy - half + 12, 'font-size': 10, cls: 't-muted', text: 'Q' }, svg);
-      let pts = [];
-      if (b === 1) pts = [[-1, 0], [1, 0]];
-      else {
-        const m = b === 2 ? 2 : b === 4 ? 4 : 8;
-        for (let i = 0; i < m; i++) for (let j = 0; j < m; j++) pts.push([(2 * i - (m - 1)) / (m - 1), (2 * j - (m - 1)) / (m - 1)]);
-      }
-      pts.forEach(p => S('circle', { cx: cx + p[0] * (half - 14), cy: cy - p[1] * (half - 14), r: b === 6 ? 3.5 : 6, fill: 'var(--accent)' }, svg));
-      S('text', { x: cx, y: cy + half + 20, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 600, text: `${NAME[b]}：${2 ** b} 個點 = ${b} bit／子載波` }, svg);
-      // subcarriers
-      const x0 = 250, w = 450;
-      S('text', { x: x0, y: 30, 'font-size': 13, 'font-weight': 700, text: '一個 OFDM symbol（4 μs）裡的 52 個子載波' }, svg);
-      const sw = w / 52;
-      const pilots = new Set([5, 19, 32, 46]);
-      for (let i = 0; i < 52; i++) {
-        const pil = pilots.has(i);
-        S('rect', { x: x0 + i * sw, y: 46, width: sw - 1.5, height: 60, rx: 1.5, fill: pil ? 'var(--muted)' : 'var(--accent)', opacity: pil ? 0.6 : 0.85 }, svg);
-      }
-      S('text', { x: x0, y: 124, 'font-size': 11, cls: 't-muted', text: '藍：48 個資料子載波　灰：4 個 pilot' }, svg);
-      const raw = 48 * b, eff = raw * rn / rd, rate = eff / 4;
-      const lines = [
-        `48 × ${b} bits = ${raw} bits（編碼後）`,
-        `× 碼率 ${rs} = ${eff} bits 有效資料`,
-        `÷ 4 μs = ${rate} Mbps`,
-      ];
-      lines.forEach((l, i) => S('text', { x: x0, y: 156 + i * 24, 'font-size': 15, 'font-weight': i === 2 ? 800 : 500, cls: 't-mono', text: l, fill: i === 2 ? 'var(--accent)' : 'var(--fg)' }, svg));
-      const std = STD[b + '|' + rs];
-      out.textContent = std ? `✔ ${NAME[b]} + 碼率 ${rs} = ${std} Mbps，是 802.11a 的標準速率${[6, 12, 24].includes(std) ? '（必要速率）' : ''}。` : `這個組合算得出 ${rate} Mbps，但 802.11a 沒有定義它（11a 的組合：BPSK 1/2、3/4；QPSK 1/2、3/4；16-QAM 1/2、3/4；64-QAM 2/3、3/4）。`;
-    }
-    modSel.addEventListener('change', draw); rateSel.addEventListener('change', draw);
-    draw();
-  })();
-
   /* ---------- 8. 頻段 ---------- */
   (function bands() {
     const svg = svgRoot(document.getElementById('fig-bands'), 720, 190, '免執照頻段頻寬比較');

@@ -9,9 +9,12 @@
 <link rel="stylesheet" href="assets/css/highlighter.css">
 <script src="assets/js/highlighter.js"></script>
 <script src="assets/js/common.js"></script>
+<script src="assets/js/exam-refs.js"></script>
 <style>
   .mq { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; margin: 16px 0; }
   .mq-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 8px; }
+  .mq-refs { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .85rem; color: var(--muted); margin: -2px 0 8px; }
+  .mq-refs a { color: var(--accent, inherit); }
   .mq-id { font-weight: 700; font-size: 1.05rem; }
   .mq-pts { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
   .chip { font-size: .78rem; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap; }
@@ -63,6 +66,7 @@
 const P = [
 {
   id: 'Q1', pts: '20%',
+  k: 'K1 K2 K4 K5 K6', sec: ['ch1#collision', 'ch2-1#unique', 'ch2-4#dcf', 'ch2-4#backoff', 'ch2-4#hidden'],
   en: `At present, IEEE 802.3 Ethernet uses CSMA/CD and IEEE 802.11 WLAN uses CSMA/CA to access channel. Please describe the differences between IEEE 802.3 and IEEE 802.11 in detail (10%). In addition, as IEEE 802.3 Ethernet uses CSMA/CA and IEEE 802.11 WLAN uses CSMA/CD, they show what kinds of results are generated? (10%)`,
   zh: `目前 IEEE 802.3 乙太網路使用 CSMA/CD、IEEE 802.11 無線區域網路使用 CSMA/CA 存取通道。請詳細說明 IEEE 802.3 與 IEEE 802.11 的差異（10%）。另外，如果 IEEE 802.3 乙太網路改用 CSMA/CA、IEEE 802.11 無線區域網路改用 CSMA/CD，會產生什麼結果？（10%）`,
   az: `<p>先用表格比六個面向（碰撞處理、退避、確認、載波偵測、優先權、媒介特性），再分兩點答互換：802.11 改用 CD 做不到也沒用；802.3 改用 CA 能運作但變慢、沒有好處。</p>`,
@@ -84,6 +88,7 @@ const P = [
 },
 {
   id: 'Q2', pts: '10%',
+  k: 'K11 K12 K26', sec: ['ch2-3#fc', 'ch2-5#ps', 'ch2-5#ibss-ps', 'ch3#apsd'],
   en: `What mechanism does IEEE 802.11 provide for SATs <span style="color:var(--muted)">[sic，應為 STAs]</span> to enter sleep mode without losing packets? (10%)`,
   zh: `IEEE 802.11 提供什麼機制，讓站台（STA）進入睡眠模式而不遺失封包？（10%）`,
   az: `<p>題目沒說機制名稱，要自己答出<b>電源管理</b>（PM 位元 → AP 緩衝 → TIM → PS-Poll → More Data → DTIM），infrastructure 與 IBSS（ATIM 視窗）兩種組態都寫，可補 APSD。</p>`,
@@ -98,6 +103,7 @@ const P = [
 },
 {
   id: 'Q3', pts: '20%',
+  k: 'K20 K15 K17', sec: ['ch2-1#modulation', 'ch2-2#distribution', 'ch2-3#fc', 'ch2-3#duration'],
   en: `Explanation (20%):
   <ol type="A"><li>QAM (quadrature amplitude modulation):</li><li>More Data Field:</li><li>Integration service:</li><li>Duration or Connection ID:</li></ol>`,
   zh: `解釋（20%）：
@@ -116,6 +122,7 @@ const P = [
 },
 {
   id: 'Q4', pts: '10%',
+  k: 'K16', sec: ['ch2-3#addr'],
   en: `What do the reasons use four address fields in MAC header of IEEE 802.11 data frame? Please describe the details. (10%)`,
   zh: `IEEE 802.11 資料訊框的 MAC 標頭為什麼要用四個位址欄位？請詳細說明。（10%）`,
   az: `<p>主軸：有線只需要原始兩端；無線多了「這一跳的兩端」，只有 AP↔AP 的 WDS 四個位址才全都不同，所以需要第四個；附 To/From DS 表。</p>`,
@@ -136,6 +143,7 @@ const P = [
 },
 {
   id: 'Q5', pts: '10%',
+  k: 'K3 K4 K21', sec: ['ch2-4#ifs', 'ch2-4#backoff', 'ch3#edca'],
   en: `In IEEE 802.11, how to use "time" to set different priorities? (10%)`,
   zh: `在 IEEE 802.11 中，怎麼用「時間」設定不同的優先權？（10%）`,
   az: `<p>題目沒說「IFS」，要自己答出<b>訊框間隔</b>：越短越優先（SIFS &lt; PIFS &lt; DIFS &lt; EIFS），加上隨機退避，再延伸到 802.11e 的 AIFS[AC]。</p>`,
@@ -152,6 +160,7 @@ const P = [
 },
 {
   id: 'Q6', pts: '10%',
+  k: 'K9 K22', sec: ['ch2-1#mac', 'ch2-5#pcf', 'ch2-5#access', 'ch3#why'],
   en: `Please explain the advantages and disadvantages of the PCF mechanism. (10%)`,
   zh: `請說明 PCF 機制的優點與缺點。（10%）`,
   az: `<p>先一兩句說 PCF 怎麼運作，再分優點、缺點條列，最後點出 HCCA 就是針對這些缺點改進。</p>`,
@@ -175,6 +184,7 @@ const P = [
 },
 {
   id: 'Q7', pts: '10%',
+  k: 'K13', sec: ['ch2-3#mgmt', 'ch2-5#scan'],
   en: `In IEEE 802.11, what are the differences between active scan and passive scan? Please describe the details. (10%)`,
   zh: `在 IEEE 802.11 中，主動掃描與被動掃描有什麼差異？請詳細說明。（10%）`,
   az: `<p>用表格比做法、時間、耗電與流量、取得的資訊，再寫兩者的共同目的與掃描之後的流程。</p>`,
@@ -190,6 +200,7 @@ const P = [
 },
 {
   id: 'Q8', pts: '15%',
+  k: 'K6 K7 K9 K27', sec: ['ch2-1#unique', 'ch2-1#ap', 'ch2-4#ifs', 'ch2-4#hidden', 'ch2-4#frag', 'ch2-5#access'],
   en: `Please define hidden node problem and exposed node problem in detail. (10%) If we want to solve the problem to follow IEEE 802.11 standard, please describe your ideas. (5%) Note that you do not use RTS and CTS control frames.`,
   zh: `請詳細定義隱藏節點問題與暴露節點問題。（10%）如果要在符合 IEEE 802.11 標準的前提下解決這個問題，請說明你的想法。（5%）注意：不能使用 RTS 與 CTS 控制訊框。`,
   az: `<p>先用站台排列定義兩種問題（碰撞發生在接收端／被不必要地延後），再列出不用 RTS/CTS 的解法並說明原理。</p>`,
@@ -209,6 +220,7 @@ const P = [
 },
 {
   id: 'Q9', pts: '10%',
+  k: 'K5 K1', sec: ['ch0#ieee802', 'ch1#protocol', 'ch2-4#dcf'],
   en: `What are positive ACK? (5%) Why does not Ethernet use ACK frame? (5%)`,
   zh: `什麼是正向確認（positive ACK）？（5%）為什麼乙太網路不使用 ACK 訊框？（5%）`,
   az: `<p>先定義正向 ACK（SIFS 後回、沒收到就重傳、重複訊框靠 Retry＋序號刪除），再從「CD 能確認成功、有線可靠、上層負責可靠度」答 Ethernet 為何不用。這是講義 2-4 p.11 的原句問題。</p>`,
@@ -228,6 +240,7 @@ const REL = r => `<div class="src">🔗 相關練習：${r.map(id => `<a href="m
 document.getElementById('qp').innerHTML = P.map(q => `
   <section class="mq" id="${q.id}">
     <div class="mq-head"><span class="mq-id">${q.id}</span><span class="mq-pts">(${q.pts})</span></div>
+    ${examRefs(q)}
     <div class="q-en" lang="en">${q.en}</div>
     <div class="q-zh">${q.zh}</div>
     <details>
@@ -246,6 +259,7 @@ const SUP = '<span class="sup">補充</span>';
 const L = [
 {
   id: 'L1', ch: '0 LAN 概論 p.8', kind: '部分',
+  k: '', sec: ['ch0#def'],
   en: `What is a LAN? PAN? MAN? WAN?`,
   zh: `什麼是區域網路（LAN）？個人區域網路（PAN）、都會區域網路（MAN）、廣域網路（WAN）又是什麼？`,
   az: `<p>LAN 的定義照講義背；PAN、MAN、WAN 講義只寫了問號，用「涵蓋範圍」比較，並舉講義 p.3–4 列出的 IEEE 標準當例子。</p>`,
@@ -259,6 +273,7 @@ const L = [
 },
 {
   id: 'L2', ch: '2-1 p.7、p.9', kind: '講義有答案',
+  k: '③', sec: ['ch2-1#unique'],
   en: `What is unique about wireless?`,
   zh: `無線有什麼獨特之處？`,
   az: `<p>講義分五點：困難的媒介、無法假設全連通（隱藏節點）、各國法規、移動性、安全性。這題是後面所有 802.11 機制的「為什麼」。</p>`,
@@ -272,6 +287,7 @@ const L = [
 },
 {
   id: 'L3', ch: '2-1 p.9', kind: '補充',
+  k: 'K18', sec: ['ch2-1#unique'],
   en: `Security: no physical boundaries, overlapping LANs — power control ???`,
   zh: `安全性：沒有實體邊界、區域網路互相重疊——功率控制？？？`,
   az: `<p>講義在「安全性」旁邊寫了 power control 加三個問號，意思是「能不能用控制發射功率來改善安全性」。回答能減少外洩，但不能取代加密。</p>`,
@@ -285,6 +301,7 @@ const L = [
 },
 {
   id: 'L4', ch: '2-1 p.11', kind: '講義有答案',
+  k: 'K5 K7 K20', sec: ['ch2-1#req', 'ch2-1#dsss', 'ch2-4#dcf', 'ch2-4#frag'],
   en: `Need to be robust for interference?`,
   zh: `需要能抵抗干擾嗎？`,
   az: `<p>答「需要」，理由是講義列的三種干擾來源；再寫 802.11 用哪些機制抵抗。</p>`,
@@ -301,6 +318,7 @@ const L = [
 },
 {
   id: 'L5', ch: '2-1 p.11', kind: '部分',
+  k: 'K6 K9 K27', sec: ['ch2-1#unique', 'ch2-1#ap', 'ch2-4#hidden'],
   en: `Need mechanisms to deal with Hidden Nodes?`,
   zh: `需要處理隱藏節點的機制嗎？`,
   az: `<p>答「需要」，理由是無線無法假設全連通；再列講義出現過的三種機制。</p>`,
@@ -314,6 +332,7 @@ const L = [
 },
 {
   id: 'L6', ch: '2-1 p.24', kind: '補充',
+  k: '', sec: ['ch2-1#configs'],
   en: `Wireless Bridging (Building A ↔ Building B, vs. private lease line): Security? Data Rate. Range? Legal? Cost?`,
   zh: `無線橋接（A 大樓 ↔ B 大樓，對比私人租用專線）：安全性？資料速率。範圍？合法性？成本？`,
   az: `<p>投影片比較兩棟大樓之間用無線橋接，還是租專線（802.1g 遠端橋接）。四個問號各寫一兩句利弊。注意 Data Rate 後面沒有問號，不要硬解讀。</p>`,
@@ -326,6 +345,7 @@ const L = [
 },
 {
   id: 'L7', ch: '2-1 p.36', kind: '講義有答案',
+  k: 'K9', sec: ['ch2-1#mac', 'ch3#why'],
   en: `Time Bounded Services: optional point coordination function (PCF) — Existing in commercial products?`,
   zh: `時間受限的服務：選用的點協調功能（PCF）——商業產品中存在嗎？`,
   az: `<p>答「幾乎沒有」，理由是講義列的兩點，最後補上後來由 WMM／802.11e 取代。</p>`,
@@ -337,6 +357,7 @@ const L = [
 },
 {
   id: 'L8', ch: '2-1 p.40', kind: '部分',
+  k: 'K19', sec: ['ch2-1#phy-svc'],
   en: `Question: how to decide the proper data rate?`,
   zh: `問題：如何決定適當的資料速率？`,
   az: `<p>先答講義的重點：<b>標準不規定</b>，由廠商自己做；再舉常見做法。</p>`,
@@ -349,6 +370,7 @@ const L = [
 },
 {
   id: 'L9', ch: '2-2 p.4', kind: '部分',
+  k: 'K2 K23', sec: ['ch2-2#char', 'ch3#txop'],
   en: `Bandwidth fairness is guaranteed or not (to observe long time). By employing the CSMA/CA protocol, the bandwidth employed by each station may be different. Needs load sharing scheme in the near future?`,
   zh: `頻寬公平性有沒有保證（需要長時間觀察）。使用 CSMA/CA 時，每個站台用到的頻寬可能不同。不久的將來需要負載分擔機制嗎？`,
   az: `<p>講義的答案是：<b>公平性不保證</b>，每台用到的頻寬可能不同。再說明為什麼不同，以及負載分擔的方向。</p>`,
@@ -362,6 +384,7 @@ const L = [
 },
 {
   id: 'L10', ch: '2-2 p.14', kind: '補充',
+  k: 'K27', sec: ['ch2-2#spatial'],
   en: `Question: Is it possible for a single BSS to utilizes multiple channels?`,
   zh: `問題：單一 BSS 有可能使用多個頻道嗎？`,
   az: `<p>傳統的答案是<b>不行</b>，一個 BSS 用一個頻道；要用多個頻道就是多個 BSS 放在同一個地方。可以補充新標準的做法。</p>`,
@@ -375,6 +398,7 @@ const L = [
 },
 {
   id: 'L11', ch: '2-2 p.17', kind: '部分',
+  k: 'K15', sec: ['ch2-2#portal'],
   en: `Bridging to the 802.11 architecture raises the questions of which logical medium to bridge to; the DSM or the WM?`,
   zh: `橋接到 802.11 架構時就產生一個問題：要橋接到哪個邏輯媒介，DSM 還是 WM？`,
   az: `<p>答 <b>DSM</b>，並說明是由 Portal 處理；理由用講義下一句：Portal 要處理 BSS 成員動態變化與位址／位置對應。</p>`,
@@ -388,6 +412,7 @@ const L = [
 },
 {
   id: 'L12', ch: '2-4 p.11', kind: '講義有答案',
+  k: 'K5', sec: ['ch2-4#dcf'],
   en: `Why does not Ethernet use ACK frame?`,
   zh: `為什麼乙太網路不用 ACK 訊框？`,
   az: `<p>這題就是考古題 <a href="#Q9">Q9</a> 的後半，完整答案看 Q9。</p>`,
@@ -400,6 +425,7 @@ const L = [
 },
 {
   id: 'L13', ch: '2-5 p.18', kind: '講義有答案',
+  k: 'K11', sec: ['ch2-5#ps'],
   en: `How can we power off during idle periods while maintaining an active session?`,
   zh: `我們要如何在閒置期間關閉電源，同時維持一個活動中的連線？`,
   az: `<p>先說問題（閒置接收最耗電），再答 802.11 電源管理協定的三個特性，最後寫運作步驟。步驟和考古題 Q2 相同。</p>`,
@@ -413,6 +439,7 @@ const L = [
 },
 {
   id: 'L14', ch: '11EnhancedQoS 第 7 張', kind: '講義有答案',
+  k: 'K9 K22', sec: ['ch3#why'],
   en: `Is IEEE 802.11 enough for QoS?`,
   zh: `IEEE 802.11 足以提供 QoS 嗎？`,
   az: `<p>答「不夠」，分 DCF、PCF 兩部分說明，最後帶出 802.11e 的 HCF。</p>`,
@@ -427,6 +454,7 @@ const L = [
 },
 {
   id: 'L15', ch: '11EnhancedQoS 第 46 張', kind: '講義有答案',
+  k: 'K23 K21 K22', sec: ['ch3#txop', 'ch3#hcca'],
   en: `When will a QSTA get a TXOP?`,
   zh: `QSTA 什麼時候會得到 TXOP？`,
   az: `<p>兩種情況：EDCA 競爭贏了，或收到 QoS CF-Poll。可再補 TXOP 內怎麼送、TXOP limit 從哪裡來。</p>`,
@@ -443,6 +471,7 @@ const L = [
 document.getElementById('lq').innerHTML = L.map(q => `
   <section class="mq" id="${q.id}">
     <div class="mq-head"><span class="mq-id">${q.id}</span><span class="chip">${q.ch}</span><span class="chip">${q.kind}</span></div>
+    ${examRefs(q)}
     <div class="q-en" lang="en">${q.en}</div>
     <div class="q-zh">${q.zh}</div>
     <details>

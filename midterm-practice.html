@@ -9,9 +9,12 @@
 <link rel="stylesheet" href="assets/css/highlighter.css">
 <script src="assets/js/highlighter.js"></script>
 <script src="assets/js/common.js"></script>
+<script src="assets/js/exam-refs.js"></script>
 <style>
   .mq { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; margin: 16px 0; }
   .mq-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 8px; }
+  .mq-refs { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .85rem; color: var(--muted); margin: -2px 0 8px; }
+  .mq-refs a { color: var(--accent, inherit); }
   .mq-id { font-weight: 700; font-size: 1.05rem; }
   .mq-pts { font-family: var(--mono); font-size: .85rem; color: var(--muted); }
   .chip { font-size: .78rem; padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); white-space: nowrap; }
@@ -85,6 +88,7 @@ const Q = {
 qa: [
 {
   id: 'A1', pts: '15%', chips: [['x','ch1 × ch2-4'],['past','考古 Q1 變形']],
+  k: 'K1 K2 K4', sec: ['ch1#collision', 'ch2-4#backoff', 'ch2-4#proc'],
   en: `Both IEEE 802.3 and IEEE 802.11 use a binary exponential backoff.
   <ol type="a"><li>Compare the two backoff procedures in detail: when backoff is invoked, how the backoff range grows, and what a station does with its backoff counter while the medium is busy. (10%)</li>
   <li>The lecture points out that the 802.3 BEBA has a "First-in-Last-out effect". Does 802.11 DCF suffer from the same problem? Explain which DCF rules reduce it. (5%)</li></ol>`,
@@ -102,6 +106,7 @@ qa: [
 },
 {
   id: 'A2', pts: '10%', chips: [['x','ch0/ch1 × ch2-2']],
+  k: 'K14 K15', sec: ['ch2-2#diff', 'ch2-2#distribution', 'ch2-2#assoc'],
   en: `The 802.11 standard states that "destination address does not equal destination location." Why is this not a problem in a wired LAN? What problem does it create for 802.11, and which architectural components and services does 802.11 define to solve it while still appearing to LLC as an ordinary 802 LAN?`,
   zh: `802.11 標準說「目的地位址不等於目的地位置」。為什麼這在有線 LAN 不是問題？它對 802.11 造成什麼問題？802.11 定義了哪些架構元件與服務來解決，同時讓 LLC 看起來仍是一般的 802 LAN？`,
   zd: `<p>在有線 LAN 中，位址實際上就代表一個實體連接點：站台一直接在同一條線／同一個埠上，所以橋接器可以學到某個位址在哪裡。在 802.11 中，可定址的單位是 STA，它是訊息的目的地，但<b>不是固定的位置</b>：它會移動，而且 PHY 的涵蓋範圍有限，所以網路必須追蹤<i>目前是哪一個 AP 在服務這個 STA</i>。移動性必須在 MAC 內處理，對 LLC 是透明的。</p>
@@ -113,6 +118,7 @@ qa: [
 },
 {
   id: 'A3', pts: '15%', chips: [['x','ch2-5 × ch3'],['past','考古 Q6 延伸']],
+  k: 'K9 K22 K23', sec: ['ch2-5#cfp', 'ch3#why', 'ch3#hcca'],
   en: `The lecture states that "PCF is not enough" for QoS.
   <ol type="a"><li>Give three reasons why the 802.11 PCF cannot guarantee QoS. (6%)</li>
   <li>Explain how HCCA in 802.11e overcomes each of the reasons you gave. (6%)</li>
@@ -132,6 +138,7 @@ qa: [
 },
 {
   id: 'A4', pts: '15%', chips: [['x','ch2-4 × ch3'],['past','考古 Q5 延伸']],
+  k: 'K3 K21 K23', sec: ['ch2-4#ifs', 'ch3#edca', 'ch3#txop'],
   en: `Both 802.11 DCF and 802.11e EDCA use "time" to create priorities.
   <ol type="a"><li>In legacy 802.11, between <i>which</i> entities (or frame types) does the IFS create priorities? In EDCA, between which entities? (5%)</li>
   <li>Why must AIFS[AC] always be larger than SIFS? What would happen if an AC used AIFS = SIFS? (5%)</li>
@@ -151,6 +158,7 @@ qa: [
 },
 {
   id: 'A5', pts: '10%', chips: [['x','ch2-1 × ch3']],
+  k: 'K27 K25', sec: ['ch2-1#ap', 'ch3#dls'],
   en: `"In an Infrastructure BSS, all mobile stations communicate with the AP."
   <ol type="a"><li>List the advantages and disadvantages of forcing all traffic through the AP. (6%)</li>
   <li>Which 802.11e mechanism removes the main disadvantage? Why does it still need the QAP at the beginning? (4%)</li></ol>`,
@@ -166,6 +174,7 @@ qa: [
 },
 {
   id: 'A6', pts: '15%', chips: [['x','ch2-5 × ch3'],['past','考古 Q2 延伸']],
+  k: 'K11 K26', sec: ['ch2-3#fc', 'ch2-5#ps', 'ch3#apsd'],
   en: `Power saving in 802.11 and 802.11e.
   <ol type="a"><li>Describe how a station in an infrastructure BSS sleeps without losing unicast and broadcast frames. Mention the related frame-header bits. (6%)</li>
   <li>The lecture says "VoIP does not work in legacy power management mode." Explain why. (4%)</li>
@@ -185,6 +194,7 @@ qa: [
 },
 {
   id: 'A7', pts: '10%', chips: [['x','ch0 × ch1 × ch2-4 × ch3'],['past','考古 Q9 延伸']],
+  k: 'K5 K24 K1', sec: ['ch0#ieee802', 'ch1#protocol', 'ch2-4#dcf', 'ch3#ack', 'ch3#ba'],
   en: `Acknowledgement design differs across the standards in this course: Ethernet has no MAC-level ACK, 802.11 acknowledges every directed frame, and 802.11e adds several ACK policies.
   <ol type="a"><li>Explain why each standard made its choice. Where is reliability provided for Ethernet? (6%)</li>
   <li>Give one situation in which a QSTA should choose the "No ACK" policy and one in which it should choose "Block ACK". (4%)</li></ol>`,
@@ -200,6 +210,7 @@ qa: [
 },
 {
   id: 'A8', pts: '10%', chips: [['x','ch0 × ch2-1']],
+  k: 'K19', sec: ['ch0#encap', 'ch2-1#req', 'ch2-1#entities'],
   en: `Relate the 802.11 protocol architecture to the OSI model.
   <ol type="a"><li>Explain the relationship among MSDU, MPDU, PSDU and PPDU. (4%)</li>
   <li>802.11 requires "a single MAC to support multiple PHYs." Explain why the PHY is split into the PLCP and PMD sublayers and how this split supports that requirement. (6%)</li></ol>`,
@@ -215,6 +226,7 @@ qa: [
 },
 {
   id: 'A9', pts: '15%', chips: [['x','ch2-1 × ch2-3 × ch2-4 × ch2-5']],
+  k: 'K6 K3 K17', sec: ['ch2-1#plcp', 'ch2-3#duration', 'ch2-4#ifs', 'ch2-4#hidden', 'ch2-5#access'],
   en: `802.11 performs carrier sense "both through physical and virtual mechanisms".
   <ol type="a"><li>Why is physical carrier sense alone not sufficient in a WLAN? (4%)</li>
   <li>List at least four different ways in which a station's NAV can be set, and for each one say which frame or field carries the information. (8%)</li>
@@ -234,6 +246,7 @@ qa: [
 },
 {
   id: 'A10', pts: '10%', chips: [['x','ch1 × ch2-1 × ch2-4']],
+  k: 'K1 K7', sec: ['ch1#frame', 'ch2-4#frag'],
   en: `Frame length design in 802.3 and 802.11.
   <ol type="a"><li>802.3 defines a minimum and a maximum MAC frame size. Give the reason for each. (4%)</li>
   <li>802.11 has no minimum frame size but supports fragmentation, which 802.3 does not. Explain why each design fits its own medium. (6%)</li></ol>`,
@@ -249,6 +262,7 @@ qa: [
 },
 {
   id: 'A11', pts: '10%', chips: [['x','ch1 × ch2-5 × ch3']],
+  k: 'K10 K11 K12 K26', sec: ['ch2-5#sync', 'ch2-5#tbtt', 'ch2-5#ps', 'ch2-5#ibss-ps', 'ch3#hcca', 'ch3#apsd'],
   en: `An Ethernet station needs no common clock with other stations, but every 802.11 station keeps a TSF timer synchronized to the BSS.
   <ol type="a"><li>List the functions in 802.11 and 802.11e that depend on this synchronization. (6%)</li>
   <li>How is the timer synchronized in an infrastructure BSS and in an IBSS? (4%)</li></ol>`,
@@ -264,6 +278,7 @@ qa: [
 },
 {
   id: 'A12', pts: '10%', chips: [['x','ch0 × ch3']],
+  k: 'K21 K22', sec: ['ch0#ieee802', 'ch3#diff'],
   en: `802.11e classifies traffic in two ways.
   <ol type="a"><li>Compare prioritized QoS and parameterized QoS. Which classification (UP or TSPEC) and which access method serves each? (5%)</li>
   <li>The 8 user priorities are the same as IEEE 802.1D, but EDCA has only 4 access categories. Why reuse 802.1D priorities, and how are the 8 UPs used inside one AC? (5%)</li></ol>`,
@@ -279,6 +294,7 @@ qa: [
 },
 {
   id: 'A13', pts: '15%', chips: [['x','ch2-4 × ch2-5 × ch3']],
+  k: 'K6 K9 K22', sec: ['ch2-4#hidden', 'ch2-5#access', 'ch3#hcca'],
   en: `The hidden terminal problem affects more than DCF.
   <ol type="a"><li>Explain how a hidden station harms (i) DCF data transfer and (ii) a PCF/HCCA contention-free period. (8%)</li>
   <li>For each case, describe the countermeasure 802.11 provides and its cost. (7%)</li></ol>`,
@@ -294,6 +310,7 @@ qa: [
 },
 {
   id: 'A14', pts: '15%', chips: [['x','ch2-1 × ch2-4 × ch2-5 × ch3']],
+  k: 'K7 K19 K23 K24 K25', sec: ['ch2-1#plcp', 'ch2-4#overhead', 'ch2-4#frag', 'ch3#ack', 'ch3#txop', 'ch3#dls', 'ch3#ba'],
   en: `"DCF generates many overheads related to PHY and MAC data units."
   <ol type="a"><li>List the overheads of one DCF data transfer. Which of them stay constant when the data rate increases? (5%)</li>
   <li>From 802.11b/g to 802.11e, several mechanisms reduce these overheads. Name at least four and state which overhead each one reduces. (10%)</li></ol>`,
@@ -304,11 +321,12 @@ qa: [
   <p><b>(b)</b> (1) <b>Short PLCP preamble</b>（802.11b）：96 µs 取代 192 µs → 省 PHY 負擔。(2) <b>Short slot time</b> 9 µs（802.11g）→ 省退避與 DIFS 時間。(3) <b>分段串（fragment burst）</b>：分段之間用 SIFS 隔開、不用重新競爭 → 省每個分段的退避／DIFS。(4) PCF 中<b>捎帶的 CF-Ack／CF-Poll</b>（Data+CF-Ack+CF-Poll）→ 省獨立的 ACK 與輪詢訊框。(5) <b>TXOP</b>（802.11e）：競爭一次後用 SIFS 隔開送多個訊框 → 省 DIFS／AIFS 與退避。(6) <b>Block Ack</b>：一個 BA 確認多個 MPDU → 省每個訊框的 SIFS + ACK。(7) <b>No Ack</b> policy → 完全省掉 ACK，用於無法利用重傳的流量。(8) <b>DLS</b> → 省掉經過 AP 的第二次傳送。</p>`,
   ae: `<p><b>(a)</b> DIFS, random backoff (slot × [0, CW]), the PLCP preamble and header, the MAC header (24 octets) and FCS, SIFS, and the ACK frame (with its own preamble/header). DIFS, backoff, SIFS and the PLCP preamble/header are fixed times that do not shrink with the data rate, so at high rates they dominate and efficiency drops.</p>
   <p><b>(b)</b> (1) <b>Short PLCP preamble</b> (802.11b): 96 µs instead of 192 µs → PHY overhead. (2) <b>Short slot time</b> 9 µs (802.11g) → backoff and DIFS time. (3) <b>Fragment burst</b>: fragments separated by SIFS without new contention → backoff/DIFS per fragment. (4) <b>Piggybacked CF-Ack / CF-Poll</b> in PCF (Data+CF-Ack+CF-Poll) → separate ACK and poll frames. (5) <b>TXOP</b> (802.11e): several frames separated by SIFS after one contention → DIFS/AIFS and backoff. (6) <b>Block Ack</b>: one BA for many MPDUs → SIFS + ACK per frame. (7) <b>No Ack</b> policy → the ACK entirely, for traffic that cannot use retransmissions. (8) <b>DLS</b> → the second transmission through the AP.</p>`,
-  az: `<p>這題是「效率」主線的跨章整理。答案的每一項都要寫「它省掉哪一種負擔」，不要只列名稱。(a) 的「固定時間不會隨速率變小」是推理，C13 有實際算給你看。</p>`,
+  az: `<p>這題是「效率」主線的跨章整理。答案的每一項都要寫「它省掉哪一種負擔」，不要只列名稱。(a) 的「固定時間不會隨速率變小」是推理。</p>`,
   src: `2-1 p.66（short PLCP）；2-3 p.28（short slot time）；2-4 p.22「Drawbacks of DCF」、p.29；2-5 p.4、p.12；11EnhancedQoS「ACK Policy」「Transmission Opportunity (TXOP)」「Brief of Block ACK」「Direct Link Setup (DLS)」`
 },
 {
   id: 'A15', pts: '15%', chips: [['x','ch2-2 × ch2-3 × ch2-5']],
+  k: 'K12 K14 K16', sec: ['ch2-3#states', 'ch2-3#ibss', 'ch2-3#addr', 'ch2-5#tbtt', 'ch2-5#ibss-ps'],
   en: `Compare an independent BSS (IBSS) with an infrastructure BSS with respect to:
   <ol type="a"><li>the services available and the frame classes allowed; (5%)</li>
   <li>the address fields used in data frames; (4%)</li>
@@ -328,6 +346,7 @@ qa: [
 },
 {
   id: 'A16', pts: '10%', chips: [['x','ch0 × ch2-4 × ch2-5 × ch3']],
+  k: 'K2 K9 K21 K22', sec: ['ch0#req', 'ch2-4#arch', 'ch3#edca', 'ch3#hcca'],
   en: `One of the basic LAN requirements in the lecture is "minimal dependence on any centralized component or control".
   <ol type="a"><li>Classify DCF, PCF, EDCA and HCCA as distributed or centralized. (4%)</li>
   <li>Discuss the trade-off between this requirement and QoS guarantees. Why does 802.11 keep the centralized methods optional and built on top of the distributed one? (6%)</li></ol>`,
@@ -345,6 +364,7 @@ qa: [
 qb: [
 {
   id: 'B1', pts: '10%', chips: [['past','考古 Q4 變形']],
+  k: 'K16', sec: ['ch2-3#addr'],
   en: `An Ethernet frame carries only two addresses (DA and SA), but an 802.11 data frame may carry up to four.
   <ol type="a"><li>Why does an 802.11 frame need more than two addresses even inside a single infrastructure BSS? (5%)</li>
   <li>In what situation is the fourth address needed? Use this case to explain: STA1 (associated with AP1) sends to STA4 (associated with AP2), and AP1 and AP2 are connected by a <i>wireless</i> distribution system. (5%)</li></ol>`,
@@ -360,6 +380,7 @@ qb: [
 },
 {
   id: 'B2', pts: '20%', chips: [['past','考古 Q3 變形']],
+  k: 'K3 K15 K22 K23', sec: ['ch2-4#ifs', 'ch2-2#portal', 'ch2-2#distribution', 'ch3#tspec', 'ch3#txop'],
   en: `Explanation (5% each). Explain how each item works and what problem it solves.
   <ol type="A"><li>EIFS</li><li>TXOP</li><li>Portal and the Integration service</li><li>Traffic Identifier (TID)</li></ol>`,
   zh: `解釋（各 5%）。說明每一項怎麼運作、解決什麼問題。
@@ -377,6 +398,7 @@ qb: [
 },
 {
   id: 'B3', pts: '15%', chips: [['x','ch2-1 × ch2-4 × ch2-5'],['past','考古 Q8 變形']],
+  k: 'K6 K7 K9 K27', sec: ['ch2-1#ap', 'ch2-4#hidden', 'ch2-4#frag', 'ch2-5#access'],
   en: `Consider four nodes in a line, A – B – C – D, where each node hears only its neighbors. B sends to A while C wants to send to D.
   <ol type="a"><li>Is C a hidden node or an exposed node? Explain why, even with RTS/CTS, 802.11 does not let C use the medium during B's transmission. (7%)</li>
   <li>Without using RTS/CTS, list three mechanisms or designs covered in this course that reduce the damage of hidden nodes, and explain each briefly. (8%)</li></ol>`,
@@ -392,6 +414,7 @@ qb: [
 },
 {
   id: 'B4', pts: '10%', chips: [['x','ch2-3 × ch2-5']],
+  k: 'K6 K9 K11 K17', sec: ['ch2-3#duration', 'ch2-5#cfp', 'ch2-5#ps'],
   en: `The Duration/ID field of the MAC header is used differently in different frames.
   <ol type="a"><li>In ordinary frames it carries a duration. Explain how this implements virtual carrier sense, and why both the RTS and the CTS carry it. (5%)</li>
   <li>During the CFP the field is not used to set the NAV, and in a PS-Poll it carries an ID instead. Explain why a duration is not needed in each case and what the PS-Poll uses the field for. (5%)</li></ol>`,
@@ -407,6 +430,7 @@ qb: [
 },
 {
   id: 'B5', pts: '15%', chips: [['x','ch2-5 × ch3'],['calc','含計算']],
+  k: 'K9 K10', sec: ['ch2-5#cfp', 'ch2-5#access', 'ch3#hcca'],
   en: `PCF superframe.
   <ol type="a"><li>How do DCF stations know not to contend during the CFP, and how is this protection removed? (5%)</li>
   <li>A station that is hidden from the Point Coordinator does not set its NAV. What problem can it cause, and what keeps the CF traffic going? (4%)</li>
@@ -426,6 +450,7 @@ qb: [
 },
 {
   id: 'B6', pts: '10%', chips: [['x','ch2-2 × ch2-3']],
+  k: 'K14', sec: ['ch2-2#assoc', 'ch2-3#states'],
   en: `A wired LAN lets any attached station send data immediately, but an 802.11 station must first be authenticated and then associated.
   <ol type="a"><li>Why does 802.11 need these two steps, and why must they be in this order? Why must some frames (e.g. Probe Request, Beacon, Authentication) still be allowed before a station has joined? (6%)</li>
   <li>Why is Disassociation a notification rather than a request? (4%)</li></ol>`,
@@ -441,6 +466,7 @@ qb: [
 },
 {
   id: 'B7', pts: '10%', chips: [['x','ch2-2 × ch2-5'],['past','考古 Q7 延伸']],
+  k: 'K13 K14', sec: ['ch2-2#mobility', 'ch2-2#auth', 'ch2-5#scan', 'ch2-5#roam'],
   en: `A STA moving between APs of the same ESS.
   <ol type="a"><li>Describe the roaming procedure, including what the DS does. (5%)</li>
   <li>Which scanning mode would you use while roaming with a VoIP call in progress, and why? How can pre-authentication shorten the handoff? (5%)</li></ol>`,
@@ -456,6 +482,7 @@ qb: [
 },
 {
   id: 'B8', pts: '10%', chips: [['x','ch2-1 × ch2-4']],
+  k: 'K19', sec: ['ch2-1#phy-svc', 'ch2-1#plcp', 'ch2-4#dcf'],
   en: `802.11 supports multiple data rates in the same BSS ("Question: how to decide the proper data rate?").
   <ol type="a"><li>Why are the DSSS PLCP preamble and header always sent at 1 Mbps DBPSK? How does the PLCP Length field keep virtual carrier sense working for stations that cannot decode the higher-rate payload? (5%)</li>
   <li>The rate-switching algorithm is beyond the scope of the standard. Propose a reasonable method, and explain the trade-off it must handle. (5%)</li></ol>`,
@@ -471,6 +498,7 @@ qb: [
 },
 {
   id: 'B9', pts: '20%', chips: [['past','考古 Q3 形式']],
+  k: 'K7 K11 K12 K17', sec: ['ch2-3#fc', 'ch2-3#frag', 'ch2-4#defrag', 'ch2-5#ps', 'ch2-5#ibss-ps'],
   en: `Explanation (20%): explain the purpose of each item and how it works.
   <ol type="A"><li>Retry field (Frame Control)</li><li>DTIM</li><li>ATIM window</li><li>More Fragments field</li></ol>`,
   zh: `解釋題（20%）：說明每一項的目的和運作方式。
@@ -488,6 +516,7 @@ qb: [
 },
 {
   id: 'B10', pts: '15%', chips: [],
+  k: 'K6 K7', sec: ['ch2-4#frag'],
   en: `Fragmentation with RTS/CTS.
   <ol type="a"><li>How are the Duration fields of the RTS, CTS, fragments and ACKs set, so that every fragment and ACK acts as a "virtual RTS and CTS"? (6%)</li>
   <li>The source sends fragment 1 but the ACK is lost. Describe what the source, the stations that hear only the source, and the stations that hear only the destination do. (6%)</li>
@@ -507,6 +536,7 @@ qb: [
 },
 {
   id: 'B11', pts: '10%', chips: [],
+  k: 'K6', sec: ['ch2-4#hidden'],
   en: `RTS/CTS is "optional to use, but must be implemented", and its use is controlled by RTS_Threshold.
   <ol type="a"><li>Why is it optional to use but mandatory to implement? (4%)</li>
   <li>As a network designer, how would you choose RTS_Threshold? Explain what happens if it is set very low or very high, and why the "mixed" mode performs well. (6%)</li></ol>`,
@@ -522,6 +552,7 @@ qb: [
 },
 {
   id: 'B12', pts: '10%', chips: [],
+  k: 'K9 K10 K11 K13', sec: ['ch2-3#mgmt', 'ch2-5#cfp', 'ch2-5#tbtt', 'ch2-5#scan'],
   en: `Beacons are transmitted at the Target Beacon Transmission Time (TBTT).
   <ol type="a"><li>A beacon is delayed by 3 ms because the medium is busy. When is the next beacon sent, and why is it scheduled this way? (4%)</li>
   <li>What information in the beacon is needed by (i) a station that is scanning, (ii) a sleeping station, (iii) a PCF-aware station? (6%)</li></ol>`,
@@ -537,6 +568,7 @@ qb: [
 },
 {
   id: 'B13', pts: '10%', chips: [['x','ch2-1 × ch2-2']],
+  k: 'K20', sec: ['ch2-1#dsss', 'ch2-1#channels', 'ch2-2#spatial'],
   en: `DSSS spreads each data bit with an 11-chip Barker sequence.
   <ol type="a"><li>What does the system gain by spreading, and what does it pay for it? (5%)</li>
   <li>Why can at most three DSSS BSSs overlap in the same area? How should channels be assigned to adjacent cells? (5%)</li></ol>`,
@@ -552,6 +584,7 @@ qb: [
 },
 {
   id: 'B14', pts: '10%', chips: [],
+  k: 'K22', sec: ['ch3#brief', 'ch3#tspec', 'ch3#addts'],
   en: `Parameterized QoS needs admission control.
   <ol type="a"><li>Describe how a QSTA obtains parameterized service for a new video stream, from request to transmission. (6%)</li>
   <li>Why must the HC be allowed to reject an ADDTS request? What would happen without admission control? (4%)</li></ol>`,
@@ -562,11 +595,12 @@ qb: [
   <p><b>(b)</b> 通道時間有限。如果每個流都被接受，總需求時間會超過容量；HC 就無法再滿足任何一個流的頻寬或延遲上限，連既有的流也會受影響。拒絕（或協商）新請求，是為了保護已經給出的保證。在 EDCA 中，EDCA Parameter Set 裡的 ACM 位元同樣可以讓某個 AC 必須做 admission control。</p>`,
   ae: `<p><b>(a)</b> The QSTA sends an <b>ADDTS Request</b> (action frame) containing a <b>TSPEC</b> (rates, service interval, delay bound, direction, access policy HCCA, ack policy…) and optionally a TCLAS to identify the stream's MSDUs. The HC decides and answers with an <b>ADDTS Response</b> (status, and a Schedule element if requested). If accepted, the TS gets a TSID (8–15); the HC includes it in its polling schedule and sends QoS (+)CF-Poll frames giving polled TXOPs; the QSTA sends its frames within each TXOP. DELTS removes the TS.</p>
   <p><b>(b)</b> Channel time is limited. If every stream were admitted, the total requested time would exceed the capacity; the HC could no longer meet any stream's bandwidth or delay bound, and existing streams would also suffer. Rejecting (or negotiating) new requests protects the guarantees already given. In EDCA the ACM bit in the EDCA Parameter Set can likewise make admission control mandatory for an AC.</p>`,
-  az: `<p>(a) 流程題：ADDTS Req（TSPEC）→ HC 判斷 → ADDTS Resp → 輪詢排程 → QoS CF-Poll → Polled TXOP。(b) 的觀念：「保證」的前提是「不超賣」；C19 有一個算容量的例子。</p>`,
+  az: `<p>(a) 流程題：ADDTS Req（TSPEC）→ HC 判斷 → ADDTS Resp → 輪詢排程 → QoS CF-Poll → Polled TXOP。(b) 的觀念：「保證」的前提是「不超賣」。</p>`,
   src: `11EnhancedQoS「802.11e 的主要強化」（Admission Control）、「Traffic Specification」「Action frame: ADDTS Request and ADDTS Response」「TS Info Field」「Schedule Element」「EDCA Parameter Set Element」（ACM）`
 },
 {
   id: 'B15', pts: '10%', chips: [],
+  k: 'K14', sec: ['ch2-3#states'],
   en: `802.11 defines three station states and three frame classes.
   <ol type="a"><li>Station A receives a Class 3 data frame from station B, but B is not authenticated with A. What does A do, and why? (4%)</li>
   <li>Why are RTS, CTS, ACK, beacon and probe frames allowed in State 1, before any authentication? (6%)</li></ol>`,
@@ -582,6 +616,7 @@ qb: [
 },
 {
   id: 'B16', pts: '15%', chips: [['x','ch2-4 × ch3']],
+  k: 'K4 K21 K23', sec: ['ch2-4#backoff', 'ch3#edca'],
   en: `You manage a QAP in a hotspot. Many users download files (AC_BE) and VoIP calls (AC_VO) suffer from long delays.
   <ol type="a"><li>Which EDCA parameters would you change, how, and why? (9%)</li>
   <li>What side effects should you watch for? (6%)</li></ol>`,
@@ -599,6 +634,7 @@ qb: [
 qc: [
 {
   id: 'C1', pts: '10%', chips: [['calc','計算']],
+  k: 'K1', sec: ['ch1#collision', 'ch1#calc'],
   en: `Truncated binary exponential backoff. In 802.3, two stations collide for the first time. What is the probability that they collide again on the next attempt? After their 3rd collision? Give the range of r and the maximum waiting time after the 3rd and the 12th collision. (10%)`,
   zh: `截斷二元指數退避。802.3 中兩個站台第一次碰撞。它們在下一次嘗試再次碰撞的機率是多少？第 3 次碰撞之後呢？寫出第 3 次與第 12 次碰撞後 r 的範圍與最長等待時間。（10%）`,
   zd: `<p>第 n 次碰撞後 r ∈ [0, 2<sup>k</sup> − 1]，k = min(n, 10)。兩個站台選到同一個 r 就會再次碰撞：第 1 次碰撞後 r ∈ {0, 1} → P = <b>1/2</b>；第 3 次碰撞後 r ∈ [0, 7] → P = <b>1/8</b>。第 3 次碰撞後最長等待 = 7 × 51.2 = <b>358.4 µs</b>；第 12 次碰撞後 k = 10，r ∈ [0, 1023]，最長 = 1023 × 51.2 = <b>52,377.6 µs ≈ 52.4 ms</b>。嘗試 16 次後就丟棄訊框。</p>`,
@@ -608,6 +644,7 @@ qc: [
 },
 {
   id: 'C2', pts: '10%', chips: [['calc','計算'],['x','ch2-4 × ch3']],
+  k: 'K3 K21', sec: ['ch2-4#ifs', 'ch3#edca', 'ch3#calc'],
   en: `EDCA in 802.11a (SIFS = 16 µs, slot = 9 µs). Use the lecture's WME defaults: AIFSN = 2, 2, 3, 7 and random backoff 0–3, 0–7, 0–15, 0–15 slots for AC_VO, AC_VI, AC_BE, AC_BK.
   <ol type="a"><li>Compute AIFS[AC] and the minimum and maximum initial waiting time of each AC. Compare AIFS with DIFS. (6%)</li>
   <li>If an administrator configures all four ACs with the same AIFSN and the same CW, what happens to the service differentiation? (2%)</li>
@@ -648,6 +685,7 @@ function render(list) {
   return list.map(q => `
   <section class="mq" id="${q.id}">
     <div class="mq-head"><span class="mq-id">${q.id}</span><span class="mq-pts">(${q.pts})</span>${q.chips.map(chip).join('')}</div>
+    ${examRefs(q)}
     <div class="q-en" lang="en">${q.en}</div>
     <div class="q-zh">${q.zh}</div>
     <details>
