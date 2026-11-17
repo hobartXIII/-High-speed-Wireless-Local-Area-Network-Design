@@ -58,7 +58,7 @@
     <tr><td><b>困難的媒介</b>：干擾、雜訊、訊號隨時間與位置變化</td><td>錯誤率高；傳送時聽不到別人</td><td>正向 ACK、重傳、分段、EIFS；不能 CD，只能 CA</td></tr>
     <tr><td><b>不能假設全連通</b></td><td>隱藏節點：兩個站彼此聽不到</td><td>NAV、RTS/CTS、經 AP 傳、輪詢</td></tr>
     <tr><td><b>各國法規不同</b></td><td>頻段、功率、頻道數不同</td><td>多種 PHY、頻道規劃</td></tr>
-    <tr><td><b>移動性</b></td><td>位址 ≠ 位置；靠電池</td><td>Association、DS、漫遊、省電</td></tr>
+    <tr><td><b>移動性</b></td><td>位址 ≠ 位置；站台（行動裝置）靠電池</td><td>Association、DS、漫遊、省電</td></tr>
     <tr><td><b>安全性</b>：沒有實體邊界，網路互相重疊</td><td>誰都能接入、竊聽</td><td>認證取代「接上線」、WEP 取代「封閉的線」</td></tr>
   </table></div>
   <p><b>LAN 的定義</b>（L1，講義 0 p.8）：在有限範圍內（建築物、校園），讓多台裝置直接互相通訊的網路，速率中到高、錯誤率低。PAN、MAN、WAN 講義只打了問號，用<b>涵蓋範圍</b>比較：PAN（個人周圍幾公尺，IEEE 802.15）＜ LAN（建築物）＜ MAN（城市，IEEE 802.16）＜ WAN（跨城市、跨國，經過電信業者）。</p>
@@ -490,7 +490,7 @@ sequenceDiagram
   <div class="qs"><span class="lb">題目</span><a class="past" href="past-exam.html#Q2">Q2</a><a class="lec" href="past-exam.html#L13">L13</a><a href="midterm-practice.html#A6">A6</a><a href="midterm-practice.html#B9">B9</a></div>
   <div class="refs">小抄：K11、K12、K26、K17｜筆記：<a href="ch2-3-80211-frame.html#fc">CH2-3 §7</a>；<a href="ch2-5-80211-pcf-mgmt.html#ps">CH2-5 §10</a>、<a href="ch2-5-80211-pcf-mgmt.html#ibss-ps">§11</a>；<a href="ch3-80211e-qos.html#apsd">CH3 §13</a></div>
 
-  <p>Q2 的題目沒寫機制名稱，第一句要自己點出：<b>802.11 的電源管理</b>。閒置時接收最耗電，所以讓站台睡覺，由 AP 替它緩衝。講義 2-5 p.18 列了電源管理協定的三個特性：讓收發器盡可能關閉、對現有協定透明、有彈性（可以在吞吐量與電池壽命之間取捨）。</p>
+  <p>Q2 的題目沒寫機制名稱，第一句要自己點出：<b>802.11 的電源管理</b>。靠電池的是站台（行動裝置），閒置時接收最耗電，所以讓站台睡覺，由 AP 替它緩衝；AP 通常接市電、可以一直醒著，才擔得起緩衝的角色 <span class="sup">補充</span>。講義 2-5 p.18 列了電源管理協定的三個特性：讓收發器盡可能關閉、對現有協定透明、有彈性（可以在吞吐量與電池壽命之間取捨）。</p>
   <div class="figure">
     <div class="fig-title">Infrastructure 省電：PS-Poll <span class="tag static">時序圖</span></div>
     <div class="fig-body"><div class="mermaid-host">
