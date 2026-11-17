@@ -16,6 +16,7 @@
     { href: 'midterm-practice.html', label: '期中練習' },
     { href: 'cheatsheet.html', label: '期中小抄' },
     { href: 'cheatsheet-guide.html', label: '小抄導讀' },
+    { href: 'exam-focus.html', label: '考前重點' },
     { href: 'index.html#english', label: '英文練習' },
     { href: 'index.html#lecture', label: '講義對照 🔒' },
   ];
