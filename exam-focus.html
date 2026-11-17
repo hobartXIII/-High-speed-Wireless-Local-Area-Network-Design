@@ -213,7 +213,7 @@ sequenceDiagram
   Note over R: 序號 7 已收過且 Retry = 1，判定為重複，丟掉
   R->>S: ACK
     </div></div>
-    <div class="caption">依講義 2-4 p.11、2-3 p.14（Retry）整理。重複的訊框也要回 ACK，否則傳送端會一直重傳。</div>
+    <div class="caption">依講義 2-4 p.11、2-3 p.14（Retry）整理。重複的訊框也要回 ACK，否則傳送端會一直重傳。<br>這張圖是「接收端第一次有收到、只是 ACK 在回程遺失」的情況，也就是講義說 Sequence Control 用來過濾的「ACK 機制造成的重複」。如果是第一次的 Data 本身就沒送到（碰撞或 CRC 錯誤），接收端沒收過序號 7，Retry = 1 的重傳就是第一份，照常收下並回 ACK。所以 Retry = 1 只代表「這是重傳」；要<b>序號已經收過</b>再加上 Retry = 1，才判定為重複。</div>
   </div>
 
   <h3 class="t">三個標準為什麼不同（Q9、A7）</h3>
